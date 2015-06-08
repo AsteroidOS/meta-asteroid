@@ -1,0 +1,30 @@
+From 70443dedff5669e0fcc630dfb7439255e0a3979d Mon Sep 17 00:00:00 2001
+From: Simon Busch <morphis@gravedo.de>
+Date: Wed, 12 Nov 2014 12:22:19 +0100
+Subject: [PATCH 1/2] Unblock rendering for Android 4.4.4 and hwcomposer 1.2
+ based devices
+
+Signed-off-by: Simon Busch <morphis@gravedo.de>
+---
+ hwcomposer/hwcomposer_backend_v11.cpp | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/hwcomposer/hwcomposer_backend_v11.cpp b/hwcomposer/hwcomposer_backend_v11.cpp
+index ee18407..0f10760 100644
+--- a/hwcomposer/hwcomposer_backend_v11.cpp
++++ b/hwcomposer/hwcomposer_backend_v11.cpp
+@@ -90,9 +90,8 @@ void HWComposer::present(HWComposerNativeWindowBuffer *buffer)
+ 
+     setFenceBufferFd(buffer, fblayer->releaseFenceFd);
+ 
+-    if (oldretire != -1)
+-    {   
+-        sync_wait(oldretire, -1);
++    if (oldretire != -1) {
++        // sync_wait(oldretire, -1);
+         close(oldretire);
+     }
+ }
+-- 
+1.9.1
+

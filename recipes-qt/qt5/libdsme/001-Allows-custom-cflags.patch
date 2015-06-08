@@ -1,0 +1,53 @@
+commit d474b630a62265e2090489a9048f510d3d8d2746
+Author: Florent Revest <revestflo@gmail.com>
+Date:   Fri Jun 5 13:28:45 2015 +0200
+
+    Allows use of custom CFLAGS
+
+diff --git a/Makefile b/Makefile
+index 18067ca..d1fa663 100644
+--- a/Makefile
++++ b/Makefile
+@@ -100,13 +100,13 @@ install_tests::
+ # Common options
+ # ----------------------------------------------------------------------------
+ 
+-CFLAGS   += -O2
+-CFLAGS   += -Wall -Wwrite-strings -Wmissing-prototypes -Werror
++override CFLAGS   += -O2
++override CFLAGS   += -Wall -Wwrite-strings -Wmissing-prototypes -Werror
+ 
+-CFLAGS   += -g
+-LDFLAGS  += -g
++override CFLAGS   += -g
++override LDFLAGS  += -g
+ 
+-LDFLAGS  += -Wl,--as-needed
++override LDFLAGS  += -Wl,--as-needed
+ 
+ # ----------------------------------------------------------------------------
+ # libdsme$(SOVERS) and libdsme.a
+@@ -115,11 +115,11 @@ LDFLAGS  += -Wl,--as-needed
+ libdsme_OBJ += protocol.pic.o message.pic.o alarm_limit.pic.o
+ libdsme_PC  += glib-2.0
+ 
+-libdsme$(SOVERS) : CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
+-libdsme$(SOVERS) : LDLIBS += $$(pkg-config --libs $(libdsme_PC))
++libdsme$(SOVERS) : override CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
++libdsme$(SOVERS) : override LDLIBS += $$(pkg-config --libs $(libdsme_PC))
+ libdsme$(SOVERS) : $(libdsme_OBJ)
+ 
+-libdsme.a : CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
++libdsme.a : override CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
+ libdsme.a : $(patsubst %.pic.o, %.o, $(libdsme_OBJ))
+ 
+ # ----------------------------------------------------------------------------
+@@ -145,6 +145,6 @@ libthermalmanager_dbus_if$(SOVERS) : $(libthermalmanager_dbus_if_OBJ)
+ ut_libdsme_OBJ += tests/ut_libdsme.o
+ ut_libdsme_PC  += glib-2.0 check
+ 
+-tests/ut_libdsme : CFLAGS += $$(pkg-config --cflags $(ut_libdsme_PC))
+-tests/ut_libdsme : LDLIBS += $$(pkg-config --libs $(ut_libdsme_PC))
++tests/ut_libdsme : override CFLAGS += $$(pkg-config --cflags $(ut_libdsme_PC))
++tests/ut_libdsme : override LDLIBS += $$(pkg-config --libs $(ut_libdsme_PC))
+ tests/ut_libdsme : $(ut_libdsme_OBJ) libdsme$(SOVERS)

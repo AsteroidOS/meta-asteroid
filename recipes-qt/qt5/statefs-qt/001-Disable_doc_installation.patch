@@ -1,0 +1,23 @@
+commit 7fc6345ef28492954413126be46ecfe5a0eba3c8
+Author: Florent Revest <revestflo@gmail.com>
+Date:   Mon Jun 8 12:44:27 2015 +0200
+
+    Disable doc installation
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 064857c..f60a3f0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,9 +22,9 @@ link_directories(
+   ${QTAROUND_LIBRARY_DIRS}
+ )
+ 
+-add_custom_target(doc
+-  COMMAND doxygen ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile)
+-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION share/doc/statefs-qt5)
++#add_custom_target(doc
++#  COMMAND doxygen ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile)
++#install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION share/doc/statefs-qt5)
+ 
+ find_package(Qt5Core REQUIRED)
+ 

@@ -1,0 +1,14 @@
+diff --git a/hwcomposer/hwcomposer.pro b/hwcomposer/hwcomposer.pro
+index 417f80c..c228926 100644
+--- a/hwcomposer/hwcomposer.pro
++++ b/hwcomposer/hwcomposer.pro
+@@ -18,9 +18,6 @@
+ SOURCES += hwcomposer_backend.cpp
+ HEADERS += hwcomposer_backend.h
+ 
+-SOURCES += hwcomposer_backend_v0.cpp
+-HEADERS += hwcomposer_backend_v0.h
+-
+ SOURCES += hwcomposer_backend_v10.cpp
+ HEADERS += hwcomposer_backend_v10.h
+ 
