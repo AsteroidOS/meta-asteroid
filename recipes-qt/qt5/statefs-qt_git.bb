@@ -11,7 +11,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
 INSANE_SKIP_statefs-qt += "dev-deps"
-DEPENDS += " qtbase cor qtaround"
+DEPENDS += " qtbase cor qtaround qtdeclarative"
 inherit cmake_qt5
 
 B = "${WORKDIR}/git"

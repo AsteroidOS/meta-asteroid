@@ -9,7 +9,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += " qtbase libngf"
+DEPENDS += " qtbase libngf qtdeclarative "
 inherit qmake5
 
 do_install_append() {

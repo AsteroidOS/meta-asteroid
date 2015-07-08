@@ -11,5 +11,5 @@ S = "${WORKDIR}/git"
 
 inherit cmake
 
-DEPENDS+=" tut "
+DEPENDS+=" tut udev "
 EXTRA_OECMAKE=" -DVERSION=0.1.17"
