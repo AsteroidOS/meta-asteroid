@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c
 
 PV = "5.2.0+gitr${SRCPV}"
 
-DEPENDS = "qtbase libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers"
+DEPENDS = " qtbase libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
 
 # We need to be ${MACHINE_ARCH} as we need to compile the source against a specific
 # Android version we select per machine
@@ -19,6 +19,7 @@ SRCREV = "${AUTOREV}"
 SRC_URI_append_tenderloin = " \
     file://0001-Unblock-rendering-for-Android-4.4.4-and-hwcomposer-1.patch;striplevel=2 \
     file://0002-Add-QCOM_BSP-define-switch.patch;striplevel=2 \
+    file://003-Disable_hwcomposer_backend_v0.patch;striplevel=2 \
 "
 
 inherit qmake5

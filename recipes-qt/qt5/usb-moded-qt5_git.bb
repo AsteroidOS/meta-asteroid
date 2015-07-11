@@ -11,3 +11,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase usb-moded"
 inherit qmake5
+
+do_install_append() {
+    mv ${D}/include ${D}/usr/
+}

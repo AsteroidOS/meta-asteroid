@@ -3,8 +3,6 @@ HOMEPAGE = "https://github.com/nemomobile/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-DEPENDS += "glib-2.0 udev dbus-glib dbus"
-
 SRC_URI = "git://github.com/nemomobile/usb-moded;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
@@ -15,6 +13,7 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd "
+DEPENDS += " dbus dbus-glib glib-2.0 udev kmod systemd "
 
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac

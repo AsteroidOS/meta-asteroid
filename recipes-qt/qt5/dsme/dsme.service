@@ -1,0 +1,24 @@
+[Unit]
+Description=DSME
+DefaultDependencies=no
+Requires=dbus.service
+After=local-fs.target dbus.service
+Conflicts=shutdown.target
+
+[Service]
+Type=notify
+# When starting dsme gets initial runlevel from the bootstate file
+# If it doesn't exist, we default to USER
+# This works because EnvironmentFile overrides Environment
+Environment=BOOTSTATE=USER
+EnvironmentFile=-/run/systemd/boot-status/bootstate
+EnvironmentFile=-/var/lib/environment/dsme/*.conf
+ExecStart=/usr/sbin/dsme -p /usr/lib/dsme/libstartup.so --systemd
+Restart=always
+RestartSec=1
+StartLimitInterval=600
+StartLimitBurst=3
+StartLimitAction=reboot
+
+[Install]
+WantedBy=multi-user.target

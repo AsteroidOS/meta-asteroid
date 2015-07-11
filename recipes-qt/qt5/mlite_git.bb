@@ -9,7 +9,12 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "qtbase qtbase-native"
+DEPENDS += " qtbase glib-2.0"
 inherit qmake5
 B = "${WORKDIR}/git" 
 # Out of dir build breaks mlite5.pc installation
+
+do_install_append() {
+    rm -rf ${D}/opt
+}
+
