@@ -12,7 +12,7 @@ DEPENDS = " qtbase libhybris mtdev glib-2.0 udev qtwayland virtual/android-heade
 # Android version we select per machine
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin.git;protocol=http"
+SRC_URI = "git://github.com/webOS-ports/qt5-qpa-hwcomposer-plugin.git;protocol=http;branch=webOS-ports/master"
 S = "${WORKDIR}/git/hwcomposer"
 SRCREV = "${AUTOREV}"
 
