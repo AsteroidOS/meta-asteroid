@@ -14,7 +14,4 @@ inherit cmake_qt5
 
 EXTRA_OECMAKE=" -DVERSION=0.2.6 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
 
-do_install_append() {
-    rm -rf ${D}/opt
-}
-
+FILES_${PN}-dbg += "/opt"

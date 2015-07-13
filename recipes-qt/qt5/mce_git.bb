@@ -16,4 +16,5 @@ do_install() {
     oe_runmake install DESTDIR=${D}
 }
 
+FILES_${PN} += " /run/mce /lib/systemd/system "
 FILES_${PN}-dbg += "/usr/lib/mce/modules/.debug"

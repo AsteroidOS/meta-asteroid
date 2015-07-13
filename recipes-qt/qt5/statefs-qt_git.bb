@@ -16,3 +16,10 @@ inherit cmake_qt5
 
 B = "${WORKDIR}/git"
 EXTRA_OECMAKE=" -DVERSION=0.2.51 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
+
+do_install_append() {
+    rm ${D}/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so
+}
+
+FILES_${PN} += "/usr/lib/qt5/qml/Mer/State/"
+FILES_${PN}-dbg += "/usr/lib/qt5/qml/Mer/State/.debug/"

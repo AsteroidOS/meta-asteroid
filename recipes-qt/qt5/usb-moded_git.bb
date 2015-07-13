@@ -52,3 +52,5 @@ do_install_append() {
     install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/graphical.target.wants/usb-rescue-mode-off.service
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 }
+
+FILES_${PN} += " /lib/systemd/system "

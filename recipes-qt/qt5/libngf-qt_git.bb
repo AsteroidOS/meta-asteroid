@@ -15,6 +15,8 @@ inherit qmake5
 do_install_append() {
     mv ${D}/lib/* ${D}/usr/lib/
     mv ${D}/include/* ${D}/usr/include/
-    rmdir ${D}/include/
-    rm -rf ${D}/opt/
+    rmdir ${D}/include/ ${D}/lib/
 }
+
+FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/ngf"
+FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/ngf/.debug/"

@@ -15,6 +15,8 @@ B = "${WORKDIR}/git"
 # Out of dir build breaks mlite5.pc installation
 
 do_install_append() {
-    rm -rf ${D}/opt
+    cd src/
+    cp *.h MDConfGroup MNotificationGroup MRemoteAction MExport MDesktopEntry MNotification MGConfItem  ${D}/usr/include/mlite5/
 }
 
+FILES_${PN}-dbg += "/opt"

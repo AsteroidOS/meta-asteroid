@@ -14,6 +14,4 @@ inherit cmake
 DEPENDS+=" tut udev "
 EXTRA_OECMAKE=" -DVERSION=0.1.17"
 
-do_install_append() {
-    rm -rf ${D}/opt
-}
+FILES_${PN}-dbg += "/opt /usr/lib/cmake/cor"

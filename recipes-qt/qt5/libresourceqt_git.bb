@@ -14,3 +14,5 @@ DEPENDS += " qtbase libresource dbus virtual/libgles2"
 inherit qmake5
 
 B = "${WORKDIR}/git"
+
+FILES_${PN}-dbg += "/usr/lib/libresourceqt-qt5-tests /usr/share"

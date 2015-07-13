@@ -15,7 +15,4 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 
-do_install_append() {
-    rm -rf ${D}/opt
-}
-
+FILES_${PN}-dbg += "/opt"
