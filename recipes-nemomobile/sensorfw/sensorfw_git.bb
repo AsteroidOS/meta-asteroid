@@ -11,6 +11,8 @@ S = "${WORKDIR}/git"
 
 inherit qmake5
 
+DEPENDS += "qtbase"
+
 FILES_${PN} += "/usr/lib/sensord-qt5/*.so /usr/lib/sensord-qt5/testing/*.so"
 FILES_${PN}-dbg += "/usr/share/sensorfw-tests/ /usr/lib/sensord-qt5/.debug/ /usr/lib/sensord-qt5/testing/.debug/"
 FILES_${PN}-dev += "/usr/share/qt5/mkspecs/"
