@@ -11,7 +11,8 @@ S = "${WORKDIR}/git"
 
 inherit cmake
 
-DEPENDS+=" tut udev "
+DEPENDS += "udev"
+DEPENDS_${PN}-dbg += "tut"
 EXTRA_OECMAKE=" -DVERSION=0.1.17"
 
 FILES_${PN}-dbg += "/opt /usr/lib/cmake/cor"

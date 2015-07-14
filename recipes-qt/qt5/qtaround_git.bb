@@ -9,7 +9,8 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += " qtbase tut cor "
+DEPENDS += "qtbase cor"
+DEPENDS_${PN}-dbg += "tut"
 inherit cmake_qt5
 
 EXTRA_OECMAKE=" -DVERSION=0.2.6 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
