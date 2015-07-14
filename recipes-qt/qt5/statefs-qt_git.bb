@@ -10,7 +10,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-INSANE_SKIP_statefs-qt += "dev-deps"
+INSANE_SKIP_${PN} += "dev-deps"
 DEPENDS += " qtbase qtquick1 cor qtaround"
 inherit cmake_qt5
 
@@ -21,5 +21,5 @@ do_install_append() {
     rm ${D}/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so
 }
 
-FILES_${PN} += "/usr/lib/qt5/qml/Mer/State/"
+FILES_${PN} += "/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so.0 /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so.0.2.51 /usr/lib/qt5/qml/Mer/State/qmldir"
 FILES_${PN}-dbg += "/usr/lib/qt5/qml/Mer/State/.debug/"
