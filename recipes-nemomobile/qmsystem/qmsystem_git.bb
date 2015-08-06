@@ -12,6 +12,11 @@ S = "${WORKDIR}/git"
 inherit qmake5
 B = "${S}"
 
+# Disable tests which don't work as expected
+do_configure_append () {
+    sed -i "s@system keyd tests@system keyd@" libqmsystem2.pro
+}
+
 DEPENDS += "timed sensorfw libdsme libiphb"
 
 FILES_${PN}-dbg += "/opt /usr/share/qmsystem-qt5-tests/"
