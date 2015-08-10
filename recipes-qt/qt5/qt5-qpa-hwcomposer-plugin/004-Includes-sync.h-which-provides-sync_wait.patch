@@ -1,0 +1,37 @@
+From ee32e808edc73b208dc787530e50013ee60775c6 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 6 Aug 2015 14:32:10 +0200
+Subject: [PATCH] Includes sync.h which provides sync_wait
+
+---
+ hwcomposer/hwcomposer_backend_v10.h | 1 +
+ hwcomposer/hwcomposer_backend_v11.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/hwcomposer/hwcomposer_backend_v10.h b/hwcomposer/hwcomposer_backend_v10.h
+index bc7055a..628557f 100644
+--- a/hwcomposer/hwcomposer_backend_v10.h
++++ b/hwcomposer/hwcomposer_backend_v10.h
+@@ -48,6 +48,7 @@
+ 
+ #include <QWaitCondition>
+ #include <QMutex>
++#include <sync/sync.h>
+ 
+ class HwComposerBackend_v10 : public HwComposerBackend {
+ public:
+diff --git a/hwcomposer/hwcomposer_backend_v11.h b/hwcomposer/hwcomposer_backend_v11.h
+index 46b34d3..8281925 100644
+--- a/hwcomposer/hwcomposer_backend_v11.h
++++ b/hwcomposer/hwcomposer_backend_v11.h
+@@ -45,6 +45,7 @@
+ #ifdef HWC_PLUGIN_HAVE_HWCOMPOSER1_API
+ 
+ #include "hwcomposer_backend.h"
++#include <sync/sync.h>
+ 
+ // libhybris access to the native hwcomposer window
+ #include <hwcomposer_window.h>
+-- 
+2.5.0
+
