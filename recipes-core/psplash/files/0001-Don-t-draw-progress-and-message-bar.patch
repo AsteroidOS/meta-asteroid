@@ -1,0 +1,34 @@
+From 0a4de5dde63b6e425a3021536fcc4a1e76eec8f4 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 17 Aug 2015 12:20:58 +0200
+Subject: [PATCH] Don't draw progress and message bar
+
+---
+ psplash.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/psplash.c b/psplash.c
+index 22af68d..fb231f6 100644
+--- a/psplash.c
++++ b/psplash.c
+@@ -290,7 +290,7 @@ main (int argc, char** argv)
+ 			 POKY_IMG_RLE_PIXEL_DATA);
+ 
+   /* Draw progress bar border */
+-  psplash_fb_draw_image (fb, 
++/*  psplash_fb_draw_image (fb, 
+ 			 (fb->width  - BAR_IMG_WIDTH)/2, 
+ 			 SPLIT_LINE_POS(fb),
+ 			 BAR_IMG_WIDTH,
+@@ -303,7 +303,7 @@ main (int argc, char** argv)
+ 
+ #ifdef PSPLASH_STARTUP_MSG
+   psplash_draw_msg (fb, PSPLASH_STARTUP_MSG);
+-#endif
++#endif */
+ 
+   psplash_main (fb, pipe_fd, 0);
+ 
+-- 
+2.5.0
+
