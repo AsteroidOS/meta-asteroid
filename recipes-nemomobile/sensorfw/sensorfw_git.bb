@@ -11,6 +11,10 @@ S = "${WORKDIR}/git"
 
 inherit qmake5
 
+do_configure_prepend() {
+    sed -i '/include( doc\/doc.pri )/d' ../git/sensorfw.pro
+}
+
 DEPENDS += "qtbase"
 
 FILES_${PN} += "/usr/lib/sensord-qt5/*.so /usr/lib/sensord-qt5/testing/*.so"
