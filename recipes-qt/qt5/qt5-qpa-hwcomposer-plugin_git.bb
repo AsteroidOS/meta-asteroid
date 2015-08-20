@@ -12,14 +12,13 @@ DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/andr
 # Android version we select per machine
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://github.com/webOS-ports/qt5-qpa-hwcomposer-plugin.git;protocol=http;branch=webOS-ports/master"
+SRC_URI = "git://github.com/Asteroid-Project/qt5-qpa-hwcomposer-plugin.git;protocol=https"
 S = "${WORKDIR}/git/hwcomposer"
 SRCREV = "${AUTOREV}"
 
 SRC_URI_append_tenderloin = " \
     file://0001-Unblock-rendering-for-Android-4.4.4-and-hwcomposer-1.patch;striplevel=2 \
     file://0002-Add-QCOM_BSP-define-switch.patch;striplevel=2 \
-    file://003-Disable_hwcomposer_backend_v0.patch;striplevel=2 \
 "
 
 inherit qmake5
