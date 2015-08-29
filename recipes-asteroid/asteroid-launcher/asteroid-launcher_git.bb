@@ -11,3 +11,4 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "lipstick"
+RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
