@@ -12,7 +12,7 @@ DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/andr
 # Android version we select per machine
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://github.com/Asteroid-Project/qt5-qpa-hwcomposer-plugin.git;protocol=https"
+SRC_URI = "git://github.com/Asteroid-Project/qt5-qpa-hwcomposer-plugin;protocol=https"
 S = "${WORKDIR}/git/hwcomposer"
 SRCREV = "${AUTOREV}"
 
