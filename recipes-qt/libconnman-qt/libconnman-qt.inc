@@ -12,41 +12,9 @@ S = "${WORKDIR}/git"
 
 inherit pkgconfig
 
-EXTRA_QMAKEVARS_PRE += "CONFIG+=notests TARGET_SUFFIX=${QT_DIR_NAME}"
-
-do_configure_prepend() {
-    # Hack *.pro variables
-    find ${S}/plugin/*.pro -exec sed -i -e 's,$$\[QT_INSTALL_IMPORTS\],${QT_IMPORTS_DIR},g' '{}' ';'
-}
-do_install() {
-    oe_runmake install INSTALL_ROOT=${D}
-}
-
-PACKAGES =+ "${PN}-plugin ${PN}-plugin-dbg"
-
+DEPENDS += "qtbase qtdeclarative"
 RDEPENDS_${PN} = "connman"
-RDEPENDS_${PN}-plugin = "${PN}"
 
-RRECOMMENDS_${PN} = "${PN}-plugin"
-
-FILES_${PN} = " \
-    ${libdir}/libconnman-qt*${SOLIBS} \
-"
-FILES_${PN}-dev = " \
-    ${includedir}/connman-qt*/* \
-    ${libdir}/libconnman-qt*${SOLIBSDEV} \
-    ${libdir}/libconnman-qt*.prl \
-    ${libdir}/pkgconfig/connman-qt*.pc \
-"
-FILES_${PN}-plugin = " \
-    ${PLUGINS_TARGET}/qmldir \
-    ${PLUGINS_TARGET}/lib*.so \
-"
-FILES_${PN}-plugin-dbg = " \
-    ${PLUGINS_TARGET}/.debug \
-    ${PLUGINS_TARGET}/.debug/* \
-"
-
-QT_IMPORTS_DIR = "${libdir}/${QT_DIR_NAME}/imports"
-# the plugin target needs to be the same as 'target.path' and 'qmldir.path' in ${S}/plugin/plugin.pro
-PLUGINS_TARGET = "${QT_IMPORTS_DIR}/MeeGo/Connman"
+FILES_${PN}-dbg += "/usr/lib/qt5/qml/MeeGo/Connman/.debug"
+FILES_${PN}-dev += "/usr/lib/libconnman-qt5.prl"
+FILES_${PN} += "/usr/lib/qt5/qml/MeeGo/Connman"
