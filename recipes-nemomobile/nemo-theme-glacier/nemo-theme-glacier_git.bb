@@ -12,3 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtquickcontrols-nemo"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+
+FILES_${PN} = "/usr/"
