@@ -17,9 +17,11 @@ inherit cmake_qt5
 B = "${WORKDIR}/git"
 EXTRA_OECMAKE=" -DVERSION=0.2.51 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
 
+# Workaround for "ERROR: QA Issue: non -dev/-dbg/-nativesdk package contains symlink .so: statefs-qt path '/work/armv7a-vfp-neon-oe-linux-gnueabi/statefs-qt/+gitAUTOINC-r1/packages-split/statefs-qt/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so' [dev-so]"
 do_install_append() {
     rm ${D}/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so
 }
 
-FILES_${PN} += "/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so.0 /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so.0.2.51 /usr/lib/qt5/qml/Mer/State/qmldir"
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/Mer/State/.debug/"
+FILES_${PN} = "/usr/bin/contextkit-monitor /usr/lib/qt5/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
+FILES_${PN}-dev = "/usr/lib/pkgconfig /usr/include/"
+FILES_${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/"
