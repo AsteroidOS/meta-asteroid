@@ -10,6 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 B = "${S}"
+DEPENDS += "qtbase"
 
 do_configure_prepend () {
     cd tests/
