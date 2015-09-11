@@ -7,10 +7,12 @@ SRC_URI = "git://github.com/nemomobile/nemo-qml-plugin-contextkit.git;protocol=h
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"
-S = "${WORKDIR}/git"
-SEPB = "${S}"
 inherit cmake_qt5
+S = "${WORKDIR}/git"
+B = "${S}"
 EXTRA_OECMAKE+="-DUSEQT=5"
 
-DEPENDS += "qtquickcontrols-nemo"
+DEPENDS += "qtquickcontrols-nemo statefs-qt"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/freedesktop/contextkit/.debug/"
+FILES_${PN} += "/usr/lib/qt5/qml/org/freedesktop/contextkit"
