@@ -10,5 +10,8 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtquickcontrols-nemo"
+DEPENDS += "qtquickcontrols-nemo mlite"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+
+FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/configuration/.debug"
+FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/configuration/"
