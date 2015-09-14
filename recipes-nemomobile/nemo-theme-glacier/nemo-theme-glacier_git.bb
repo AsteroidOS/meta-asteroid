@@ -13,4 +13,11 @@ inherit qmake5
 DEPENDS += "qtquickcontrols-nemo"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
 
+do_install_append() {
+    cd ${D}/usr/share/themes/glacier/meegotouch/icons/
+    ln -sf icon-app-terminal.png icon-l-terminal.png
+    ln -sf icon-app-settings.png icon-l-settings.png
+    ln -sf icon-app-screenshot.png icon-launcher-screenshot.png
+}
+
 FILES_${PN} = "/usr/"
