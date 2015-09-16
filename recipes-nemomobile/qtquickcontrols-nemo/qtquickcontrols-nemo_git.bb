@@ -13,5 +13,9 @@ inherit qmake5
 DEPENDS += "qtquickcontrols"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
 
+do_configure_prepend() {
+    sed -i "s@\$\$\[QT_INSTALL_QML\]/\$\$PLUGIN_IMPORT_PATH/themes@/usr/lib/qt5/qml/QtQuick/Controls/Styles/Nemo/themes@" ${S}/src/styles/styles.pro
+}
+
 FILES_${PN} += "/usr/lib/qt5"
 FILES_${PN}-dbg += "/usr/lib/qt5/examples/.debug/ /usr/lib/qt5/qml/QtQuick/Controls/Nemo/.debug/ /usr/lib/qt5/qml/QtQuick/Controls/Styles/Nemo/.debug/"
