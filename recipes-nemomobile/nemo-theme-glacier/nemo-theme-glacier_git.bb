@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtquickcontrols-nemo"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+RDEPENDS_${PN} += "qtquickcontrols-qmlplugins meegotouch-theme-darko"
 
 do_install_append() {
     cd ${D}/usr/share/themes/glacier/meegotouch/icons/
