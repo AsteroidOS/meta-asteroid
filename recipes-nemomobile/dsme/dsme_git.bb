@@ -34,6 +34,8 @@ do_install_append() {
     ln -s ../dsme.service ${D}/lib/systemd/system/multi-user.target.wants/dsme.service
     install -d ${D}/var/lib/dsme
     [ ! -f ${D}/var/lib/dsme/alarm_queue_status ] && echo 0 > ${D}/var/lib/dsme/alarm_queue_status
+    rm ${D}/usr/lib/dsme/libstartup.so
 }
 
+FILES_${PN} += "/lib/systemd/"
 FILES_${PN}-dbg += "/opt"
