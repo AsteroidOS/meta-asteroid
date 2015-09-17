@@ -1,0 +1,14 @@
+on init
+    write /dev/.coldboot_done 1
+    mkdir /dev/graphics/
+    symlink /dev/fb0 /dev/graphics/fb0
+    class_start core
+
+service logd /system/bin/logd
+    class core
+    socket logd stream 0666 root root
+    socket logdr seqpacket 0666 root root
+    socket logdw dgram 0222 root root
+
+service servicemanager /system/bin/servicemanager
+    class core
