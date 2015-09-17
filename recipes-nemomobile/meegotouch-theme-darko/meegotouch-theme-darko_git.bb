@@ -9,6 +9,8 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
+RDEPENDS_${PN} += "nemo-theme-default"
+
 do_install() {
     mkdir -p ${D}/usr/share/themes/darko/meegotouch/icons/
     install -m 644 index.theme ${D}/usr/share/themes/darko/
