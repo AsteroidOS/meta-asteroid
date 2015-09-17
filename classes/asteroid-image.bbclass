@@ -3,6 +3,8 @@ LICENSE = "GPL-2.0"
 
 IMAGE_FEATURES += "splash package-management"
 
-IMAGE_INSTALL += "base-files base-passwd shadow systemd tzdata coreutils bash file findutils gawk grep procps psmisc sed util-linux sudo module-init-tools less logrotate tar zlib gzip bzip2 connman bluez5 ppp dropbear qtbase qtbase-fonts qtbase-fonts-ttf-dejavu qtbase-plugins qtdeclarative-tools asteroid-launcher glacier-home"
+IMAGE_INSTALL += " \
+base-files base-passwd shadow systemd tzdata coreutils bash file findutils gawk grep procps psmisc sed util-linux sudo module-init-tools less tar gzip bzip2 \
+connman bluez5 ppp dropbear qtbase-fonts qtbase-fonts-ttf-dejavu qtbase-plugins mce android-init asteroid-launcher"
 
 PACKAGECONFIG_append_pn-qtmultimedia = " gstreamer010"
