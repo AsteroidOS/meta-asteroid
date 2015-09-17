@@ -1,0 +1,32 @@
+From b35bf98949aadd87a62c576b96ac243ee892ce78 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 17 Sep 2015 13:32:00 +0200
+Subject: [PATCH] Forces GLES2 the dirty way
+
+---
+ src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
+index 81c74a7..1c38350 100644
+--- a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
++++ b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
+@@ -317,12 +317,9 @@ void QWaylandGLContext::updateGLFormat()
+             || m_format.renderableType() == QSurfaceFormat::OpenGLES) {
+             const GLubyte *s = glGetString(GL_VERSION);
+             if (s) {
+-                QByteArray version = QByteArray(reinterpret_cast<const char *>(s));
+-                int major, minor;
+-                if (QPlatformOpenGLContext::parseOpenGLVersion(version, major, minor)) {
+-                    m_format.setMajorVersion(major);
+-                    m_format.setMinorVersion(minor);
+-                }
++                int major = 2, minor = 0;
++                m_format.setMajorVersion(major);
++                m_format.setMinorVersion(minor);
+             }
+             m_format.setProfile(QSurfaceFormat::NoProfile);
+             m_format.setOptions(QSurfaceFormat::FormatOptions());
+-- 
+2.5.1
+
