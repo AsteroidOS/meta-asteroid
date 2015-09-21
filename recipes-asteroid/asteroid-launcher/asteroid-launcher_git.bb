@@ -1,9 +1,11 @@
 SUMMARY = "Asteroid's launcher based on lipstick"
 HOMEPAGE = "https://github.com/Asteroid-Project/asteroid-launcher"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://COPYING;md5=8a2d6d8e97bb7e7654de49c1af93557f"
+LIC_FILES_CHKSUM = "file://qml/AppLauncher.qml;beginline=1;endline=23;md5=b5fbcff61900379fb98b9f80f09d97a8"
 
-SRC_URI = "git://github.com/Asteroid-Project/asteroid-launcher.git;protocol=https"
+SRC_URI = "git://github.com/Asteroid-Project/asteroid-launcher.git;protocol=https \
+    file://asteroid-launcher.service \
+    file://default.conf"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"
@@ -11,4 +13,15 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "lipstick"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+RDEPENDS_${PN} += "qtdeclarative-qmlplugins qtquickcontrols-qmlplugins qtquickcontrols-nemo qtwayland-plugins qtgraphicaleffects-qmlplugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration nemo-theme-glacier libconnman-qt libqofono xkeyboard-config ttf-opensans"
+FILES_${PN} += "/usr/share/lipstick-glacier-home-qt5"
+
+do_install_append() {
+    install -d ${D}/var/lib/environment/compositor/
+    cp ../default.conf ${D}/var/lib/environment/compositor/
+
+    # TODO: This should definitely be run as a simple user !!
+    install -d ${D}/etc/systemd/system/multi-user.target.wants/
+    cp ../asteroid-launcher.service ${D}/etc/systemd/system/
+    ln -s ../asteroid-launcher.service ${D}/etc/systemd/system/multi-user.target.wants/asteroid-launcher.service
+}
