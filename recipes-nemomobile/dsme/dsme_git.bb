@@ -10,7 +10,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += " qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib "
+DEPENDS += "qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib mce"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
