@@ -9,5 +9,6 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
+DEPENDS += "qtbase"
 
 FILES_${PN} = "/usr/ /etc/"
