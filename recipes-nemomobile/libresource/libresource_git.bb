@@ -9,5 +9,9 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
+do_compile_prepend() {
+    sed -i "s@\$(top_builddir)/src/libresource.la@libresource.la@g" src/Makefile
+}
+
 DEPENDS += " glib-2.0 dbus-glib dbus"
 inherit autotools pkgconfig
