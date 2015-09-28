@@ -1,6 +1,6 @@
 SUMMARY = "Glacier Theme for Nemo"
 HOMEPAGE = "https://github.com/nemomobile-ux/nemo-theme-glacier.git"
-LICENSE = "Creative-Commons-Attribution-ShareAlike-3.0-Unported-License"
+LICENSE = "CC-BY-SA-3.0"
 LIC_FILES_CHKSUM = "file://cc3/LICENSE.md;md5=cf7e5cf784e962ee361c8d468cebf569"
 
 SRC_URI = "git://github.com/nemomobile-ux/nemo-theme-glacier.git;protocol=https"

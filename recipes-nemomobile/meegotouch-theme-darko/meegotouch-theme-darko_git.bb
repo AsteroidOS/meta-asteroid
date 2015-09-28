@@ -1,6 +1,6 @@
 SUMMARY = "Darko Theme for MeegoTouch"
 HOMEPAGE = "https://github.com/nemomobile/meegotouch-theme-darko"
-LICENSE = "Creative-Commons-Attribution-Unported-3.0-Unported-License"
+LICENSE = "CC-BY-3.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=88f871534ad2268001f05f4790685ea5"
 
 SRC_URI = "git://github.com/nemomobile/meegotouch-theme-darko;protocol=https"
