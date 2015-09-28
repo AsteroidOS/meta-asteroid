@@ -15,7 +15,7 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 # Poweron-timer needs libcal but I can't find it
-EXTRA_OECONF= " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-static"
+EXTRA_OECONF= " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-static --includedir=${STAGING_INCDIR} --oldincludedir=${STAGING_INCDIR}"
 
 do_configure_prepend() {
     sed -i "s/\lsystemd-daemon/lsystemd/" dsme/Makefile.am
