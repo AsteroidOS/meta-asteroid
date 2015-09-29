@@ -19,4 +19,4 @@ S = "${WORKDIR}/git"
 
 FILES_${PN}-dev += "/usr/share/qt5"
 FILES_${PN}-dbg += "/opt /usr/lib/libqofono-qt5/tests /usr/lib/qt5/qml/MeeGo/QOfono/.debug/"
-FILES_${PN} += "/usr/lib/qt5 "
+FILES_${PN} += "/usr/lib/qt5 /usr/lib/libqofono-qt5.prl"
