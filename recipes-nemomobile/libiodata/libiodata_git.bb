@@ -13,10 +13,10 @@ B = "${S}"
 DEPENDS += "qtbase"
 
 do_configure_prepend () {
-    cd tests/
-    ln -s ../src/libiodata-qt5.so libiodata-qt5.so
-    cd ../type-to-cxx/
-    ln -s ../src/libiodata-qt5.so libiodata-qt5.so
+    export IODATA_VERSION=0.19.8
+    cd src/
+    ${OE_QMAKE_QMAKE} -makefile -o Makefile ${OE_QMAKE_DEBUG_OUTPUT} ${OE_QMAKE_RECURSIVE} $QMAKE_VARSUBST_PRE $AFTER $PROFILES $QMAKE_VARSUBST_POST
+    oe_runmake
     cd ..
 }
 
