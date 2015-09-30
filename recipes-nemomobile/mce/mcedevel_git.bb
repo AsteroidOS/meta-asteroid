@@ -9,6 +9,13 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
+do_compile() {
+}
+
 do_install() {
-    oe_runmake install DESTDIR=${D}
+    install -d ${D}/usr/include/mce/
+    cp include/mce/* ${D}/usr/include/mce/
+
+    install -d ${D}/usr/lib/pkgconfig/
+    cp mce.pc ${D}/usr/lib/pkgconfig/
 }
