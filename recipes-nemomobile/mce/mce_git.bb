@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/nemomobile/mce.git;protocol=https \
     file://001-Fixes_build.patch"
-SRCREV = "${AUTOREV}"
+SRCREV = "702a41228f7509f49eb3d70713fb4ed47ed06412"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
