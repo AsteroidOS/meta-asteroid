@@ -5,6 +5,6 @@ IMAGE_FEATURES += "splash package-management"
 
 IMAGE_INSTALL += " \
 base-files base-passwd shadow systemd tzdata coreutils bash file findutils gawk grep procps psmisc sed util-linux sudo module-init-tools less tar gzip bzip2 \
-connman bluez5 ppp dropbear qtbase-fonts qtbase-fonts-ttf-dejavu qtbase-plugins mce android-init asteroid-launcher"
+connman bluez5 ppp dropbear qtbase-fonts qtbase-fonts-ttf-dejavu qtbase-plugins statefs dsme mce ngfd timed sensorfw android-init asteroid-launcher"
 
 PACKAGECONFIG_append_pn-qtmultimedia = " gstreamer010"
