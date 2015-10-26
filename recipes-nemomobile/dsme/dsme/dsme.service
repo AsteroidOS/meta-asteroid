@@ -13,7 +13,7 @@ Type=notify
 Environment=BOOTSTATE=USER
 EnvironmentFile=-/run/systemd/boot-status/bootstate
 EnvironmentFile=-/var/lib/environment/dsme/*.conf
-ExecStart=/usr/sbin/dsme -p /usr/lib/dsme/libstartup.so --systemd
+ExecStart=/usr/sbin/dsme -p /usr/lib/dsme/startup.so --systemd
 Restart=always
 RestartSec=1
 StartLimitInterval=600
