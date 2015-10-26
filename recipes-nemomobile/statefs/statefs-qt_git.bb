@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's statefs-qt"
-HOMEPAGE = "https://github.com/nemomobile/statefs-qt"
+HOMEPAGE = "https://git.merproject.org/mer-core/statefs-qt"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://src/qml/plugin.cpp;beginline=1;endline=6;md5=4f9a52d865013e8cb78d481eaa0e94d7"
 
-SRC_URI = "git://github.com/nemomobile/statefs-qt;protocol=https \
+SRC_URI = "git://git.merproject.org/mer-core/statefs-qt.git;protocol=https \
     file://001-Disable_doc_installation.patch"
 SRCREV = "${AUTOREV}"
 PR = "r1"

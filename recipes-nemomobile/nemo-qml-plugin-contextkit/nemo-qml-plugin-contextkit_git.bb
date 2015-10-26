@@ -1,9 +1,9 @@
 SUMMARY = "QML Plugin for contextkit on Nemo"
-HOMEPAGE = "https://github.com/nemomobile/nemo-qml-plugin-contextkit.git"
+HOMEPAGE = "https://git.merproject.org/mer-core/nemo-qml-plugin-contextkit"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=23;md5=bc596f90d6ca301d84447f4d365b9243"
 
-SRC_URI = "git://github.com/nemomobile/nemo-qml-plugin-contextkit.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-contextkit.git;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"

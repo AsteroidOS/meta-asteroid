@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's DSME"
-HOMEPAGE = "https://github.com/nemomobile/dsme"
+HOMEPAGE = "https://git.merproject.org/mer-core/dsme"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://github.com/nemomobile/dsme;protocol=https \
+SRC_URI = "git://git.merproject.org/mer-core/dsme.git;protocol=https \
     file://dsme.service"
 SRCREV = "${AUTOREV}"
 PR = "r1"

@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's libngf-qt"
-HOMEPAGE = "https://github.com/nemomobile/libngf-qt.git"
+HOMEPAGE = "https://git.merproject.org/mer-core/libngf-qt"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/nemomobile/libngf-qt.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/libngf-qt.git;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"

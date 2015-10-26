@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's time daemon"
-HOMEPAGE = "https://github.com/nemomobile/timed"
+HOMEPAGE = "https://git.merproject.org/mer-core/timed"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/nemomobile/timed.git;protocol=https \
+SRC_URI = "git://git.merproject.org/mer-core/timed.git;protocol=https \
     file://0001-Fixes-build.patch"
 SRCREV = "${AUTOREV}"
 PR = "r1"

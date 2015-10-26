@@ -1,9 +1,9 @@
 SUMMARY = "This is a daemon which can hanlde setting different usb profiles with gadget drivers"
-HOMEPAGE = "https://github.com/nemomobile/usb-moded"
+HOMEPAGE = "https://git.merproject.org/mer-core/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-SRC_URI = "git://github.com/nemomobile/usb-moded;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"

@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's non graphical feedback daemon"
-HOMEPAGE = "https://github.com/nemomobile/ngfd"
+HOMEPAGE = "https://git.merproject.org/mer-core/ngfd"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/nemomobile/ngfd.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/ngfd.git;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"

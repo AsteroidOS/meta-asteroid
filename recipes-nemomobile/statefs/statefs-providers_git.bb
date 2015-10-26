@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's statefs-providers"
-HOMEPAGE = "https://github.com/nemomobile/statefs-providers"
+HOMEPAGE = "https://git.merproject.org/mer-core/statefs-providers"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5="
 
-SRC_URI = "git://github.com/nemomobile/statefs-providers;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/statefs-providers.git;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"
