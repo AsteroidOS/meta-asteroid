@@ -8,7 +8,7 @@ DEPENDS += " glib-2.0 libcheck"
 SRC_URI = "git://git.merproject.org/mer-core/libdsme.git;protocol=https \
     file://001-Allows-custom-cflags.patch \
 "
-SRCREV = "${AUTOREV}"
+SRCREV = "826915f91a5f94fe3385a2b1d2b04092fbf5c4d9"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

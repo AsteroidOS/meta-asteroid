@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5="
 
 SRC_URI = "git://git.merproject.org/mer-core/statefs-providers.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "a3fb4f3f81945b964b2748c0cbef45356c002c6f"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

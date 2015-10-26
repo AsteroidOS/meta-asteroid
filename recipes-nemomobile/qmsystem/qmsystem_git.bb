@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://system/qmsystemstate.cpp;beginline=1;endline=29;md5=63b0668100f7f3c7d93090514722bceb"
 
 SRC_URI = "git://github.com/nemomobile-graveyard/qmsystem.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "b6ee288d04efd4612d02273c77eedfaa3af500f6"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/qml/AppLauncher.qml;beginline=1;endline=23;md5=b5
 SRC_URI = "git://github.com/nemomobile-ux/glacier-home.git;protocol=https \
     file://lipstick.service \
     file://default.conf"
-SRCREV = "${AUTOREV}"
+SRCREV = "23a384ed117fc08ef5e1d5113812055a4fb3aeac"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

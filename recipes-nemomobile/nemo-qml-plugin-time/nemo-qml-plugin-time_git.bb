@@ -4,7 +4,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=6fe870673c7cd84b28372abaa5be2f48"
 
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-time.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "f8bfe5da480aeabb02a3575ca6f3f420ba13f34f"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

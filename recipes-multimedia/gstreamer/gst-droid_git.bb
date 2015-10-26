@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/gst-droid.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "3580ee0fa10b57737a7d73b91eb1cffab616eae3"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

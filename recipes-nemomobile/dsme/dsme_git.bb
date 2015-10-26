@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/dsme.git;protocol=https \
     file://dsme.service"
-SRCREV = "${AUTOREV}"
+SRCREV = "0d43f45e5990f9658aa8d63c57213093d683ca71"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

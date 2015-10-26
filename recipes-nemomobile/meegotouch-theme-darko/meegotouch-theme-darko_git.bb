@@ -4,7 +4,7 @@ LICENSE = "CC-BY-3.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=88f871534ad2268001f05f4790685ea5"
 
 SRC_URI = "git://github.com/nemomobile/meegotouch-theme-darko;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "756f041714943d6e3c24e9ea1fc1149d83192f5a"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

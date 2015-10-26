@@ -4,7 +4,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=4193e7f1d47a858f6b7c0f1ee66161de"
 
 SRC_URI = "git://github.com/nemomobile/qtquickcontrols-nemo.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "da72638aeaab5b596258b7e172b3cc8828057d57"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

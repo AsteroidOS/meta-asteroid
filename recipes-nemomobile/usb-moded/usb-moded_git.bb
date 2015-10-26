@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "eadebc6ce7230e2789ff0999a8b15a49a4aceaf3"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
