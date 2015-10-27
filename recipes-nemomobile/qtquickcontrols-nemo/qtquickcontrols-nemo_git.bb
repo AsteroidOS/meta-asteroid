@@ -15,6 +15,7 @@ RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
 
 do_configure_prepend() {
     sed -i "s@\$\$\[QT_INSTALL_QML\]/\$\$PLUGIN_IMPORT_PATH/themes@/usr/lib/qt5/qml/QtQuick/Controls/Styles/Nemo/themes@" ${S}/src/styles/styles.pro
+    sed -i "s@src examples@src@" ${S}/qtquickcontrols-nemo.pro
 }
 
 FILES_${PN} += "/usr/lib/qt5"
