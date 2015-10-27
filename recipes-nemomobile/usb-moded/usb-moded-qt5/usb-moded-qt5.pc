@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+includedir=${prefix}/include/usb-moded-qt5
+libdir=${prefix}/lib
+
+Name: Usb-moded-qt5
+Description: Qt bindings for usb_moded
+Version: 1.1
+Libs: -lusb-moded-qt5 
+Libs.private: -ldbus-1 -lQt5DBus -lQt5Core -lpthread   
+Cflags: -I${includedir}
