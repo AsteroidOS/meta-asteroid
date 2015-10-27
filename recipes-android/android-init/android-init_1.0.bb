@@ -9,9 +9,9 @@ S = "${WORKDIR}"
 do_install() {
     install -m 0644 ${WORKDIR}/init.rc ${D}/init.rc
 
-    install -d ${D}/etc/systemd/system/multi-user.target.wants/
-    cp ${WORKDIR}/android-init.service ${D}/etc/systemd/system/
-    ln -s ../android-init.service ${D}/etc/systemd/system/multi-user.target.wants/android-init.service
+    install -d ${D}/lib/systemd/system/multi-user.target.wants/
+    cp ${WORKDIR}/android-init.service ${D}/lib/systemd/system/
+    ln -s ../android-init.service ${D}/lib/systemd/system/multi-user.target.wants/android-init.service
 }
 
-FILES_${PN} += "/init.rc"
+FILES_${PN} += "/init.rc /lib/systemd/system/"
