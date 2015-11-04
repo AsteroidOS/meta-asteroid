@@ -17,6 +17,7 @@ B = "${S}"
 do_configure_prepend() {
     mkdir -p src/h/timed-qt5/
     cp src/lib/qmacro.h src/h/timed-qt5/qmacro.h
+    sed -i "s@<policy user=\"nemo\">@<policy user=\"root\">@" src/server/timed-qt5.conf src/server/timed.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
 }
 
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
