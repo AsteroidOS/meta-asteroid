@@ -4,7 +4,8 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://git.merproject.org/mer-core/mce.git;protocol=https \
-    file://001-Fixes_build.patch"
+    file://001-Fixes_build.patch \
+    file://0002-mce.service-use-a-2-seconds-timeout.patch"
 SRCREV = "702a41228f7509f49eb3d70713fb4ed47ed06412"
 PR = "r1"
 PV = "+git${SRCREV}"

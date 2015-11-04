@@ -1,0 +1,24 @@
+From ad01f509d9787e933849d390f454b794169baa95 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 4 Nov 2015 18:09:47 +0100
+Subject: [PATCH] mce.service: use a 2 seconds timeout
+
+---
+ systemd/mce.service | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/systemd/mce.service b/systemd/mce.service
+index e717c15..c724d9e 100644
+--- a/systemd/mce.service
++++ b/systemd/mce.service
+@@ -10,6 +10,7 @@ Conflicts=shutdown.target
+ [Service]
+ Type=notify
+ ExecStart=/usr/sbin/mce --systemd
++TimeoutSec=2
+ Restart=always
+ 
+ [Install]
+-- 
+2.6.2
+
