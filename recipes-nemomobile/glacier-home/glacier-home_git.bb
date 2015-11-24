@@ -1,7 +1,7 @@
 SUMMARY = "Homescreen for the Glacier UX"
 HOMEPAGE = "https://github.com/nemomobile-ux/glacier-home.git"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://src/qml/AppLauncher.qml;beginline=1;endline=23;md5=b5fbcff61900379fb98b9f80f09d97a8"
+LICENSE = "BSD"
+LIC_FILES_CHKSUM = "file://src/qml/MainScreen.qml;beginline=1;endline=30;md5=1a053e8b1bbb35a9b0146cf1a5775e3a"
 
 SRC_URI = "git://github.com/nemomobile-ux/glacier-home.git;protocol=https \
     file://lipstick.service \
