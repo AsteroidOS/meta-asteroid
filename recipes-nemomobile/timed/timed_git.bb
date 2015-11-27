@@ -20,8 +20,13 @@ do_configure_prepend() {
     sed -i "s@<policy user=\"nemo\">@<policy user=\"root\">@" src/server/timed-qt5.conf src/server/timed.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
 }
 
+do_install_append() {
+    install -d ${D}/lib/systemd/system/
+    mv ${D}/usr/lib/systemd/user/timed-qt5.service ${D}/lib/systemd/system/timed-qt5.service
+}
+
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
-FILES_${PN} += "/usr/lib/ /usr/share/contextkit"
-FILES_${PN} += "/usr/share/mkspecs"
+FILES_${PN} += "/usr/lib/ /usr/share/contextkit /lib/"
+FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
 INSANE_SKIP_${PN} += "dev-deps"
