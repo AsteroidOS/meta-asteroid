@@ -1,14 +1,17 @@
-commit e50a224cc64b3caa2e83a22dad8569e0c654b7eb
-Author: Florent Revest <revestflo@gmail.com>
-Date:   Mon Jun 8 01:52:54 2015 +0200
+From 9879ff15e08d16e93ef88439b78997fad2bf1582 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Tue, 8 Dec 2015 12:06:27 +0100
+Subject: [PATCH] Fixes build
 
-    Fixes build with yocto
+---
+ Makefile | 102 +++++++++++++++++++++++++++++++--------------------------------
+ 1 file changed, 51 insertions(+), 51 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 731fffb..f1fa87f 100644
+index aaef621..aee36fc 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -181,70 +181,70 @@ DBUSCONF              := mce.conf
+@@ -180,70 +180,70 @@ DBUSCONF              := mce.conf
  # ----------------------------------------------------------------------------
  
  # C Preprocessor
@@ -124,19 +127,16 @@ index 731fffb..f1fa87f 100644
  
  # Linker
  LDLIBS   += -Wl,--as-needed
-@@ -261,9 +261,9 @@ MCE_PKG_NAMES += dbus-1
+@@ -260,7 +260,7 @@ MCE_PKG_NAMES += dbus-1
  MCE_PKG_NAMES += dbus-glib-1
  MCE_PKG_NAMES += dsme
  MCE_PKG_NAMES += libiphb
 -MCE_PKG_NAMES += libsystemd-daemon
 +MCE_PKG_NAMES += libsystemd
+ MCE_PKG_NAMES += libngf0
  
--MCE_PKG_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(MCE_PKG_NAMES))
-+MCE_PKG_CFLAGS += $(shell $(PKG_CONFIG) --cflags $(MCE_PKG_NAMES))
- MCE_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(MCE_PKG_NAMES))
- 
- MCE_CFLAGS += -DMCE_CONF_DIR='"$(CONFDIR)"'
-@@ -303,15 +303,15 @@ ifeq ($(strip $(ENABLE_WAKELOCKS)),y)
+ MCE_PKG_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(MCE_PKG_NAMES))
+@@ -305,7 +305,7 @@ ifeq ($(strip $(ENABLE_WAKELOCKS)),y)
  MCE_CORE   += libwakelock.c
  endif
  
@@ -145,17 +145,7 @@ index 731fffb..f1fa87f 100644
  mce : LDLIBS += $(MCE_LDLIBS)
  ifeq ($(ENABLE_HYBRIS),y)
  mce : LDLIBS += -ldl
- endif
- mce : mce.o $(patsubst %.c,%.o,$(MCE_CORE))
- 
--CFLAGS  += -g
--LDFLAGS += -g
-+override CFLAGS  += -g
-+override LDFLAGS += -g
- 
- # ----------------------------------------------------------------------------
- # MODULES
-@@ -334,7 +334,7 @@ MODULE_LDLIBS += $(MODULE_PKG_LDLIBS)
+@@ -336,7 +336,7 @@ MODULE_LDLIBS += $(MODULE_PKG_LDLIBS)
  %.pic.o : %.c
  	$(CC) -c -o $@ $< -fPIC $(CPPFLAGS) $(CFLAGS)
  
@@ -164,7 +154,7 @@ index 731fffb..f1fa87f 100644
  $(MODULE_DIR)/%.so : LDLIBS += $(MODULE_LDLIBS)
  $(MODULE_DIR)/%.so : $(MODULE_DIR)/%.pic.o
  	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LDLIBS)
-@@ -353,11 +353,11 @@ TOOLS_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(TOOLS_PKG_NAMES))
+@@ -355,11 +355,11 @@ TOOLS_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(TOOLS_PKG_NAMES))
  TOOLS_CFLAGS += $(TOOLS_PKG_CFLAGS)
  TOOLS_LDLIBS += $(TOOLS_PKG_LDLIBS)
  
@@ -178,7 +168,7 @@ index 731fffb..f1fa87f 100644
  $(TOOLDIR)/evdev_trace : LDLIBS += $(TOOLS_LDLIBS)
  $(TOOLDIR)/evdev_trace : $(TOOLDIR)/evdev_trace.o evdev.o
  
-@@ -380,7 +380,7 @@ UTESTS_LDLIBS += $(UTESTS_PKG_LDLIBS)
+@@ -382,7 +382,7 @@ UTESTS_LDLIBS += $(UTESTS_PKG_LDLIBS)
  UTESTS_CFLAGS += -fdata-sections -ffunction-sections
  UTESTS_LDLIBS += -Wl,--gc-sections
  
@@ -187,3 +177,6 @@ index 731fffb..f1fa87f 100644
  $(UTESTDIR)/% : LDLIBS += $(UTESTS_LDLIBS)
  $(UTESTDIR)/% : LDLIBS += $(foreach fn_sym,$(LINK_STUBS),\
  				    -Wl,--defsym=$(fn_sym)=stub__$(fn_sym))
+-- 
+2.6.2
+
