@@ -16,5 +16,9 @@ inherit cmake
 
 B = "${WORKDIR}/git"
 
+do_configure_prepend() {
+    sed -i "/examples/d" CMakeLists.txt
+}
+
 FILES_${PN} += "/usr/lib/systemd"
 FILES_${PN}-dbg += "/opt/"
