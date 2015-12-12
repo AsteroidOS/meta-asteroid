@@ -12,9 +12,9 @@ DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/andr
 # Android version we select per machine
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://github.com/Asteroid-Project/qt5-qpa-hwcomposer-plugin;protocol=https"
+SRC_URI = "git://github.com/AsteroidOS/qt5-qpa-hwcomposer-plugin;protocol=https"
 S = "${WORKDIR}/git/hwcomposer"
-SRCREV = "9874c80b9063ee707da61e58bbfe27966a481df8"
+SRCREV = "ab86143bbea38d2679d68073b509b6633e0fb4d0"
 
 SRC_URI_append_tenderloin = " \
     file://0001-Unblock-rendering-for-Android-4.4.4-and-hwcomposer-1.patch;striplevel=2 \
