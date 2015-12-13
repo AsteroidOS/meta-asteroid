@@ -1,0 +1,6 @@
+[global]
+OfflineMode=false
+
+[Bluetooth]
+Enable=true
+Tethering=false
