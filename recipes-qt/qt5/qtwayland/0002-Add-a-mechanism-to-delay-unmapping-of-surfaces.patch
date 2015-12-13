@@ -1,0 +1,270 @@
+From 68a35e17d2c19551f4d6caab875c54b90cd06f16 Mon Sep 17 00:00:00 2001
+From: Giulio Camuffo <giulio.camuffo@jollamobile.com>
+Date: Thu, 19 Mar 2015 10:52:03 +0200
+Subject: Add a mechanism to delay unmapping of surfaces
+
+When a client attachs a NULL buffer on a surface we may want to hang on
+to the old buffer for a bit, e.g. to do a hide animation.
+Add the QWaylandUnmapLock class to keep a surface mapped after an attach(0)
+request.
+
+Change-Id: I5d5be0b36410a76a58d2b68c1b2ac5e3b875a801
+---
+ .../qwindow-compositor/qwindowcompositor.cpp       |  7 ++++++
+ src/compositor/compositor_api/qwaylandbufferref.h  |  3 ++-
+ .../compositor_api/qwaylandquicksurface.cpp        | 21 +++++++---------
+ src/compositor/compositor_api/qwaylandsurface.cpp  | 18 ++++++++++++++
+ src/compositor/compositor_api/qwaylandsurface.h    | 11 ++++++++
+ .../compositor_api/qwaylandsurfaceitem.cpp         |  4 +--
+ src/compositor/wayland_wrapper/qwlsurface.cpp      | 29 +++++++++++++++++++---
+ src/compositor/wayland_wrapper/qwlsurface_p.h      |  6 +++++
+ 8 files changed, 79 insertions(+), 20 deletions(-)
+
+diff --git a/examples/wayland/qwindow-compositor/qwindowcompositor.cpp b/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
+index 0b39f11..82e2f9d 100644
+--- a/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
++++ b/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
+@@ -98,6 +98,13 @@ public:
+         }
+     }
+ 
++    void unmapped()
++    {
++        delete shmTex;
++        shmTex = 0;
++        bufferRef = QWaylandBufferRef();
++    }
++
+     QImage image() const
+     {
+         if (!bufferRef || !bufferRef.isShm())
+diff --git a/src/compositor/compositor_api/qwaylandbufferref.h b/src/compositor/compositor_api/qwaylandbufferref.h
+index 213474f..103a1b3 100644
+--- a/src/compositor/compositor_api/qwaylandbufferref.h
++++ b/src/compositor/compositor_api/qwaylandbufferref.h
+@@ -65,7 +65,8 @@ public:
+ #ifdef QT_COMPOSITOR_WAYLAND_GL
+     /**
+      * There must be a GL context bound when calling this function.
+-     * It is responsibility of the caller to call destroyTexture() later.
++     * The texture will be automatically destroyed when the last QWaylandBufferRef
++     * referring to the same underlying buffer will be destroyed or reset.
+      */
+     GLuint createTexture();
+     void destroyTexture();
+diff --git a/src/compositor/compositor_api/qwaylandquicksurface.cpp b/src/compositor/compositor_api/qwaylandquicksurface.cpp
+index ef78c88..61ab47c 100644
+--- a/src/compositor/compositor_api/qwaylandquicksurface.cpp
++++ b/src/compositor/compositor_api/qwaylandquicksurface.cpp
+@@ -73,19 +73,13 @@ public:
+ 
+     void createTexture()
+     {
+-        if (bufferRef)
+-            bufferRef.destroyTexture();
+         bufferRef = nextBuffer;
++        delete texture;
++        texture = 0;
+ 
+         QQuickWindow *window = static_cast<QQuickWindow *>(surface->mainOutput()->window());
+ 
+-        // If the next buffer is NULL do not delete the current texture. If the client called
+-        // attach(0) the surface is going to be unmapped anyway, if instead the client attached
+-        // a valid buffer but died before we got here we want to keep the old buffer around
+-        // in case some destroy animation is run.
+-        if (bufferRef) {
+-            delete texture;
+-
++        if (nextBuffer) {
+             if (bufferRef.isShm()) {
+                 texture = window->createTextureFromImage(bufferRef.image());
+             } else {
+@@ -101,6 +95,12 @@ public:
+         update = false;
+     }
+ 
++    void unmapped() Q_DECL_OVERRIDE
++    {
++        nextBuffer = QWaylandBufferRef();
++        update = true;
++    }
++
+     void invalidateTexture()
+     {
+         if (bufferRef)
+@@ -141,9 +141,6 @@ public:
+ 
+     void surface_commit(Resource *resource) Q_DECL_OVERRIDE
+     {
+-        if (m_pending.newlyAttached) {
+-            buffer->update = true;
+-        }
+         QWaylandSurfacePrivate::surface_commit(resource);
+ 
+         Q_FOREACH (QtWayland::Output *output, outputs())
+diff --git a/src/compositor/compositor_api/qwaylandsurface.cpp b/src/compositor/compositor_api/qwaylandsurface.cpp
+index bae6468..9a7f835 100644
+--- a/src/compositor/compositor_api/qwaylandsurface.cpp
++++ b/src/compositor/compositor_api/qwaylandsurface.cpp
+@@ -509,4 +509,22 @@ void QWaylandSurfacePrivate::setType(QWaylandSurface::WindowType type)
+     }
+ }
+ 
++/*!
++    Constructs a QWaylandUnmapLock object.
++
++    The lock will act on the \a surface parameter, and will prevent the surface to
++    be unmapped, retaining the last valid buffer when the client attachs a NULL buffer.
++    The lock will be automatically released when deleted.
++*/
++QWaylandUnmapLock::QWaylandUnmapLock(QWaylandSurface *surface)
++                 : m_surface(surface)
++{
++    surface->handle()->addUnmapLock(this);
++}
++
++QWaylandUnmapLock::~QWaylandUnmapLock()
++{
++    m_surface->handle()->removeUnmapLock(this);
++}
++
+ QT_END_NAMESPACE
+diff --git a/src/compositor/compositor_api/qwaylandsurface.h b/src/compositor/compositor_api/qwaylandsurface.h
+index 653d74c..ff01900 100644
+--- a/src/compositor/compositor_api/qwaylandsurface.h
++++ b/src/compositor/compositor_api/qwaylandsurface.h
+@@ -77,6 +77,7 @@ public:
+ 
+ protected:
+     virtual void attach(const QWaylandBufferRef &ref) = 0;
++    virtual void unmapped() = 0;
+ 
+     friend class QtWayland::Surface;
+ };
+@@ -261,6 +262,16 @@ Q_SIGNALS:
+     friend class QtWayland::Surface;
+ };
+ 
++class Q_COMPOSITOR_EXPORT QWaylandUnmapLock
++{
++public:
++    QWaylandUnmapLock(QWaylandSurface *surface);
++    ~QWaylandUnmapLock();
++
++private:
++    QWaylandSurface *m_surface;
++};
++
+ QT_END_NAMESPACE
+ 
+ #endif // QWAYLANDSURFACE_H
+diff --git a/src/compositor/compositor_api/qwaylandsurfaceitem.cpp b/src/compositor/compositor_api/qwaylandsurfaceitem.cpp
+index fddf34f..ca746ae 100644
+--- a/src/compositor/compositor_api/qwaylandsurfaceitem.cpp
++++ b/src/compositor/compositor_api/qwaylandsurfaceitem.cpp
+@@ -368,9 +368,7 @@ void QWaylandSurfaceItem::updateTexture(bool changed)
+     if (!m_provider)
+         m_provider = new QWaylandSurfaceTextureProvider();
+ 
+-    bool mapped = surface() && surface()->isMapped();
+-    if (mapped)
+-        m_provider->t = static_cast<QWaylandQuickSurface *>(surface())->texture();
++    m_provider->t = static_cast<QWaylandQuickSurface *>(surface())->texture();
+     m_provider->smooth = smooth();
+     if (m_newTexture || changed)
+         emit m_provider->textureChanged();
+diff --git a/src/compositor/wayland_wrapper/qwlsurface.cpp b/src/compositor/wayland_wrapper/qwlsurface.cpp
+index 2b7f21a..d6d12f1 100644
+--- a/src/compositor/wayland_wrapper/qwlsurface.cpp
++++ b/src/compositor/wayland_wrapper/qwlsurface.cpp
+@@ -187,7 +187,7 @@ bool Surface::isYInverted() const
+ 
+ bool Surface::mapped() const
+ {
+-    return m_buffer ? bool(m_buffer->waylandBufferHandle()) : false;
++    return !m_unmapLocks.isEmpty() || (m_buffer && bool(m_buffer->waylandBufferHandle()));
+ }
+ 
+ QSize Surface::size() const
+@@ -353,7 +353,8 @@ void Surface::setBackBuffer(SurfaceBuffer *buffer)
+ 
+     if (m_buffer) {
+         bool valid = m_buffer->waylandBufferHandle() != 0;
+-        setSize(valid ? m_buffer->size() : QSize());
++        if (valid)
++            setSize(m_buffer->size());
+ 
+         m_damage = m_damage.intersected(QRect(QPoint(), m_size));
+         emit m_waylandSurface->damaged(m_damage);
+@@ -374,6 +375,20 @@ void Surface::setMapped(bool mapped)
+     }
+ }
+ 
++void Surface::addUnmapLock(QWaylandUnmapLock *l)
++{
++    m_unmapLocks << l;
++}
++
++void Surface::removeUnmapLock(QWaylandUnmapLock *l)
++{
++    m_unmapLocks.removeOne(l);
++    if (!mapped() && m_attacher) {
++        setSize(QSize());
++        m_attacher->unmapped();
++    }
++}
++
+ SurfaceBuffer *Surface::createSurfaceBuffer(struct ::wl_resource *buffer)
+ {
+     SurfaceBuffer *newBuffer = 0;
+@@ -468,8 +483,14 @@ void Surface::surface_commit(Resource *)
+         setBackBuffer(m_pending.buffer);
+         m_bufferRef = QWaylandBufferRef(m_buffer);
+ 
+-        if (m_attacher)
+-            m_attacher->attach(m_bufferRef);
++        if (m_attacher) {
++            if (m_bufferRef) {
++                m_attacher->attach(m_bufferRef);
++            } else if (!mapped()) {
++                setSize(QSize());
++                m_attacher->unmapped();
++            }
++        }
+         emit m_waylandSurface->configure(m_bufferRef);
+     }
+ 
+diff --git a/src/compositor/wayland_wrapper/qwlsurface_p.h b/src/compositor/wayland_wrapper/qwlsurface_p.h
+index 103b599..ac75f8f 100644
+--- a/src/compositor/wayland_wrapper/qwlsurface_p.h
++++ b/src/compositor/wayland_wrapper/qwlsurface_p.h
+@@ -65,6 +65,8 @@ QT_BEGIN_NAMESPACE
+ 
+ class QTouchEvent;
+ 
++class QWaylandUnmapLock;
++
+ namespace QtWayland {
+ 
+ class Compositor;
+@@ -141,6 +143,9 @@ public:
+     void releaseSurfaces();
+     void frameStarted();
+ 
++    void addUnmapLock(QWaylandUnmapLock *l);
++    void removeUnmapLock(QWaylandUnmapLock *l);
++
+     void setMapped(bool mapped);
+ 
+     inline bool isDestroyed() const { return m_destroyed; }
+@@ -176,6 +181,7 @@ protected:
+     QWaylandBufferRef m_bufferRef;
+     bool m_surfaceMapped;
+     QWaylandBufferAttacher *m_attacher;
++    QList<QWaylandUnmapLock *> m_unmapLocks;
+ 
+     struct {
+         SurfaceBuffer *buffer;
+-- 
+2.6.2
+
