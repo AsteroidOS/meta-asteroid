@@ -18,4 +18,4 @@ do_configure_prepend() {
 }
 
 FILES_${PN} += "/usr/lib/qt5"
-FILES_${PN}-dbg += "/usr/lib/qt5/examples/.debug/ /usr/lib/qt5/qml/org/asteroid/controls/.debug/ /usr/lib/qt5/qml/org/asteroid/styles/.debug/"
+FILES_${PN}-dbg += "/usr/lib/qt5/examples/.debug/ /usr/lib/qt5/qml/org/asteroid/controls/.debug/ /usr/lib/qt5/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
