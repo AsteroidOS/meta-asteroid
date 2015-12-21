@@ -10,8 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtquickcontrols-nemo timed"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+DEPENDS += "qtdeclarative timed"
 
 FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/alarms/.debug"
 FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/alarms/"

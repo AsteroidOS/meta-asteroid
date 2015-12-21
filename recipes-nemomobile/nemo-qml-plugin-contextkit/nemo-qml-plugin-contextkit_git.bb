@@ -12,7 +12,7 @@ S = "${WORKDIR}/git"
 B = "${S}"
 EXTRA_OECMAKE+="-DUSEQT=5"
 
-DEPENDS += "qtquickcontrols-nemo statefs-qt"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
+DEPENDS += "qtdeclarative statefs-qt"
+
 FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/freedesktop/contextkit/.debug/"
 FILES_${PN} += "/usr/lib/qt5/qml/org/freedesktop/contextkit"
