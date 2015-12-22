@@ -9,7 +9,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += " qtbase qtquick1 libngf dbus"
+DEPENDS += " qtbase qtdeclarative libngf dbus"
 inherit qmake5
 
 do_install_append() {
