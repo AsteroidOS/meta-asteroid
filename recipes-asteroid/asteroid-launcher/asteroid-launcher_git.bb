@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "lipstick"
-RDEPENDS_${PN} += "qtdeclarative-qmlplugins qtquickcontrols-qmlplugins qml-asteroid qtwayland-plugins qtgraphicaleffects-qmlplugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration nemo-theme-glacier libconnman-qt libqofono xkeyboard-config"
+RDEPENDS_${PN} += "qtdeclarative-qmlplugins qtquickcontrols-qmlplugins qml-asteroid qtwayland-plugins qtgraphicaleffects-qmlplugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration libconnman-qt xkeyboard-config"
 FILES_${PN} += "/usr/share/asteroid-launcher/ /lib/systemd/system"
 
 do_install_append() {
