@@ -1,0 +1,230 @@
+From a26713acf58a39fa1a51cae3e85f5dc391100f24 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juho=20H=C3=A4m=C3=A4l=C3=A4inen?=
+ <juho.hamalainen@tieto.com>
+Date: Thu, 5 Feb 2015 11:00:52 +0200
+Subject: [PATCH 1002/1011] build: Install pulsecore headers.
+
+This is for building out-of-tree modules. Upstream doesn't want to
+support out-of-tree modules, so this patch is not upstreamable.
+Mer/Nemo should try to not depend on any out-of-tree modules.
+---
+ Makefile.am           |   2 +-
+ configure.ac          |   1 +
+ libpulse-simple.pc.in |   2 +-
+ libpulse.pc.in        |   2 +-
+ pulsecore.pc.in       |  12 +++++
+ src/Makefile.am       | 130 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 146 insertions(+), 3 deletions(-)
+ create mode 100644 pulsecore.pc.in
+
+diff --git a/Makefile.am b/Makefile.am
+index 75b784f..f0f591b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -49,7 +49,7 @@ dist_vapi_DATA = \
+ 		vala/libpulse-simple.deps vala/libpulse-simple.vapi
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+-pkgconfig_DATA = libpulse.pc libpulse-simple.pc
++pkgconfig_DATA = libpulse.pc libpulse-simple.pc pulsecore.pc
+ 
+ if HAVE_GLIB20
+ pkgconfig_DATA += \
+diff --git a/configure.ac b/configure.ac
+index 3c71472..6f96312 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1446,6 +1446,7 @@ man/Makefile
+ libpulse.pc
+ libpulse-simple.pc
+ libpulse-mainloop-glib.pc
++pulsecore.pc
+ doxygen/Makefile
+ doxygen/doxygen.conf
+ src/pulse/version.h
+diff --git a/libpulse-simple.pc.in b/libpulse-simple.pc.in
+index dc855fd..c034241 100644
+--- a/libpulse-simple.pc.in
++++ b/libpulse-simple.pc.in
+@@ -5,7 +5,7 @@ includedir=@includedir@
+ 
+ Name: libpulse-simple
+ Description: PulseAudio Simplified Synchronous Client Interface
+-Version: @PACKAGE_VERSION@
++Version: @PA_MAJORMINOR@
+ Libs: -L${libdir} -lpulse-simple @PTHREAD_LIBS@
+ Libs.private: -L${libdir}/pulseaudio -lpulsecommon-@PA_MAJORMINOR@
+ Cflags: -I${includedir} -D_REENTRANT
+diff --git a/libpulse.pc.in b/libpulse.pc.in
+index 23d888b..5e7e75f 100644
+--- a/libpulse.pc.in
++++ b/libpulse.pc.in
+@@ -6,7 +6,7 @@ modlibexecdir=@modlibexecdir@
+ 
+ Name: libpulse
+ Description: PulseAudio Client Interface
+-Version: @PACKAGE_VERSION@
++Version: @PA_MAJORMINOR@
+ Libs: -L${libdir} -lpulse @PTHREAD_LIBS@
+ Libs.private: -L${libdir}/pulseaudio -lpulsecommon-@PA_MAJORMINOR@
+ Cflags: -I${includedir} -D_REENTRANT
+diff --git a/pulsecore.pc.in b/pulsecore.pc.in
+new file mode 100644
+index 0000000..b5b4a9b
+--- /dev/null
++++ b/pulsecore.pc.in
+@@ -0,0 +1,12 @@
++prefix=@prefix@
++exec_prefix=${prefix}
++libdir=@libdir@
++includedir=${prefix}/include
++libexecdir=@libexecdir@
++pulsetestdir=${libexecdir}/pulse-tests
++
++Name: pulsecore
++Description: Module building interface for pulseaudio
++Version: @PA_MAJORMINOR@
++Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-@PA_MAJORMINOR@/modules -lpulsecore-@PA_MAJORMINOR@ -lpulsecommon-@PA_MAJORMINOR@ -lpulse @PTHREAD_LIBS@
++Cflags: -D_REENTRANT -D__INCLUDED_FROM_PULSE_AUDIO -DPA_DEFAULT_CONFIG_DIR=\"@PA_DEFAULT_CONFIG_DIR@\" -I${includedir}
+diff --git a/src/Makefile.am b/src/Makefile.am
+index 5cb5564..fb71693 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -779,6 +779,134 @@ libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
+ endif
+ 
+ ###################################
++#         Pulsecore headers       #
++###################################
++
++pulsecoreinclude_HEADERS = \
++		pulsecore/arpa-inet.h \
++		pulsecore/asyncmsgq.h \
++		pulsecore/asyncq.h \
++		pulsecore/atomic.h \
++		pulsecore/aupdate.h \
++		pulsecore/auth-cookie.h \
++		pulsecore/authkey.h \
++		pulsecore/avahi-wrap.h \
++		pulsecore/bitset.h \
++		pulsecore/card.h \
++		pulsecore/cli-command.h \
++		pulsecore/client.h \
++		pulsecore/cli.h \
++		pulsecore/cli-text.h \
++		pulsecore/conf-parser.h \
++		pulsecore/core-error.h \
++		pulsecore/core-format.h \
++		pulsecore/core.h \
++		pulsecore/core-rtclock.h \
++		pulsecore/core-scache.h \
++		pulsecore/core-subscribe.h \
++		pulsecore/core-util.h \
++		pulsecore/cpu-arm.h \
++		pulsecore/cpu.h \
++		pulsecore/cpu-orc.h \
++		pulsecore/cpu-x86.h \
++		pulsecore/creds.h \
++		pulsecore/database.h \
++		pulsecore/dbus-shared.h \
++		pulsecore/dbus-util.h \
++		pulsecore/device-port.h \
++		pulsecore/dynarray.h \
++		pulsecore/endianmacros.h \
++		pulsecore/esound.h \
++		pulsecore/fdsem.h \
++		pulsecore/flist.h \
++		pulsecore/g711.h \
++		pulsecore/hashmap.h \
++		pulsecore/hook-list.h \
++		pulsecore/i18n.h \
++		pulsecore/idxset.h \
++		pulsecore/iochannel.h \
++		pulsecore/ioline.h \
++		pulsecore/ipacl.h \
++		pulsecore/llist.h \
++		pulsecore/lock-autospawn.h \
++		pulsecore/log.h \
++		pulsecore/ltdl-helper.h \
++		pulsecore/macro.h \
++		pulsecore/mcalign.h \
++		pulsecore/memblock.h \
++		pulsecore/memblockq.h \
++		pulsecore/memchunk.h \
++		pulsecore/memtrap.h \
++		pulsecore/mime-type.h \
++		pulsecore/mix.h \
++		pulsecore/modargs.h \
++		pulsecore/modinfo.h \
++		pulsecore/module.h \
++		pulsecore/msgobject.h \
++		pulsecore/mutex.h \
++		pulsecore/namereg.h \
++		pulsecore/native-common.h \
++		pulsecore/object.h \
++		pulsecore/once.h \
++		pulsecore/packet.h \
++		pulsecore/parseaddr.h \
++		pulsecore/pdispatch.h \
++		pulsecore/pid.h \
++		pulsecore/pipe.h \
++		pulsecore/play-memblockq.h \
++		pulsecore/play-memchunk.h \
++		pulsecore/poll.h \
++		pulsecore/proplist-util.h \
++		pulsecore/protocol-cli.h \
++		pulsecore/protocol-dbus.h \
++		pulsecore/protocol-esound.h \
++		pulsecore/protocol-http.h \
++		pulsecore/protocol-native.h \
++		pulsecore/protocol-simple.h \
++		pulsecore/pstream.h \
++		pulsecore/pstream-util.h \
++		pulsecore/queue.h \
++		pulsecore/random.h \
++		pulsecore/ratelimit.h \
++		pulsecore/refcnt.h \
++		pulsecore/remap.h \
++		pulsecore/resampler.h \
++		pulsecore/rtkit.h \
++		pulsecore/rtpoll.h \
++		pulsecore/sample-util.h \
++		pulsecore/sconv.h \
++		pulsecore/sconv-s16be.h \
++		pulsecore/sconv-s16le.h \
++		pulsecore/semaphore.h \
++		pulsecore/shared.h \
++		pulsecore/shm.h \
++		pulsecore/sink.h \
++		pulsecore/sink-input.h \
++		pulsecore/sioman.h \
++		pulsecore/sndfile-util.h \
++		pulsecore/socket-client.h \
++		pulsecore/socket.h \
++		pulsecore/socket-server.h \
++		pulsecore/socket-util.h \
++		pulsecore/sound-file.h \
++		pulsecore/sound-file-stream.h \
++		pulsecore/source.h \
++		pulsecore/source-output.h \
++		pulsecore/srbchannel.h \
++		pulsecore/start-child.h \
++		pulsecore/strbuf.h \
++		pulsecore/stream-util.h \
++		pulsecore/strlist.h \
++		pulsecore/tagstruct.h \
++		pulsecore/thread.h \
++		pulsecore/thread-mq.h \
++		pulsecore/time-smoother.h \
++		pulsecore/tokenizer.h \
++		pulsecore/usergroup.h \
++		pulsecore/x11prop.h \
++		pulsecore/x11wrap.h
++
++###################################
+ #         Client library          #
+ ###################################
+ 
+-- 
+1.9.1
+
