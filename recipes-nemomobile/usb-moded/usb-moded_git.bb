@@ -42,14 +42,14 @@ do_install_append() {
 
     touch ${D}/etc/modprobe.d/g_ether.conf
     touch ${D}/etc/udhcpd.conf
-    #systemd stuff
-    install -d ${D}/lib/systemd/system/basic.target.wants/
+
+    install -d ${D}/lib/systemd/system/multi-user.target.wants/
     install -m 644 -D systemd/usb-moded.service ${D}/lib/systemd/system/usb-moded.service
-    ln -s ../usb-moded.service ${D}/lib/systemd/system/basic.target.wants/usb-moded.service
+    ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
     install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
     install -m 755 -D systemd/turn-usb-rescue-mode-off ${D}/usr/bin/turn-usb-rescue-mode-off
     install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/usb-rescue-mode-off.service
-    install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/graphical.target.wants/usb-rescue-mode-off.service
+    install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/multi-user.target.wants/usb-rescue-mode-off.service
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 }
 
