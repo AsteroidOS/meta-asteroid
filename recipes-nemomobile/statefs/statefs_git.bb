@@ -10,6 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "boost fuse cor"
+RDEPENDS_${PN} += "statefs-providers"
 EXTRA_OECMAKE=" -DVERSION=0.3.0"
 
 inherit cmake
