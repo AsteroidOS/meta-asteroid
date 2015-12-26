@@ -14,14 +14,13 @@ inherit qmake5
 
 DEPENDS += "lipstick"
 RDEPENDS_${PN} += "qtdeclarative-qmlplugins qtquickcontrols-qmlplugins qml-asteroid qtwayland-plugins qtgraphicaleffects-qmlplugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration libconnman-qt xkeyboard-config"
-FILES_${PN} += "/usr/share/asteroid-launcher/ /lib/systemd/system"
+FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/"
 
 do_install_append() {
     install -d ${D}/var/lib/environment/compositor/
     cp ../default.conf ${D}/var/lib/environment/compositor/
 
-    # TODO: This should definitely be run as a simple user !!
-    install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    cp ../asteroid-launcher.service ${D}/lib/systemd/system/
-    ln -s ../asteroid-launcher.service ${D}/lib/systemd/system/multi-user.target.wants/asteroid-launcher.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    cp ../asteroid-launcher.service ${D}/usr/lib/systemd/user/
+    ln -s ../asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
 }

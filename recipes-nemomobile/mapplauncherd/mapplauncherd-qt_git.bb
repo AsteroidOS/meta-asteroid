@@ -16,5 +16,11 @@ do_configure_prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd@" ${S}/qtbooster/qtbooster.pro
 }
 
+do_install_append() {
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+#    ln -s ../booster-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service
+#    ln -s ../booster-qt5-signal.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5-signal.service
+}
+
 FILES_${PN} += "/usr/share/mkspecs/features /usr/lib/systemd/user /usr/libexec/mapplauncherd"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

@@ -17,5 +17,10 @@ do_configure_prepend() {
     sed -i "s@LIBS += -lapplauncherd@LIBS += -lapplauncherd -lmdeclarativecache5@" ${S}/booster-qtcomponents.pro
 }
 
+do_install_append() {
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+#    ln -s ../booster-qtcomponents-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service
+}
+
 FILES_${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

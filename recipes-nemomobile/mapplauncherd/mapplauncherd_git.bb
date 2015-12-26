@@ -19,5 +19,10 @@ do_configure_prepend() {
     sed -i 's@lsystemd-daemon@lsystemd@' ${S}/src/launcherlib/CMakeLists.txt
 }
 
-FILES_${PN} += "/usr/lib/systemd /usr/libexec/mapplauncherd/"
+do_install_append() {
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+#    ln -s ../booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
+}
+
+FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

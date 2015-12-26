@@ -1,0 +1,2 @@
+ACTION=="add", KERNEL=="ion", MODE="0664", GROUP="video"
+ACTION=="add", KERNEL=="kgsl-3d0", MODE="0664", GROUP="video"

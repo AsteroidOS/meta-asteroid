@@ -11,4 +11,4 @@ ExecStart=/usr/bin/lipstick $LIPSTICK_OPTIONS --systemd
 Restart=always
  
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

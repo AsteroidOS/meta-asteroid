@@ -1,5 +1,5 @@
 [Unit]
-Description=The lipstick UI
+Description=The wayland compositors and desktop of AsteroidOS
 Requires=dbus.socket
  
 [Service]
@@ -11,4 +11,4 @@ ExecStart=/usr/bin/lipstick $LIPSTICK_OPTIONS --systemd
 Restart=always
  
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

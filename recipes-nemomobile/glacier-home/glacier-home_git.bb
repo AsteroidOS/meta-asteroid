@@ -20,8 +20,7 @@ do_install_append() {
     install -d ${D}/var/lib/environment/compositor/
     cp ../default.conf ${D}/var/lib/environment/compositor/
 
-    # TODO: This should definitely be run as a simple user !!
-    install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    cp ../lipstick.service ${D}/lib/systemd/system/
-    ln -s ../lipstick.service ${D}/lib/systemd/system/multi-user.target.wants/lipstick.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    cp ../lipstick.service ${D}/usr/lib/systemd/user/
+    ln -s ../lipstick.service ${D}/usr/lib/systemd/user/default.target.wants/lipstick.service
 }
