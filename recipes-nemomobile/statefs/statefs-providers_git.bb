@@ -12,7 +12,7 @@ S = "${WORKDIR}/git"
 DEPENDS += "statefs boost qtbase statefs-qt qtsensors"
 inherit cmake_qt5
 
-EXTRA_OECMAKE=" -DVERSION=x.x.x -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
+EXTRA_OECMAKE=" -DVERSION=x.x.x -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
 FILES_${PN} = "/usr/share/statefs /usr/lib/"
 FILES_${PN}-dbg = "/usr/lib/statefs/.debug/ /usr/lib/.debug/ /usr/src/"
