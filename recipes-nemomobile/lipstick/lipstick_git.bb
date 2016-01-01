@@ -18,12 +18,6 @@ RDEPENDS_${PN} += "qt5-qpa-hwcomposer-plugin"
 
 inherit qmake5
 
-do_configure_prepend() {
-    sed -i "s@system(qdbusxml2cpp@system(${STAGING_BINDIR_NATIVE}/qt5/qdbusxml2cpp@" ${S}/src/compositor/compositor.pri ${S}/tools/notificationtool/notificationtool.pro ${S}/src/src.pro
-    sed -i "s@ lupdate@ ${STAGING_BINDIR_NATIVE}/qt5/lupdate@" ${S}/src/compositor/compositor.pri ${S}/tools/notificationtool/notificationtool.pro ${S}/src/src.pro
-    sed -i "s@ lrelease@ ${STAGING_BINDIR_NATIVE}/qt5/lrelease@" ${S}/src/compositor/compositor.pri ${S}/src/src.pro
-}
-
 FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qt5/qml/org/nemomobile/lipstick/qmldir"
 FILES_${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
 FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/nemomobile/lipstick/.debug"

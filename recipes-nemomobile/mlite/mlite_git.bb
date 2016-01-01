@@ -16,7 +16,6 @@ B = "${WORKDIR}/git"
 
 do_configure_prepend() {
     sed -i "/tests/d" ${S}/mlite.pro
-    sed -i "s@system(qdbusxml2cpp@system(${STAGING_BINDIR_NATIVE}/qt5/qdbusxml2cpp@" ${S}/src/src.pro
 }
 
 do_install_append() {
