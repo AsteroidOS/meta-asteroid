@@ -18,9 +18,9 @@ RDEPENDS_${PN} += "qt5-qpa-hwcomposer-plugin"
 
 inherit qmake5
 
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qt5/qml/org/nemomobile/lipstick/qmldir"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir"
 FILES_${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/nemomobile/lipstick/.debug"
+FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
 FILES_${PN}-locale += "/usr/share/translations"
 
 INSANE_SKIP_${PN} += "dev-deps"

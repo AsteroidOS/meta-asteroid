@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative timed"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/alarms/.debug"
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/alarms/"
+FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/alarms/.debug"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/alarms/"

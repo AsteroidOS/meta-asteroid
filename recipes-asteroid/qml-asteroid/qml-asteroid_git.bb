@@ -17,5 +17,5 @@ do_configure_prepend() {
     sed -i "s@examples@@" ${S}/qml-asteroid.pro
 }
 
-FILES_${PN} += "/usr/lib/qt5"
-FILES_${PN}-dbg += "/usr/lib/qt5/examples/.debug/ /usr/lib/qt5/qml/org/asteroid/controls/.debug/ /usr/lib/qt5/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
+FILES_${PN} += "/usr/lib"
+FILES_${PN}-dbg += "/usr/lib/examples/.debug/ /usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"

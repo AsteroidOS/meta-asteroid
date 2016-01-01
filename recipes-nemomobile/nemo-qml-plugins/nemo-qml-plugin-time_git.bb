@@ -13,5 +13,5 @@ inherit qmake5
 DEPENDS += "qtquickcontrols timed"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins"
 
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/nemomobile/time/.debug /opt/"
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/time/ "
+FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/time/.debug /opt/"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/time/ "

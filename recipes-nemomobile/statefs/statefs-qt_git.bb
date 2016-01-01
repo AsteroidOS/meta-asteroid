@@ -21,11 +21,6 @@ do_configure_prepend() {
     sed -i "s@DESTINATION include/qt5@DESTINATION include@" CMakeLists.txt
 }
 
-# Workaround for "ERROR: QA Issue: non -dev/-dbg/-nativesdk package contains symlink .so: statefs-qt path '/work/armv7a-vfp-neon-oe-linux-gnueabi/statefs-qt/+gitAUTOINC-r1/packages-split/statefs-qt/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so' [dev-so]"
-do_install_append() {
-    rm ${D}/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so
-}
-
-FILES_${PN} = "/usr/bin/contextkit-monitor /usr/lib/qt5/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
-FILES_${PN}-dev = "/usr/lib/pkgconfig /usr/include/"
+FILES_${PN} = "/usr/bin/contextkit-monitor /usr/lib/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
+FILES_${PN}-dev = "/usr/lib/pkgconfig /usr/include/ /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so"
 FILES_${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/"

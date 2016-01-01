@@ -14,5 +14,9 @@ EXTRA_OECMAKE+="-DUSEQT=5"
 
 DEPENDS += "qtdeclarative statefs-qt"
 
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/freedesktop/contextkit/.debug/"
-FILES_${PN} += "/usr/lib/qt5/qml/org/freedesktop/contextkit"
+do_configure_prepend() {
+    sed -i "s@DESTINATION lib/qt5/qml/@DESTINATION lib/qml/@" src/CMakeLists.txt
+}
+
+FILES_${PN}-dbg += "/usr/lib/qml/org/freedesktop/contextkit/.debug/"
+FILES_${PN} += "/usr/lib/qml/org/freedesktop/contextkit"

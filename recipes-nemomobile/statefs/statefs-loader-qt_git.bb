@@ -13,7 +13,7 @@ DEPENDS += "qtbase cor statefs"
 inherit cmake_qt5
 
 B = "${WORKDIR}/git"
-EXTRA_OECMAKE=" -DUSEQT=5 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/qt5/"
+EXTRA_OECMAKE=" -DUSEQT=5 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
 FILES_${PN} += "/usr/lib/statefs/"
 FILES_${PN}-dbg += "/usr/lib/statefs/.debug/"

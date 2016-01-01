@@ -14,5 +14,5 @@ inherit qmake5
 DEPENDS += "qtquickcontrols profiled usb-moded-qt5 mlite mce timed qtsystems"
 RDEPENDS_${PN} += "qtquickcontrols-qmlplugins profiled"
 
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/systemsettings/"
+FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/"

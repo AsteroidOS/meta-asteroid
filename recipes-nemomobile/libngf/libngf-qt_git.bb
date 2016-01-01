@@ -18,5 +18,5 @@ do_install_append() {
     rmdir ${D}/include/ ${D}/lib/
 }
 
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/ngf"
-FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/ngf/.debug/"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/ngf"
+FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/ngf/.debug/"

@@ -15,6 +15,6 @@ inherit pkgconfig
 DEPENDS += "qtbase qtdeclarative"
 RDEPENDS_${PN} = "connman"
 
-FILES_${PN}-dbg += "/usr/lib/qt5/qml/MeeGo/Connman/.debug"
+FILES_${PN}-dbg += "/usr/lib/qml/MeeGo/Connman/.debug"
 FILES_${PN}-dev += "/usr/lib/libconnman-qt5.prl"
-FILES_${PN} += "/usr/lib/qt5/qml/MeeGo/Connman"
+FILES_${PN} += "/usr/lib/qml/MeeGo/Connman"

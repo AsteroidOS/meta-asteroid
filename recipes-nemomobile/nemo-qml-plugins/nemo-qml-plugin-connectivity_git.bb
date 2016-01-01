@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase libconnman-qt"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qt5/qml/org/nemomobile/connectivity/.debug"
-FILES_${PN} += "/usr/lib/qt5/qml/org/nemomobile/connectivity/"
+FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/connectivity/.debug"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/connectivity/"
