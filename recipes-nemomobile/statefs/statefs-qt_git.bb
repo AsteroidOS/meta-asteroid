@@ -17,6 +17,10 @@ inherit cmake_qt5
 B = "${WORKDIR}/git"
 EXTRA_OECMAKE=" -DVERSION=0.2.51 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
+do_configure_prepend() {
+    sed -i "s@DESTINATION include/qt5@DESTINATION include@" CMakeLists.txt
+}
+
 # Workaround for "ERROR: QA Issue: non -dev/-dbg/-nativesdk package contains symlink .so: statefs-qt path '/work/armv7a-vfp-neon-oe-linux-gnueabi/statefs-qt/+gitAUTOINC-r1/packages-split/statefs-qt/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so' [dev-so]"
 do_install_append() {
     rm ${D}/usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so
