@@ -11,3 +11,4 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qml-asteroid nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qtconnectivity"
+RDEPENDS_${PN} += "qtconnectivity-qmlplugins"
