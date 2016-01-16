@@ -1,6 +1,6 @@
-From d742716a87b867900b26e4be4508f0045345406c Mon Sep 17 00:00:00 2001
+From 8231557cb3d2ee01382ceae0e76d74358a40afc0 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Thu, 20 Aug 2015 20:22:21 +0200
+Date: Sat, 12 Dec 2015 18:50:02 +0100
 Subject: [PATCH] Forces GLES2 the dirty way
 
 ---
@@ -8,18 +8,17 @@ Subject: [PATCH] Forces GLES2 the dirty way
  1 file changed, 2 insertions(+)
 
 diff --git a/src/platformsupport/eglconvenience/qeglplatformcontext.cpp b/src/platformsupport/eglconvenience/qeglplatformcontext.cpp
-index 7cc3300..0beda2c 100644
+index bffb0eb..cdd482b 100644
 --- a/src/platformsupport/eglconvenience/qeglplatformcontext.cpp
 +++ b/src/platformsupport/eglconvenience/qeglplatformcontext.cpp
-@@ -273,6 +273,8 @@ void QEGLPlatformContext::updateFormatFromGL()
-                 QByteArray version = QByteArray(reinterpret_cast<const char *>(s));
-                 int major, minor;
-                 if (QPlatformOpenGLContext::parseOpenGLVersion(version, major, minor)) {
+@@ -306,6 +306,8 @@ void QEGLPlatformContext::updateFormatFromGL()
+                         minor = 0;
+                     }
+ #endif
 +                    major = 2;
 +                    minor = 0;
                      m_format.setMajorVersion(major);
                      m_format.setMinorVersion(minor);
                  }
 -- 
-2.5.0
-
+2.6.2
