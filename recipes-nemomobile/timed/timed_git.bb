@@ -23,9 +23,11 @@ do_configure_prepend() {
 do_install_append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     ln -s ../timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service 
+    ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime 
 }
 
-DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
+DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
+RDEPENDS_${PN} += "tzdata-timed"
 FILES_${PN} += "/usr/lib/ /usr/share/contextkit"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
