@@ -2,6 +2,7 @@ on init
     write /dev/.coldboot_done 1
     mkdir /dev/graphics/
     symlink /dev/fb0 /dev/graphics/fb0
+    chown system root /sys/class/timed_output/vibrator/enable
     class_start core
 
 service logd /system/bin/logd
