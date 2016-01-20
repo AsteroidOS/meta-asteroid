@@ -14,7 +14,6 @@ DEPENDS += "glib-2.0 dbus dbus-glib"
 B = "${WORKDIR}/git" 
 
 do_compile_prepend() {
-    export USE_SYSTEM_BUS=y
     export CFLAGS="-std=c11 $CFLAGS"
 }
 
