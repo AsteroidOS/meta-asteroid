@@ -23,6 +23,7 @@ do_configure_prepend() {
 do_install_append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     ln -s ../timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service 
+    install -d ${D}/var/lib/timed/
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime 
 }
 
