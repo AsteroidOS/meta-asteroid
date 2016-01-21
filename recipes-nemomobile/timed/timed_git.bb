@@ -27,8 +27,17 @@ do_install_append() {
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime 
 }
 
+pkg_postinst_${PN}() {
+#!/bin/sh -e
+if [ x"$D" = "x" ]; then
+    setcap cap_sys_time+ep /usr/bin/timed-qt5
+else
+    exit 1
+fi
+}
+
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
-RDEPENDS_${PN} += "tzdata-timed"
+RDEPENDS_${PN} += "tzdata-timed libcap-bin"
 FILES_${PN} += "/usr/lib/ /usr/share/contextkit"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
