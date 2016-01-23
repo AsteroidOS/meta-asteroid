@@ -1,0 +1,13 @@
+[Unit]
+Description=Application launch booster for Qt Components on QtQuick2
+After=pre-user-session.target
+Requires=dbus.socket pre-user-session.target
+
+[Service]
+Type=notify
+ExecStart=/usr/libexec/mapplauncherd/booster-qtcomponents-qt5 --systemd
+EnvironmentFile=/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
+OOMScoreAdjust=-250
+
+[Install]
+WantedBy=user-session.target

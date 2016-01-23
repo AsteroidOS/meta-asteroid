@@ -21,7 +21,7 @@ do_configure_prepend() {
 
 do_install_append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
-#    ln -s ../booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
+    ln -s ../booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
 }
 
 FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/"
