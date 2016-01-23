@@ -16,7 +16,7 @@ B = "${S}"
 
 do_configure_prepend() {
     sed -i '/Target for documentation/,$d' ${S}/CMakeLists.txt
-    sed -i 's@lsystemd-daemon@lsystemd@' ${S}/src/launcherlib/CMakeLists.txt
+    sed -i 's@-L/lib -lsystemd-daemon@-lsystemd@' ${S}/src/launcherlib/CMakeLists.txt
 }
 
 do_install_append() {
