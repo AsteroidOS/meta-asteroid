@@ -1,10 +1,11 @@
 SUMMARY = "This is a daemon which can hanlde setting different usb profiles with gadget drivers"
-HOMEPAGE = "https://git.merproject.org/mer-core/usb-moded"
+HOMEPAGE = "https://github.com/philippedeswert/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https"
-SRCREV = "eadebc6ce7230e2789ff0999a8b15a49a4aceaf3"
+SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
+           file://usb-moded.ini"
+SRCREV = "eecb0b4c4347f8447bc78c562f4ac5fcee97aedb"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
@@ -12,11 +13,13 @@ S = "${WORKDIR}/git"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
-EXTRA_OECONF="--enable-systemd "
+EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync"
 DEPENDS += " dbus dbus-glib glib-2.0 udev kmod systemd "
 
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
+    sed -i "s@shell@ceres@g" systemd/adbd-functionfs.sh
+    sed -i "s@adbd.service@android-tools-adbd.service@" ${S}/config/run-diag/qa-diagnostic.ini ${S}/config/run/adb-diag.ini ${S}/config/run/adb-startserver.ini ${S}/systemd/adbd-prepare.service 
 }
 
 do_install_append() {
@@ -46,11 +49,21 @@ do_install_append() {
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
     install -m 644 -D systemd/usb-moded.service ${D}/lib/systemd/system/usb-moded.service
     ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
-    install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
+
+    # TODO: we currently disable the rescue mode
+#    install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
     install -m 755 -D systemd/turn-usb-rescue-mode-off ${D}/usr/bin/turn-usb-rescue-mode-off
     install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/usb-rescue-mode-off.service
     install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/multi-user.target.wants/usb-rescue-mode-off.service
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
+
+    install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh
+    install -m 644 -D systemd/adbd-prepare.service ${D}/lib/systemd/system/adbd-prepare.service
+    
+    install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini 
+
+    # Remove problematic ini files
+    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
 }
 
 FILES_${PN} += " /lib/systemd/system "
