@@ -10,6 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "statefs boost qtbase statefs-qt qtsensors"
+RDEPENDS_${PN} += "statefs-loader-qt"
 inherit cmake_qt5
 
 EXTRA_OECMAKE=" -DVERSION=x.x.x -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
