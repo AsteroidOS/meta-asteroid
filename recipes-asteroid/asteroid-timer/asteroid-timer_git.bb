@@ -11,3 +11,4 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qml-asteroid qtsvg mapplauncherd-booster-qtcomponents"
+RDEPENDS_${PN} += "qtfeedback-qmlplugins"
