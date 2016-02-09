@@ -23,4 +23,13 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/dbus.conf ${D}/etc/systemd/system/user@.service.d/dbus.conf
 }
 
+pkg_postinst_${PN}() {
+#!/bin/sh -e
+if [ x"$D" = "x" ]; then
+    loginctl enable-linger ceres
+else
+    exit 1
+fi
+}
+
 PACKAGECONFIG_append += "pam"
