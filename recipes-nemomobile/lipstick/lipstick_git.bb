@@ -11,7 +11,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt statefs-qt mce usb-moded-qt5 systemd wayland qt5-qpa-hwcomposer-plugin qmsystem nemo-keepalive qttools-native"
-RDEPENDS_${PN} += "qt5-qpa-hwcomposer-plugin"
+RDEPENDS_${PN} += "qt5-qpa-hwcomposer-plugin ${PN}-locale"
 # qt5-qpa-hwcomposer-plugin isn't detected to be needed at runtime by OpenEmbedded
 
 inherit qmake5
