@@ -15,6 +15,11 @@ RDEPENDS_${PN} += "qtquickcontrols-qmlplugins asteroid-theme-moka qtsvg-plugins 
 
 do_configure_prepend() {
     sed -i "s@examples@@" ${S}/qml-asteroid.pro
+
+    if [ ${MACHINE_DISPLAY_ROUND} = "true" ]
+    then
+        export EXTRA_QMAKEVARS_PRE="DEFINES+=ROUND_SCREEN"
+    fi
 }
 
 FILES_${PN} += "/usr/lib"
