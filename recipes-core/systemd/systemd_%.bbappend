@@ -11,6 +11,8 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
 
     # Enables auto-login for ceres
+    install -d ${D}/var/lib/systemd/linger
+    touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
    
     # In current systemd versions we have to take care ourselves of the dbus user service, it should be handled in the next versions
