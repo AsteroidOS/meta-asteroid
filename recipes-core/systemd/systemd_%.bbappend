@@ -11,6 +11,8 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
 
     # Enables auto-login for ceres
+    install -d ${D}/var/lib/systemd/linger
+    touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
    
     # In current systemd versions we have to take care ourselves of the dbus user service, it should be handled in the next versions
@@ -21,15 +23,6 @@ do_install_append() {
     ln -s ../dbus.service ${D}/usr/lib/systemd/user/default.target.wants/dbus.service
     install -d ${D}/etc/systemd/system/user@.service.d/
     install -m 0644 ${WORKDIR}/dbus.conf ${D}/etc/systemd/system/user@.service.d/dbus.conf
-}
-
-pkg_postinst_${PN}() {
-#!/bin/sh -e
-if [ x"$D" = "x" ]; then
-    loginctl enable-linger ceres
-else
-    exit 1
-fi
 }
 
 PACKAGECONFIG_append += "pam"
