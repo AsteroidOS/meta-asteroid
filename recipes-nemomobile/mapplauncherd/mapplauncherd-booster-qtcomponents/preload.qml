@@ -9,5 +9,8 @@ Application {
     Switch { }
     TextArea { }
     TextField { }
+    Calendar { }
+    LayerStack { }
+    TimePicker { }
 }
 
