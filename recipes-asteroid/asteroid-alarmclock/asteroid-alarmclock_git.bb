@@ -11,3 +11,4 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-alarms"
+RDEPENDS_${PN} += "nemo-qml-plugin-alarms"
