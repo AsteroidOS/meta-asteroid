@@ -3,6 +3,7 @@ DEPENDS += " wayland "
 EXTRA_OECONF += " --enable-wayland --with-default-egl-platform=wayland"
 COMPATIBLE_MACHINE_dory = "(^dory$)"
 COMPATIBLE_MACHINE_bass = "(^bass$)"
+COMPATIBLE_MACHINE_tetra = "(^tetra$)"
 
 do_configure_append() {
      # Use the OE's wayland-scanner (it is in PATH before the host's version)
