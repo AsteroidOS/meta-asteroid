@@ -1,0 +1,12 @@
+[Unit]
+Description=Starts the BLE synchronization daemon
+Requires=dbus.socket
+ 
+[Service]
+Type=simple
+ExecStartPre=hciconfig hci0 leadv 0
+ExecStart=/usr/bin/asteroid-btsyncd
+Restart=always
+ 
+[Install]
+WantedBy=default.target
