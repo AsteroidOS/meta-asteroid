@@ -13,6 +13,7 @@ inherit qmake5
 
 do_configure_prepend() {
     sed -i '/include( doc\/doc.pri )/d' ../git/sensorfw.pro
+    sed -i 's@=/usr/include/android@=${STAGING_DIR_TARGET},/usr/include/android@' ../git/core/hybris.pro ../git/config.tests/hybris/hybris.pro ../git/adaptors/hybrisproximityadaptor/hybrisproximityadaptor.pro ../git/adaptors/hybrisorientationadaptor/hybrisorientationadaptor.pro ../git/adaptors/hybrismagnetometeradaptor/hybrismagnetometeradaptor.pro ../git/adaptors/hybrisgyroscopeadaptor/hybrisgyroscopeadaptor.pro ../git/adaptors/hybrisalsadaptor/hybrisalsadaptor.pro ../git/adaptors/hybrisaccelerometer/hybrisaccelerometer.pro
 }
 
 # libhybris is needed on android platforms
