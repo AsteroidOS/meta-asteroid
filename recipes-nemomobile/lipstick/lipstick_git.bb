@@ -4,7 +4,8 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "git://git.merproject.org/mer-core/lipstick.git;protocol=https \
-    file://0001-Disables-tests-tools-and-doc-and-fixes-build.patch"
+    file://0001-Disables-tests-tools-and-doc-and-fixes-build.patch \
+    file://0002-Store-notifications-database-inside-cere-s-home-dire.patch"
 SRCREV = "d393a948d2d7d179dbe5dedf3ae68543e655507a"
 PR = "r1"
 PV = "+git${SRCREV}"

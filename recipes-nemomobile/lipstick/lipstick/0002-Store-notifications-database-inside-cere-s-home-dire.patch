@@ -1,0 +1,25 @@
+From ced56479a1ed6a70ed9678671cea86a30a971596 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 6 Jun 2016 17:13:57 +0200
+Subject: [PATCH] Store notifications database inside cere's home directory
+
+---
+ src/notifications/notificationmanager.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/notifications/notificationmanager.cpp b/src/notifications/notificationmanager.cpp
+index f9d3a33..67f5e91 100644
+--- a/src/notifications/notificationmanager.cpp
++++ b/src/notifications/notificationmanager.cpp
+@@ -605,7 +605,7 @@ void NotificationManager::restoreNotifications(bool update)
+ 
+ bool NotificationManager::connectToDatabase()
+ {
+-    QString databasePath = "/home/nemo" + QString(PRIVILEGED_DATA_PATH) + QDir::separator() + "Notifications";
++    QString databasePath = "/home/ceres" + QString(PRIVILEGED_DATA_PATH) + QDir::separator() + "Notifications";
+     if (!QDir::root().exists(databasePath)) {
+         QDir::root().mkpath(databasePath);
+     }
+-- 
+2.8.1
+
