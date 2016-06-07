@@ -16,6 +16,11 @@ do_configure_prepend() {
     sed -i 's@=/usr/include/android@=${STAGING_DIR_TARGET},/usr/include/android@' ../git/core/hybris.pro ../git/config.tests/hybris/hybris.pro ../git/adaptors/hybrisproximityadaptor/hybrisproximityadaptor.pro ../git/adaptors/hybrisorientationadaptor/hybrisorientationadaptor.pro ../git/adaptors/hybrismagnetometeradaptor/hybrismagnetometeradaptor.pro ../git/adaptors/hybrisgyroscopeadaptor/hybrisgyroscopeadaptor.pro ../git/adaptors/hybrisalsadaptor/hybrisalsadaptor.pro ../git/adaptors/hybrisaccelerometer/hybrisaccelerometer.pro
 }
 
+do_install_append() {
+    install -d ${D}/etc/sensorfw/
+    cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/sensord.conf
+}
+
 # libhybris is needed on android platforms
 DEPENDS += "qtbase libhybris"
 
