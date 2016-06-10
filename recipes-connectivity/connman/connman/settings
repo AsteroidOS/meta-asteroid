@@ -4,3 +4,7 @@ OfflineMode=false
 [Bluetooth]
 Enable=true
 Tethering=false
+
+[Gadget]
+Enable=true
+Tethering=false
