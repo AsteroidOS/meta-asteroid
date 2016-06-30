@@ -1,0 +1,766 @@
+From 0d0cc49154d85e78517f6622f59d57a52a4fbf20 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 20 Jun 2016 21:12:03 +0200
+Subject: [PATCH] Revert "Support EGLStream in wayland-egl"
+
+---
+ .../qwindow-compositor/qwindowcompositor.cpp       |  17 +-
+ .../wayland/qwindow-compositor/textureblitter.cpp  |  51 +---
+ .../wayland/qwindow-compositor/textureblitter.h    |   6 +-
+ .../compositor_api/qwaylandbufferref.cpp           |  12 -
+ src/compositor/compositor_api/qwaylandbufferref.h  |   2 -
+ .../qwlclientbufferintegration_p.h                 |  23 +-
+ .../wayland_wrapper/qwlsurfacebuffer.cpp           |  32 +--
+ .../wayland_wrapper/qwlsurfacebuffer_p.h           |   2 -
+ .../waylandeglclientbufferintegration.cpp          | 269 +++------------------
+ .../waylandeglclientbufferintegration.h            |   9 +-
+ .../compositor/wayland-egl/wayland-egl.pro         |   2 +-
+ 11 files changed, 56 insertions(+), 369 deletions(-)
+
+diff --git a/examples/wayland/qwindow-compositor/qwindowcompositor.cpp b/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
+index 4e3f633..5d33869 100644
+--- a/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
++++ b/examples/wayland/qwindow-compositor/qwindowcompositor.cpp
+@@ -92,10 +92,8 @@ public:
+                 shmTex = new QOpenGLTexture(bufferRef.image(), QOpenGLTexture::DontGenerateMipMaps);
+                 shmTex->setWrapMode(QOpenGLTexture::ClampToEdge);
+                 texture = shmTex->textureId();
+-                textureTarget = GL_TEXTURE_2D;
+             } else {
+                 texture = bufferRef.createTexture();
+-                textureTarget = bufferRef.textureTarget();
+             }
+         }
+     }
+@@ -114,16 +112,9 @@ public:
+         return bufferRef.image();
+     }
+ 
+-    void updateTexture()
+-    {
+-        if (bufferRef)
+-            bufferRef.updateTexture();
+-    }
+-
+     QOpenGLTexture *shmTex;
+     QWaylandBufferRef bufferRef;
+     GLuint texture;
+-    GLenum textureTarget;
+ };
+ 
+ QWindowCompositor::QWindowCompositor(CompositorWindow *window)
+@@ -335,7 +326,7 @@ void QWindowCompositor::render()
+     if (!m_backgroundTexture)
+         m_backgroundTexture = new QOpenGLTexture(m_backgroundImage, QOpenGLTexture::DontGenerateMipMaps);
+ 
+-    m_textureBlitter->bind(GL_TEXTURE_2D);
++    m_textureBlitter->bind();
+     // Draw the background image texture
+     m_textureBlitter->drawTexture(m_backgroundTexture->textureId(),
+                                   QRect(QPoint(0, 0), m_backgroundImage.size()),
+@@ -345,11 +336,7 @@ void QWindowCompositor::render()
+     foreach (QWaylandSurface *surface, m_surfaces) {
+         if (!surface->visible())
+             continue;
+-        BufferAttacher *ba = static_cast<BufferAttacher *>(surface->bufferAttacher());
+-        ba->updateTexture();
+-        const GLuint texture = ba->texture;
+-        const GLenum target = ba->textureTarget;
+-        m_textureBlitter->bind(target);
++        GLuint texture = static_cast<BufferAttacher *>(surface->bufferAttacher())->texture;
+         foreach (QWaylandSurfaceView *view, surface->views()) {
+             QRect geo(view->pos().toPoint(),surface->size());
+             m_textureBlitter->drawTexture(texture,geo,m_window->size(),0,false,surface->isYInverted());
+diff --git a/examples/wayland/qwindow-compositor/textureblitter.cpp b/examples/wayland/qwindow-compositor/textureblitter.cpp
+index df4fa18..856c891 100644
+--- a/examples/wayland/qwindow-compositor/textureblitter.cpp
++++ b/examples/wayland/qwindow-compositor/textureblitter.cpp
+@@ -52,9 +52,6 @@ QT_BEGIN_NAMESPACE
+ 
+ TextureBlitter::TextureBlitter()
+     : m_shaderProgram(new QOpenGLShaderProgram)
+-    , m_shaderProgramExternal(new QOpenGLShaderProgram)
+-    , m_currentProgram(0)
+-    , m_currentTarget(GL_TEXTURE_2D)
+ {
+     static const char *textureVertexProgram =
+             "uniform highp mat4 matrix;\n"
+@@ -73,58 +70,33 @@ TextureBlitter::TextureBlitter()
+             "   gl_FragColor = texture2D(texture, textureCoord);\n"
+             "}\n";
+ 
+-    static const char *textureFragmentProgramExternal =
+-        "#extension GL_OES_EGL_image_external : require\n"
+-        "uniform samplerExternalOES texture;\n"
+-        "varying highp vec2 textureCoord;\n"
+-        "void main() {\n"
+-        "   gl_FragColor = texture2D(texture, textureCoord);\n"
+-        "}\n";
++    //Enable transparent windows
++    glEnable(GL_BLEND);
++    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ 
+     m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, textureVertexProgram);
+     m_shaderProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, textureFragmentProgram);
+     m_shaderProgram->link();
+-
+-    m_shaderProgramExternal->addShaderFromSourceCode(QOpenGLShader::Vertex, textureVertexProgram);
+-    m_shaderProgramExternal->addShaderFromSourceCode(QOpenGLShader::Fragment, textureFragmentProgramExternal);
+-    m_shaderProgramExternal->link();
+ }
+ 
+ TextureBlitter::~TextureBlitter()
+ {
+     delete m_shaderProgram;
+-    delete m_shaderProgramExternal;
+ }
+ 
+-void TextureBlitter::bind(quint32 target)
++void TextureBlitter::bind()
+ {
+-    m_currentTarget = target;
+-    switch (target) {
+-    case GL_TEXTURE_2D:
+-        m_currentProgram = m_shaderProgram;
+-        break;
+-    case GL_TEXTURE_EXTERNAL_OES:
+-        m_currentProgram = m_shaderProgramExternal;
+-        break;
+-    default:
+-        qFatal("INVALID TARGET TYPE %d", target);
+-        break;
+-    }
+ 
+-    m_currentProgram->bind();
++    m_shaderProgram->bind();
+ 
+     m_vertexCoordEntry = m_shaderProgram->attributeLocation("vertexCoordEntry");
+     m_textureCoordEntry = m_shaderProgram->attributeLocation("textureCoordEntry");
+     m_matrixLocation = m_shaderProgram->uniformLocation("matrix");
+-
+-    //Enable transparent windows
+-    glEnable(GL_BLEND);
+-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ }
+ 
+ void TextureBlitter::release()
+ {
+-    m_currentProgram->release();
++    m_shaderProgram->release();
+ }
+ 
+ void TextureBlitter::drawTexture(int textureId, const QRectF &targetRect, const QSize &targetSize, int depth, bool targethasInvertedY, bool sourceHasInvertedY)
+@@ -180,17 +152,16 @@ void TextureBlitter::drawTexture(int textureId, const QRectF &targetRect, const
+ 
+     currentContext->functions()->glVertexAttribPointer(m_vertexCoordEntry, 3, GL_FLOAT, GL_FALSE, 0, vertexCoordinates);
+     currentContext->functions()->glVertexAttribPointer(m_textureCoordEntry, 2, GL_FLOAT, GL_FALSE, 0, textureCoordinates);
++    m_shaderProgram->setUniformValue(m_matrixLocation, m_transformMatrix);
+ 
+-    m_currentProgram->setUniformValue(m_matrixLocation, m_transformMatrix);
+-
+-    glBindTexture(m_currentTarget, textureId);
++    glBindTexture(GL_TEXTURE_2D, textureId);
+ 
+-    glTexParameterf(m_currentTarget, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+-    glTexParameterf(m_currentTarget, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+ 
+     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+ 
+-    glBindTexture(m_currentTarget, 0);
++    glBindTexture(GL_TEXTURE_2D, 0);
+ 
+     currentContext->functions()->glDisableVertexAttribArray(m_vertexCoordEntry);
+     currentContext->functions()->glDisableVertexAttribArray(m_textureCoordEntry);
+diff --git a/examples/wayland/qwindow-compositor/textureblitter.h b/examples/wayland/qwindow-compositor/textureblitter.h
+index 85e2bbf..b46d354 100644
+--- a/examples/wayland/qwindow-compositor/textureblitter.h
++++ b/examples/wayland/qwindow-compositor/textureblitter.h
+@@ -51,7 +51,7 @@ class TextureBlitter
+ public:
+     TextureBlitter();
+     ~TextureBlitter();
+-    void bind(quint32 target);
++    void bind();
+     void release();
+     void drawTexture(int textureId, const QRectF &sourceGeometry,
+                      const QSize &targetRect, int depth,
+@@ -59,15 +59,11 @@ public:
+ 
+ private:
+     QOpenGLShaderProgram *m_shaderProgram;
+-    QOpenGLShaderProgram *m_shaderProgramExternal;
+-    QOpenGLShaderProgram *m_currentProgram;
+     QMatrix4x4 m_transformMatrix;
+ 
+     int m_matrixLocation;
+     int m_vertexCoordEntry;
+     int m_textureCoordEntry;
+-
+-    quint32 m_currentTarget;
+ };
+ 
+ QT_END_NAMESPACE
+diff --git a/src/compositor/compositor_api/qwaylandbufferref.cpp b/src/compositor/compositor_api/qwaylandbufferref.cpp
+index 894f50a..abea24a 100644
+--- a/src/compositor/compositor_api/qwaylandbufferref.cpp
++++ b/src/compositor/compositor_api/qwaylandbufferref.cpp
+@@ -104,12 +104,6 @@ QImage QWaylandBufferRef::image() const
+ 
+ #ifdef QT_COMPOSITOR_WAYLAND_GL
+ 
+-GLenum QWaylandBufferRef::textureTarget() const
+-{
+-    Q_ASSERT(d->buffer->textureCreated());
+-    return d->buffer->textureTarget();
+-}
+-
+ GLuint QWaylandBufferRef::createTexture()
+ {
+     if (!d->buffer->isShmBuffer() && !d->buffer->textureCreated()) {
+@@ -118,12 +112,6 @@ GLuint QWaylandBufferRef::createTexture()
+     return d->buffer->texture();
+ }
+ 
+-void QWaylandBufferRef::updateTexture()
+-{
+-    if (!d->buffer->isShmBuffer() && d->buffer->textureCreated())
+-        d->buffer->updateTexture();
+-}
+-
+ void QWaylandBufferRef::destroyTexture()
+ {
+     if (!d->buffer->isShmBuffer() && d->buffer->textureCreated()) {
+diff --git a/src/compositor/compositor_api/qwaylandbufferref.h b/src/compositor/compositor_api/qwaylandbufferref.h
+index 0a5f6cd..103a1b3 100644
+--- a/src/compositor/compositor_api/qwaylandbufferref.h
++++ b/src/compositor/compositor_api/qwaylandbufferref.h
+@@ -69,8 +69,6 @@ public:
+      * referring to the same underlying buffer will be destroyed or reset.
+      */
+     GLuint createTexture();
+-    GLenum textureTarget() const;
+-    void updateTexture();
+     void destroyTexture();
+     void *nativeBuffer() const;
+ #endif
+diff --git a/src/compositor/hardware_integration/qwlclientbufferintegration_p.h b/src/compositor/hardware_integration/qwlclientbufferintegration_p.h
+index c19b903..e4bbb45 100644
+--- a/src/compositor/hardware_integration/qwlclientbufferintegration_p.h
++++ b/src/compositor/hardware_integration/qwlclientbufferintegration_p.h
+@@ -75,29 +75,14 @@ public:
+ 
+     virtual void initializeHardware(QtWayland::Display *waylandDisplay) = 0;
+ 
+-    virtual void initialize(struct ::wl_resource *buffer) { Q_UNUSED(buffer); }
+-
+-    virtual GLenum textureTargetForBuffer(struct ::wl_resource *buffer) const { Q_UNUSED(buffer); return GL_TEXTURE_2D; }
+-
+-    virtual GLuint textureForBuffer(struct ::wl_resource *buffer) {
+-        Q_UNUSED(buffer);
+-        GLuint texture;
+-        glGenTextures(1, &texture);
+-        glBindTexture(GL_TEXTURE_2D, texture);
+-        return texture;
+-    }
+-
+-    virtual void destroyTextureForBuffer(struct ::wl_resource *buffer, GLuint texture)
+-    {
+-        Q_UNUSED(buffer);
+-        glDeleteTextures(1, &texture);
+-    }
++    // Used when the hardware integration wants to provide its own texture for a given buffer.
++    // In most cases the compositor creates and manages the texture so this is not needed.
++    virtual GLuint textureForBuffer(struct ::wl_resource *buffer) { Q_UNUSED(buffer); return 0; }
++    virtual void destroyTextureForBuffer(struct ::wl_resource *buffer) { Q_UNUSED(buffer); }
+ 
+     // Called with the texture bound.
+     virtual void bindTextureToBuffer(struct ::wl_resource *buffer) = 0;
+ 
+-    virtual void updateTextureForBuffer(struct ::wl_resource *buffer) { Q_UNUSED(buffer); }
+-
+     virtual bool isYInverted(struct ::wl_resource *) const { return true; }
+ 
+     virtual void *lockNativeBuffer(struct ::wl_resource *) const { return 0; }
+diff --git a/src/compositor/wayland_wrapper/qwlsurfacebuffer.cpp b/src/compositor/wayland_wrapper/qwlsurfacebuffer.cpp
+index 1229d28..066ffd1 100644
+--- a/src/compositor/wayland_wrapper/qwlsurfacebuffer.cpp
++++ b/src/compositor/wayland_wrapper/qwlsurfacebuffer.cpp
+@@ -99,12 +99,8 @@ void SurfaceBuffer::initialize(struct ::wl_resource *buffer)
+     m_size = QSize();
+     m_destroy_listener.surfaceBuffer = this;
+     m_destroy_listener.listener.notify = destroy_listener_callback;
+-    if (buffer) {
+-        ClientBufferIntegration *hwIntegration = m_compositor->clientBufferIntegration();
+-        hwIntegration->unlockNativeBuffer(m_handle);
+-        hwIntegration->initialize(buffer);
++    if (buffer)
+         wl_signal_add(&buffer->destroy_signal, &m_destroy_listener.listener);
+-    }
+ }
+ 
+ void SurfaceBuffer::destructBufferState()
+@@ -190,22 +186,12 @@ void SurfaceBuffer::destroyTexture()
+         if (hwIntegration->textureForBuffer(m_buffer) == 0)
+             glDeleteTextures(1, &m_texture);
+         else
+-            hwIntegration->destroyTextureForBuffer(m_buffer, m_texture);
++            hwIntegration->destroyTextureForBuffer(m_buffer);
+         m_texture = 0;
+     }
+ #endif
+ }
+ 
+-uint SurfaceBuffer::textureTarget() const
+-{
+-#ifdef QT_COMPOSITOR_WAYLAND_GL
+-    ClientBufferIntegration *hwIntegration = m_compositor->clientBufferIntegration();
+-    return hwIntegration->textureTargetForBuffer(m_buffer);
+-#endif
+-
+-    return 0;
+-}
+-
+ void SurfaceBuffer::handleAboutToBeDisplayed()
+ {
+     qDebug() << Q_FUNC_INFO;
+@@ -278,21 +264,17 @@ void SurfaceBuffer::createTexture()
+ 
+     ClientBufferIntegration *hwIntegration = m_compositor->clientBufferIntegration();
+ #ifdef QT_COMPOSITOR_WAYLAND_GL
+-    m_texture = hwIntegration->textureForBuffer(m_buffer);
++    if (!m_texture)
++        m_texture = hwIntegration->textureForBuffer(m_buffer);
++    if (!m_texture)
++        glGenTextures(1, &m_texture);
++    glBindTexture(GL_TEXTURE_2D, m_texture);
+     hwIntegration->bindTextureToBuffer(m_buffer);
+ #else
+     Q_UNUSED(hwIntegration);
+ #endif
+ }
+ 
+-void SurfaceBuffer::updateTexture()
+-{
+-#ifdef QT_COMPOSITOR_WAYLAND_GL
+-    ClientBufferIntegration *hwIntegration = m_compositor->clientBufferIntegration();
+-    hwIntegration->updateTextureForBuffer(m_buffer);
+-#endif
+-}
+-
+ bool SurfaceBuffer::isYInverted() const
+ {
+     bool ret = false;
+diff --git a/src/compositor/wayland_wrapper/qwlsurfacebuffer_p.h b/src/compositor/wayland_wrapper/qwlsurfacebuffer_p.h
+index 3401d21..5d09c5a 100644
+--- a/src/compositor/wayland_wrapper/qwlsurfacebuffer_p.h
++++ b/src/compositor/wayland_wrapper/qwlsurfacebuffer_p.h
+@@ -106,8 +106,6 @@ public:
+     bool isDestroyed() { return m_destroyed; }
+ 
+     void createTexture();
+-    uint textureTarget() const;
+-    void updateTexture();
+ #ifdef QT_COMPOSITOR_WAYLAND_GL
+     inline GLuint texture() const;
+ #else
+diff --git a/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.cpp b/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.cpp
+index 9b62d08..5096acc 100644
+--- a/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.cpp
++++ b/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.cpp
+@@ -48,16 +48,11 @@
+ #include <qpa/qplatformscreen.h>
+ #include <QtGui/QWindow>
+ #include <QtCore/QPointer>
+-#include <QDebug>
+ 
+-#include <QMutex>
+-#include <QMutexLocker>
+-#include <QtCore/private/qcore_unix_p.h>
+-#include <QtPlatformSupport/private/qeglstreamconvenience_p.h>
++#include <QDebug>
+ 
+-#ifndef GL_TEXTURE_EXTERNAL_OES
+-#define GL_TEXTURE_EXTERNAL_OES           0x8D65
+-#endif
++#include <EGL/egl.h>
++#include <EGL/eglext.h>
+ 
+ #ifndef EGL_WAYLAND_BUFFER_WL
+ #define EGL_WAYLAND_BUFFER_WL           0x31D5
+@@ -83,28 +78,6 @@ typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenu
+ 
+ QT_BEGIN_NAMESPACE
+ 
+-struct BufferState
+-{
+-    BufferState()
+-        : gl_texture(0)
+-        , gl_texture_target(GL_TEXTURE_2D)
+-        , egl_stream(EGL_NO_STREAM_KHR)
+-        , isYInverted(true)
+-        {}
+-
+-    GLuint gl_texture;
+-    GLenum gl_texture_target;
+-    EGLStreamKHR egl_stream;
+-    bool isYInverted;
+-    QSize size;
+-};
+-
+-struct buffer_destroy_listener
+-{
+-    struct wl_listener listener;
+-    class WaylandEglClientBufferIntegrationPrivate *d;
+-};
+-
+ class WaylandEglClientBufferIntegrationPrivate
+ {
+ public:
+@@ -118,40 +91,10 @@ public:
+         , egl_create_image(0)
+         , egl_destroy_image(0)
+         , gl_egl_image_target_texture_2d(0)
+-        , funcs(Q_NULLPTR)
+-    {
+-        destroy_listener.d = this;
+-        destroy_listener.listener.notify = destroy_listener_callback;
+-    }
+-
+-    static void destroy_listener_callback(wl_listener *listener, void *data) {
+-        static QMutex mutex;
+-        QMutexLocker locker(&mutex);
+-
+-        buffer_destroy_listener *destroy_listener = reinterpret_cast<buffer_destroy_listener *>(listener);
+-        WaylandEglClientBufferIntegrationPrivate *self = destroy_listener->d;
+-        struct ::wl_resource *buffer = static_cast<struct ::wl_resource *>(data);
+-        if (!self->buffers.contains(buffer))
+-            return;
+-
+-        Q_ASSERT(self);
+-        Q_ASSERT(buffer);
+-
+-        BufferState state = self->buffers.take(buffer);
+-
+-        if (state.gl_texture != 0)
+-            glDeleteTextures(1, &state.gl_texture);
+-
+-        if (state.egl_stream != EGL_NO_STREAM_KHR)
+-            self->funcs->destroy_stream(self->egl_display, state.egl_stream);
+-    }
+-
++    { }
+     EGLDisplay egl_display;
+     bool valid;
+     bool display_bound;
+-    QHash<struct ::wl_resource *, BufferState> buffers;
+-    buffer_destroy_listener destroy_listener;
+-
+     PFNEGLBINDWAYLANDDISPLAYWL egl_bind_wayland_display;
+     PFNEGLUNBINDWAYLANDDISPLAYWL egl_unbind_wayland_display;
+     PFNEGLQUERYWAYLANDBUFFERWL_compat egl_query_wayland_buffer;
+@@ -160,8 +103,6 @@ public:
+     PFNEGLDESTROYIMAGEKHRPROC egl_destroy_image;
+ 
+     PFNGLEGLIMAGETARGETTEXTURE2DOESPROC gl_egl_image_target_texture_2d;
+-
+-    QEGLStreamConvenience *funcs;
+ };
+ 
+ WaylandEglClientBufferIntegration::WaylandEglClientBufferIntegration()
+@@ -226,193 +167,51 @@ void WaylandEglClientBufferIntegration::initializeHardware(QtWayland::Display *w
+         }
+     }
+ 
+-    d->funcs = new QEGLStreamConvenience;
+-    d->funcs->initialize(d->egl_display);
+-
+     d->valid = true;
+ }
+ 
+-static GLuint make_texture(GLenum target)
+-{
+-    GLuint texture;
+-
+-    glGenTextures(1, &texture);
+-    glBindTexture(target, texture);
+-
+-    return texture;
+-}
+-
+-static void set_texture_params(GLenum target)
+-{
+-    glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+-    glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+-    glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+-    glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+-}
+-
+-void WaylandEglClientBufferIntegration::initialize(struct ::wl_resource *buffer)
+-{
+-    Q_D(WaylandEglClientBufferIntegration);
+-
+-    if (wl_shm_buffer_get(buffer))
+-        return;
+-
+-    if (!buffer || d->buffers.contains(buffer))
+-        return;
+-
+-    wl_signal_add(&buffer->destroy_signal, &d->destroy_listener.listener);
+-}
+-
+-GLenum WaylandEglClientBufferIntegration::textureTargetForBuffer(struct ::wl_resource *buffer) const
+-{
+-    Q_D(const WaylandEglClientBufferIntegration);
+-
+-    return d->buffers.value(buffer).gl_texture_target;
+-}
+-
+-GLuint WaylandEglClientBufferIntegration::textureForBuffer(struct ::wl_resource *buffer)
+-{
+-    Q_D(WaylandEglClientBufferIntegration);
+-
+-    if (!buffer)
+-        return 0;
+-
+-    BufferState state = d->buffers.value(buffer);
+-
+-    if (state.gl_texture != 0) {
+-        glBindTexture(state.gl_texture_target, state.gl_texture);
+-        return state.gl_texture;
+-    }
+-
+-    EGLint format;
+-    EGLNativeFileDescriptorKHR streamFd = EGL_NO_FILE_DESCRIPTOR_KHR;
+-
+-    EGLint width, height;
+-    d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WIDTH, &width);
+-    d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_HEIGHT, &height);
+-    state.size = QSize(width, height);
+-
+-#if defined(EGL_WAYLAND_Y_INVERTED_WL)
+-    EGLint isYInverted;
+-    EGLBoolean ret = d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WAYLAND_Y_INVERTED_WL, &isYInverted);
+-    // Yes, this looks strange, but the specification says that EGL_FALSE return
+-    // value (not supported) should be treated the same as EGL_TRUE return value
+-    // and EGL_TRUE in value.
+-    state.isYInverted = (ret == EGL_FALSE || isYInverted == EGL_TRUE);
+-#endif
+-
+-    if (d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_TEXTURE_FORMAT, &format)) {
+-        state.gl_texture_target = GL_TEXTURE_2D;
+-        state.gl_texture = make_texture(state.gl_texture_target);
+-    } else if (d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WAYLAND_BUFFER_WL, &streamFd)) {
+-        state.egl_stream = d->funcs->create_stream_from_file_descriptor(d->egl_display, streamFd);
+-        close(streamFd);
+-
+-        if (state.egl_stream == EGL_NO_STREAM_KHR) {
+-            qWarning("%s:%d: eglCreateStreamFromFileDescriptorKHR failed: 0x%x", Q_FUNC_INFO, __LINE__, eglGetError());
+-            return 0;
+-        }
+-
+-        state.isYInverted = false;
+-        state.gl_texture_target = GL_TEXTURE_EXTERNAL_OES;
+-        state.gl_texture = make_texture(state.gl_texture_target);
+-        set_texture_params(state.gl_texture_target);
+-
+-        if (d->funcs->stream_consumer_gltexture(d->egl_display, state.egl_stream) != EGL_TRUE)
+-            qWarning("%s:%d: eglStreamConsumerGLTextureExternalKHR failed: 0x%x", Q_FUNC_INFO, __LINE__, eglGetError());
+-    }
+-
+-    d->buffers[buffer] = state;
+-    return state.gl_texture;
+-}
+-
+-void WaylandEglClientBufferIntegration::destroyTextureForBuffer(struct ::wl_resource *buffer, GLuint texture)
+-{
+-    Q_D(WaylandEglClientBufferIntegration);
+-    Q_UNUSED(texture);
+-
+-    if (!buffer || !d->buffers.contains(buffer))
+-        return;
+-
+-    BufferState &state = d->buffers[buffer];
+-
+-    if (state.egl_stream != EGL_NO_STREAM_KHR)
+-        return;
+-
+-    if (state.gl_texture != 0) {
+-        glDeleteTextures(1, &state.gl_texture);
+-        state.gl_texture = 0;
+-    }
+-}
+-
+ void WaylandEglClientBufferIntegration::bindTextureToBuffer(struct ::wl_resource *buffer)
+ {
+     Q_D(WaylandEglClientBufferIntegration);
++
+     if (!d->valid) {
+         qWarning("QtCompositor: bindTextureToBuffer() failed");
+         return;
+     }
+ 
+-    if (!buffer)
+-        return;
+-
+-    const BufferState state = d->buffers.value(buffer);
+-
+-    if (state.egl_stream != EGL_NO_STREAM_KHR) {
+-        d->funcs->stream_consumer_acquire(d->egl_display, state.egl_stream);
+-    } else {
+-        Q_ASSERT(QOpenGLContext::currentContext());
++    // Vivante drivers on the iMX6 don't resolve this function early enough for us, they seem to require the EGL/GLES setup to be further
++    // along than they are in initializeHardware(), so do the lookup here instead.
++    if (!d->gl_egl_image_target_texture_2d)
++        d->gl_egl_image_target_texture_2d = reinterpret_cast<PFNGLEGLIMAGETARGETTEXTURE2DOESPROC>(eglGetProcAddress("glEGLImageTargetTexture2DOES"));
+ 
+-        // Resolving GL functions may need a context current, so do it only here.
+-        if (!d->gl_egl_image_target_texture_2d)
+-            d->gl_egl_image_target_texture_2d = reinterpret_cast<PFNGLEGLIMAGETARGETTEXTURE2DOESPROC>(eglGetProcAddress("glEGLImageTargetTexture2DOES"));
+-
+-        if (!d->gl_egl_image_target_texture_2d) {
+-            qWarning("QtCompositor: bindTextureToBuffer() failed. Could not find glEGLImageTargetTexture2DOES.");
+-            return;
+-        }
+-
+-        EGLImageKHR image = d->egl_create_image(d->egl_display, EGL_NO_CONTEXT,
+-                                                EGL_WAYLAND_BUFFER_WL,
+-                                                buffer, NULL);
+-
+-        d->gl_egl_image_target_texture_2d(GL_TEXTURE_2D, image);
+-        set_texture_params(GL_TEXTURE_2D);
+-        d->egl_destroy_image(d->egl_display, image);
+-    }
+-}
+-
+-// Update is only needed for the EGLStream path as that requires calling acquire
+-// on every frame. bindTextureToBuffer() is typically invoked only upon attach
+-// so that is insufficient.
+-void WaylandEglClientBufferIntegration::updateTextureForBuffer(struct ::wl_resource *buffer)
+-{
+-    Q_D(WaylandEglClientBufferIntegration);
+-    if (!d->valid) {
+-        qWarning("QtCompositor: updateTextureForBuffer() failed");
++    if (!d->gl_egl_image_target_texture_2d) {
++        qWarning("QtCompositor: bindTextureToBuffer() failed. Could not find glEGLImageTargetTexture2DOES.");
+         return;
+     }
+ 
+-    if (!buffer)
+-        return;
++    EGLImageKHR image = d->egl_create_image(d->egl_display, EGL_NO_CONTEXT,
++                                          EGL_WAYLAND_BUFFER_WL,
++                                          buffer, NULL);
+ 
+-    const BufferState state = d->buffers.value(buffer);
++    d->gl_egl_image_target_texture_2d(GL_TEXTURE_2D, image);
+ 
+-    if (state.egl_stream != EGL_NO_STREAM_KHR)
+-        d->funcs->stream_consumer_acquire(d->egl_display, state.egl_stream);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++
++    d->egl_destroy_image(d->egl_display, image);
+ }
+ 
+ bool WaylandEglClientBufferIntegration::isYInverted(struct ::wl_resource *buffer) const
+ {
++#if defined(EGL_WAYLAND_Y_INVERTED_WL)
+     Q_D(const WaylandEglClientBufferIntegration);
+ 
+-    if (d->buffers.contains(buffer))
+-        return d->buffers[buffer].isYInverted;
+-
+-#if defined(EGL_WAYLAND_Y_INVERTED_WL)
+     EGLint isYInverted;
+-    EGLBoolean ret = EGL_FALSE;
++    EGLBoolean ret;
+     ret = d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WAYLAND_Y_INVERTED_WL, &isYInverted);
++
+     // Yes, this looks strange, but the specification says that EGL_FALSE return
+     // value (not supported) should be treated the same as EGL_TRUE return value
+     // and EGL_TRUE in value.
+@@ -429,9 +228,6 @@ void *WaylandEglClientBufferIntegration::lockNativeBuffer(struct ::wl_resource *
+ {
+     Q_D(const WaylandEglClientBufferIntegration);
+ 
+-    if (d->buffers.contains(buffer) && d->buffers[buffer].egl_stream != EGL_NO_STREAM_KHR)
+-        return 0;
+-
+     EGLImageKHR image = d->egl_create_image(d->egl_display, EGL_NO_CONTEXT,
+                                           EGL_WAYLAND_BUFFER_WL,
+                                           buffer, NULL);
+@@ -441,11 +237,8 @@ void *WaylandEglClientBufferIntegration::lockNativeBuffer(struct ::wl_resource *
+ void WaylandEglClientBufferIntegration::unlockNativeBuffer(void *native_buffer) const
+ {
+     Q_D(const WaylandEglClientBufferIntegration);
+-
+-    if (!native_buffer)
+-        return;
+-
+     EGLImageKHR image = static_cast<EGLImageKHR>(native_buffer);
++
+     d->egl_destroy_image(d->egl_display, image);
+ }
+ 
+@@ -453,15 +246,11 @@ QSize WaylandEglClientBufferIntegration::bufferSize(struct ::wl_resource *buffer
+ {
+     Q_D(const WaylandEglClientBufferIntegration);
+ 
+-    if (d->buffers.contains(buffer)) {
+-        return d->buffers[buffer].size;
+-    } else {
+-        int width, height;
+-        d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WIDTH, &width);
+-        d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_HEIGHT, &height);
++    int width, height;
++    d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_WIDTH, &width);
++    d->egl_query_wayland_buffer(d->egl_display, buffer, EGL_HEIGHT, &height);
+ 
+-        return QSize(width, height);
+-    }
++    return QSize(width, height);
+ }
+ 
+ QT_END_NAMESPACE
+diff --git a/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.h b/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.h
+index c3f5848..5f660e9 100644
+--- a/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.h
++++ b/src/hardwareintegration/compositor/wayland-egl/waylandeglclientbufferintegration.h
+@@ -56,15 +56,7 @@ public:
+ 
+     void initializeHardware(QtWayland::Display *waylandDisplay) Q_DECL_OVERRIDE;
+ 
+-    void initialize(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
+-
+-    GLenum textureTargetForBuffer(struct ::wl_resource *buffer) const Q_DECL_OVERRIDE;
+-
+-    GLuint textureForBuffer(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
+-    void destroyTextureForBuffer(struct ::wl_resource *buffer, GLuint texture) Q_DECL_OVERRIDE;
+-
+     void bindTextureToBuffer(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
+-    void updateTextureForBuffer(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
+     bool isYInverted(struct ::wl_resource *) const Q_DECL_OVERRIDE;
+ 
+     void *lockNativeBuffer(struct ::wl_resource *buffer) const Q_DECL_OVERRIDE;
+@@ -80,3 +72,4 @@ private:
+ QT_END_NAMESPACE
+ 
+ #endif // WAYLANDEGLINTEGRATION_H
++
+diff --git a/src/plugins/hardwareintegration/compositor/wayland-egl/wayland-egl.pro b/src/plugins/hardwareintegration/compositor/wayland-egl/wayland-egl.pro
+index 48e5977..f8e5c88 100644
+--- a/src/plugins/hardwareintegration/compositor/wayland-egl/wayland-egl.pro
++++ b/src/plugins/hardwareintegration/compositor/wayland-egl/wayland-egl.pro
+@@ -1,4 +1,4 @@
+-QT = compositor compositor-private core-private gui-private platformsupport-private
++QT = compositor compositor-private core-private gui-private
+ 
+ OTHER_FILES += wayland-egl.json
+ 
+-- 
+2.8.1
+
