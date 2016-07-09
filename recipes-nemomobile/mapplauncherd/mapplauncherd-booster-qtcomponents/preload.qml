@@ -1,16 +1,14 @@
-import QtQuick 2.4
-import QtQuick.Controls 1.3
+import QtQuick 2.6
 import org.asteroid.controls 1.0
 
 Application {
-    Button { }
-    Label { }
-    Slider { }
-    Switch { }
-    TextArea { }
-    TextField { }
-    Calendar { }
-    LayerStack { }
-    TimePicker { }
+    Component {
+        Calendar { }
+        LayerStack { }
+        TimePicker { }
+        CircularScrollIndicator {}
+        IconButton { }
+        ProgressCircle {}
+    }
 }
 
