@@ -14,6 +14,10 @@ do_install() {
     install -d ${D}/usr/share/themes/moka/meegotouch/icons/
     cp --no-dereference ${S}/Moka/256x256/apps/* ${S}/Moka/256x256/web/* ${D}/usr/share/themes/moka/meegotouch/icons/
     cp ${WORKDIR}/index.theme ${D}/usr/share/themes/moka/index.theme
+
+    cd ${D}/usr/share/themes/moka/meegotouch/icons/
+    ln -s usb-creator-gtk.png icon-system-usb.png
+    ln -s preferences-system-power.png icon-system-charging.png
 }
 
 FILES_${PN} = "/usr/share/themes/moka"
