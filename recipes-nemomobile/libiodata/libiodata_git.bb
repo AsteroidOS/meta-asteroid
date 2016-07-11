@@ -14,6 +14,7 @@ DEPENDS += "qtbase"
 
 do_configure_prepend () {
     export IODATA_VERSION=0.19.8
+    sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
     cd src/
     ${OE_QMAKE_QMAKE} -makefile -o Makefile ${OE_QMAKE_DEBUG_OUTPUT} ${OE_QMAKE_RECURSIVE} $QMAKE_VARSUBST_PRE $AFTER $PROFILES $QMAKE_VARSUBST_POST
     oe_runmake
