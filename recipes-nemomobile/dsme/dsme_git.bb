@@ -18,6 +18,7 @@ B = "${WORKDIR}/git"
 EXTRA_OECONF= " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-static --includedir=${STAGING_INCDIR} --oldincludedir=${STAGING_INCDIR}"
 
 do_configure_prepend() {
+    sed -i "s@<policy user=\"root\">@<policy user=\"ceres\">@" dsme/dsme.conf
     sed -i "s@-L/lib -lsystemd-daemon@-lsystemd@" dsme/Makefile.am
     sed -i "s@LDFLAGS \= \-pthread@LDFLAGS \= \-L${STAGING_DIR_TARGET}/usr/lib \-pthread@" modules/Makefile.am
 }
