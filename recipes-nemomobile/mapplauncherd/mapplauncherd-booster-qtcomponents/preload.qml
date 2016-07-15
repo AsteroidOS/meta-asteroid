@@ -1,5 +1,4 @@
 import QtQuick 2.6
-import QtQuick.Layouts 1.2
 import org.asteroid.controls 1.0
 
 Application {
@@ -12,7 +11,6 @@ Application {
     Switch { }
     Slider { }
     ListView { }
-    GridLayout { }
     GridView { }
     Text { }
     Image { }
