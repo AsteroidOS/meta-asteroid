@@ -17,10 +17,7 @@ FONT_PACKAGES = "ttf-opensans"
 
 do_install() {
     install -d ${D}${datadir}/fonts/truetype/
-    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}${datadir}/fonts/truetype/ \;
-
-    install -d ${D}${datadir}/fonts/google-opensans/
-    ln -s ../truetype/OpenSans-Regular.ttf ${D}/usr/share/fonts/google-opensans/OpenSans-Regular.ttf
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/lib/fonts/ \;
 }
 
 FILES_${PN} += "/usr/"
