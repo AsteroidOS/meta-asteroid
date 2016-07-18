@@ -10,8 +10,8 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtquickcontrols"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins asteroid-theme-moka qtsvg-plugins ttf-opensans"
+DEPENDS += "qtdeclarative"
+RDEPENDS_${PN} += "asteroid-theme-moka qtsvg-plugins ttf-opensans"
 
 do_configure_prepend() {
     sed -i "s@examples@@" ${S}/qml-asteroid.pro

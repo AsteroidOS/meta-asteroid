@@ -10,4 +10,4 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents"
+DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents qtquickcontrols"

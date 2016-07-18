@@ -11,8 +11,8 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtquickcontrols profiled usb-moded-qt5 mlite mce timed qtsystems"
-RDEPENDS_${PN} += "qtquickcontrols-qmlplugins profiled"
+DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems"
+RDEPENDS_${PN} += "profiled"
 
 FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
 FILES_${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/"
