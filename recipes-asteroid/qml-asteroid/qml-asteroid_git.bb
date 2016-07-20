@@ -10,7 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtdeclarative"
+DEPENDS += "qtdeclarative qtsvg"
 RDEPENDS_${PN} += "asteroid-theme-moka qtsvg-plugins ttf-opensans"
 
 do_configure_prepend() {
