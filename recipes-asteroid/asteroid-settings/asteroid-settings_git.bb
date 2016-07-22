@@ -12,3 +12,10 @@ inherit qmake5
 
 DEPENDS += "qml-asteroid nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qtconnectivity mapplauncherd-booster-qtcomponents"
 RDEPENDS_${PN} += "qtconnectivity-qmlplugins nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qtquickcontrols-qmlplugins"
+FILES_${PN} += "/usr/share/translations/"
+
+do_install_append() {
+    lrelease ${S}/asteroid-settings.pro
+    install -d ${D}/usr/share/translations/
+    cp ${S}/asteroid-settings.*.qm ${D}/usr/share/translations/
+}
