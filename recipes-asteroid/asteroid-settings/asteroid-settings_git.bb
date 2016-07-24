@@ -15,7 +15,7 @@ RDEPENDS_${PN} += "qtconnectivity-qmlplugins nemo-qml-plugin-systemsettings nemo
 FILES_${PN} += "/usr/share/translations/"
 
 do_install_append() {
-    lrelease ${S}/asteroid-settings.pro
+    lrelease ${S}/asteroid-settings.*.ts
     install -d ${D}/usr/share/translations/
     cp ${S}/asteroid-settings.*.qm ${D}/usr/share/translations/
 }

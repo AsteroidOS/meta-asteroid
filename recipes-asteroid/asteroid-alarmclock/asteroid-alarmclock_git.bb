@@ -15,7 +15,7 @@ RDEPENDS_${PN} += "nemo-qml-plugin-alarms"
 FILES_${PN} += "/usr/share/translations/"
 
 do_install_append() {
-    lrelease ${S}/asteroid-alarmclock.pro
+    lrelease ${S}/asteroid-alarmclock.*.ts
     install -d ${D}/usr/share/translations/
     cp ${S}/asteroid-alarmclock.*.qm ${D}/usr/share/translations/
 }
