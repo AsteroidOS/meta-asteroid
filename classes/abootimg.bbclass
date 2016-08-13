@@ -1,27 +1,29 @@
 #
-# This class is used to create Android device compatible boot.img files with kernel and initrd
-# It differs from meta-android/classes/kernel_android.bbclass because it uses mkboot
+# This class is used to create Android device compatible boot.img files with kernel and initrd using abootimg
 #
 
+ABOOTIMG_ARGS ?= ""
+
 do_compile[depends] += "initramfs-android-image:do_rootfs"
-DEPENDS += "mkbootimg-tools-native"
+DEPENDS += "abootimg-native"
 
 do_compile_append() {
-    cd ${B}
-    cp ${WORKDIR}/img_info .
-    sed -i "s@%%KERNEL%%@${B}/${KERNEL_OUTPUT}@" img_info
-    sed -i "s@%%RAMDISK%%@${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz@" img_info
-    mkboot . boot.img
-}
-
-do_install_append() {
-    install -d ${D}/${KERNEL_IMAGEDEST}
-    install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
+    abootimg --create ${B}/boot.img \
+             -k ${B}/${KERNEL_OUTPUT} \
+             -r ${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz \
+             ${ABOOTIMG_ARGS}
 }
 
 do_deploy_append() {
     cp ${B}/boot.img ${DEPLOYDIR}/${KERNEL_IMAGE_BASE_NAME}.fastboot
     ln -sf ${KERNEL_IMAGE_BASE_NAME}.fastboot ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.fastboot
+}
+
+# Update mechanism
+
+do_install_append() {
+    install -d ${D}/${KERNEL_IMAGEDEST}
+    install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
 }
 
 pkg_postinst_kernel-image_append () {
@@ -51,4 +53,3 @@ pkg_postinst_kernel-image_append () {
 }
 
 FILES_kernel-image += "/${KERNEL_IMAGEDEST}/boot.img"
-
