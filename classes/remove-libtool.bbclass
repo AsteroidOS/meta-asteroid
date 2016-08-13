@@ -1,3 +1,5 @@
+# /!\ This is temporarily in meta-asteroid because we haven't fully updated to krogoth but this belongs to oe-core
+
 # This class removes libtool .la files after do_install
 
 REMOVE_LIBTOOL_LA ?= "1"
