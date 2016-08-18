@@ -22,5 +22,7 @@ do_install_append() {
 
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     cp ../asteroid-launcher.service ${D}/usr/lib/systemd/user/
-    ln -s ../asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service ]; then
+        ln -s ../asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
+    fi
 }
