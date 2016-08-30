@@ -12,7 +12,7 @@ inherit qmake5
 
 DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-alarms"
 RDEPENDS_${PN} += "nemo-qml-plugin-alarms"
-FILES_${PN} += "/usr/share/translations/"
+FILES_${PN} += "/usr/share/translations/ /usr/lib/systemd/user/open-alarm.service /usr/share/dbus-1/services/com.nokia.voland.service"
 
 do_install_append() {
     lrelease ${S}/asteroid-alarmclock.*.ts
