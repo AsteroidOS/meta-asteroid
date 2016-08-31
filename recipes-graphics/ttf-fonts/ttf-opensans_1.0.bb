@@ -16,8 +16,8 @@ S = "${WORKDIR}/git"
 FONT_PACKAGES = "ttf-opensans"
 
 do_install() {
-    install -d ${D}${datadir}/fonts/truetype/
-    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/lib/fonts/ \;
+    install -d ${D}/usr/share/fonts/
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/share/fonts/ \;
 }
 
-FILES_${PN} += "/usr/"
+FILES_${PN} += "/usr/share/fonts/"
