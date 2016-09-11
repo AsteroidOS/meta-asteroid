@@ -1,6 +1,7 @@
 [Unit]
 Description=Starts the BLE synchronization daemon
 Requires=dbus.socket
+After=bluetooth.service
  
 [Service]
 Type=simple
