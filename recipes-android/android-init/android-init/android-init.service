@@ -1,7 +1,6 @@
 [Unit]
 Description=/system/bin/init initializes the property service and launches servicemanager and logd
-Wants=systemd-udev-settle.service
-After=local-fs.target systemd-udev-settle.service systemd-tmpfiles-setup.service
+After=local-fs.target
 Before=basic.target network.target bluetooth.service ofono.service sensord.service
 DefaultDependencies=no
 Conflicts=shutdown.target
