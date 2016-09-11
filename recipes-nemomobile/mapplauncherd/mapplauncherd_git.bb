@@ -24,5 +24,6 @@ do_install_append() {
     ln -s ../booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
 }
 
-FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/"
+FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
+FILES_${PN}-dev = "/usr/include/"
