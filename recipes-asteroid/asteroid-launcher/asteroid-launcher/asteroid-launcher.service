@@ -1,6 +1,6 @@
 [Unit]
 Description=The wayland compositors and desktop of AsteroidOS
-Requires=dbus.socket
+Requires=dbus.socket mce.service
  
 [Service]
 Type=notify
