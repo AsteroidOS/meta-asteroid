@@ -1,0 +1,16 @@
+[Unit]
+Description=Mode Control Entity (MCE)
+DefaultDependencies=no
+Requires=dbus.socket
+After=dbus.socket
+After=local-fs.target
+Conflicts=shutdown.target
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/mce --systemd
+TimeoutSec=2
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
