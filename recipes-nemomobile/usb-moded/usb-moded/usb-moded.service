@@ -1,0 +1,19 @@
+[Unit]
+Description=usb-moded USB gadget controller
+DefaultDependencies=no
+Requires=dbus.socket
+After=local-fs.target dbus.socket
+Conflicts=shutdown.target
+
+[Service]
+Type=notify
+TimeoutSec=15
+EnvironmentFile=-/var/lib/environment/usb-moded/*.conf
+EnvironmentFile=-/run/usb-moded/*.conf
+ExecStart=/usr/sbin/usb_moded --systemd --force-syslog $USB_MODED_ARGS
+Restart=always
+ExecReload=/bin/kill -HUP $MAINPID
+BusName=com.meego.usb_moded
+
+[Install]
+WantedBy=multi-user.target

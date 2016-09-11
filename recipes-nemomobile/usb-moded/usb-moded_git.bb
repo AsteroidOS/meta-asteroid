@@ -4,6 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
+           file://usb-moded.service \
            file://usb-moded.ini"
 SRCREV = "eecb0b4c4347f8447bc78c562f4ac5fcee97aedb"
 PR = "r1"
@@ -47,7 +48,7 @@ do_install_append() {
     touch ${D}/etc/udhcpd.conf
 
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    install -m 644 -D systemd/usb-moded.service ${D}/lib/systemd/system/usb-moded.service
+    install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
     ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
 
     # TODO: we currently disable the rescue mode
