@@ -1,16 +1,25 @@
-From 9879ff15e08d16e93ef88439b78997fad2bf1582 Mon Sep 17 00:00:00 2001
+From 0d3f0e2a211a75a25557bc4421f9df5de93e9d27 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Tue, 8 Dec 2015 12:06:27 +0100
+Date: Mon, 12 Sep 2016 18:56:52 +0200
 Subject: [PATCH] Fixes build
 
 ---
- Makefile | 102 +++++++++++++++++++++++++++++++--------------------------------
- 1 file changed, 51 insertions(+), 51 deletions(-)
+ Makefile | 104 +++++++++++++++++++++++++++++++--------------------------------
+ 1 file changed, 52 insertions(+), 52 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index aaef621..aee36fc 100644
+index aaef621..0042d37 100644
 --- a/Makefile
 +++ b/Makefile
+@@ -73,7 +73,7 @@ endif
+ PKG_CONFIG   ?= pkg-config
+ 
+ # Whether to enable DEVEL release logging
+-ENABLE_DEVEL_LOGGING ?= y
++ENABLE_DEVEL_LOGGING ?= n
+ 
+ # Whether to enable support for libhybris plugin
+ ENABLE_HYBRIS ?= y
 @@ -180,70 +180,70 @@ DBUSCONF              := mce.conf
  # ----------------------------------------------------------------------------
  
@@ -178,5 +187,5 @@ index aaef621..aee36fc 100644
  $(UTESTDIR)/% : LDLIBS += $(foreach fn_sym,$(LINK_STUBS),\
  				    -Wl,--defsym=$(fn_sym)=stub__$(fn_sym))
 -- 
-2.6.2
+2.9.3
 
