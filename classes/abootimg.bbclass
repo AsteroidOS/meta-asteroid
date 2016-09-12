@@ -4,7 +4,7 @@
 
 ABOOTIMG_ARGS ?= ""
 
-do_compile[depends] += "initramfs-android-image:do_rootfs"
+do_compile[depends] += "initramfs-android-image:do_image_complete"
 DEPENDS += "abootimg-native"
 
 do_compile_append() {

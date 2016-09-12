@@ -2,7 +2,7 @@
 # This class is used to create Android device compatible boot.img files with kernel and initrd using mkboot
 #
 
-do_compile[depends] += "initramfs-android-image:do_rootfs"
+do_compile[depends] += "initramfs-android-image:do_image_complete"
 DEPENDS += "mkbootimg-tools-native"
 
 do_compile_append() {
