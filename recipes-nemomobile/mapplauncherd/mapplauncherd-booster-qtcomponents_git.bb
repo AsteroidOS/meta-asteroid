@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase polkit"
-RDEPENDS_${PN} += "polkit"
+RDEPENDS_${PN} += "polkit mapplauncherd"
 
 do_configure_prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd/@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd ${STAGING_INCDIR}/mdeclarativecache5/@" ${S}/booster-qtcomponents.pro
