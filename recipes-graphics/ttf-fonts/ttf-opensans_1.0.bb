@@ -16,8 +16,12 @@ S = "${WORKDIR}/git"
 FONT_PACKAGES = "ttf-opensans"
 
 do_install() {
+    # Different versions of OE seems to require different places for fonts so we install in both share and lib...
     install -d ${D}/usr/share/fonts/
     find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/share/fonts/ \;
+
+    install -d ${D}/usr/lib/fonts/
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/lib/fonts/ \;
 }
 
-FILES_${PN} += "/usr/share/fonts/"
+FILES_${PN} += "/usr/share/fonts/ /usr/lib/fonts/"
