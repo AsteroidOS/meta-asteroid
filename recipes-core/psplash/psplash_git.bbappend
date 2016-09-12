@@ -4,6 +4,7 @@ SRC_URI += "file://psplash-colors.h \
 file://psplash-bar-img.png \
 file://psplash-config.h \
 file://0001-Don-t-draw-progress-and-message-bar.patch \
+file://psplash.service \
 "
 SPLASH_IMAGES = "file://psplash-poky-img.png;outsuffix=default"
 
@@ -15,6 +16,15 @@ do_configure_append () {
     ./make-image-header.sh ./psplash-bar.png BAR
 }
 
+do_install_append () {
+    install -d ${D}/lib/systemd/system/multi-user.target.wants/
+
+    cp ../psplash.service ${D}/lib/systemd/system/
+    ln -s ../psplash.service ${D}/lib/systemd/system/multi-user.target.wants/psplash.service
+}
+
 # Erase psplash's pkg_postinst which masks psplash from systemd
 pkg_postinst_${PN} () {
 }
+
+FILES_${PN} += "/lib/systemd/system/"
