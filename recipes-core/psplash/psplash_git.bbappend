@@ -5,8 +5,12 @@ file://psplash-bar-img.png \
 file://psplash-config.h \
 file://0001-Don-t-draw-progress-and-message-bar.patch \
 file://psplash.service \
+file://psplash-img-280.png \
+file://psplash-img-320.png \
 "
-SPLASH_IMAGES = "file://psplash-poky-img.png;outsuffix=default"
+SPLASH_IMAGES = "file://psplash-img-320.png;outsuffix=default"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_configure_append () {
     cd ${S}
