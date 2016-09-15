@@ -1,0 +1,10 @@
+[Unit]
+Description=msm-fb-refresher updates the framebuffer on qualcomm devices
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/bin/msm-fb-refresher
+
+[Install]
+WantedBy=graphical.target
