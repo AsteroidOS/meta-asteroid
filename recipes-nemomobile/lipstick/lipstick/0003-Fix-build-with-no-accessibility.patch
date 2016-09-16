@@ -1,0 +1,63 @@
+From 3388c954e7fe9a7fbc7e11817e55e208ac3a8e5a Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 12 Sep 2016 22:48:08 +0200
+Subject: [PATCH] Fix build with no-accessibility
+
+---
+ src/compositor/hwcimage.cpp         | 1 +
+ src/compositor/lipstickrecorder.cpp | 1 +
+ src/compositor/windowmodel.cpp      | 1 +
+ src/homewindow.cpp                  | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/src/compositor/hwcimage.cpp b/src/compositor/hwcimage.cpp
+index 25ee330..cbbccb7 100644
+--- a/src/compositor/hwcimage.cpp
++++ b/src/compositor/hwcimage.cpp
+@@ -18,6 +18,7 @@
+ 
+ #include <QRunnable>
+ #include <QThreadPool>
++#include <QCoreApplication>
+ 
+ #include <QQuickWindow>
+ #include <QSGSimpleTextureNode>
+diff --git a/src/compositor/lipstickrecorder.cpp b/src/compositor/lipstickrecorder.cpp
+index a758363..5e94686 100644
+--- a/src/compositor/lipstickrecorder.cpp
++++ b/src/compositor/lipstickrecorder.cpp
+@@ -16,6 +16,7 @@
+ #include <sys/time.h>
+ #include <grp.h>
+ 
++#include <QCoreApplication>
+ #include <QMutexLocker>
+ 
+ #include "lipstickrecorder.h"
+diff --git a/src/compositor/windowmodel.cpp b/src/compositor/windowmodel.cpp
+index 7ecd4d4..102fc45 100644
+--- a/src/compositor/windowmodel.cpp
++++ b/src/compositor/windowmodel.cpp
+@@ -14,6 +14,7 @@
+ ****************************************************************************/
+ 
+ #include <QDBusConnection>
++#include <QDebug>
+ #include "lipstickcompositorwindow.h"
+ #include "lipstickcompositor.h"
+ #include "windowmodel.h"
+diff --git a/src/homewindow.cpp b/src/homewindow.cpp
+index b59e668..2d33bbd 100644
+--- a/src/homewindow.cpp
++++ b/src/homewindow.cpp
+@@ -20,6 +20,7 @@
+ #include <QQuickView>
+ #include <QQmlContext>
+ #include <QGuiApplication>
++#include <QDebug>
+ #include "homeapplication.h"
+ #include "compositor/lipstickcompositorprocwindow.h"
+ #include "compositor/lipstickcompositor.h"
+-- 
+2.9.3
+

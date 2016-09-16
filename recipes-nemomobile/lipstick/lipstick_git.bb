@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "git://git.merproject.org/mer-core/lipstick.git;protocol=https \
     file://0001-Disables-tests-tools-and-doc-and-fixes-build.patch \
-    file://0002-Store-notifications-database-inside-cere-s-home-dire.patch"
+    file://0002-Store-notifications-database-inside-cere-s-home-dire.patch \
+    file://0003-Fix-build-with-no-accessibility.patch"
 SRCREV = "d393a948d2d7d179dbe5dedf3ae68543e655507a"
 PR = "r1"
 PV = "+git${SRCREV}"
@@ -13,9 +14,8 @@ S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS += "qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt statefs-qt mce usb-moded-qt5 systemd wayland qt5-qpa-hwcomposer-plugin qmsystem nemo-keepalive qttools-native"
-RDEPENDS_${PN} += "qt5-qpa-hwcomposer-plugin ${PN}-locale"
-# qt5-qpa-hwcomposer-plugin isn't detected to be needed at runtime by OpenEmbedded
+DEPENDS += "qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt statefs-qt mce usb-moded-qt5 systemd wayland qmsystem nemo-keepalive qttools-native"
+RDEPENDS_${PN} += "${PN}-locale"
 
 inherit qmake5
 
