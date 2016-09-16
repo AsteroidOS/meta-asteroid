@@ -7,7 +7,8 @@ PR = "r0"
 # we don't need a compiler nor a c library for these fonts
 INHIBIT_DEFAULT_DEPS = "1"
 
-inherit allarch fontcache
+inherit allarch
+inherit qmake5_paths
 
 SRC_URI = "git://github.com/ppowalowski/fontface-open-sans.git;protocol=https"
 SRCREV = "462165fa0e73a665d2fbc8c80ecc23ce135700da"
@@ -17,11 +18,8 @@ FONT_PACKAGES = "ttf-opensans"
 
 do_install() {
     # Different versions of OE seems to require different places for fonts so we install in both share and lib...
-    install -d ${D}/usr/share/fonts/
-    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/share/fonts/ \;
-
-    install -d ${D}/usr/lib/fonts/
-    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/lib/fonts/ \;
+    install -d ${D}/${OE_QMAKE_PATH_QT_FONTS}
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/${OE_QMAKE_PATH_QT_FONTS} \;
 }
 
-FILES_${PN} += "/usr/share/fonts/ /usr/lib/fonts/"
+FILES_${PN} += "${OE_QMAKE_PATH_QT_FONTS}"
