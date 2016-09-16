@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdeclarative qtsvg"
-RDEPENDS_${PN} += "asteroid-theme-moka qtsvg-plugins ttf-opensans"
+RDEPENDS_${PN} += "qtsvg-plugins ttf-opensans"
 
 do_configure_prepend() {
     sed -i "s@examples@@" ${S}/qml-asteroid.pro
