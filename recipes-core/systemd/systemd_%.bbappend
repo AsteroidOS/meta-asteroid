@@ -1,9 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI_append = "file://50-video.rules \
+SRC_URI_append = " file://50-video.rules \
                   file://65-android.rules \
                   file://dbus.service \
                   file://dbus.socket \
-                  file://dbus.conf"
+                  file://dbus.conf "
 
 do_install_append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
@@ -26,3 +26,5 @@ do_install_append() {
 }
 
 PACKAGECONFIG_append += "pam"
+
+RRECOMMENDS_${PN}_remove = "udev-hwdb"
