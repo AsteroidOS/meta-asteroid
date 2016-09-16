@@ -10,6 +10,6 @@ LIC_FILES_CHKSUM = " \
     file://LGPL_EXCEPTION.txt;md5=0145c4d1b6f96a661c2c139dfb268fb6 \
 "
 
-DEPENDS += "qtbase qtdeclarative qtmultimedia"
+DEPENDS += "qtbase qtdeclarative"
 
 SRCREV = "28ca62414901502189ea28ef2efd551386187619"
