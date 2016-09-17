@@ -1,10 +1,9 @@
 [Unit]
-Description=Load firmware into BCM20715A1 bluetooth chip
-After=dev-ttyHS99.device
+Description=Load firmware into broadcom bluetooth chip
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/patchram.sh
+ExecStart=/bin/echo This script should be device specific
 
 [Install]
 WantedBy=basic.target
