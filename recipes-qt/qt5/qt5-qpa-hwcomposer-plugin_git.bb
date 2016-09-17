@@ -4,7 +4,7 @@ sometimes also SoC type (generic, qcom, exynos4, ...)."
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c08382077db2dbc01b1b5536ec6665"
 
-PV = "5.2.0+gitr${SRCPV}"
+PV = "5.6.1+gitr${SRCPV}"
 
 DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
 
