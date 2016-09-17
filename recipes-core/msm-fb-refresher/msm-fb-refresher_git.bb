@@ -3,7 +3,6 @@ PR = "r0"
 SRC_URI = "git://github.com/AsteroidOS/msm-fb-refresher.git;protocol=https \
     file://msm-fb-refresher.service"
 SRCREV = "06378f02ac54edc91f8db19487e1d5d379813147"
-COMPATIBLE_MACHINE = "dory"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://refresher.c;beginline=1;endline=16;md5=3d0eae401b24b819f25959dcfcc3194f"
 S = "${WORKDIR}/git/"
