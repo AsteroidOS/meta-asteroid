@@ -15,7 +15,7 @@ DEPENDS = "qtbase libhybris qtwayland virtual/android-headers"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = " \
-    git://github.com/mer-hybris/qtscenegraph-adaptation \
+    git://github.com/mer-hybris/qtscenegraph-adaptation;protocol=https \
 "
 S = "${WORKDIR}/git"
 
