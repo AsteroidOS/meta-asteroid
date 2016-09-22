@@ -9,15 +9,15 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
+inherit qmake5 gsettings
 
-RDEPENDS_${PN} += "python python-dbus python-pygobject"
-FILES_${PN} += "/usr/bin/ /usr/lib/systemd/user/"
+DEPENDS += "qtbase glibmm"
+
+FILES_${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas"
 
 do_install_append() {
-    install -d ${D}/usr/bin/
-    cp asteroid-btsyncd ${D}/usr/bin/
-
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     cp ../asteroid-btsyncd.service ${D}/usr/lib/systemd/user/
     ln -s ../asteroid-btsyncd.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service
 }
+
