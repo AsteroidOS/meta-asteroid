@@ -1,4 +1,4 @@
-From 18eaa2b8d842da04a62aff779dd4ff44cd3601dc Mon Sep 17 00:00:00 2001
+From 0a19efd68b4f116fab38158f15d64e6686453810 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Sat, 16 Jan 2016 17:06:23 +0100
 Subject: [PATCH] Disables tests, tools and doc and fixes build
@@ -12,7 +12,8 @@ Subject: [PATCH] Disables tests, tools and doc and fixes build
  src/compositor/windowmodel.cpp              |  2 +-
  src/notifications/lipsticknotification.cpp  |  1 +
  src/src.pro                                 |  2 +-
- 8 files changed, 14 insertions(+), 11 deletions(-)
+ tools/screenshottool/screenshottool.pro     |  1 -
+ 9 files changed, 14 insertions(+), 12 deletions(-)
 
 diff --git a/lipstick.pro b/lipstick.pro
 index 78ee362..28f0721 100644
@@ -21,7 +22,7 @@ index 78ee362..28f0721 100644
 @@ -1,5 +1,5 @@
  TEMPLATE = subdirs
 -SUBDIRS += src plugin tools tests doc
-+SUBDIRS += src plugin
++SUBDIRS += src plugin tools
  
  plugin.depends = src
  tools.depends = src
@@ -165,6 +166,16 @@ index 5e66ecb..f8d4ff1 100644
  
  LIBS += -lrt
  
+diff --git a/tools/screenshottool/screenshottool.pro b/tools/screenshottool/screenshottool.pro
+index 0a8cf23..d666850 100644
+--- a/tools/screenshottool/screenshottool.pro
++++ b/tools/screenshottool/screenshottool.pro
+@@ -1,5 +1,4 @@
+ TEMPLATE = subdirs
+-SUBDIRS = application
+ 
+ screenshottool.files = screenshottool
+ screenshottool.path = /usr/bin
 -- 
-2.7.0.rc3
+2.9.3
 
