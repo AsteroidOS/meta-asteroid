@@ -1,0 +1,129 @@
+From d493df1cd36949f688681f894256bdf883951986 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 9 Oct 2016 19:01:52 +0200
+Subject: [PATCH] Remove dependency to SSU
+
+---
+ libmeegomtp.pro                                    | 30 ----------------------
+ mts/mts.pro                                        |  2 --
+ mts/platform/deviceinfo/deviceinfoprovider.cpp     |  7 +----
+ .../storage/fsstorageplugin/fsstorageplugin.pro    |  2 +-
+ 4 files changed, 2 insertions(+), 39 deletions(-)
+
+diff --git a/libmeegomtp.pro b/libmeegomtp.pro
+index db788fb..84136ba 100644
+--- a/libmeegomtp.pro
++++ b/libmeegomtp.pro
+@@ -3,33 +3,14 @@ TEMPLATE = subdirs
+ mts.subdir = mts
+ mts.target = sub-mts
+ 
+-test.subdir = test
+-test.target = sub-test
+-test.depends = sub-mts
+-
+ mtpserver.subdir = mtpserver
+ mtpserver.target = sub-mtpserver
+ mtpserver.depends = sub-mts
+ 
+-mts_storage_tests.subdir = mts/platform/storage/unittests
+-mts_storage_tests.depends= sub-mts
+-
+ mts_fsstorage_plugin.subdir = mts/platform/storage/fsstorageplugin
+ mts_fsstorage_plugin.target = sub-mts-fsstorage-plugin
+ mts_fsstorage_plugin.depends = sub-mts
+ 
+-mts_fsstorage_tests.subdir = mts/platform/storage/fsstorageplugin/unittests
+-mts_fsstorage_tests.target = sub-mts-fsstorage-tests
+-mts_fsstorage_tests.depends = sub-mts
+-
+-mts_deviceinfo_tests.subdir = mts/platform/deviceinfo/unittests
+-mts_deviceinfo_tests.target = sub-mts-deviceinfo-tests
+-mts_deviceinfo_tests.depends = sub-mts
+-
+-mts_protocol_tests.subdir = mts/protocol/unittests
+-mts_protocol_tests.target = sub-mts-protocol-tests
+-mts_protocol_tests.depends = sub-mts
+-
+ service.subdir = service
+ service.target = sub-service
+ service.depends = sub-mts
+@@ -39,17 +20,6 @@ systemd.target = sub-systemd
+ 
+ SUBDIRS += \
+     mts \
+-    test \
+     mtpserver \
+-    mts_storage_tests \
+-    mts_fsstorage_plugin \
+-    mts_fsstorage_tests \
+-    mts_deviceinfo_tests \
+-    mts_protocol_tests \
+     service \
+     systemd
+-
+-# install additional files for the CI Integration tests
+-citests.path = /opt/tests/buteo-mtp/test-definition/
+-citests.files = tests.xml
+-INSTALLS += citests
+diff --git a/mts/mts.pro b/mts/mts.pro
+index 765dd08..09268dd 100644
+--- a/mts/mts.pro
++++ b/mts/mts.pro
+@@ -1,8 +1,6 @@
+ QT += xml dbus
+ QT -= gui
+ 
+-LIBS += -lssu
+-
+ CONFIG += link_pkgconfig debug
+ 
+ equals(QT_MAJOR_VERSION, 4): {
+diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+index dd0d0d3..cbbfbc0 100644
+--- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
++++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
+@@ -32,7 +32,6 @@
+ #include "deviceinfoprovider.h"
+ #include <QDeviceInfo>
+ #include <QTimer>
+-#include <ssudeviceinfo.h>
+ #include <contextproperty.h>
+ #include "trace.h"
+ 
+@@ -46,10 +45,6 @@ DeviceInfoProvider::DeviceInfoProvider():
+ {
+     QDeviceInfo di;
+ 
+-    SsuDeviceInfo ssuDeviceInfo;
+-
+-    m_serialNo = ssuDeviceInfo.deviceUid();
+-
+     m_deviceVersion = QString("%1 HW: %2").arg(di.version(QDeviceInfo::Os))
+                                           .arg(di.version(QDeviceInfo::Firmware));
+ 
+@@ -68,7 +63,7 @@ DeviceInfoProvider::DeviceInfoProvider():
+     {
+         /* Query DeviceModel from SSU and use it to override the value of
+          * the friendly name -property defined in the XML configuration */
+-        QString deviceModel = ssuDeviceInfo.displayName(Ssu::DeviceModel);
++        QString deviceModel = "Asteroid";
+         MTP_LOG_INFO("Setting MTP friendly name to:" << deviceModel);
+         setDeviceFriendlyName(deviceModel);
+     }
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+index 3f22edf..14467c3 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
+@@ -44,7 +44,7 @@ SOURCES += fsstorageplugin.cpp \
+            storageitem.cpp
+ 
+ LIBPATH += ../../..
+-LIBS    += -lmeegomtp -lssu
++LIBS    += -lmeegomtp
+ 
+ #install
+ target.path = /usr/lib/mtp
+-- 
+2.9.3
+
