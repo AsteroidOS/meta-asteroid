@@ -15,7 +15,8 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync"
-DEPENDS += " dbus dbus-glib glib-2.0 udev kmod systemd "
+DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd buteo-mtp"
+RDEPENDS_${PN} += "buteo-mtp"
 
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
@@ -64,7 +65,7 @@ do_install_append() {
     install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini 
 
     # Remove problematic ini files
-    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
+    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini
 }
 
 FILES_${PN} += " /lib/systemd/system "
