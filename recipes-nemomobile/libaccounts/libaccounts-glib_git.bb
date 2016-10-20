@@ -10,7 +10,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-EXTRA_OECONF = "--disable-static --disable-gtk-doc --enable-introspection=no"
+EXTRA_OECONF = "--disable-static --disable-gtk-doc --enable-introspection=no --disable-man"
 
 do_configure_prepend() {
     gtkdocize
