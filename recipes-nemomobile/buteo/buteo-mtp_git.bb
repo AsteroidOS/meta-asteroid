@@ -15,6 +15,7 @@ do_configure_prepend() {
     sed -i "s@contextkit-statefs@contextkit-statefs contextsubscriber-1.0@" ${S}/mts/common.pri
     sed -i "s@buteosyncfw5@buteosyncfw5 contextsubscriber-1.0@" ${S}/service/service.pro
     sed -i "s@/bin/bash@/bin/sh@" ${S}/service/start-mtp.sh
+    sed -i "/Nice=-10/d" ${S}/init/systemd/buteo-mtp.service
 }
 
 DEPENDS += "buteo-syncfw statefs-qt libqtsparql"
