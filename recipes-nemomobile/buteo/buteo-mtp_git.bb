@@ -17,6 +17,7 @@ do_configure_prepend() {
     sed -i "s@/bin/bash@/bin/sh@" ${S}/service/start-mtp.sh
 }
 
-DEPENDS += "buteo-syncfw"
+DEPENDS += "buteo-syncfw statefs-qt"
 
 FILES_${PN} += "/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
+B="${S}"
