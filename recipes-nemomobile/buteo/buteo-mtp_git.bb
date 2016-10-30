@@ -18,6 +18,11 @@ do_configure_prepend() {
     sed -i "/Nice=-10/d" ${S}/init/systemd/buteo-mtp.service
 }
 
+do_install_append() {
+    mkdir -p ${D}/lib/systemd/system/local-fs.target.wants
+    ln -s ../dev-mtp.mount ${D}/lib/systemd/system/local-fs.target.wants
+}
+
 DEPENDS += "buteo-syncfw statefs-qt libqtsparql"
 
 FILES_${PN} += "/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
