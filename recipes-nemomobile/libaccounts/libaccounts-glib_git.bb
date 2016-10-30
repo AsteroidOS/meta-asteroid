@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 EXTRA_OECONF = "--disable-static --disable-gtk-doc --enable-introspection=no --disable-man"
 
 do_configure_prepend() {
-    gtkdocize
+    sed -i "/docs/d"  configure.ac
 }
 
 DEPENDS += "glib-2.0"
