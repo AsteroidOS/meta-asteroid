@@ -8,12 +8,17 @@ SRCREV = "ed05f850be3103231ff6cc3f78ae5b23bc504272"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 gsettings
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE"
 
 do_configure_prepend() {
     sed -i "/doc/d" ${S}/buteo-sync.pro
+}
+
+do_install_append() {
+    mkdir -p ${D}/usr/lib/systemd/user/default.target.wants
+    ln -s ../msyncd.service ${D}/usr/lib/systemd/user/default.target.wants/
 }
 
 DEPENDS = "libaccounts-qt5 libsignon-qt5 qtsystems nemo-keepalive"
