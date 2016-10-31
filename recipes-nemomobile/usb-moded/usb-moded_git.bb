@@ -65,7 +65,7 @@ do_install_append() {
     install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini 
 
     # Remove problematic ini files
-    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini
+    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
 }
 
 FILES_${PN} += " /lib/systemd/system "
