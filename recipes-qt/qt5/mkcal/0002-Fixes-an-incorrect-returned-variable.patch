@@ -1,0 +1,25 @@
+From 908d07c85c6f239a2e7be885bddba550b5eeea53 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 30 Oct 2016 21:27:08 +0100
+Subject: [PATCH] Fixes an incorrect returned variable
+
+---
+ src/servicehandler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/servicehandler.cpp b/src/servicehandler.cpp
+index 86ff41a..d951f08 100644
+--- a/src/servicehandler.cpp
++++ b/src/servicehandler.cpp
+@@ -271,7 +271,7 @@ QString ServiceHandler::emailAddress(const Notebook::Ptr &notebook, const Extend
+ QString ServiceHandler::displayName(const Notebook::Ptr &notebook, const ExtendedStorage::Ptr &storage)
+ {
+   if ( storage.isNull() || notebook.isNull() )
+-    return false;
++    return QString();
+ 
+   ServiceInterface* service = d->getServicePlugin(notebook, storage);
+ 
+-- 
+2.10.1
+
