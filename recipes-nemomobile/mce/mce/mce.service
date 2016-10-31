@@ -8,6 +8,7 @@ Conflicts=shutdown.target
 
 [Service]
 Type=notify
+Environment=DSME_SOCKFILE=/run/dsme.socket
 ExecStart=/usr/sbin/mce --systemd
 TimeoutSec=2
 Restart=always
