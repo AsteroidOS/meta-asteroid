@@ -2,6 +2,8 @@
 # This class is used to create Android device compatible boot.img files with kernel and initrd using abootimg
 #
 
+KERNEL_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}"
+
 ABOOTIMG_ARGS ?= ""
 
 do_compile[depends] += "initramfs-android-image:do_image_complete"
@@ -15,8 +17,14 @@ do_compile_append() {
 }
 
 do_deploy_append() {
-    cp ${B}/boot.img ${DEPLOYDIR}/${KERNEL_IMAGE_BASE_NAME}.fastboot
-    ln -sf ${KERNEL_IMAGE_BASE_NAME}.fastboot ${DEPLOYDIR}/${KERNEL_IMAGE_SYMLINK_NAME}.fastboot
+    # We're probably interested only in zImage KERNEL_IMAGETYPE, but keep
+    # the for loop for consistency with other bbclasses
+    for type in ${KERNEL_IMAGETYPES} ; do
+        base_name=${type}-${KERNEL_IMAGE_BASE_NAME}
+        symlink_name=${type}-${KERNEL_IMAGE_SYMLINK_NAME}
+        cp ${B}/boot.img ${DEPLOYDIR}/${base_name}.fastboot
+        ln -sf ${base_name}.fastboot ${DEPLOYDIR}/${symlink_name}.fastboot
+    done
 }
 
 # Update mechanism
