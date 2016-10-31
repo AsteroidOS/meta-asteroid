@@ -1,17 +1,14 @@
-From 94c9d8c04f6f2a3c7702a6ff75acd3ba6d5232b3 Mon Sep 17 00:00:00 2001
+From e343830bf20e18133d2dceb6d660486328bfff35 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Sun, 23 Oct 2016 23:23:37 +0200
+Date: Mon, 31 Oct 2016 23:28:15 +0100
 Subject: [PATCH] Remove dependency to SSU and tests
 
 ---
  libmeegomtp.pro                                    | 29 ----------------------
- mts/common.pri                                     |  2 +-
  mts/mts.pro                                        |  2 --
  mts/platform/deviceinfo/deviceinfoprovider.cpp     |  7 +-----
  .../storage/fsstorageplugin/fsstorageplugin.pro    |  4 +--
- service/service.pro                                |  2 +-
- service/start-mtp.sh                               |  2 +-
- 7 files changed, 6 insertions(+), 42 deletions(-)
+ 4 files changed, 3 insertions(+), 39 deletions(-)
 
 diff --git a/libmeegomtp.pro b/libmeegomtp.pro
 index db788fb..0b2310d 100644
@@ -69,14 +66,6 @@ index db788fb..0b2310d 100644
 -citests.path = /opt/tests/buteo-mtp/test-definition/
 -citests.files = tests.xml
 -INSTALLS += citests
-diff --git a/mts/common.pri b/mts/common.pri
-index d1f600c..8364d39 100644
---- a/mts/common.pri
-+++ b/mts/common.pri
-@@ -1,2 +1,2 @@
- CONFIG += link_pkgconfig
--PKGCONFIG += contextkit-statefs
-+PKGCONFIG += contextkit-statefs contextsubscriber-1.0 contextsubscriber-1.0 contextsubscriber-1.0
 diff --git a/mts/mts.pro b/mts/mts.pro
 index 765dd08..09268dd 100644
 --- a/mts/mts.pro
@@ -144,29 +133,6 @@ index 3f22edf..218a398 100644
  
  #install
  target.path = /usr/lib/mtp
-diff --git a/service/service.pro b/service/service.pro
-index baf8c67..86688b6 100644
---- a/service/service.pro
-+++ b/service/service.pro
-@@ -11,7 +11,7 @@ LIBS += -L../mts -lmeegomtp
- QT -= gui
- CONFIG += link_pkgconfig
- equals(QT_MAJOR_VERSION, 4): PKGCONFIG += buteosyncfw
--equals(QT_MAJOR_VERSION, 5): PKGCONFIG += buteosyncfw5
-+equals(QT_MAJOR_VERSION, 5): PKGCONFIG += buteosyncfw5 contextsubscriber-1.0 contextsubscriber-1.0 contextsubscriber-1.0
- 
- SOURCES += service.cpp
- 
-diff --git a/service/start-mtp.sh b/service/start-mtp.sh
-index c20842c..f4b151a 100755
---- a/service/start-mtp.sh
-+++ b/service/start-mtp.sh
-@@ -1,4 +1,4 @@
--#!/bin/bash
-+#!/bin/sh
- 
- SERVICE=/usr/lib/mtp/mtp_service
- STORAGE_PATH=$HOME
 -- 
-2.9.3
+2.10.1
 
