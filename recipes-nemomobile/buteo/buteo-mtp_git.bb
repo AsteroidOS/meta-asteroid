@@ -12,6 +12,8 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
+EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
+
 do_configure_prepend() {
     sed -i "s@contextkit-statefs@contextkit-statefs contextsubscriber-1.0@" ${S}/mts/common.pri
     sed -i "s@buteosyncfw5@buteosyncfw5 contextsubscriber-1.0@" ${S}/service/service.pro

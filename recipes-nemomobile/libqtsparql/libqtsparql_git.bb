@@ -10,12 +10,15 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
+EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
+
 DEPENDS += "qtbase qtdeclarative"
 
 do_configure_prepend() {
     ./configure -prefix /usr/
     sed -i "s@src tests examples@src@" projects.pro
     sed -i "/doc.pri/d" projects.pro
+    export QT_SELECT=5
 }
 
 do_install_append() {
