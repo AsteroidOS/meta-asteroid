@@ -7,7 +7,8 @@ SRC_URI = "git://git.merproject.org/mer-core/lipstick.git;protocol=https \
     file://0001-Disables-tests-tools-and-doc-and-fixes-build.patch \
     file://0002-Store-notifications-database-inside-cere-s-home-dire.patch \
     file://0003-Fix-build-with-no-accessibility.patch \
-    file://0004-notificationcategories-use-ion-icons.patch"
+    file://0004-notificationcategories-use-ion-icons.patch \
+    file://0005-Add-a-missing-math.h-include.patch"
 SRCREV = "d393a948d2d7d179dbe5dedf3ae68543e655507a"
 PR = "r1"
 PV = "+git${SRCREV}"
