@@ -10,10 +10,12 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-EXTRA_OECONF = "--disable-static --disable-gtk-doc --enable-introspection=no --disable-man"
+EXTRA_OECONF = "--disable-static --enable-introspection=no --disable-man"
 
 do_configure_prepend() {
     sed -i "/docs/d"  configure.ac
+    sed -i "/GTK_DOC_CHECK/d"  configure.ac
+    sed -i "s/docs tools/tools/" Makefile.am
 }
 
 DEPENDS += "glib-2.0"
