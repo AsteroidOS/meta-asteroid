@@ -1,6 +1,6 @@
 From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 24 Nov 2016 17:39:00 +0200
-Subject: [PATCH] Forces GLES2 the dirty way
+Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable name in AsteroidOSSync
 
 ---
 --- a/src/shared/ad.c
