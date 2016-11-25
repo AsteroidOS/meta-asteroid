@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 do_configure_prepend() {
-    sed -i "/doc.pri/d" ${S}/signon.pro
+    sed -i "/doc.pri/d" ${S}/signon.pro ${S}/lib/SignOn/SignOn.pro ${S}/lib/plugins/plugins.pro
 }
 
 do_install_append() {
