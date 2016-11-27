@@ -22,7 +22,7 @@ do_compile() {
 do_install() {
     # Different versions of OE seems to require different places for fonts so we install in both share and lib...
     install -d ${D}/${OE_QMAKE_PATH_QT_FONTS}
-    find ./ -name 'hinted/*.tt[cf]' -exec install -m 0644 {} ${D}/${OE_QMAKE_PATH_QT_FONTS} \;
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/${OE_QMAKE_PATH_QT_FONTS} \;
 }
 
 FILES_${PN} += "${OE_QMAKE_PATH_QT_FONTS}"
