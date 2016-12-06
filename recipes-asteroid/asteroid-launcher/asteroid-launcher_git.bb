@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd
 SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
     file://asteroid-launcher.service \
     file://default.conf"
-SRCREV = "${AUTOREV}"
+SRCREV = "2a1e6c1dd1677abb4e248ca0fbc1d8d3cae50034"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

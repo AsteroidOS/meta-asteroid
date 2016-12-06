@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1702a92c723f09e3fab3583b165a8d90"
 
 SRC_URI = "git://github.com/AsteroidOS/qml-asteroid.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "932da54984b22ec9f0be53e4eb868f24b91b12d1"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

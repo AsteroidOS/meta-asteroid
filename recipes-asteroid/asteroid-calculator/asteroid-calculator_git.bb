@@ -4,7 +4,7 @@ LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-calculator.git;protocol=https"
-SRCREV = "${AUTOREV}"
+SRCREV = "1d25dd492a56f73fba18570aab77e8b2d01a3056"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"

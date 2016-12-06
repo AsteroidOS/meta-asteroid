@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https \
     file://asteroid-btsyncd.service"
-SRCREV = "${AUTOREV}"
+SRCREV = "3c45161b9d174e11ab95a306f9d0b03afffb58f0"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
