@@ -2,6 +2,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/brcm-patchram-plus:"
 SRC_URI += "file://patchram.service"
 LICENSE = "BSD"
 
+SRC_URI = "git://github.com/AsteroidOS/brcm-patchram-plus.git;protocol=https"
+S = "${WORKDIR}/git/"
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_install_append() {
