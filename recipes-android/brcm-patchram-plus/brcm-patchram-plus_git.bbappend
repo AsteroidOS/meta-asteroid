@@ -4,6 +4,7 @@ LICENSE = "BSD"
 
 SRC_URI = "git://github.com/AsteroidOS/brcm-patchram-plus.git;protocol=https"
 S = "${WORKDIR}/git/"
+SRCREV = "c8fbd5f45392c4bf3c12cec7e3f59c2b79bd7dfc"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
