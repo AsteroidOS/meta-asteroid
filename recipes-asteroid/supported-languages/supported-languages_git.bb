@@ -11,7 +11,7 @@ PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 
-FILES_${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/jolla-supported-languages/"
+FILES_${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/"
 
 INSANE_SKIP_${PN} += "host-user-contaminated"
 
@@ -26,6 +26,6 @@ do_install_append() {
     # that others apps cannot set environment variables
     chown 1000:1000 ${D}/var/lib/environment/ceres/locale.conf # ceres:ceres
 
-    install -d ${D}/usr/share/jolla-supported-languages/
-    cp ${S}/*.conf ${D}/usr/share/jolla-supported-languages/
+    install -d ${D}/usr/share/supported-languages/
+    cp ${S}/*.conf ${D}/usr/share/supported-languages/
 }
