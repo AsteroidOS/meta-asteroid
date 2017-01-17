@@ -13,15 +13,15 @@ Mer/Nemo should try to not depend on any out-of-tree modules.
  libpulse-simple.pc.in |   2 +-
  libpulse.pc.in        |   2 +-
  pulsecore.pc.in       |  12 +++++
- src/Makefile.am       | 130 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 146 insertions(+), 3 deletions(-)
+ src/Makefile.am       | 134 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 150 insertions(+), 3 deletions(-)
  create mode 100644 pulsecore.pc.in
 
 diff --git a/Makefile.am b/Makefile.am
-index 75b784f..f0f591b 100644
+index 13bc469..9771fac 100644
 --- a/Makefile.am
 +++ b/Makefile.am
-@@ -49,7 +49,7 @@ dist_vapi_DATA = \
+@@ -53,7 +53,7 @@ dist_vapi_DATA = \
  		vala/libpulse-simple.deps vala/libpulse-simple.vapi
  
  pkgconfigdir = $(libdir)/pkgconfig
@@ -31,10 +31,10 @@ index 75b784f..f0f591b 100644
  if HAVE_GLIB20
  pkgconfig_DATA += \
 diff --git a/configure.ac b/configure.ac
-index 3c71472..6f96312 100644
+index 4edc8e0..70b50d0 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1446,6 +1446,7 @@ man/Makefile
+@@ -1515,6 +1515,7 @@ man/Makefile
  libpulse.pc
  libpulse-simple.pc
  libpulse-mainloop-glib.pc
@@ -87,15 +87,26 @@ index 0000000..b5b4a9b
 +Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-@PA_MAJORMINOR@/modules -lpulsecore-@PA_MAJORMINOR@ -lpulsecommon-@PA_MAJORMINOR@ -lpulse @PTHREAD_LIBS@
 +Cflags: -D_REENTRANT -D__INCLUDED_FROM_PULSE_AUDIO -DPA_DEFAULT_CONFIG_DIR=\"@PA_DEFAULT_CONFIG_DIR@\" -I${includedir}
 diff --git a/src/Makefile.am b/src/Makefile.am
-index 5cb5564..fb71693 100644
+index b600dfb..7e76b51 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
-@@ -779,6 +779,134 @@ libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
+@@ -23,6 +23,7 @@
+ 
+ pulseincludedir=$(includedir)/pulse
+ pulsecoreincludedir=$(includedir)/pulsecore
++pulsecorefilterincludedir=$(includedir)/pulsecore/filter
+ pulselibexecdir=$(libexecdir)/pulse
+ if HAVE_X11
+ xdgautostartdir=$(sysconfdir)/xdg/autostart
+@@ -799,6 +800,139 @@ libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
  endif
  
  ###################################
 +#         Pulsecore headers       #
 +###################################
++
++pulsecorefilterinclude_HEADERS = \
++		pulsecore/filter/lfe-filter.h
 +
 +pulsecoreinclude_HEADERS = \
 +		pulsecore/arpa-inet.h \
@@ -148,6 +159,7 @@ index 5cb5564..fb71693 100644
 +		pulsecore/ltdl-helper.h \
 +		pulsecore/macro.h \
 +		pulsecore/mcalign.h \
++		pulsecore/mem.h \
 +		pulsecore/memblock.h \
 +		pulsecore/memblockq.h \
 +		pulsecore/memchunk.h \
@@ -217,6 +229,7 @@ index 5cb5564..fb71693 100644
 +		pulsecore/thread-mq.h \
 +		pulsecore/time-smoother.h \
 +		pulsecore/tokenizer.h \
++		pulsecore/typedefs.h \
 +		pulsecore/usergroup.h \
 +		pulsecore/x11prop.h \
 +		pulsecore/x11wrap.h
@@ -226,5 +239,5 @@ index 5cb5564..fb71693 100644
  ###################################
  
 -- 
-1.9.1
+2.11.0
 
