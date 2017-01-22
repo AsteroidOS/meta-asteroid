@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/sensorfw.git;protocol=https"
-SRCREV = "6e5acd56944faca5e01161a2e444023f5600c299"
+SRCREV = "9efd97d298131a116e4e93fa223072def9268e81"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
