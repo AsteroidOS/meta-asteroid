@@ -17,12 +17,13 @@ do_configure_prepend() {
 }
 
 do_install_append() {
-    install -d ${D}/etc/sensorfw/
+    install -d ${D}/etc/sensorfw/ ${D}/lib/systemd/system/multi-user.target.wants/
     cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/sensord.conf
+    ln -s ../sensorfwd.service ${D}/lib/systemd/system/multi-user.target.wants/
 }
 
 DEPENDS += "qtbase"
 
-FILES_${PN} += "/usr/lib/sensord-qt5/*.so /usr/lib/sensord-qt5/testing/*.so /lib/systemd/system/sensorfwd.service"
+FILES_${PN} += "/usr/lib/sensord-qt5/*.so /usr/lib/sensord-qt5/testing/*.so /lib/systemd/system"
 FILES_${PN}-dbg += "/usr/share/sensorfw-tests/ /usr/lib/sensord-qt5/.debug/ /usr/lib/sensord-qt5/testing/.debug/"
 FILES_${PN}-dev += "/usr/share/qt5/mkspecs/"
