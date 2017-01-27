@@ -30,7 +30,7 @@ load-module module-esound-protocol-unix
 load-module module-native-protocol-unix
 
 .ifexists module-droid-card.so
-load-module module-droid-card
+load-module module-droid-card source_channel_map=mono
 .endif
 
 ### Automatically restore the volume of streams and devices
