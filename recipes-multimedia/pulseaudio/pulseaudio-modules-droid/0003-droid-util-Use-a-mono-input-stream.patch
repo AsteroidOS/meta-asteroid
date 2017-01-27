@@ -1,0 +1,61 @@
+From 7e24454a1498db6b186885fa2d11166129378db0 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Fri, 27 Jan 2017 14:08:25 +0100
+Subject: [PATCH] droid-util: Use a mono input stream
+
+---
+ src/common/droid-util.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
+
+diff --git a/src/common/droid-util.c b/src/common/droid-util.c
+index 87dea5b..e119f8d 100644
+--- a/src/common/droid-util.c
++++ b/src/common/droid-util.c
+@@ -1698,17 +1698,9 @@ pa_droid_stream *pa_droid_open_input_stream(pa_droid_hw_module *module,
+     audio_channel_mask_t hal_channel_mask = 0;
+     pa_channel_map channel_map;
+     pa_sample_spec sample_spec;
+-    bool voicecall_record = false;
+     struct audio_config config_in;
+     size_t buffer_size;
+ 
+-#if DROID_HAL >= 2
+-    if ((devices & ~AUDIO_DEVICE_BIT_IN) & AUDIO_DEVICE_IN_VOICE_CALL)
+-#else
+-    if (devices & AUDIO_DEVICE_IN_VOICE_CALL)
+-#endif
+-        voicecall_record = true;
+-
+     channel_map = *map;
+     sample_spec = *spec;
+ 
+@@ -1726,20 +1718,14 @@ pa_droid_stream *pa_droid_open_input_stream(pa_droid_hw_module *module,
+         hal_channel_mask |= c;
+     }
+ 
+-    if (voicecall_record) {
+-        pa_channel_map_init_mono(&channel_map);
+-        sample_spec.channels = 1;
+-        /* Only allow recording both downlink and uplink. */
+-#if defined(QCOM_HARDWARE)
+-  #if ANDROID_VERSION_MAJOR == 5 && ANDROID_VERSION_MINOR == 1
+-        hal_channel_mask = AUDIO_CHANNEL_IN_MONO;
+-  #else
+-        hal_channel_mask = AUDIO_CHANNEL_IN_VOICE_CALL_MONO;
+-  #endif
++    pa_channel_map_init_mono(&channel_map);
++    sample_spec.channels = 1;
++    /* Only allow recording both downlink and uplink. */
++#if ANDROID_VERSION_MAJOR == 5 && ANDROID_VERSION_MINOR == 1
++    hal_channel_mask = AUDIO_CHANNEL_IN_MONO;
+ #else
+-        hal_channel_mask = AUDIO_CHANNEL_IN_VOICE_UPLINK | AUDIO_CHANNEL_IN_VOICE_DNLINK;
++    hal_channel_mask = AUDIO_CHANNEL_IN_VOICE_CALL_MONO;
+ #endif
+-    }
+ 
+     memset(&config_in, 0, sizeof(struct audio_config));
+     config_in.sample_rate = sample_spec.rate;
+-- 
+2.11.0
+
