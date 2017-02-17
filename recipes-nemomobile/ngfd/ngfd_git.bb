@@ -24,9 +24,11 @@ do_install_append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     cp ../ngfd.service ${D}/usr/lib/systemd/user/
     ln -s ../ngfd.service ${D}/usr/lib/systemd/user/default.target.wants/ngfd.service
+
+    install -d ${D}/usr/share/sounds/
 }
 
 inherit autotools pkgconfig
 
 FILES_${PN}-dbg += "/usr/lib/ngf/.debug/"
-FILES_${PN} += "/usr/lib/ngf /usr/share/dbus-1 /usr/lib/systemd/"
+FILES_${PN} += "/usr/lib/ngf /usr/share/dbus-1 /usr/lib/systemd/ /usr/share/sounds/"
