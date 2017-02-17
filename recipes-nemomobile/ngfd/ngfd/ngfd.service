@@ -3,11 +3,8 @@ Description=Non Graphical Feedback Daemon
 Requires=dbus.socket
 
 [Service]
-Type=dbus
-TimeoutSec=15
+Type=simple
 ExecStart=/usr/bin/ngfd
-Restart=always
-BusName=com.nokia.NonGraphicFeedback1.Backend
 
 [Install]
 WantedBy=multi-user.target
