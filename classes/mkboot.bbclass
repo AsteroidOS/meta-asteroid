@@ -12,7 +12,7 @@ do_compile_append() {
     cp ${WORKDIR}/img_info .
     sed -i "s@%%KERNEL%%@${B}/${KERNEL_OUTPUT}@" img_info
     sed -i "s@%%RAMDISK%%@${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz@" img_info
-    mkboot . boot.img
+    mkboot . boot.img || { echo "mkboot failed"; exit 1; }
 }
 
 do_deploy_append() {
