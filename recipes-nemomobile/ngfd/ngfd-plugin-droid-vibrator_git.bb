@@ -10,7 +10,7 @@ PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 
-DEPENDS += "ngfd"
+DEPENDS += "ngfd libhybris"
 
 inherit cmake
 
