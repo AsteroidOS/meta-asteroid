@@ -3,4 +3,6 @@ do_install_append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         rm -r ${D}${sysconfdir}/modules-load.d
     fi
+
+    echo "user_allow_other" >> ${D}${sysconfdir}/fuse.conf
 }
