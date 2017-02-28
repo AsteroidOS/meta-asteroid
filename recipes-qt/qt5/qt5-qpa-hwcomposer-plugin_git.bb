@@ -14,12 +14,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/AsteroidOS/qt5-qpa-hwcomposer-plugin;protocol=https"
 S = "${WORKDIR}/git/hwcomposer"
-SRCREV = "ab86143bbea38d2679d68073b509b6633e0fb4d0"
-
-SRC_URI_append_tenderloin = " \
-    file://0001-Unblock-rendering-for-Android-4.4.4-and-hwcomposer-1.patch;striplevel=2 \
-    file://0002-Add-QCOM_BSP-define-switch.patch;striplevel=2 \
-"
+SRCREV = "2356f482b64dbe5ee62115ab93778dec625e2206"
 
 inherit qmake5
 
