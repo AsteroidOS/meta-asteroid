@@ -3,13 +3,10 @@ HOMEPAGE = "https://git.merproject.org/mer-core/lipstick"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "git://git.merproject.org/mer-core/lipstick.git;protocol=https \
-    file://0001-Disables-tests-tools-and-doc-and-fixes-build.patch \
-    file://0002-Store-notifications-database-inside-cere-s-home-dire.patch \
-    file://0003-Fix-build-with-no-accessibility.patch \
-    file://0004-notificationcategories-use-ion-icons.patch \
-    file://0005-Add-a-missing-math.h-include.patch"
-SRCREV = "d393a948d2d7d179dbe5dedf3ae68543e655507a"
+SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
+    file://0001-Disables-tests-and-doc.patch \
+    file://0004-notificationcategories-use-ion-icons.patch"
+SRCREV = "0274da621e9a26b1386c624fc841fcae89a3f3ac"
 PR = "r1"
 PV = "+git${SRCREV}"
 S = "${WORKDIR}/git"
