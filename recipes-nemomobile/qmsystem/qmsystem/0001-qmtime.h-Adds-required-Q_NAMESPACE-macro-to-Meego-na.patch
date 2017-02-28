@@ -1,0 +1,25 @@
+From 96e03f69e86d8b7948e4230767d38eacd02c7377 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 26 Feb 2017 23:06:30 +0100
+Subject: [PATCH] qmtime.h Adds required Q_NAMESPACE macro to Meego namespace
+ declaration
+
+---
+ system/qmtime.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/system/qmtime.h b/system/qmtime.h
+index 8e5e28c..c178834 100644
+--- a/system/qmtime.h
++++ b/system/qmtime.h
+@@ -51,6 +51,7 @@ namespace MeeGo { class QmTimePrivate2 ; }
+ /* to be replaces by MeeGo::QmTime::WhatChanged */
+ namespace MeeGo
+ {
++  Q_NAMESPACE
+   /**
+    *
+    * Enumeration for change events for QmTime.
+-- 
+2.11.0
+
