@@ -27,7 +27,8 @@ do_install_append() {
     ln -s ../booster-qtcomponents-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service
 
     install -d ${D}/var/lib/environment/mapplauncherd
-    echo "QT_QPA_PLATFORM=wayland-egl" >> ${D}/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
+    echo "QT_QPA_PLATFORM=wayland-egl" > ${D}/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
+    echo "QT_IM_MODULE=qtvirtualkeyboard" >> ${D}/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
 }
 
 FILES_${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5"
