@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https \
     file://localeEnv.conf"
 SRCREV = "${AUTOREV}"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 FILES_${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/"

@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/statefs-qt.git;protocol=https \
     file://001-Disable_doc_installation.patch"
 SRCREV = "32db98f6eed332df9672e5d8b091d95254b5e1df"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 INSANE_SKIP_${PN} += "dev-deps"

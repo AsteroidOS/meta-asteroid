@@ -8,7 +8,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mce.git;protocol=https \
     file://mce.service"
 SRCREV = "ad535db76b7443febaf4f97328eb1968a3f1d8cc"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf"

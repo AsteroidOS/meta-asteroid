@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0004-notificationcategories-use-ion-icons.patch"
 SRCREV = "0274da621e9a26b1386c624fc841fcae89a3f3ac"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

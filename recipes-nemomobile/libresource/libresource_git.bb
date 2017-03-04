@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://github.com/mer-packages/libresource;protocol=https"
 SRCREV = "749daba70eb0d5627cfd063f88d0e44c74c25011"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 do_compile_prepend() {

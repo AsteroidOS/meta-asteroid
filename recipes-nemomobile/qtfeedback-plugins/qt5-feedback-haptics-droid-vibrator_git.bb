@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/mer-hybris/qt5-feedback-haptics-droid-vibrator;proto
            file://droid-vibrator.ini"
 SRCREV = "e70cdbfdca7a6d87793604b6aed8231728f30c64"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtfeedback libprofile-qt"

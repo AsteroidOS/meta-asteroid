@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-qt.git;protocol=https"
 SRCREV = "5b272ae218ccdf1f67f4eed92e2cdbe21c56ceb8"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://qfeedback.cpp;beginline=1;endline=38;md5=a8726eef46a2
 SRC_URI = "git://git.merproject.org/mer-core/qt-mobility-haptics-ffmemless.git;protocol=https"
 SRCREV = "c00a979e5e55f28c8b7c1eeffdfd1279e6e7e51e"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtfeedback libprofile-qt"

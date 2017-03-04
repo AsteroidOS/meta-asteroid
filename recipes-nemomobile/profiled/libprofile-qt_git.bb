@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/profile.cpp;beginline=1;endline=34;md5=1bb00ceba8
 SRC_URI = "git://git.merproject.org/mer-core/libprofile-qt.git;protocol=https"
 SRCREV = "6aeb3a0b5ec9241b557dd0e838fbaa1f61d5215d"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "profiled qtbase"

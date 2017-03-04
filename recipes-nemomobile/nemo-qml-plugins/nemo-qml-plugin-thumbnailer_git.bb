@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=99bfde884fb
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-thumbnailer.git;protocol=https"
 SRCREV = "08c0c98ff535ac44608f57e9facfbbdadf806229"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

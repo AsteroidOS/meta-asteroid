@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://license.lgpl;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/nemo-keepalive.git;protocol=https"
 SRCREV = "ba0768371c7d822871048865eb2753461b0d9bb6"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

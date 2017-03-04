@@ -9,7 +9,7 @@ SRC_URI = "git://git.merproject.org/mer-core/buteo-mtp.git;protocol=https \
            file://0003-Fixes-some-dependencies-to-contextkit-bash-and-syste.patch"
 SRCREV = "dd37c4f61e96bc25dd95d9661310e5326e31b593"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

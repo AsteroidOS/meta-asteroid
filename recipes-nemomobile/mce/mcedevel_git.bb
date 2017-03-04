@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 SRC_URI = "git://git.merproject.org/mer-core/mce-dev.git;protocol=https"
 SRCREV = "e6e96ef67f6dcd752962452d53bcc37dea6bf934"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 do_compile() {

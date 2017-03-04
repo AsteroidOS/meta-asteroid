@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
     file://default.conf"
 SRCREV = "${AUTOREV}"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

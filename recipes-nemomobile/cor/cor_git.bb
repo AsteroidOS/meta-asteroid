@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/cor.git;protocol=https \
            file://0001-Fix-error-with-GCC-6.patch"
 SRCREV = "52362ca66838694bbfa32071a1c14e1cb0cab1eb"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit cmake

@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/mnotification.cpp;beginline=1;endline=18;md5=5dd5
 SRC_URI = "git://git.merproject.org/mer-core/mlite.git;protocol=https"
 SRCREV = "144086d5f6c83abc721c8de503a83d4d1bb26fde"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase glib-2.0 dconf"

@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=243b725d71bb5df4a1e5920b344b86ad"
 SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd.git;protocol=https"
 SRCREV = "45ed31bffdb2b7fac3d0ee287d194ae468a4c1cb"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "dbus systemd"

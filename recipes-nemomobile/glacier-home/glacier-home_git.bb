@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/nemomobile-ux/glacier-home.git;protocol=https \
     file://default.conf"
 SRCREV = "23a384ed117fc08ef5e1d5113812055a4fb3aeac"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

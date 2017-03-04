@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 SRC_URI = "git://git.merproject.org/mer-core/pulseaudio-modules-nemo.git;protocol=https"
 SRCREV = "f4ddfe58bcee6a6928c9cf659c02c96520b24ba9"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio"
 

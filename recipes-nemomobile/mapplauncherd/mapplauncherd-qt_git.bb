@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd-qt.git;protocol=https
           file://booster-qt5-signal.service"
 SRCREV = "8c2d34f64c7e21bcf394e937e71361da51e6077c"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

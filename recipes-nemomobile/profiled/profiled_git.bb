@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/profiled.git;protocol=https \
     file://0001-Fixes-build.patch"
 SRCREV = "71f6fbe6f3845365627923c40569bbd078ab8b19"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 dbus dbus-glib"

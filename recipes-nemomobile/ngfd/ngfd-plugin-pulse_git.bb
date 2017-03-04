@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/ngfd-plugin-pulse.git;protocol=https"
 SRCREV = "277c45626720ddcb3e3e89f2262fed9ac56fabfa"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 

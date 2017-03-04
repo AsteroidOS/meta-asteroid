@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/qtaround.git;protocol=https \
            file://0001-Add-a-missing-math.h-include.patch"
 SRCREV = "bf7f438ea7281d3341f6b353a427a15b2cf10a7c"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase cor tut-dev"

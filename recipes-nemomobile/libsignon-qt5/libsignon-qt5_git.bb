@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 SRC_URI = "git://gitlab.com/accounts-sso/signond.git;protocol=https"
 SRCREV = "440587278e2cd5cb268e9d95fbf45d18849fd879"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

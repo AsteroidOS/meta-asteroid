@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=4f66b392565
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-calendar.git;protocol=https"
 SRCREV = "cbd0229ff16d2b9d345f8936d6d1febef8ad0122"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

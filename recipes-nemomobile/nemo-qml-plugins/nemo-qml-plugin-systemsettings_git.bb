@@ -9,7 +9,7 @@ SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings.git;
     file://0003-languagemodel-don-t-require-region-names.patch"
 SRCREV = "8e98f8c8069592d3dd21011743fdfb4d2efcc50a"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

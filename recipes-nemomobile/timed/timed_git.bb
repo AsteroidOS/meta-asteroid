@@ -8,7 +8,7 @@ SRC_URI = "git://git.merproject.org/mer-core/timed.git;protocol=https \
     file://timed-qt5.conf"
 SRCREV = "c7c1380fcc72390d59f1dc3e01b0cff29207f293"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit qmake5

@@ -8,7 +8,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mkcal.git;protocol=https \
            file://0002-Fixes-an-incorrect-returned-variable.patch"
 SRCREV = "bccf4e2f28c65006c2cfa8a36acc584a59bcf501"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

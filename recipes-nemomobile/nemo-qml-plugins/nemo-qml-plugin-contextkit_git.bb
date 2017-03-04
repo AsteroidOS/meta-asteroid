@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=23;md5=bc596f90d6c
 SRC_URI = "git://git.merproject.org/mer-core-attic/nemo-qml-plugin-contextkit.git;protocol=https"
 SRCREV = "ea0485fd84f5851d0671cfb3d2b9cec10a048890"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 inherit cmake_qt5
 S = "${WORKDIR}/git"
 B = "${S}"

@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=93ae0a8ec7ecf7709c725bd232bbafc6"
 SRC_URI = "git://git.merproject.org/mer-core/buteo-syncfw.git;protocol=https"
 SRCREV = "ed05f850be3103231ff6cc3f78ae5b23bc504272"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 gsettings
 

@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/nemomobile-graveyard/qmsystem.git;protocol=https \
            file://0001-qmtime.h-Adds-required-Q_NAMESPACE-macro-to-Meego-na.patch"
 SRCREV = "b6ee288d04efd4612d02273c77eedfaa3af500f6"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit qmake5

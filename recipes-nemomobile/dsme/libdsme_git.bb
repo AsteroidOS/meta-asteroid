@@ -10,7 +10,7 @@ SRC_URI = "git://git.merproject.org/mer-core/libdsme.git;protocol=https \
 "
 SRCREV = "826915f91a5f94fe3385a2b1d2b04092fbf5c4d9"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 do_compile_prepend () {

@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/libiphb.git;protocol=https"
 
 SRCREV = "5db3ab70268933369fbfc90e8ca3fd00b774c66b"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += " mcedevel glib-2.0 dbus-glib dbus libdsme "

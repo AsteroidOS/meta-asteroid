@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https \
     file://asteroid-btsyncd.service"
 SRCREV = "${AUTOREV}"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 gsettings
 

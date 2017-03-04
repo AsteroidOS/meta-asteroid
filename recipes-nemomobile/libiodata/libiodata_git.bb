@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/libiodata.git;protocol=https"
 SRCREV = "5c7ddd20667e09c877cbbc48bab57942e6bd9897"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 B = "${S}"

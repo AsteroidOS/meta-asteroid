@@ -7,7 +7,7 @@ SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-glib.git;protocol=https"
 
 SRCREV = "8d14b10652b2fe6c25d8ad8334e2d5023d254313"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 EXTRA_OECONF = "--disable-static --enable-introspection=no --disable-man"

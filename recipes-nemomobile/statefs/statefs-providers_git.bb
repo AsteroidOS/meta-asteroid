@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=9d1d95673c01a94e06648bf72ecda12d"
 SRC_URI = "git://git.merproject.org/mer-core/statefs-providers.git;protocol=https"
 SRCREV = "a3fb4f3f81945b964b2748c0cbef45356c002c6f"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "statefs boost qtbase statefs-qt qtsensors"

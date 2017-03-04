@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/dsme.git;protocol=https \
     file://dsme.service"
 SRCREV = "0d43f45e5990f9658aa8d63c57213093d683ca71"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib mce"

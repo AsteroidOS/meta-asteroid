@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.ini"
 SRCREV = "eecb0b4c4347f8447bc78c562f4ac5fcee97aedb"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig

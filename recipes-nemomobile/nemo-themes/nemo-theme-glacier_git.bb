@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://cc3/LICENSE.md;md5=cf7e5cf784e962ee361c8d468cebf569"
 SRC_URI = "git://github.com/nemomobile-ux/nemo-theme-glacier.git;protocol=https"
 SRCREV = "bb308f61a77cd935c82f9665d0b0b3d5e7e34670"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

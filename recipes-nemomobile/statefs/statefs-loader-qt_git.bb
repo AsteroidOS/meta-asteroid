@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/statefs-loader-qt.git;protocol=https"
 SRCREV = "2685ce9f7dce1068bb0da34fa38a07e75131d51e"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase cor statefs"

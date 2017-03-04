@@ -8,7 +8,7 @@ SRC_URI = "git://git.merproject.org/mer-core/ngfd.git;protocol=https \
            file://ngfd.service"
 SRCREV = "fbeea2a48bebd3faaac1ee84a144f797ac9006fc"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 

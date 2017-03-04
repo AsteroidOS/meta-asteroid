@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=51d0e64178c
 SRC_URI = "git://github.com/nemomobile/nemo-qml-plugin-alarms;protocol=https"
 SRCREV = "c501f5480f896e3a3b4eb8c1f57cad08f71a242b"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

@@ -8,7 +8,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd-booster-qtcomponents.
           file://preload.qml"
 SRCREV = "1f9706fb9001cd350e4f6bcefbdb12d036af2ae2"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 

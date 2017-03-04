@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/nemomobile/libusb-moded-qt;protocol=https \
     file://usb-moded-qt5.pc"
 SRCREV = "0a4b8ffe0cd775cce7a2366c8363d29d617b8e60"
 PR = "r1"
-PV = "+git${SRCREV}"
+PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase usb-moded"
