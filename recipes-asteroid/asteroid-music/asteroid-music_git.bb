@@ -12,3 +12,10 @@ inherit qmake5
 
 DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents qtmpris"
 RDEPENDS_${PN} += "qtmpris"
+FILE_${PN} += "/usr/share/translations/"
+
+do_install_append() {
+    lrelease ${S}/i18n/asteroid-music.*.ts
+    install -d ${D}/usr/share/translations/
+    cp ${S}/i18n/asteroid-music.*.qm ${D}/usr/share/translations/
+}

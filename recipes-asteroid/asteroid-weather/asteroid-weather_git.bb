@@ -15,7 +15,7 @@ RDEPENDS_${PN} += "nemo-qml-plugin-configuration"
 FILES_${PN} += "/usr/share/translations/ /usr/lib/fonts"
 
 do_install_append() {
-    lrelease ${S}/asteroid-weather.*.ts
+    lrelease ${S}/i18n/asteroid-weather.*.ts
     install -d ${D}/usr/share/translations/
-    cp ${S}/asteroid-weather.*.qm ${D}/usr/share/translations/
+    cp ${S}/i18n/asteroid-weather.*.qm ${D}/usr/share/translations/
 }

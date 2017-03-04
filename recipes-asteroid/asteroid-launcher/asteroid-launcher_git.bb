@@ -14,9 +14,13 @@ inherit qmake5
 
 DEPENDS += "lipstick"
 RDEPENDS_${PN} += "qtdeclarative-qmlplugins qml-asteroid qtwayland-plugins qtgraphicaleffects-qmlplugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration asteroid-wallpapers ttf-roboto ttf-raleway ttf-orbitron"
-FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/"
+FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/"
 
 do_install_append() {
+    lrelease ${S}/i18n/asteroid-launcher.*.ts
+    install -d ${D}/usr/share/translations/
+    cp ${S}/i18n/asteroid-launcher.*.qm ${D}/usr/share/translations/
+
     install -d ${D}/var/lib/environment/compositor/
     cp ../default.conf ${D}/var/lib/environment/compositor/
 

@@ -12,3 +12,10 @@ inherit qmake5
 
 DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-calendar qtvirtualkeyboard"
 RDEPENDS_${PN} += "nemo-qml-plugin-calendar qtvirtualkeyboard"
+FILE_${PN} += "/usr/share/translations/"
+
+do_install_append() {
+    lrelease ${S}/i18n/asteroid-calendar.*.ts
+    install -d ${D}/usr/share/translations/
+    cp ${S}/i18n/asteroid-calendar.*.qm ${D}/usr/share/translations/
+}

@@ -15,7 +15,7 @@ RDEPENDS_${PN} += "nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"
 FILES_${PN} += "/usr/share/translations/"
 
 do_install_append() {
-    lrelease ${S}/asteroid-settings.*.ts
+    lrelease ${S}/i18n/asteroid-settings.*.ts
     install -d ${D}/usr/share/translations/
-    cp ${S}/asteroid-settings.*.qm ${D}/usr/share/translations/
+    cp ${S}/i18n/asteroid-settings.*.qm ${D}/usr/share/translations/
 }
