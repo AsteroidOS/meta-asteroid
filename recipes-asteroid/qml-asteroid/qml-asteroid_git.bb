@@ -22,5 +22,5 @@ do_configure_prepend() {
     fi
 }
 
-FILES_${PN} += "/usr/lib"
+FILES_${PN} += "/usr/lib /usr/share/icons/asteroid/"
 FILES_${PN}-dbg += "/usr/lib/examples/.debug/ /usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
