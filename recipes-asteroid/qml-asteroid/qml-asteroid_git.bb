@@ -10,6 +10,8 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard"
 RDEPENDS_${PN} += "qtsvg-plugins ttf-opensans qtvirtualkeyboard"
 
