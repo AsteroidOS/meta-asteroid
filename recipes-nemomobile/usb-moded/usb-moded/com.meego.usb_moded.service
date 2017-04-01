@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.meego.usb_moded
+Exec=
+SystemdService=usb-moded.service

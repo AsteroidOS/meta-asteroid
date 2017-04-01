@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.service \
-           file://usb-moded.ini"
+           file://usb-moded.ini \
+           file://com.meego.usb_moded.service"
 SRCREV = "eecb0b4c4347f8447bc78c562f4ac5fcee97aedb"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -52,6 +53,9 @@ do_install_append() {
     install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
     ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
 
+    install -d ${D}/usr/share/dbus-1/services/
+    install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
+
     # TODO: we currently disable the rescue mode
 #    install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
     install -m 755 -D systemd/turn-usb-rescue-mode-off ${D}/usr/bin/turn-usb-rescue-mode-off
@@ -61,11 +65,11 @@ do_install_append() {
 
     install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh
     install -m 644 -D systemd/adbd-prepare.service ${D}/lib/systemd/system/adbd-prepare.service
-    
-    install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini 
+
+    install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
 
     # Remove problematic ini files
     rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
 }
 
-FILES_${PN} += " /lib/systemd/system "
+FILES_${PN} += " /lib/systemd/system  /usr/share/dbus-1/services/"
