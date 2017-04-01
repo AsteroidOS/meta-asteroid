@@ -39,7 +39,7 @@ fi
 }
 
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
-RDEPENDS_${PN} += "tzdata-timed libcap-bin"
+RDEPENDS_${PN} += "tzdata-timed libcap-bin tzdata"
 FILES_${PN} += "/usr/lib/ /usr/share/contextkit"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
