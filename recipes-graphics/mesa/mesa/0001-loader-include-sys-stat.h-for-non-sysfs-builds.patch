@@ -1,0 +1,40 @@
+From d1f3d522b78036feb89d1f7c23dea66aed52673f Mon Sep 17 00:00:00 2001
+From: Emil Velikov <emil.l.velikov@gmail.com>
+Date: Wed, 11 Mar 2015 19:12:35 +0000
+Subject: [PATCH] loader: include <sys/stat.h> for non-sysfs builds
+
+Required by fstat(), otherwise we'll error out due to implicit function
+declaration.
+
+Cc: "10.4 10.5" <mesa-stable@lists.freedesktop.org>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=89530
+Signed-off-by: Emil Velikov <emil.l.velikov@gmail.com>
+Reported-by: Vadim Rutkovsky <vrutkovs@redhat.com>
+Tested-by: Vadim Rutkovsky <vrutkovs@redhat.com>
+---
+ src/loader/loader.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/loader/loader.c b/src/loader/loader.c
+index 47e1f58..72414c5 100644
+--- a/src/loader/loader.c
++++ b/src/loader/loader.c
+@@ -64,6 +64,7 @@
+  *    Rob Clark <robclark@freedesktop.org>
+  */
+ 
++#include <sys/stat.h>
+ #include <stdarg.h>
+ #include <stdio.h>
+ #include <string.h>
+@@ -80,7 +81,6 @@
+ #endif
+ #endif
+ #ifdef HAVE_SYSFS
+-#include <sys/stat.h>
+ #include <sys/types.h>
+ #endif
+ #include "loader.h"
+-- 
+2.6.0
+

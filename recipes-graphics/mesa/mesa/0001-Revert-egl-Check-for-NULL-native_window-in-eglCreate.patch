@@ -1,0 +1,29 @@
+From b22b038d0526050e972e1f52261033fedd45403f Mon Sep 17 00:00:00 2001
+From: Martin Jansa <Martin.Jansa@gmail.com>
+Date: Tue, 22 Sep 2015 20:57:54 +0200
+Subject: [PATCH] Revert "egl: Check for NULL native_window in
+ eglCreateWindowSurface"
+
+This reverts commit 91ff0d4c6510dc38f279c586ced17fba917873e7.
+---
+ src/egl/main/eglapi.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 096c3d8..7846814 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -571,10 +571,6 @@ _eglCreateWindowSurfaceCommon(_EGLDisplay *disp, EGLConfig config,
+    EGLSurface ret;
+ 
+    _EGL_CHECK_CONFIG(disp, conf, EGL_NO_SURFACE, drv);
+-
+-   if (native_window == NULL)
+-      RETURN_EGL_ERROR(disp, EGL_BAD_NATIVE_WINDOW, EGL_NO_SURFACE);
+-
+    surf = drv->API.CreateWindowSurface(drv, disp, conf, native_window,
+                                        attrib_list);
+    ret = (surf) ? _eglLinkSurface(surf) : EGL_NO_SURFACE;
+-- 
+2.5.1
+
