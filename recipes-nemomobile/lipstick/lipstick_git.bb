@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0001-Disables-tests-and-doc.patch \
-    file://0004-notificationcategories-use-ion-icons.patch"
+    file://0002-notificationcategories-use-ion-icons.patch \
+    file://0003-Disable-USB-mode-notifications-on-connect.patch"
 SRCREV = "0274da621e9a26b1386c624fc841fcae89a3f3ac"
 PR = "r1"
 PV = "+git${SRCPV}"
