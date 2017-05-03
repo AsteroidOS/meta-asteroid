@@ -3,7 +3,8 @@ HOMEPAGE = "https://git.merproject.org/mer-core/buteo-syncfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=93ae0a8ec7ecf7709c725bd232bbafc6"
 
-SRC_URI = "git://git.merproject.org/mer-core/buteo-syncfw.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/buteo-syncfw.git;protocol=https \
+           file://msyncd.service"
 SRCREV = "ed05f850be3103231ff6cc3f78ae5b23bc504272"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -17,6 +18,8 @@ do_configure_prepend() {
 }
 
 do_install_append() {
+    cp ${WORKDIR}/msyncd.service ${D}/usr/lib/systemd/user/msyncd.service
+
     mkdir -p ${D}/usr/lib/systemd/user/default.target.wants
     ln -s ../msyncd.service ${D}/usr/lib/systemd/user/default.target.wants/
 }

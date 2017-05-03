@@ -1,0 +1,13 @@
+[Unit]
+Description=Sync FW daemon
+Requires=dbus.socket booster-qt5.service
+After=pre-user-session.target booster-qt5.service booster-qt5-signal.service
+
+[Service]
+# -G (--global-syms) so that msyncd's plugins can find symbols in msyncd and
+#     in the libraries msyncd is linked to.
+ExecStart=/usr/bin/invoker -G -o -s --type=qt5 /usr/bin/msyncd
+Restart=always
+
+[Install]
+WantedBy=user-session.target
