@@ -1,0 +1,25 @@
+From 985c1ffdbdee08f20270c66bd2a23fd460e144a4 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Fri, 5 May 2017 14:26:01 +0200
+Subject: [PATCH] Display: Sets default brightness to 100%
+
+---
+ builtin-gconf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/builtin-gconf.c b/builtin-gconf.c
+index 4078518..4a9a953 100644
+--- a/builtin-gconf.c
++++ b/builtin-gconf.c
+@@ -1153,7 +1153,7 @@ static const setting_t gconf_defaults[] =
+   {
+     .key  = MCE_GCONF_DISPLAY_BRIGHTNESS,
+     .type = "i",
+-    .def  = "3", // Note: Legacy value, migrated at mce startup
++    .def  = "5", // Note: Legacy value, migrated at mce startup
+   },
+   {
+     .key  = MCE_GCONF_DISPLAY_BRIGHTNESS_LEVEL_SIZE,
+-- 
+2.11.0
+
