@@ -6,7 +6,8 @@ LIC_FILES_CHKSUM = "file://mtpserver/mtpserver.cpp;beginline=1;endline=30;md5=a2
 SRC_URI = "git://git.merproject.org/mer-core/buteo-mtp.git;protocol=https \
            file://0001-Remove-dependency-to-SSU-and-tests.patch \
            file://0002-Start-buteo-mtp-as-ceres-by-default.patch \
-           file://0003-Fixes-some-dependencies-to-contextkit-bash-and-syste.patch"
+           file://0003-Fixes-some-dependencies-to-contextkit-bash-and-syste.patch \
+           file://0004-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch"
 SRCREV = "dd37c4f61e96bc25dd95d9661310e5326e31b593"
 PR = "r1"
 PV = "+git${SRCPV}"
