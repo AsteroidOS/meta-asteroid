@@ -1,0 +1,48 @@
+From 563e94abab883a78a95289b08552685dfa4357cd Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 8 May 2017 19:57:28 +0200
+Subject: [PATCH] Display: Sets dimming timeout to 10 sec and blanking timeout
+ to 5 sec
+
+---
+ modules/display.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/modules/display.h b/modules/display.h
+index 458eb09..d14f234 100644
+--- a/modules/display.h
++++ b/modules/display.h
+@@ -275,10 +275,10 @@ typedef enum
+ #define DEFAULT_DISP_BRIGHTNESS_STEP_SIZE	1
+ 
+ /** Default value for MCE_GCONF_DISPLAY_BLANK_TIMEOUT setting */
+-#define DEFAULT_BLANK_TIMEOUT			3
++#define DEFAULT_BLANK_TIMEOUT			5
+ 
+ /** Default value for MCE_GCONF_DISPLAY_BLANK_FROM_LOCKSCREEN_TIMEOUT setting */
+-#define DEFAULT_BLANK_FROM_LOCKSCREEN_TIMEOUT	10
++#define DEFAULT_BLANK_FROM_LOCKSCREEN_TIMEOUT	5
+ 
+ /** Default value for MCE_GCONF_DISPLAY_BLANK_FROM_LPM_ON_TIMEOUT setting */
+ #define DEFAULT_BLANK_FROM_LPM_ON_TIMEOUT	5
+@@ -293,7 +293,7 @@ typedef enum
+ #define DEFAULT_ADAPTIVE_DIMMING_THRESHOLD	3000	/* 3 seconds */
+ 
+ /** Default dim timeout, in seconds */
+-#define DEFAULT_DIM_TIMEOUT			30	/* 30 seconds */
++#define DEFAULT_DIM_TIMEOUT			10	/* 10 seconds */
+ 
+ /** Minimum blanking delay after bootup, in seconds */
+ #define AFTERBOOT_BLANKING_TIMEOUT		30
+@@ -379,7 +379,7 @@ enum
+ #define DEFAULT_DISPLAY_OFF_OVERRIDE		DISPLAY_OFF_OVERRIDE_DISABLED
+ 
+ /** Default value for MCE_GCONF_DISPLAY_DIM_TIMEOUT_LIST setting */
+-#define DEFAULT_DISPLAY_DIM_TIMEOUT_LIST	15,30,60,120,600
++#define DEFAULT_DISPLAY_DIM_TIMEOUT_LIST	10,30,60,120,600
+ 
+ /** Use Orientation sensor GConf setting */
+ # define MCE_GCONF_ORIENTATION_SENSOR_ENABLED   MCE_GCONF_DISPLAY_PATH"/orientation_sensor_enabled"
+-- 
+2.11.0
+
