@@ -19,9 +19,6 @@ EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 do_install_append() {
     mkdir -p ${D}/lib/systemd/system/local-fs.target.wants
     ln -s ../dev-mtp.mount ${D}/lib/systemd/system/local-fs.target.wants
-
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    ln -s ../buteo-mtp.service ${D}/usr/lib/systemd/user/default.target.wants/buteo-mtp.service
 }
 
 DEPENDS += "buteo-syncfw statefs-qt libqtsparql"
