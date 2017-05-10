@@ -1,0 +1,8 @@
+[Unit]
+Description=Android Debug Bridge
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=/usr/bin/adbd
+StandardOutput=null
