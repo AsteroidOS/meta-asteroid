@@ -1,0 +1,9 @@
+[Unit]
+Description=udhcpcd DHCP server
+DefaultDependencies=no
+After=local-fs.target
+Conflicts=shutdown.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/udhcpd -f

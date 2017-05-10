@@ -6,8 +6,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.service \
            file://usb-moded.ini \
-           file://com.meego.usb_moded.service"
-SRCREV = "eecb0b4c4347f8447bc78c562f4ac5fcee97aedb"
+           file://com.meego.usb_moded.service \
+           file://udhcpd.service \
+           file://0001-systemd-Use-a-default-timeout-of-2sec-to-StartUnit-a.patch"
+SRCREV = "b2bcc5ba8d1bf3179c73a916f01ab4e0cf0a3526"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -15,14 +17,15 @@ S = "${WORKDIR}/git"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
-EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync"
+EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
 DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd buteo-mtp"
 RDEPENDS_${PN} += "buteo-mtp"
 
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
     sed -i "s@shell@ceres@g" systemd/adbd-functionfs.sh
-    sed -i "s@adbd.service@android-tools-adbd.service@" ${S}/config/run-diag/qa-diagnostic.ini ${S}/config/run/adb-diag.ini ${S}/config/run/adb-startserver.ini ${S}/systemd/adbd-prepare.service 
+    sed -i "s@ adbd.service@ android-tools-adbd.service@" ${S}/config/run-diag/qa-diagnostic.ini ${S}/config/run/adb-diag.ini ${S}/config/run/adb-startserver.ini ${S}/systemd/adbd-prepare.service
+    sed -i "s@umount adb@umount /dev/usb-ffs/adb@" ${S}/systemd/adbd-prepare.service
 }
 
 do_install_append() {
@@ -52,6 +55,7 @@ do_install_append() {
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
     install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
     ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
+    install -m 644 -D ../udhcpd.service ${D}/lib/systemd/system/udhcpd.service
 
     install -d ${D}/usr/share/dbus-1/services/
     install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
@@ -69,7 +73,8 @@ do_install_append() {
     install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
 
     # Remove problematic ini files
-    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/udhcpd-developer-mode.ini ${D}/etc/usb-moded/run/udhcpd-adb-mode.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
+    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
+    rm ${D}/etc/usb-moded/dyn-modes/connection_sharing.ini ${D}/etc/usb-moded/dyn-modes/developer_mode.ini ${D}/etc/usb-moded/dyn-modes/diag_mode_old.ini ${D}/etc/usb-moded/dyn-modes/mass-storage.ini ${D}/etc/usb-moded/dyn-modes/mtp_mode.ini
 }
 
 FILES_${PN} += " /lib/systemd/system  /usr/share/dbus-1/services/"
