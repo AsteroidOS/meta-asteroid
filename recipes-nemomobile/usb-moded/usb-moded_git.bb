@@ -8,7 +8,8 @@ SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.ini \
            file://com.meego.usb_moded.service \
            file://udhcpd.service \
-           file://0001-systemd-Use-a-default-timeout-of-2sec-to-StartUnit-a.patch"
+           file://0001-systemd-Use-a-default-timeout-of-2sec-to-StartUnit-a.patch \
+           file://init_ffs"
 SRCREV = "b2bcc5ba8d1bf3179c73a916f01ab4e0cf0a3526"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -75,6 +76,8 @@ do_install_append() {
     # Remove problematic ini files
     rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
     rm ${D}/etc/usb-moded/dyn-modes/connection_sharing.ini ${D}/etc/usb-moded/dyn-modes/developer_mode.ini ${D}/etc/usb-moded/dyn-modes/diag_mode_old.ini ${D}/etc/usb-moded/dyn-modes/mass-storage.ini ${D}/etc/usb-moded/dyn-modes/mtp_mode.ini
+
+    cp ../init_ffs ${D}/usr/bin/init_ffs
 }
 
 FILES_${PN} += " /lib/systemd/system  /usr/share/dbus-1/services/"

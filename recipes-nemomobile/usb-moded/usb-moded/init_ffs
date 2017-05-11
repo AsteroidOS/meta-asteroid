@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "0" > /sys/class/android_usb/android0/enable
+
+manufacturer="$(cat /system/build.prop | grep -o 'ro.product.manufacturer=.*' | cut -d'=' -f 2)"
+model="$(cat /system/build.prop | grep -o 'ro.product.model=.*' | cut -d'=' -f 2)"
+serial="$(cat /proc/cmdline | sed 's/.*androidboot.serialno=//' | sed 's/ .*//')"
+
+echo $serial       > /sys/class/android_usb/android0/iSerial
+echo $manufacturer > /sys/class/android_usb/android0/iManufacturer
+echo $model        > /sys/class/android_usb/android0/iProduct
+
+echo "1" >  /sys/class/android_usb/android0/enable

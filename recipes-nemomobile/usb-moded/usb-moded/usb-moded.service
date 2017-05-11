@@ -10,6 +10,7 @@ Type=dbus
 TimeoutSec=15
 EnvironmentFile=-/var/lib/environment/usb-moded/*.conf
 EnvironmentFile=-/run/usb-moded/*.conf
+ExecStartPre=/usr/bin/init_ffs
 ExecStart=/usr/sbin/usb_moded --systemd --force-syslog $USB_MODED_ARGS
 Restart=always
 ExecReload=/bin/kill -HUP $MAINPID
