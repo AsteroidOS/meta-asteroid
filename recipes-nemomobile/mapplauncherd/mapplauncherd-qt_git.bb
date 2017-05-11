@@ -25,5 +25,6 @@ do_install_append() {
     ln -s ../booster-qt5-signal.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5-signal.service
 }
 
-FILES_${PN} += "/usr/share/mkspecs/features /usr/lib/systemd/user /usr/libexec/mapplauncherd"
+FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd"
+FILES_${PN}-dev += "/usr/share/mkspecs/features"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
