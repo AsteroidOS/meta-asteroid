@@ -1,0 +1,29 @@
+From e4b515f61f80c85c1142d9b406fee919408ffb7f Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 14 May 2017 17:40:11 +0200
+Subject: [PATCH] haptics: Always vibrate on calendar and clock events
+
+---
+ src/ngf/haptic.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/ngf/haptic.c b/src/ngf/haptic.c
+index 795adae..e3c4dde 100644
+--- a/src/ngf/haptic.c
++++ b/src/ngf/haptic.c
+@@ -57,6 +57,12 @@ n_haptic_can_handle (NSinkInterface *iface, NRequest *request)
+     call_state = (NValue*) n_context_get_value (context,
+             "call_state.mode");
+ 
++    /* Always vibrate on Alarms regardless of enabled
++     * https://github.com/AsteroidOS/asteroid-launcher/issues/17 */
++    if (strcmp (event_name, "clock") == 0 || strcmp (event_name, "calendar") == 0) {
++        return TRUE;
++    }
++
+     if (touch_level == NULL) {
+         N_WARNING (LOG_CAT "No value for touchscreen.vibration.level!");
+     }
+-- 
+2.11.0
+
