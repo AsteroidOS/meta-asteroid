@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0001-Disables-tests-and-doc.patch \
     file://0002-notificationcategories-use-ion-icons.patch \
     file://0003-Disable-USB-mode-notifications-on-connect.patch"
-SRCREV = "17e4e616ff45ca3d0030834a9c83ea5f65c22baa"
+SRCREV = "83ffc2e9dbea566d007ba064099788c29bdb1610"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -21,6 +21,11 @@ inherit qmake5
 
 do_install_append() {
     install -d ${D}/usr/share/icons/hicolor/86x86/apps/
+
+    rm -r ${D}/usr/share/translations/source/
+    cd ${S}/i18n/
+    lrelease -idbased *.ts
+    cp -r *.qm ${D}/usr/share/translations/
 }
 
 FILES_${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir /usr/share/icons/hicolor/86x86/apps/"
