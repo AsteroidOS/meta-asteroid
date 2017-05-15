@@ -18,8 +18,8 @@ FONT_PACKAGES = "ttf-raleway"
 
 do_install() {
     # Different versions of OE seems to require different places for fonts so we install in both share and lib...
-    install -d ${D}/${OE_QMAKE_PATH_QT_FONTS}
-    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/${OE_QMAKE_PATH_QT_FONTS} \;
+    install -d ${D}/usr/share/fonts/
+    find ./ -name '*.tt[cf]' -exec install -m 0644 {} ${D}/usr/share/fonts/ \;
 }
 
-FILES_${PN} += "${OE_QMAKE_PATH_QT_FONTS}"
+FILES_${PN} += "/usr/share/fonts/"
