@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0001-Disables-tests-and-doc.patch \
     file://0002-notificationcategories-use-ion-icons.patch \
     file://0003-Disable-USB-mode-notifications-on-connect.patch"
-SRCREV = "83ffc2e9dbea566d007ba064099788c29bdb1610"
+SRCREV = "263d6342afb54034af9f6fda0ce23fa7f5910849"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
