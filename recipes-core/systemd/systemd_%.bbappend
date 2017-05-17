@@ -14,16 +14,21 @@ do_install_append() {
     install -d ${D}/var/lib/systemd/linger
     touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
-   
+
     # In current systemd versions we have to take care ourselves of the dbus user service, it should be handled in the next versions
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    install -d ${D}/usr/lib/systemd/user/
+    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
     install -m 0644 ${WORKDIR}/dbus.socket ${D}/usr/lib/systemd/user/dbus.socket
     install -m 0644 ${WORKDIR}/dbus.service ${D}/usr/lib/systemd/user/dbus.service
-    ln -s ../dbus.socket ${D}/usr/lib/systemd/user/default.target.wants/dbus.socket
-    ln -s ../dbus.service ${D}/usr/lib/systemd/user/default.target.wants/dbus.service
+    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/dbus.socket ]; then
+        ln -s /usr/lib/systemd/user/dbus.socket ${D}/home/ceres/.config/systemd/user/default.target.wants/dbus.socket
+        ln -s /usr/lib/systemd/user/dbus.service ${D}/home/ceres/.config/systemd/user/default.target.wants/dbus.service
+    fi
     install -d ${D}/etc/systemd/system/user@.service.d/
     install -m 0644 ${WORKDIR}/dbus.conf ${D}/etc/systemd/system/user@.service.d/dbus.conf
 }
+
+FILES_${PN} += "/home/ceres/.config/systemd/user/default.target.wants/"
 
 PACKAGECONFIG_append += "pam"
 

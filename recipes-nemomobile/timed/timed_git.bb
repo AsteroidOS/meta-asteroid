@@ -22,10 +22,12 @@ do_configure_prepend() {
 }
 
 do_install_append() {
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    ln -s ../timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service 
+    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
+    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/timed-qt5.service ]; then
+        ln -s /usr/lib/systemd/user/timed-qt5.service ${D}/home/ceres/.config/systemd/user/default.target.wants/timed-qt5.service
+    fi
     install -d ${D}/var/lib/timed/
-    ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime 
+    ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime
     cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
@@ -40,7 +42,7 @@ fi
 
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
 RDEPENDS_${PN} += "tzdata-timed libcap-bin tzdata"
-FILES_${PN} += "/usr/lib/ /usr/share/contextkit"
+FILES_${PN} += "/usr/lib/ /usr/share/contextkit /home/ceres/.config/systemd/user/default.target.wants/"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
 INSANE_SKIP_${PN} += "dev-deps"

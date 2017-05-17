@@ -20,10 +20,12 @@ do_configure_prepend() {
 }
 
 do_install_append() {
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    ln -s ../booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
+    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
+    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-generic.service ]; then
+        ln -s /usr/lib/systemd/user/booster-generic.service ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-generic.service
+    fi
 }
 
-FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so"
+FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so /home/ceres/.config/systemd/user/default.target.wants/"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
 FILES_${PN}-dev = "/usr/include/"

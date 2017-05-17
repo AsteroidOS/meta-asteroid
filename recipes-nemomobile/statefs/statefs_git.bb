@@ -31,10 +31,15 @@ do_install_append() {
     install -d ${D}/var/lib/statefs/system
 
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    install -d ${D}/usr/lib/systemd/user/
+    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
     mv ${D}/usr/lib/systemd/system/statefs-system.service ${D}/lib/systemd/system/statefs-system.service
-    ln -s ../statefs.service ${D}/usr/lib/systemd/user/default.target.wants/statefs.service
-    ln -s ../statefs-system.service ${D}/lib/systemd/system/multi-user.target.wants/statefs-system.service
+    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/statefs.service ]; then
+        ln -s /usr/lib/systemd/user/statefs.service ${D}/home/ceres/.config/systemd/user/default.target.wants/statefs.service
+    fi
+    if [ ! -f ${D}/lib/systemd/system/multi-user.target.wants/statefs-system.service ]; then
+        ln -s /lib/systemd/system/statefs-system.service ${D}/lib/systemd/system/multi-user.target.wants/statefs-system.service
+    fi
 }
 
 pkg_postinst_${PN}() {
@@ -57,5 +62,5 @@ else
 fi
 }
 
-FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/"
+FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /home/ceres/.config/systemd/user/default.target.wants/"
 FILES_${PN}-dbg += "/opt/"
