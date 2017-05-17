@@ -7,6 +7,7 @@ file://0001-Don-t-draw-progress-and-message-bar.patch \
 file://psplash.service \
 file://psplash-img-280.png \
 file://psplash-img-320.png \
+file://psplash.sh \
 "
 SPLASH_IMAGES = "file://psplash-img-320.png;outsuffix=default"
 
@@ -25,6 +26,8 @@ do_install_append () {
 
     cp ../psplash.service ${D}/lib/systemd/system/
     ln -s ../psplash.service ${D}/lib/systemd/system/multi-user.target.wants/psplash.service
+
+    cp ../psplash.sh ${D}/etc/init.d/psplash.sh
 }
 
 # Erase psplash's pkg_postinst which masks psplash from systemd

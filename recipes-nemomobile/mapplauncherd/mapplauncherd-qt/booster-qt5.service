@@ -1,0 +1,14 @@
+[Unit]
+Description=Application launch booster for Qt5
+After=dbus.socket
+Requires=dbus.socket
+Wants=booster-qt5-signal.service
+
+[Service]
+Type=notify
+ExecStart=/usr/libexec/mapplauncherd/booster-qt5 --systemd
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=user-session.target

@@ -1,9 +1,0 @@
-[Unit]
-Description=Signal booster-qt5 that boot is over
-Requires=booster-qt5.service
-After=booster-qt5.service post-user-session.target asteroid-launcher.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/bin/killall -SIGUSR1 booster-qt5
