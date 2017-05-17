@@ -75,6 +75,9 @@ do_install_append() {
 
     install -d ${D}/usr/bin/
     cp ../init_ffs ${D}/usr/bin/init_ffs
+
+    install -d ${D}/var/lib/misc/
+    touch ${D}/var/lib/misc/udhcpd.leases
 }
 
-FILES_${PN} += " /lib/systemd/system  /usr/share/dbus-1/services/"
+FILES_${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
