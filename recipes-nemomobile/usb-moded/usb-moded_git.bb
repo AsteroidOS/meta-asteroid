@@ -8,7 +8,7 @@ SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.ini \
            file://com.meego.usb_moded.service \
            file://udhcpd.service \
-           file://0001-systemd-Use-a-default-timeout-of-2sec-to-StartUnit-a.patch \
+           file://0001-systemd-Use-a-default-timeout-of-2sec-for-StopUnit.patch \
            file://init_ffs"
 SRCREV = "b2bcc5ba8d1bf3179c73a916f01ab4e0cf0a3526"
 PR = "r1"
