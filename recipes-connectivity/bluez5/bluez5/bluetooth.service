@@ -6,7 +6,7 @@ ConditionPathIsDirectory=/sys/class/bluetooth
 [Service]
 Type=dbus
 BusName=org.bluez
-ExecStart=/usr/libexec/bluetooth/bluetoothd -E
+ExecStart=/usr/libexec/bluetooth/bluetoothd -E --noplugin=sap
 NotifyAccess=main
 #WatchdogSec=10
 #Restart=on-failure
