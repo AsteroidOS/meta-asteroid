@@ -61,11 +61,7 @@ do_install_append() {
     install -d ${D}/usr/share/dbus-1/services/
     install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
 
-    # TODO: we currently disable the rescue mode
 #    install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
-    install -m 755 -D systemd/turn-usb-rescue-mode-off ${D}/usr/bin/turn-usb-rescue-mode-off
-    install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/usb-rescue-mode-off.service
-    install -m 644 -D systemd/usb-rescue-mode-off.service ${D}/lib/systemd/system/multi-user.target.wants/usb-rescue-mode-off.service
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 
     install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh
@@ -77,6 +73,7 @@ do_install_append() {
     rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
     rm ${D}/etc/usb-moded/dyn-modes/connection_sharing.ini ${D}/etc/usb-moded/dyn-modes/developer_mode.ini ${D}/etc/usb-moded/dyn-modes/diag_mode_old.ini ${D}/etc/usb-moded/dyn-modes/mass-storage.ini ${D}/etc/usb-moded/dyn-modes/mtp_mode.ini
 
+    install -d ${D}/usr/bin/
     cp ../init_ffs ${D}/usr/bin/init_ffs
 }
 
