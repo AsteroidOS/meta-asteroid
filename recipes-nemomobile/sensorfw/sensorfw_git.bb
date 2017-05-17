@@ -3,7 +3,8 @@ HOMEPAGE = "https://git.merproject.org/mer-core/sensorfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://git.merproject.org/mer-core/sensorfw.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/sensorfw.git;protocol=https \
+           file://sensorfwd.service"
 SRCREV = "9efd97d298131a116e4e93fa223072def9268e81"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -19,7 +20,8 @@ do_configure_prepend() {
 
 do_install_append() {
     install -d ${D}/etc/sensorfw/ ${D}/lib/systemd/system/multi-user.target.wants/
-    cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/sensord.conf
+    cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/primaryuse.conf
+    cp ../sensorfwd.service ${D}/lib/systemd/system/sensorfwd.service
     ln -s ../sensorfwd.service ${D}/lib/systemd/system/multi-user.target.wants/
 }
 

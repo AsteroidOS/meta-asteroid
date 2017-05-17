@@ -1,0 +1,15 @@
+[Unit]
+Description=Sensor daemon for sensor framework
+After=dbus.socket
+Requires=dbus.service
+Conflicts=actdead.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/sensorfwd -c=/etc/sensorfw/primaryuse.conf -d --log-level=warning --no-magnetometer-bg-calibration
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=graphical.target
