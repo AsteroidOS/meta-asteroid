@@ -67,6 +67,8 @@ while [ ! -e /sys/block/mmcblk0 ] ; do
     info "Waiting for mmcblk0..."
     sleep 1
 done
+
+/sbin/fsck.ext4 -p /dev/$sdcard_partition
 mount -t auto -o rw,noatime,nodiratime /dev/$sdcard_partition /sdcard
 [ $? -eq 0 ] || fail "Failed to mount the sdcard. Cannot continue."
 
