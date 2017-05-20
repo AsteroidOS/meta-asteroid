@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://usb-moded.service \
-           file://usb-moded.ini \
            file://com.meego.usb_moded.service \
-           file://udhcpd.service \
-           file://0001-systemd-Use-a-default-timeout-of-2sec-for-StopUnit.patch \
+           file://udhcp-daemon.service \
+           file://buteo-session.service \
+           file://usb-moded \
            file://init_ffs"
 SRCREV = "b2bcc5ba8d1bf3179c73a916f01ab4e0cf0a3526"
 PR = "r1"
@@ -25,7 +25,7 @@ RDEPENDS_${PN} += "buteo-mtp"
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
     sed -i "s@shell@ceres@g" systemd/adbd-functionfs.sh
-    sed -i "s@ adbd.service@ android-tools-adbd.service@" ${S}/config/run-diag/qa-diagnostic.ini ${S}/config/run/adb-diag.ini ${S}/config/run/adb-startserver.ini ${S}/systemd/adbd-prepare.service
+    sed -i "s@ adbd.service@ android-tools-adbd.service@" ${S}/systemd/adbd-prepare.service
     sed -i "s@umount adb@umount /dev/usb-ffs/adb@" ${S}/systemd/adbd-prepare.service
 }
 
@@ -41,14 +41,10 @@ do_install_append() {
     echo "options g_file_storage stall=0 removable=1" > ${D}/etc/modprobe.d/usb_moded.conf
     install -d ${D}/etc/usb-moded
     install -d ${D}/etc/usb-moded/run
-    install -d ${D}/etc/usb-moded/run-diag
     install -d ${D}/etc/usb-moded/dyn-modes
-    install -d ${D}/etc/usb-moded/diag
-    install -m 644 -D config/dyn-modes/* ${D}/etc/usb-moded/dyn-modes/
-    install -m 644 -D config/diag/* ${D}/etc/usb-moded/diag/
-    install -m 644 -D config/run/* ${D}/etc/usb-moded/run/
-    install -m 644 -D config/run-diag/* ${D}/etc/usb-moded/run-diag/
-    install -m 644 -D config/mass-storage-jolla.ini ${D}/etc/usb-moded/
+    install -m 644 -D ../usb-moded/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
+    install -m 644 -D ../usb-moded/run/* ${D}/etc/usb-moded/run/
+    install -m 644 -D ../usb-moded/dyn-modes/* ${D}/etc/usb-moded/dyn-modes/
 
     touch ${D}/etc/modprobe.d/g_ether.conf
     touch ${D}/etc/udhcpd.conf
@@ -56,22 +52,16 @@ do_install_append() {
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
     install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
     ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
-    install -m 644 -D ../udhcpd.service ${D}/lib/systemd/system/udhcpd.service
+    install -m 644 -D ../udhcp-daemon.service ${D}/lib/systemd/system/udhcp-daemon.service
+    install -m 644 -D ../buteo-session.service ${D}/lib/systemd/system/buteo-session.service
 
     install -d ${D}/usr/share/dbus-1/services/
     install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
 
-#    install -m 644 -D systemd/usb-moded-args.conf ${D}/var/lib/environment/usb-moded/usb-moded-args.conf
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 
     install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh
     install -m 644 -D systemd/adbd-prepare.service ${D}/lib/systemd/system/adbd-prepare.service
-
-    install -m 644 ${WORKDIR}/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
-
-    # Remove problematic ini files
-    rm ${D}/etc/usb-moded/run/udhcpd-connection-sharing.ini ${D}/etc/usb-moded/run/vfat.ini ${D}/etc/usb-moded/run/mtp.ini
-    rm ${D}/etc/usb-moded/dyn-modes/connection_sharing.ini ${D}/etc/usb-moded/dyn-modes/developer_mode.ini ${D}/etc/usb-moded/dyn-modes/diag_mode_old.ini ${D}/etc/usb-moded/dyn-modes/mass-storage.ini ${D}/etc/usb-moded/dyn-modes/mtp_mode.ini
 
     install -d ${D}/usr/bin/
     cp ../init_ffs ${D}/usr/bin/init_ffs

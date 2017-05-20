@@ -1,0 +1,10 @@
+[Unit]
+Description=Starts the buteo-session.service as ceres
+DefaultDependencies=no
+After=local-fs.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/buteo-mtp start
+ExecStop=/usr/bin/buteo-mtp stop
