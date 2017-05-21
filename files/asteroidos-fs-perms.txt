@@ -26,4 +26,4 @@
 # /usr/share/man	0755	root	root	true	0644	root	root
 
 # Note: all standard config directories are automatically assigned "0755 root root false - - -"
-/home/ceres/			0755	ceres	ceres	true 0744 ceres ceres
+/home/ceres/			0755	1000	1000	true 0744 1000 1000
