@@ -33,3 +33,21 @@ FILES_${PN} += "/home/ceres/.config/systemd/user/default.target.wants/"
 PACKAGECONFIG_append += "pam"
 
 RRECOMMENDS_${PN}_remove = "udev-hwdb"
+
+ALTERNATIVE_${PN} += "usrsbinhalt usrsbinreboot usrsbinshutdown usrsbinpoweroff"
+
+ALTERNATIVE_TARGET[usrsbinhalt] = "${base_bindir}/systemctl"
+ALTERNATIVE_LINK_NAME[usrsbinhalt] = "${sbindir}/halt"
+ALTERNATIVE_PRIORITY[usrsbinhalt] ?= "300"
+
+ALTERNATIVE_TARGET[usrsbinreboot] = "${base_bindir}/systemctl"
+ALTERNATIVE_LINK_NAME[usrsbinreboot] = "${sbindir}/reboot"
+ALTERNATIVE_PRIORITY[usrsbinreboot] ?= "300"
+
+ALTERNATIVE_TARGET[usrsbinshutdown] = "${base_bindir}/systemctl"
+ALTERNATIVE_LINK_NAME[usrsbinshutdown] = "${sbindir}/shutdown"
+ALTERNATIVE_PRIORITY[usrsbinshutdown] ?= "300"
+
+ALTERNATIVE_TARGET[usrsbinpoweroff] = "${base_bindir}/systemctl"
+ALTERNATIVE_LINK_NAME[usrsbinpoweroff] = "${sbindir}/poweroff"
+ALTERNATIVE_PRIORITY[usrsbinpoweroff] ?= "300"
