@@ -1,0 +1,15 @@
+[Match]
+Name=ecm*
+
+[Network]
+Description=USB CDC ECM interface
+DHCPServer=yes
+Address=192.168.2.1/30
+Gateway=192.168.2.2
+
+[DHCPServer]
+PoolSize=2
+EmitDNS=no
+EmitNTP=no
+EmitRouter=no
+EmitTimezone=no

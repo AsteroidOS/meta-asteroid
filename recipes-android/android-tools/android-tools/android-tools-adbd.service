@@ -1,8 +1,13 @@
 [Unit]
 Description=Android Debug Bridge
+Requires=usb-setup.service
+After=usb-setup.service
 
 [Service]
 Type=simple
 Restart=on-failure
 ExecStart=/usr/bin/adbd
 StandardOutput=null
+
+[Install]
+WantedBy=multi-user.target
