@@ -1,0 +1,14 @@
+[Unit]
+Description=mtp-server service
+Requires=usb-setup.service dev-mtp_usb.device
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Environment=GLOG_logtostderr=1
+Restart=always
+ExecStart=/usr/bin/mtp-server
+User=ceres
+
+[Install]
+WantedBy=multi-user.target
