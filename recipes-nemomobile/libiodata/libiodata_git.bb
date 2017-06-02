@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 B = "${S}"
-DEPENDS += "qtbase"
+DEPENDS += "qtbase bison-native flex-native"
 
 do_configure_prepend () {
     export IODATA_VERSION=0.19.8

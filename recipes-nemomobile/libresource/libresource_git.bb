@@ -13,5 +13,5 @@ do_compile_prepend() {
     sed -i "s@\$(top_builddir)/src/libresource.la@libresource.la@g" src/Makefile
 }
 
-DEPENDS += " glib-2.0 dbus-glib dbus"
+DEPENDS += " glib-2.0 dbus-glib dbus libcheck-native"
 inherit autotools pkgconfig

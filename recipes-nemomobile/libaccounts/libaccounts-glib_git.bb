@@ -18,7 +18,7 @@ do_configure_prepend() {
     sed -i "s/docs tools/tools/" Makefile.am
 }
 
-DEPENDS += "glib-2.0"
+DEPENDS += "glib-2.0 glib-2.0-native"
 inherit autotools pkgconfig
 B = "${S}"
 

@@ -3,7 +3,7 @@ HOMEPAGE = "https://git.merproject.org/mer-core/libdsme"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-DEPENDS += " glib-2.0 libcheck"
+DEPENDS += " glib-2.0 libcheck pkgconfig-native"
 
 SRC_URI = "git://git.merproject.org/mer-core/libdsme.git;protocol=https \
     file://001-Allows-custom-cflags.patch \

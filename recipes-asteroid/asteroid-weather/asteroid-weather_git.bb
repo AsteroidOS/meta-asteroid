@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-configuration"
+DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-configuration qttools-native"
 RDEPENDS_${PN} += "nemo-qml-plugin-configuration"
 FILES_${PN} += "/usr/share/translations/ /usr/share/fonts"
 

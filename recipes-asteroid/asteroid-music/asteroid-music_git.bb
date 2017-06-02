@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents qtmpris"
+DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents qtmpris qttools-native"
 RDEPENDS_${PN} += "qtmpris"
 FILES_${PN} += "/usr/share/translations/"
 

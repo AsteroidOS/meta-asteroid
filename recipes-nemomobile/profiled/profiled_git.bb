@@ -10,8 +10,8 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "glib-2.0 dbus dbus-glib"
-B = "${WORKDIR}/git" 
+DEPENDS += "glib-2.0 dbus dbus-glib pkgconfig-native"
+B = "${WORKDIR}/git"
 
 do_compile_prepend() {
     export CFLAGS="-std=c11 $CFLAGS"

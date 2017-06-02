@@ -13,7 +13,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf"
+DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-native"
 
 do_install() {
     oe_runmake install DESTDIR=${D}

@@ -11,6 +11,8 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 
+DEPENDS = "pcre-native"
+
 do_configure_append() {
 	if [ ! -x /usr/sbin/zic ] && [ -x /usr/bin/zic ]; then
 		sed -i "s,/usr/sbin/zic,/usr/bin/zic," "${S}/scripts/zone-generate.sh" "${S}/scripts/zone-list.sh"

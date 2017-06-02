@@ -9,7 +9,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "statefs boost qtbase statefs-qt qtsensors"
+DEPENDS += "statefs boost qtbase statefs-qt qtsensors mce"
 RDEPENDS_${PN} += "statefs-loader-qt"
 inherit cmake_qt5
 

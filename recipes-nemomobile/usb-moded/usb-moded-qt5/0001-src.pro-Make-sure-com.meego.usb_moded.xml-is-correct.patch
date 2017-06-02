@@ -1,0 +1,25 @@
+From 5b724dd32edb965bfc7c762d0a88e8c4f85eaff0 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 24 May 2017 22:10:43 +0200
+Subject: [PATCH] src.pro: Make sure com.meego.usb_moded.xml is correctly found
+
+---
+ src/src.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 3212eba..10f53c4 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -27,7 +27,7 @@ HEADERS += \
+   $$PUBLIC_HEADERS \
+   qusbmoded_debug.h
+ 
+-USB_MODED_INCLUDE_PATH = $$system(for d in `pkg-config --cflags-only-I usb_moded` ; do echo $d ; done | grep usb.moded | sed s/^-I//g)
++USB_MODED_INCLUDE_PATH = "../../recipe-sysroot/usr/include/usb-moded/"
+ DBUS_INTERFACES += com_meego_usb_moded
+ com_meego_usb_moded.files = $$USB_MODED_INCLUDE_PATH/com.meego.usb_moded.xml
+ com_meego_usb_moded.header_flags = -N -c QUsbModedInterface
+-- 
+2.11.0
+

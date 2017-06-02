@@ -11,7 +11,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 gsettings
 
-DEPENDS += "qtbase glibmm qtmpris statefs-qt timed"
+DEPENDS += "qtbase glibmm qtmpris statefs-qt timed qttools-native"
 RDEPENDS_${PN} += "glibmm qtmpris"
 
 FILES_${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /home/ceres/.config/systemd/user/default.target.wants/"
