@@ -7,7 +7,9 @@ SRC_URI = "git://git.merproject.org/mer-core/buteo-mtp.git;protocol=https \
            file://0001-Remove-dependency-to-SSU-and-tests.patch \
            file://0002-Start-buteo-mtp-as-ceres-by-default.patch \
            file://0003-Fixes-some-dependencies-to-contextkit-bash-and-syste.patch \
-           file://0004-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch"
+           file://0004-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
+           file://0005-mtp1descriptors-redine-htole16-htole32.-to-make-sure.patch \
+           file://0006-FSStoragePlugin-Make-sure-the-inotify_event-s-flexib.patch"
 SRCREV = "394df0cedd490f79b6eb2f4a22a2e2813d129432"
 PR = "r1"
 PV = "+git${SRCPV}"
