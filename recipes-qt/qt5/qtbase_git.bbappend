@@ -1,6 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/qtbase:"
-SRC_URI += " file://0001-Forces-GLES2-the-dirty-way.patch \
-             file://0002-Environment-variable-enabling-the-workaround-FBO-rea.patch"
+SRC_URI += " file://0001-Forces-GLES2-the-dirty-way.patch"
 
 # Remove dependencies to mesa
 PACKAGECONFIG_remove = "kms"
