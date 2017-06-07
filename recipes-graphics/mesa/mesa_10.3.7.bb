@@ -11,6 +11,8 @@ SRC_URI = "ftp://ftp.freedesktop.org/pub/mesa/older-versions/10.x/${PV}/MesaLib-
 SRC_URI[md5sum] = "8c540465ed7700a24dab7746d400326b"
 SRC_URI[sha256sum] = "43c6ced15e237cbb21b3082d7c0b42777c50c1f731d0d4b5efb5231063fb6a5b"
 
+DEPENDS += "udev"
+
 S = "${WORKDIR}/Mesa-${PV}"
 
 # This version doesn't have --with-sha option
