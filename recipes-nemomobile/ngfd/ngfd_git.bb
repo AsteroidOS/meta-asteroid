@@ -13,7 +13,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 
-DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib profiled"
+DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib profiled mce"
 
 do_configure_prepend() {
     sed -i "s@src data doc tests@src data@" ${S}/Makefile.am
