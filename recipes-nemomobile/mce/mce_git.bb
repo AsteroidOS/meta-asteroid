@@ -7,6 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mce.git;protocol=https \
     file://0001-Fixes_build.patch \
     file://0002-Display-Sets-default-brightness-to-100.patch \
     file://0003-Display-Sets-dimming-timeout-to-10-sec-and-blanking-.patch \
+    file://0001-event-input-Double-tap-emulation-Adapts-the-state-ma.patch \
     file://mce.service"
 SRCREV = "ad535db76b7443febaf4f97328eb1968a3f1d8cc"
 PR = "r1"
