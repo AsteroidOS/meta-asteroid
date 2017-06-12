@@ -6,7 +6,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0001-Disables-tests-and-doc.patch \
     file://0002-notificationcategories-use-ion-icons.patch \
-    file://0003-Disable-USB-mode-notifications-on-connect.patch"
+    file://0003-Disable-USB-mode-notifications-on-connect.patch \
+    file://Notifications/"
 SRCREV = "a1234260a95fba1601fd8be2709b1dd214c434fa"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -26,9 +27,12 @@ do_install_append() {
     cd ${S}/i18n/
     lrelease -idbased *.ts
     cp -r *.qm ${D}/usr/share/translations/
+
+    install -d ${D}/home/ceres/.local/share/system/privileged/Notifications/
+    cp -r ${WORKDIR}/Notifications/* ${D}/home/ceres/.local/share/system/privileged/Notifications/
 }
 
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir /usr/share/icons/hicolor/86x86/apps/"
+FILES_${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir /usr/share/icons/hicolor/86x86/apps/ /home/ceres/.local/share/system/privileged/Notifications"
 FILES_${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
 FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
 FILES_${PN}-locale += "/usr/share/translations"
