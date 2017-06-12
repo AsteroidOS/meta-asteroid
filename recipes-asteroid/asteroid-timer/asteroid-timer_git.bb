@@ -10,4 +10,4 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qml-asteroid mapplauncherd-booster-qtcomponents nemo-qml-plugin-dbus"
+DEPENDS += "qml-asteroid nemo-qml-plugin-dbus"
