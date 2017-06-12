@@ -12,12 +12,10 @@ inherit qmake5
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard"
+DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents"
 RDEPENDS_${PN} += "qtsvg-plugins ttf-opensans qtvirtualkeyboard"
 
 do_configure_prepend() {
-    sed -i "s@examples@@" ${S}/qml-asteroid.pro
-
     if [ ${MACHINE_DISPLAY_ROUND} = "true" ]
     then
         export EXTRA_QMAKEVARS_PRE="DEFINES+=ROUND_SCREEN"
@@ -25,4 +23,5 @@ do_configure_prepend() {
 }
 
 FILES_${PN} += "/usr/lib /usr/share/icons/asteroid/"
-FILES_${PN}-dbg += "/usr/lib/examples/.debug/ /usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
+FILES_${PN}-dbg += "/usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
+FILES_${PN}-dev += "/usr/lib/mkspecs/"
