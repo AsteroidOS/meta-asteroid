@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "libiphb qtbase mce glib-2.0 qtdeclarative"
 
-FILES_${PN}-dbg += "/opt /usr/share/ /usr/lib/qml/org/nemomobile/keepalive/.debug/"
+FILES_${PN}-dbg += "/opt /usr/share/ /usr/lib/qml/org/nemomobile/keepalive/.debug/ /usr/bin/"
 FILES_${PN} += "/usr/lib/"
