@@ -1,15 +1,15 @@
-From cfe58a76ff591837e44aba4dd5db7f4af7fc3695 Mon Sep 17 00:00:00 2001
+From a7fecf5d17c0c32c0bf0fb772f0cca60a242c97d Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Sat, 17 Jun 2017 19:57:55 +0200
+Date: Sun, 9 Jul 2017 18:03:19 +0100
 Subject: [PATCH] [event-input] Double-tap emulation: Adapts the state machine
- to a single tap to unlcok behavior (after 200ms the screen is unlocked)
+ to a single tap to unlock behavior (after 200ms the screen is unlocked)
 
 ---
- event-input.c | 227 ++++++++++------------------------------------------------
- 1 file changed, 38 insertions(+), 189 deletions(-)
+ event-input.c | 229 ++++++++++------------------------------------------------
+ 1 file changed, 39 insertions(+), 190 deletions(-)
 
 diff --git a/event-input.c b/event-input.c
-index 8114f46..bf21dc5 100644
+index 8114f46..37ef2b3 100644
 --- a/event-input.c
 +++ b/event-input.c
 @@ -235,41 +235,19 @@ static const char       *evin_evdevtype_repr                    (evin_evdevtype_
@@ -84,21 +84,15 @@ index 8114f46..bf21dc5 100644
 +    struct input_event *ev = malloc(sizeof(struct input_event));
  
 -    struct timeval delta;
-+    if(!evin_tap_to_unlock_timer_id)
-+        goto EXIT;
- 
+-
 -    /* Reject empty/reset slots */
 -    if( !timerisset(&e1->dt_time) || !timerisset(&e2->dt_time) )
 -        return 0;
-+    evin_tap_to_unlock_timer_id = 0;
- 
+-
 -    timersub(&e2->dt_time, &e1->dt_time, &delta);
 -    return timercmp(&delta, &limit, <);
 -}
-+    ev->type  = EV_MSC;
-+    ev->code  = MSC_GESTURE;
-+    ev->value = 0x4;
- 
+-
 -/** Check if two double tap history points are close enough in pixels
 - *
 - * @param e1 event data from the 1st click
@@ -112,11 +106,12 @@ index 8114f46..bf21dc5 100644
 -    int x = e2->dt_x - e1->dt_x;
 -    int y = e2->dt_y - e1->dt_y;
 -    int r = EVIN_DOUBLETAP_DISTANCE_LIMIT;
--
++    if(!evin_tap_to_unlock_timer_id)
++        goto EXIT;
+ 
 -    return (x*x + y*y) < (r*r);
 -}
-+    execute_datapipe(&touchscreen_pipe, &ev,
-+                     USE_INDATA, DONT_CACHE_INDATA);
++    evin_tap_to_unlock_timer_id = 0;
  
 -/** Accumulator steps for counting touch/mouse click events separately
 - *
@@ -130,13 +125,18 @@ index 8114f46..bf21dc5 100644
 - * aaaabbbbccccdddd                 [31:16]  (reserved)
 - */
 -enum {
--
++    ev->type  = EV_MSC;
++    ev->code  = MSC_GESTURE;
++    ev->value = 0x4;
+ 
 -    SEEN_EVENT_MOUSE       = 1 <<  0,
 -    SEEN_EVENT_PRESSURE    = 1 <<  4,
 -    SEEN_EVENT_TOUCH_MAJOR = 1 <<  8,
 -    SEEN_EVENT_TRACKING_ID = 1 << 12,
 -};
--
++    execute_datapipe(&touchscreen_pipe, &ev,
++                     USE_INDATA, DONT_CACHE_INDATA);
+ 
 -/** Helper for probing no-touch vs single-touch vs multi-touch
 - *
 - * return 0 for no-touch, 1 for single touch, >1 for multi-touch
@@ -219,7 +219,7 @@ index 8114f46..bf21dc5 100644
  
              /* We have a mouse click to process */
              skip_syn = false;
-@@ -1648,25 +1534,21 @@ evin_doubletap_emulate(const struct input_event *eve)
+@@ -1648,25 +1534,22 @@ evin_doubletap_emulate(const struct input_event *eve)
          switch( eve->code ) {
          case ABS_MT_PRESSURE:
              if( eve->value > 0 )
@@ -245,10 +245,11 @@ index 8114f46..bf21dc5 100644
 -            break;
          case ABS_MT_POSITION_Y:
 -            hist[i0].dt_y = eve->value;
++            dt_click ++;
              skip_syn = false;
              break;
          default:
-@@ -1692,50 +1574,22 @@ evin_doubletap_emulate(const struct input_event *eve)
+@@ -1692,50 +1575,20 @@ evin_doubletap_emulate(const struct input_event *eve)
           * relevant is seen before that */
          skip_syn = true;
  
@@ -260,8 +261,7 @@ index 8114f46..bf21dc5 100644
 -
 -        int tp0 = evin_doubletap_active_touch_points(hist+i0);
 -        int tp1 = evin_doubletap_active_touch_points(hist+i1);
-+        fprintf(stderr, "evin_unlock_on_tap: %d\n", dt_click);
- 
+-
 -        if( tp0 != tp1 ) {
 -            /* 2nd and 3rd last events before current */
 -            i2 = (i0 + 2) & 3;
@@ -307,6 +307,14 @@ index 8114f46..bf21dc5 100644
  }
  
  #endif /* ENABLE_DOUBLETAP_EMULATION */
+@@ -1934,6 +1787,7 @@ evin_iomon_touchscreen_cb(gpointer data, gsize bytes_read)
+     bool grabbed = datapipe_get_gint(touch_grab_active_pipe);
+ 
+ #ifdef ENABLE_DOUBLETAP_EMULATION
++
+     if( grabbed || fake_evin_doubletap_enabled ) {
+         /* Note: In case we happen to be in middle of display
+          *       state transition the double tap simulation must
 @@ -1947,12 +1801,7 @@ evin_iomon_touchscreen_cb(gpointer data, gsize bytes_read)
          case MCE_DISPLAY_OFF:
          case MCE_DISPLAY_LPM_OFF:
