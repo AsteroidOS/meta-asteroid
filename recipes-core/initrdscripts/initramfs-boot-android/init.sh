@@ -95,4 +95,4 @@ mount -t proc proc $BOOT_DIR/proc
 mount -t sysfs sys $BOOT_DIR/sys
 
 info "Switching to rootfs..."
-exec switch_root -c /dev/ttyprintk $BOOT_DIR /lib/systemd/systemd > /dev/ttyprintk
+exec switch_root -c /dev/ttyprintk $BOOT_DIR /lib/systemd/systemd
