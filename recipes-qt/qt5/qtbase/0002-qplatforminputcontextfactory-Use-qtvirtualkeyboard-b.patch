@@ -1,0 +1,25 @@
+From f973155d51305411fc6aa4769299c8791a155992 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 13 Jul 2017 21:12:31 +0100
+Subject: [PATCH] qplatforminputcontextfactory: Use qtvirtualkeyboard by fault
+
+---
+ src/gui/kernel/qplatforminputcontextfactory.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gui/kernel/qplatforminputcontextfactory.cpp b/src/gui/kernel/qplatforminputcontextfactory.cpp
+index c59d89f..6d1ee19 100644
+--- a/src/gui/kernel/qplatforminputcontextfactory.cpp
++++ b/src/gui/kernel/qplatforminputcontextfactory.cpp
+@@ -65,7 +65,7 @@ QStringList QPlatformInputContextFactory::keys()
+ QString QPlatformInputContextFactory::requested()
+ {
+     QByteArray env = qgetenv("QT_IM_MODULE");
+-    return env.isNull() ? QString() : QString::fromLocal8Bit(env);
++    return env.isNull() ? QString("qtvirtualkeyboard") : QString::fromLocal8Bit(env);
+ }
+ 
+ QPlatformInputContext *QPlatformInputContextFactory::create(const QString& key)
+-- 
+2.7.4
+
