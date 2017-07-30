@@ -1,0 +1,40 @@
+From f2d63b3cbdbc941ad9e60123c2d3507ddf87e040 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 30 Jul 2017 20:22:22 +0100
+Subject: [PATCH] ScreenshotService: Use system bus to workaround the
+ sessionBus not being registered correctly
+
+---
+ src/homeapplication.cpp             | 3 +--
+ tools/screenshottool/screenshottool | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/homeapplication.cpp b/src/homeapplication.cpp
+index 758e00b..6bb2b31 100644
+--- a/src/homeapplication.cpp
++++ b/src/homeapplication.cpp
+@@ -120,9 +120,8 @@ HomeApplication::HomeApplication(int &argc, char **argv, const QString &qmlPath)
+ 
+     m_screenshotService = new ScreenshotService(this);
+     new ScreenshotServiceAdaptor(m_screenshotService);
+-    QDBusConnection sessionBus = QDBusConnection::sessionBus();
+ 
+-    registerDBusObject(sessionBus, LIPSTICK_DBUS_SCREENSHOT_PATH, m_screenshotService);
++    registerDBusObject(systemBus, LIPSTICK_DBUS_SCREENSHOT_PATH, m_screenshotService);
+ 
+     // Setting up the context and engine things
+     qmlEngine->rootContext()->setContextProperty("initialSize", QGuiApplication::primaryScreen()->size());
+diff --git a/tools/screenshottool/screenshottool b/tools/screenshottool/screenshottool
+index 64d6b9a..56fd45a 100755
+--- a/tools/screenshottool/screenshottool
++++ b/tools/screenshottool/screenshottool
+@@ -15,5 +15,5 @@ else
+ fi
+ 
+ sleep "${DELAY}"
+-dbus-send --type=method_call --dest=org.nemomobile.lipstick /org/nemomobile/lipstick/screenshot org.nemomobile.lipstick.saveScreenshot "string:${SCREENSHOTPATH}"
++dbus-send --system --type=method_call --dest=org.nemomobile.lipstick /org/nemomobile/lipstick/screenshot org.nemomobile.lipstick.saveScreenshot "string:${SCREENSHOTPATH}"
+ notificationtool -o add -c device.added "" "" "" "Screenshot saved to $SCREENSHOTPATH"
+-- 
+2.7.4
+
