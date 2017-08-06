@@ -1,0 +1,26 @@
+From 3ecff2332ec0ba511444cfaafe0fa29ab3a7af82 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 6 Aug 2017 10:51:50 +0100
+Subject: [PATCH] BluetoothAgent: Advertise less hardware capabilities to make
+ sure the Keyboard will not be asked on a watch
+
+---
+ src/bluetoothagent.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/bluetoothagent.cpp b/src/bluetoothagent.cpp
+index b48bd7a..c2a016f 100644
+--- a/src/bluetoothagent.cpp
++++ b/src/bluetoothagent.cpp
+@@ -28,7 +28,7 @@
+ #include "lipstickqmlpath.h"
+ #include "bluetoothagent.h"
+ 
+-#define AGENT_CAPABILITY        "KeyboardDisplay"
++#define AGENT_CAPABILITY        "DisplayYesNo"
+ 
+ BluetoothAgent::BluetoothAgent(QObject *parent) : QObject(parent), window(0)
+ {
+-- 
+2.7.4
+
