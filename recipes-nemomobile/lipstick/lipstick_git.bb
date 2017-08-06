@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
     file://0004-ScreenshotService-Use-system-bus-to-workaround-the-s.patch \
     file://0005-BluetoothAgent-Advertise-less-hardware-capabilities-.patch \
     file://Notifications/"
-SRCREV = "b283ea0a796957246b52524abe25b761fdabf9cd"
+SRCREV = "a7665fe507ad52c639a44a2299a90e2f19dcd7d2"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
