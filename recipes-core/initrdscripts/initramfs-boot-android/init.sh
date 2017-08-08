@@ -59,6 +59,13 @@ if [ $? -ne 1 ] ; then
     /usr/bin/adbd
 fi
 
+rotation=0
+if [ -e /etc/rotation ]; then
+    read rotation < /etc/rotation
+fi
+
+/usr/bin/psplash --angle $rotation --no-console-switch &
+
 # The sdcard partition may be the rootfs itself or contain a loop file
 info "Mounting sdcard..."
 mkdir -m 0777 /sdcard /loop
