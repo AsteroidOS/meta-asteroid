@@ -35,6 +35,7 @@ ACTION=="add", KERNEL=="event[0-9]*", GROUP="system", MODE="0660"
 # misc devices
 ACTION=="add", KERNEL=="alarm", GROUP="system", MODE="0664"
 ACTION=="add", KERNEL=="uhid", GROUP="system", MODE="0660"
+ACTION=="add", KERNEL=="mtp_usb", GROUP="mtp", MODE="0664"
 
 # memory
 ACTION=="add", KERNEL=="ashmem", GROUP="system", MODE="0666"

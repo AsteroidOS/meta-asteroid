@@ -49,15 +49,6 @@ do_install_append() {
     touch ${D}/etc/modprobe.d/g_ether.conf
     touch ${D}/etc/udhcpd.conf
 
-    install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
-    ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
-    install -m 644 -D ../udhcp-daemon.service ${D}/lib/systemd/system/udhcp-daemon.service
-    install -m 644 -D ../buteo-session.service ${D}/lib/systemd/system/buteo-session.service
-
-    install -d ${D}/usr/share/dbus-1/services/
-    install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
-
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 
     install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh

@@ -1,0 +1,10 @@
+[Unit]
+Description=Asteroid USB setup service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/asteroid-usbsetup.sh
+
+[Install]
+WantedBy=multi-user.target

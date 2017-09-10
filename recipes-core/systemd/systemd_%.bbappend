@@ -1,6 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append = " file://50-video.rules \
                   file://65-android.rules \
+                  file://70-asteroid-ecm.network \
                   file://dbus.service \
                   file://dbus.socket \
                   file://dbus.conf "
@@ -9,6 +10,8 @@ do_install_append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
     install -m 0644 ${WORKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
     install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
+    # Setup systemd-networkd rules
+    install -m 0644 ${WORKDIR}/70-asteroid-ecm.network ${D}/lib/systemd/network/70-asteroid-ecm.network
 
     # Enables auto-login for ceres
     install -d ${D}/var/lib/systemd/linger
@@ -30,7 +33,7 @@ do_install_append() {
 
 FILES_${PN} += "/home/ceres/.config/systemd/user/default.target.wants/"
 
-PACKAGECONFIG_append += "pam"
+PACKAGECONFIG_append += "pam networkd"
 
 RRECOMMENDS_${PN}_remove = "udev-hwdb"
 
