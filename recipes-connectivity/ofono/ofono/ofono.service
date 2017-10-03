@@ -1,0 +1,13 @@
+[Unit]
+Description=Telephony service
+After=syslog.target
+
+[Service]
+Type=dbus
+EnvironmentFile=-/var/lib/environment/ofono/*.conf
+BusName=org.ofono
+ExecStart=/usr/sbin/ofonod -n
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+From 53950512b9e97c58bef959ed1a99625653443982 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Fri, 8 Sep 2017 19:54:47 +0200
+Subject: [PATCH] Makefile.am: Fixes include paths
+
+---
+ Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 297b545..cf3cd79 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -693,7 +693,7 @@ AM_CFLAGS = @DBUS_CFLAGS@ @GLIB_CFLAGS@ $(builtin_cflags) \
+ 
+ AM_CPPFLAGS = -I$(builddir)/include -I$(builddir)/src -I$(srcdir)/src \
+ 			-I$(srcdir)/gdbus -I$(srcdir)/gisi -I$(srcdir)/gatchat \
+-			-I$(srcdir)/btio -I$(srcdir)/gril
++			-I$(srcdir)/btio -I$(srcdir)/gril -I$(srcdir)/include -I$(srcdir)/src
+ 
+ doc_files = doc/overview.txt doc/ofono-paper.txt doc/release-faq.txt \
+ 		doc/manager-api.txt doc/modem-api.txt doc/network-api.txt \
+-- 
+2.7.4
+
