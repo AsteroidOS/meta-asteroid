@@ -1,0 +1,109 @@
+From 60cfa4988240bbc01a4184e808512e5abb8b4a7f Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 28 Sep 2017 17:53:09 +0200
+Subject: [PATCH] Disable introspection and gtk-doc
+
+---
+ configure.ac                    |  2 --
+ doc/lib/Makefile.am             | 20 --------------------
+ telepathy-farstream/Makefile.am | 29 -----------------------------
+ tools/telepathy.am              |  5 -----
+ 4 files changed, 56 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 1e957e1..f24c7a6 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -114,8 +114,6 @@ AC_SUBST(FARSTREAM_LIBS)
+ 
+ GOBJECT_INTROSPECTION_CHECK([1.30.0])
+ 
+-GTK_DOC_CHECK([1.17], [--flavour no-tmpl])
+-
+ LT_CURRENT=tp_farstream_lt_current
+ LT_REVISION=tp_farstream_lt_revision
+ LT_AGE=tp_farstream_lt_age
+diff --git a/doc/lib/Makefile.am b/doc/lib/Makefile.am
+index a2936f1..191f7a3 100644
+--- a/doc/lib/Makefile.am
++++ b/doc/lib/Makefile.am
+@@ -84,23 +84,3 @@ GTKDOC_LIBS= \
+ 	$(TELEPATHY_LIBS) \
+ 	$(FARSTREAM_LIBS) \
+ 	$(top_builddir)/telepathy-farstream/libtelepathy-farstream.la
+-
+-# This includes the standard gtk-doc make rules, copied by gtkdocize.
+-include $(top_srcdir)/gtk-doc.make
+-
+-if ENABLE_GTK_DOC
+-check-local:
+-	@if grep '^0 symbols incomplete' \
+-		$(top_builddir)/doc/lib/telepathy-farstream-undocumented.txt; then\
+-		:; else \
+-		cat $(top_builddir)/doc/lib/telepathy-farstream-undocumented.txt; exit 1; fi
+-	@if grep '^0 not documented' \
+-		$(top_builddir)/doc/lib/telepathy-farstream-undocumented.txt; then\
+-		:; else \
+-		cat $(top_builddir)/doc/lib/telepathy-farstream-undocumented.txt; exit 1; fi
+-	@if grep . $(top_builddir)/doc/lib/telepathy-farstream-unused.txt; then\
+-		echo "^^^ Unused symbols" >&2; exit 1; fi
+-	@if test -e $(top_builddir)/doc/lib/telepathy-farstream-undeclared.txt &&\
+-		grep . $(top_builddir)/doc/lib/telepathy-farstream-undeclared.txt; then\
+-		echo "^^^ Undeclared symbols" >&2; exit 1; fi
+-endif
+diff --git a/telepathy-farstream/Makefile.am b/telepathy-farstream/Makefile.am
+index 45a6280..830d370 100644
+--- a/telepathy-farstream/Makefile.am
++++ b/telepathy-farstream/Makefile.am
+@@ -60,32 +60,3 @@ libtelepathy_farstream_la_LIBADD = \
+ libtelepathy_farstream_la_LDFLAGS =  -no-undefined \
+ 	-export-symbols-regex "^tf_(init|content_|channel_).*" \
+ 	-version-info "$(LT_CURRENT)":"$(LT_REVISION)":"$(LT_AGE)"
+-
+--include $(INTROSPECTION_MAKEFILE)
+-INTROSPECTION_GIRS =
+-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir)
+-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+-
+-if HAVE_INTROSPECTION
+-introspection_sources = $(tfinclude_HEADERS) $(apisources)
+-
+-TelepathyFarstream-0.6.gir: libtelepathy-farstream.la
+-TelepathyFarstream_0_6_gir_INCLUDES = \
+-	GObject-2.0 \
+-	Gst-1.0 \
+-	Farstream-0.2 \
+-	TelepathyGLib-0.12
+-TelepathyFarstream_0_6_gir_CFLAGS = $(AM_CPPFLAGS)
+-TelepathyFarstream_0_6_gir_LIBS = libtelepathy-farstream.la
+-TelepathyFarstream_0_6_gir_FILES = $(introspection_sources)
+-TelepathyFarstream_0_6_gir_SCANNERFLAGS = --identifier-prefix=tf_ --identifier-prefix=Tf
+-INTROSPECTION_GIRS += TelepathyFarstream-0.6.gir
+-
+-girdir = $(datadir)/gir-1.0
+-gir_DATA = $(INTROSPECTION_GIRS)
+-
+-typelibdir = $(libdir)/girepository-1.0
+-typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+-
+-CLEANFILES = $(gir_DATA) $(typelib_DATA)
+-endif
+diff --git a/tools/telepathy.am b/tools/telepathy.am
+index d080afe..a3c962b 100644
+--- a/tools/telepathy.am
++++ b/tools/telepathy.am
+@@ -34,11 +34,6 @@ _is-release-check:
+ 		echo "Hey! You have changes staged! No release for you." >&2; \
+ 		exit 2; \
+ 	fi
+-if ENABLE_GTK_DOC
+-else
+-	@echo "Hey! You need to pass --enable-gtk-doc to configure!"
+-	@exit 2;
+-endif
+ 
+ %.tar.gz.asc: %.tar.gz
+ 	$(AM_V_GEN)gpg --detach-sign --armor $@
+-- 
+2.7.4
+
