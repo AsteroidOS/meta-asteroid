@@ -1,0 +1,4 @@
+telepathy-stream-engine "phone"
+tonegend "dtmf-tone"
+voicehost "phone"
+. "x-maemo"

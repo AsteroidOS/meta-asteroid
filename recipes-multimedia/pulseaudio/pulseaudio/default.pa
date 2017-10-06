@@ -16,17 +16,24 @@
 # along with PulseAudio; if not, see <http://www.gnu.org/licenses/>.
 
 ### Load several protocols
-.ifexists module-esound-protocol-unix.so
-load-module module-esound-protocol-unix
-.endif
 load-module module-native-protocol-unix
+
+load-module module-droid-keepalive
+
+load-module module-dbus-protocol
+
+load-module module-meego-parameters cache=0 directory=/var/lib/nemo-pulseaudio-parameters use_voice=false
+load-module module-meego-mainvolume virtual_stream=true
+
+load-module module-stream-restore-nemo restore_device=no restore_volume=yes restore_muted=no route_table=/etc/pulse/x-maemo-route.table fallback_table=/etc/pulse/x-maemo-stream-restore.table use_voice=false
+
+load-module module-match table=/etc/pulse/x-maemo-match.table key=application.name
 
 .ifexists module-droid-card.so
 load-module module-droid-card source_channel_map=mono
 .endif
 
 ### Automatically restore the volume of streams and devices
-load-module module-stream-restore
 load-module module-device-restore
 
 ### Automatically restore the default sink/source when changed by the user

@@ -1,0 +1,27 @@
+From b5d5f6b3d91f9d448e7f0aaddf9686615c7f7a66 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Fri, 8 Sep 2017 15:09:10 +0200
+Subject: [PATCH] Install modules to /usr/lib/pulse-10.0/
+
+---
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 8b28613..4b7f016 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -20,8 +20,8 @@ AC_PROG_CC_C99
+ AM_PROG_CC_C_O
+ AC_PROG_GCC_TRADITIONAL
+ 
+-m4_define(pa_major, `echo $VERSION | cut -d. -f1 | cut -d- -f1`)
+-m4_define(pa_minor, `echo $VERSION | cut -d. -f2 | cut -d- -f1`)
++m4_define(pa_major, `echo 10`)
++m4_define(pa_minor, `echo 0`)
+ 
+ AC_SUBST(PA_MAJOR, pa_major)
+ AC_SUBST(PA_MAJORMINOR, pa_major.pa_minor)
+-- 
+2.7.4
+
