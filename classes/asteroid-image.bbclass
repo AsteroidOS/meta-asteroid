@@ -10,5 +10,6 @@ supported-languages asteroid-launcher asteroid-calculator asteroid-calendar aste
 
 EXTRA_USERS_PARAMS = "groupadd system; \
                       groupadd statefs; \
+                      groupadd gps; \
                       groupadd -f -g 1024 mtp; \
-                      useradd -p '' -G 'audio,video,system,statefs,mtp' ceres"
+                      useradd -p '' -G 'audio,video,system,gps,statefs,mtp' ceres"
