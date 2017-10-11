@@ -1,0 +1,27 @@
+From 23c5bf0d1aeb6c65097dcf7b3685c3137f858e23 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 21 Sep 2017 23:23:59 +0200
+Subject: [PATCH] dbus-sysdeps: Don't check suid bit before accessing env vars
+
+---
+ dbus/dbus-sysdeps.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dbus/dbus-sysdeps.c b/dbus/dbus-sysdeps.c
+index 8b986d5..348acbd 100644
+--- a/dbus/dbus-sysdeps.c
++++ b/dbus/dbus-sysdeps.c
+@@ -187,8 +187,8 @@ _dbus_getenv (const char *varname)
+   /* Don't respect any environment variables if the current process is
+    * setuid.  This is the equivalent of glibc's __secure_getenv().
+    */
+-  if (_dbus_check_setuid ())
+-    return NULL;
++//  if (_dbus_check_setuid ())
++//    return NULL;
+   return getenv (varname);
+ }
+ 
+-- 
+2.7.4
+
