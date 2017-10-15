@@ -28,7 +28,7 @@ FILES_libgbm-gallium = "${libdir}/gbm/gbm_gallium_drm.so*"
 # We want the fbdev platform as well
 EGL_PLATFORMS_append = ",fbdev"
 
-PACKAGECONFIG_append = " gallium-egl gallium-gbm gallium"
+PACKAGECONFIG_append = " gallium-egl gallium-gbm gallium gallium-llvm"
 
 #because we cannot rely on the fact that all apps will use pkgconfig,
 #make eglplatform.h independent of MESA_EGL_NO_X11_HEADER
