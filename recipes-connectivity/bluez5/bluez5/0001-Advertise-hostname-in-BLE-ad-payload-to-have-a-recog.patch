@@ -1,22 +1,29 @@
+From e9623b14f63648da3bd805b3138941cfc932a82a Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Thu, 24 Nov 2016 17:39:00 +0200
-Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable name in AsteroidOSSync
+Date: Wed, 18 Oct 2017 22:10:56 +0200
+Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable
+ name in AsteroidOSSync
 
 ---
+ src/shared/ad.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/src/shared/ad.c b/src/shared/ad.c
+index 1bf013d..d7b9a79 100644
 --- a/src/shared/ad.c
 +++ b/src/shared/ad.c
-@@ -110,6 +110,18 @@
+@@ -110,6 +110,18 @@ void bt_ad_unref(struct bt_ad *ad)
  	free(ad);
  }
  
 +static size_t local_name_length()
 +{
 +	size_t length = 0;
-+	char hostname[1024];
++	char hostname[8];
 +
 +	length += 2; /* one byte for length and one byte for 0x09 */
-+	gethostname(hostname, 1024);
-+	length += strlen(&hostname);
++	gethostname(hostname, 8);
++	length += strnlen(&hostname, 8);
 +
 +	return length;
 +}
@@ -24,7 +31,7 @@ Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable nam
  static size_t uuid_list_length(struct queue *uuid_queue)
  {
  	bool uuid16_included = false;
-@@ -187,6 +199,8 @@
+@@ -187,6 +199,8 @@ static size_t calculate_length(struct bt_ad *ad)
  {
  	size_t length = 0;
  
@@ -33,18 +40,17 @@ Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable nam
  	length += uuid_list_length(ad->service_uuids);
  
  	length += uuid_list_length(ad->solicit_uuids);
-@@ -198,6 +212,22 @@
+@@ -198,6 +212,21 @@ static size_t calculate_length(struct bt_ad *ad)
  	return length;
  }
  
-+
 +static void serialize_local_name(uint8_t *buf, uint8_t *pos)
 +{
-+	char hostname[1024];
++	char hostname[8];
 +	uint8_t hostname_len;
 +
-+	gethostname(hostname, 1024);
-+	hostname_len = strlen(&hostname);
++	gethostname(hostname, 8);
++	hostname_len = strnlen(&hostname, 8);
 +
 +	buf[(*pos)++] = hostname_len + 1;
 +	buf[(*pos)++] = EIR_NAME_COMPLETE;
@@ -56,7 +62,7 @@ Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable nam
  static void serialize_uuids(struct queue *uuids, uint8_t uuid_type,
  						uint8_t ad_type, uint8_t *buf,
  						uint8_t *pos)
-@@ -330,6 +360,8 @@
+@@ -330,6 +359,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
  	if (!adv_data)
  		return NULL;
  
@@ -65,3 +71,6 @@ Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable nam
  	serialize_service_uuids(ad->service_uuids, adv_data, &pos);
  
  	serialize_solicit_uuids(ad->solicit_uuids, adv_data, &pos);
+-- 
+2.7.4
+

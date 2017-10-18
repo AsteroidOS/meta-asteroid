@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/bluez5:"
 SRC_URI += "file://main.conf \
             file://bluetooth.service \
             file://bluetooth.conf \
-            file://advertise-name.patch"
+            file://0001-Advertise-hostname-in-BLE-ad-payload-to-have-a-recog.patch"
 
 do_install_append() {
     install -d ${D}/etc/bluetooth/
