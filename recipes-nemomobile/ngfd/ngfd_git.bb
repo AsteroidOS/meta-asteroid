@@ -6,7 +6,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/ngfd.git;protocol=https \
            file://ngfd.ini \
            file://ngfd.service \
-           file://0001-haptics-Always-vibrate-on-calendar-and-clock-events.patch"
+           file://0001-haptics-Always-vibrate-on-calendar-and-clock-events.patch \
+           file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch"
 SRCREV = "fbeea2a48bebd3faaac1ee84a144f797ac9006fc"
 PR = "r1"
 PV = "+git${SRCPV}"
