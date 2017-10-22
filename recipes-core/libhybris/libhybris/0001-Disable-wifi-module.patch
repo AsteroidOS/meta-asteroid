@@ -1,0 +1,65 @@
+From 7c9fa12d1f5feaaddb9e3d3a6e5a8352eb980942 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 21 Oct 2017 21:12:33 +0200
+Subject: [PATCH] Disable wifi module
+
+---
+ hybris/Makefile.am       |  2 +-
+ hybris/configure.ac      |  2 --
+ hybris/tests/Makefile.am | 10 +---------
+ 3 files changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/hybris/Makefile.am b/hybris/Makefile.am
+index 906140e..fc6a786 100644
+--- a/hybris/Makefile.am
++++ b/hybris/Makefile.am
+@@ -6,7 +6,7 @@ endif
+ if HAS_ANDROID_5_0_0
+ SUBDIRS += libsync
+ endif
+-SUBDIRS += egl glesv1 glesv2 ui sf input camera vibrator media wifi
++SUBDIRS += egl glesv1 glesv2 ui sf input camera vibrator media
+ 
+ if HAS_LIBNFC_NXP_HEADERS
+ SUBDIRS += libnfc_nxp libnfc_ndef_nxp
+diff --git a/hybris/configure.ac b/hybris/configure.ac
+index 8015754..c498ebd 100644
+--- a/hybris/configure.ac
++++ b/hybris/configure.ac
+@@ -269,8 +269,6 @@ AC_CONFIG_FILES([
+ 	vibrator/libvibrator.pc
+ 	media/Makefile
+ 	media/libmedia.pc
+-	wifi/Makefile
+-	wifi/libwifi.pc
+ 	include/Makefile
+ 	input/Makefile
+ 	input/libis.pc
+diff --git a/hybris/tests/Makefile.am b/hybris/tests/Makefile.am
+index 43fb93c..625aa4b 100644
+--- a/hybris/tests/Makefile.am
++++ b/hybris/tests/Makefile.am
+@@ -11,8 +11,7 @@ bin_PROGRAMS = \
+ 	test_vibrator \
+ 	test_media \
+ 	test_recorder \
+-	test_gps \
+-	test_wifi
++	test_gps
+ 
+ if HAS_ANDROID_4_2_0
+ bin_PROGRAMS += test_hwcomposer
+@@ -210,10 +209,3 @@ test_vibrator_LDADD = \
+ 	$(top_builddir)/hardware/libhardware.la \
+ 	$(top_builddir)/vibrator/libvibrator.la
+ 
+-test_wifi_SOURCES = test_wifi.c
+-test_wifi_CFLAGS = \
+-	-I$(top_srcdir)/include \
+-	$(ANDROID_HEADERS_CFLAGS)
+-test_wifi_LDADD = \
+-	$(top_builddir)/wifi/libwifi.la
+-
+-- 
+2.14.2
+
