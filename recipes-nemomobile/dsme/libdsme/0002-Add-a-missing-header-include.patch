@@ -1,0 +1,24 @@
+From 3a0c80b3f7d2cf0035af2c51809f258abbee6453 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 21 Oct 2017 21:24:17 +0200
+Subject: [PATCH] Add a missing header include
+
+---
+ protocol.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/protocol.c b/protocol.c
+index 8e98800..fa57072 100644
+--- a/protocol.c
++++ b/protocol.c
+@@ -40,6 +40,7 @@
+ #include <sys/un.h>
+ #include <string.h>
+ #include <stdlib.h>
++#include <sys/uio.h>
+ 
+ static GSList* connections = 0;
+ 
+-- 
+2.14.2
+
