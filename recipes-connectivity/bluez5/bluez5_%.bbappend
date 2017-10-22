@@ -15,4 +15,3 @@ do_install_append() {
     cp ${WORKDIR}/bluetooth.conf ${D}/etc/dbus-1/system.d/
 }
 
-PACKAGECONFIG_append += "experimental"
