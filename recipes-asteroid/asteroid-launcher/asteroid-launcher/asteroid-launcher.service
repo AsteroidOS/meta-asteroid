@@ -4,7 +4,6 @@ Requires=dbus.socket
 
 [Service]
 Type=notify
-EnvironmentFile=-/usr/share/asteroid-launcher/vars.conf
 EnvironmentFile=-/var/lib/environment/compositor/*.conf
 ExecStartPre=/bin/sh -ec 'while [ ! -f /dev/.coldboot_done ]; do sleep 1; done'
 ExecStart=/usr/bin/lipstick $LIPSTICK_OPTIONS --systemd
