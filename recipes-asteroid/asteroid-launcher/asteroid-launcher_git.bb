@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd
 SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
     file://asteroid-launcher.service \
     file://default.conf"
-SRC_URI_append_qemux86 = " file://qemu.conf"
+SRC_URI_append_qemux86 = " file://qemu.conf file://kms-qemu.json"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -26,6 +26,7 @@ do_install_append() {
     cp ../default.conf ${D}/var/lib/environment/compositor/
     if [ -f ../qemu.conf ] ; then
         cp ../qemu.conf ${D}/var/lib/environment/compositor/
+        cp ../kms-qemu.json ${D}/var/lib/environment/compositor/
     fi
 
     install -d ${D}/usr/lib/systemd/user/

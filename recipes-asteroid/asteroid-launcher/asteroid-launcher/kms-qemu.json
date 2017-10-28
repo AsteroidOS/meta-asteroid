@@ -1,0 +1,6 @@
+{
+  "device": "/dev/dri/card0",
+  "outputs": [
+    { "name": "Virtual1", "mode": "800x800" }
+  ]
+}
