@@ -6,7 +6,7 @@ SRC_URI += " file://0001-Forces-GLES2-the-dirty-way.patch \
 PACKAGECONFIG_remove = "widgets"
 PACKAGECONFIG_remove = "gl"
 PACKAGECONFIG_append = "gles2 mtdev sql-sqlite glib fontconfig"
-PACKAGECONFIG_GL = " eglfs gbm kms"
+PACKAGECONFIG_GL_append_qemux86 = " eglfs gbm kms"
 
 QT_CONFIG_FLAGS += "-no-qpa-platform-guard ${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-gold', '-use-gold-linker', '-no-use-gold-linker', d)}"
 PACKAGECONFIG_X11 = "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'xcb xrender xinput2 glib xkb xkbcommon-evdev', 'xkbcommon-evdev', d)}"
