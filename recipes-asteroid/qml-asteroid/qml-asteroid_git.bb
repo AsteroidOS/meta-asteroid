@@ -18,7 +18,15 @@ RDEPENDS_${PN} += "qtsvg-plugins ttf-opensans qtvirtualkeyboard"
 do_configure_prepend() {
     if [ ${MACHINE_DISPLAY_ROUND} = "true" ]
     then
-        export EXTRA_QMAKEVARS_PRE="DEFINES+=ROUND_SCREEN"
+        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=ROUND_SCREEN"
+    fi
+    if [ ${MACHINE_HAS_WLAN} = "true" ]
+    then
+        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=HAS_WLAN"
+    fi
+    if [ ${MACHINE_HAS_SPEAKER} = "true" ]
+    then
+        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=HAS_SPEAKER"
     fi
 }
 
