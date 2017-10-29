@@ -1,0 +1,25 @@
+From f71fd191356fa0a907d1a416a6cc306d56e68697 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 29 Oct 2017 16:01:41 +0100
+Subject: [PATCH] Keep screen on by default on emulator
+
+---
+ builtin-gconf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/builtin-gconf.c b/builtin-gconf.c
+index 4078518..c24d86b 100644
+--- a/builtin-gconf.c
++++ b/builtin-gconf.c
+@@ -1325,7 +1325,7 @@ static const setting_t gconf_defaults[] =
+     // MCE_GCONF_BLANKING_INHIBIT_MODE @ modules/display.h
+     .key  = "/system/osso/dsm/display/inhibit_blank_mode",
+     .type = "i",
+-    .def  = "0",
++    .def  = "3",
+   },
+   {
+     .key  = MCE_GCONF_KBD_SLIDE_INHIBIT,
+-- 
+2.14.3
+

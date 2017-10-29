@@ -9,6 +9,7 @@ SRC_URI = "git://git.merproject.org/mer-core/mce.git;protocol=https \
     file://0003-Display-Sets-dimming-timeout-to-10-sec-and-blanking-.patch \
     file://0004-event-input-Double-tap-emulation-Adapts-the-state-ma.patch \
     file://mce.service"
+SRC_URI_append_qemux86 = " file://0005-Keep-screen-on-by-default-on-emulator.patch"
 SRCREV = "ad535db76b7443febaf4f97328eb1968a3f1d8cc"
 PR = "r1"
 PV = "+git${SRCPV}"
