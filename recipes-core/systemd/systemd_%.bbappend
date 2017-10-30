@@ -3,7 +3,8 @@ SRC_URI_append = " file://50-video.rules \
                   file://65-android.rules \
                   file://dbus.service \
                   file://dbus.socket \
-                  file://dbus.conf "
+                  file://dbus.conf \
+                  file://logind.conf"
 
 do_install_append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
@@ -26,6 +27,8 @@ do_install_append() {
     fi
     install -d ${D}/etc/systemd/system/user@.service.d/
     install -m 0644 ${WORKDIR}/dbus.conf ${D}/etc/systemd/system/user@.service.d/dbus.conf
+
+    install -m 0644 ${WORKDIR}/logind.conf ${D}/etc/systemd/logind.conf
 }
 
 FILES_${PN} += "/home/ceres/.config/systemd/user/default.target.wants/"
