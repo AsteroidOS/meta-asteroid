@@ -15,7 +15,9 @@ do_configure_prepend() {
 }
 
 do_install_append() {
-    mv ${D}/usr/lib64/ ${D}/usr/lib/
+    if [ -d "${D}/usr/lib64/" ]; then
+        mv ${D}/usr/lib64/ ${D}/usr/lib/
+    fi
 }
 
 DEPENDS += "qtbase"
