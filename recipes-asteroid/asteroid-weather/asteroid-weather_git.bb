@@ -12,7 +12,7 @@ inherit qmake5
 
 DEPENDS += "qml-asteroid nemo-qml-plugin-configuration qttools-native"
 RDEPENDS_${PN} += "nemo-qml-plugin-configuration"
-FILES_${PN} += "/usr/share/translations/ /usr/share/fonts"
+FILES_${PN} += "/usr/share/translations/"
 
 do_install_append() {
     lrelease ${S}/i18n/asteroid-weather.*.ts
