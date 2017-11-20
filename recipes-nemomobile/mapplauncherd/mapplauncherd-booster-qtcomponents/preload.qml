@@ -15,6 +15,5 @@ Application {
     StatusPage { }
     Switch { }
     TextField { }
-    TiltedSquare { }
 }
 
