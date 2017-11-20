@@ -35,7 +35,7 @@ index 189c9e1..508bd80 100644
 +++ b/src/notificationcategories/device.added.conf
 @@ -1,4 +1,4 @@
 -x-nemo-icon=icon-system-usb
-+x-nemo-icon=usb
++x-nemo-icon=ios-usb
  urgency=2
  transient=true
  x-nemo-feedback=accessory_connected
@@ -54,7 +54,7 @@ index 2f39c64..2c6b9dd 100644
 +++ b/src/notificationcategories/device.error.conf
 @@ -1,4 +1,4 @@
 -x-nemo-icon=icon-system-usb
-+x-nemo-icon=usb
++x-nemo-icon=ios-usb
  urgency=2
  transient=true
  x-nemo-feedback=general_warning
@@ -64,7 +64,7 @@ index fc9b36a..8a6a6c7 100644
 +++ b/src/notificationcategories/device.removed.conf
 @@ -1,3 +1,3 @@
 -x-nemo-icon=icon-system-usb
-+x-nemo-icon=usb
++x-nemo-icon=ios-usb
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/network.conf b/src/notificationcategories/network.conf
