@@ -24,7 +24,7 @@ do_install_append() {
         ln -s /usr/lib/systemd/user/asteroid-btsyncd.service ${D}/home/ceres/.config/systemd/user/default.target.wants/asteroid-btsyncd.service
     fi
 
-    lrelease ${S}/i18n/asteroid-btsyncd.*.ts
+    lrelease -idbased ${S}/i18n/asteroid-btsyncd.*.ts
     install -d ${D}/usr/share/translations/
     cp ${S}/i18n/asteroid-btsyncd.*.qm ${D}/usr/share/translations/
 }

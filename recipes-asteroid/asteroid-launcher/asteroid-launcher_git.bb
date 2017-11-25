@@ -18,7 +18,7 @@ RDEPENDS_${PN} += "qtdeclarative-qmlplugins qml-asteroid qtwayland-plugins nemo-
 FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/ /home/ceres/.config/systemd/user/default.target.wants/"
 
 do_install_append() {
-    lrelease ${S}/i18n/asteroid-launcher.*.ts
+    lrelease -idbased ${S}/i18n/asteroid-launcher.*.ts
     install -d ${D}/usr/share/translations/
     cp ${S}/i18n/asteroid-launcher.*.qm ${D}/usr/share/translations/
 

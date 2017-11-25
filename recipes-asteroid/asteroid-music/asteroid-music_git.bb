@@ -15,7 +15,7 @@ RDEPENDS_${PN} += "qtmpris"
 FILES_${PN} += "/usr/share/translations/"
 
 do_install_append() {
-    lrelease ${S}/i18n/asteroid-music.*.ts
+    lrelease -idbased ${S}/i18n/asteroid-music.*.ts
     install -d ${D}/usr/share/translations/
     cp ${S}/i18n/asteroid-music.*.qm ${D}/usr/share/translations/
 }
