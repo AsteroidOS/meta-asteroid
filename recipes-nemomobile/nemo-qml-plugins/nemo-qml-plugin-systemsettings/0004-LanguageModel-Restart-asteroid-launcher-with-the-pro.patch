@@ -1,0 +1,31 @@
+From 6a2fe2ffee36ea7d12d7bf973f55a39b5989f5f2 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 27 Nov 2017 23:45:19 +0100
+Subject: [PATCH] LanguageModel: Restart asteroid-launcher with the proper
+ environment when UpdateAndReboot is used
+
+---
+ src/languagemodel.cpp | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
+index a054d00..52390a8 100644
+--- a/src/languagemodel.cpp
++++ b/src/languagemodel.cpp
+@@ -201,9 +201,10 @@ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode
+     }
+ 
+     if (updateMode == UpdateAndReboot) {
+-        QDBusInterface dsmeInterface("com.nokia.dsme", "/com/nokia/dsme/request", "com.nokia.dsme.request",
+-                                     QDBusConnection::systemBus());
+-        dsmeInterface.call("req_reboot");
++        QDBusInterface systemdInterface("org.freedesktop.systemd1", "/org/freedesktop/systemd1", "org.freedesktop.systemd1.Manager",
++                             QDBusConnection::sessionBus());
++        systemdInterface.call("SetEnvironment", QStringList() << ("LANG=" + localeCode));
++        systemdInterface.call("RestartUnit", "asteroid-launcher.service", "replace");
+     }
+ }
+ 
+-- 
+2.14.3
+
