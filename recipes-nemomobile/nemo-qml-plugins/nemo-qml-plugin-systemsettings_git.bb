@@ -7,7 +7,7 @@ SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings.git;
     file://0001-Update-QStorageInfo-API-usage.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \
     file://0003-languagemodel-don-t-require-region-names.patch \
-    file://0004-LanguageModel-Restart-asteroid-launcher-with-the-pro.patch"
+    file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch"
 SRCREV = "8e98f8c8069592d3dd21011743fdfb4d2efcc50a"
 PR = "r1"
 PV = "+git${SRCPV}"
