@@ -14,8 +14,8 @@ S = "${WORKDIR}/symbola"
 SRC_URI = "http://users.teilar.gr/~g1951d/Symbola.zip;subdir=${S}"
 # If the file updates in the future, it won't stop compilation, but we'll see some warnings
 BB_STRICT_CHECKSUM = "0"
-SRC_URI[md5sum] = "e5b77fdf1a74897bd52c5b979e389edd"
-SRC_URI[sha256sum] = "ff0706603b93238008ce1b76fdeeb83c23a470bd90fed56c2c64c6a052842c50"
+SRC_URI[md5sum] = "359d6b29e337f7259fb84a0569b56a53"
+SRC_URI[sha256sum] = "7e9f5f29860366869c0fcd7584d4f5d2a15e577cc47938cba80b4380dde93e60"
 
 FONT_PACKAGES = "ttf-symbola"
 
