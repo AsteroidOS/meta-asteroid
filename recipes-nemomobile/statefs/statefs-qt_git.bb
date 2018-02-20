@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://src/qml/plugin.cpp;beginline=1;endline=6;md5=4f9a52d8
 
 SRC_URI = "git://git.merproject.org/mer-core/statefs-qt.git;protocol=https \
     file://001-Disable_doc_installation.patch"
-SRCREV = "32db98f6eed332df9672e5d8b091d95254b5e1df"
+SRCREV = "6d91f87a8887b46c1e6883d72a32f49af6171919"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
