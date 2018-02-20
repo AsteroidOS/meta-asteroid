@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://qfeedback.cpp;beginline=1;endline=38;md5=a8726eef46a2a09f5773ba508cad12a2"
 
 SRC_URI = "git://git.merproject.org/mer-core/qt-mobility-haptics-ffmemless.git;protocol=https"
-SRCREV = "c00a979e5e55f28c8b7c1eeffdfd1279e6e7e51e"
+SRCREV = "d7ea915d2fb42a38967861fbbf6153077f4cedd8"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
