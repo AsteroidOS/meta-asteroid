@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://mainloop.c;beginline=1;endline=35;md5=5c3ca83e6421044
 
 SRC_URI = "git://git.merproject.org/mer-core/profiled.git;protocol=https \
     file://0001-Fixes-build.patch"
-SRCREV = "71f6fbe6f3845365627923c40569bbd078ab8b19"
+SRCREV = "bf70ccf650330f1e2bc23b689e51015bb034b77d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
