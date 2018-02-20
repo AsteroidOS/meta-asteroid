@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://git.merproject.org/mer-core/libiodata.git;protocol=https"
-SRCREV = "5c7ddd20667e09c877cbbc48bab57942e6bd9897"
+SRCREV = "7c2c0274c397a19fa9d855cd0116c37ae459ec54"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
