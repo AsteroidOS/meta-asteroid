@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5c936b15295e0f34fd6618c596808948"
 
 SRC_URI = "git://github.com/nemomobile/qtmpris.git;protocol=https"
-SRCREV = "4e2881b8ce6b4de837f4c827a8dc9e86b222e1a6"
+SRCREV = "62c55e43dad6a479439ada609741ebebc4adaf23"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
