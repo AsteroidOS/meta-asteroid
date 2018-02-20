@@ -1,10 +1,10 @@
 SUMMARY = "Nemomobile's libresource"
-HOMEPAGE = "https://github.com/mer-packages/libresource"
+HOMEPAGE = "https://git.merproject.org/mer-core/libresource"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/mer-packages/libresource;protocol=https"
-SRCREV = "749daba70eb0d5627cfd063f88d0e44c74c25011"
+SRC_URI = "git://git.merproject.org/mer-core/libresource.git;protocol=https"
+SRCREV = "0af1cea2bf457a911baa7cd65ee1e32747df3011"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
