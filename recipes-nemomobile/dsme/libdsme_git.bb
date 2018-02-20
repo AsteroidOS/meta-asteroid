@@ -8,7 +8,7 @@ DEPENDS += " glib-2.0 libcheck pkgconfig-native"
 SRC_URI = "git://git.merproject.org/mer-core/libdsme.git;protocol=https \
     file://001-Allows-custom-cflags.patch \
     file://0002-Add-a-missing-header-include.patch"
-SRCREV = "826915f91a5f94fe3385a2b1d2b04092fbf5c4d9"
+SRCREV = "28d3fea293eea73d961a25b44adbdd00c8b8ad4f"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
