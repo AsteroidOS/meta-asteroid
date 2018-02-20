@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-glib.git;protocol=https"
 
-SRCREV = "8d14b10652b2fe6c25d8ad8334e2d5023d254313"
+SRCREV = "8e551e1f81ead63d941e926ed2429c43dabbc81d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
