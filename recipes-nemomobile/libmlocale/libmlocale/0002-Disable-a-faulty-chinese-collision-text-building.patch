@@ -1,0 +1,25 @@
+From 4c86e6e719e1d7d7f9789a9d21b1365b35b7b284 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Tue, 20 Feb 2018 14:01:19 +0100
+Subject: [PATCH] Disable a faulty chinese collision text building
+
+---
+ src/icu-extradata/icu-extradata.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/icu-extradata/icu-extradata.pro b/src/icu-extradata/icu-extradata.pro
+index 0d5756f3..1d26fe0d 100644
+--- a/src/icu-extradata/icu-extradata.pro
++++ b/src/icu-extradata/icu-extradata.pro
+@@ -134,7 +134,7 @@ greaterThan(ICUVERSION, 4.4) {
+                  data/lang/pt_PT.txt \
+                  data/lang/zh.txt \
+                  data/lang/zh_Hant.txt
+-    COLLTXT    = data/coll/zh.txt \
++    COLLTXT    =  \
+                  data/coll/be.txt \
+                  data/coll/bg.txt \
+                  data/coll/kk.txt \
+-- 
+2.14.3
+
