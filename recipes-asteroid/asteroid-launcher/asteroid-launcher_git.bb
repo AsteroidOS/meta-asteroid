@@ -13,7 +13,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "lipstick qttools-native"
+DEPENDS += "lipstick qttools-native timed"
 RDEPENDS_${PN} += "qtdeclarative-qmlplugins qml-asteroid qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration asteroid-wallpapers ttf-roboto ttf-raleway ttf-orbitron ttf-symbola"
 FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/ /home/ceres/.config/systemd/user/default.target.wants/"
 
