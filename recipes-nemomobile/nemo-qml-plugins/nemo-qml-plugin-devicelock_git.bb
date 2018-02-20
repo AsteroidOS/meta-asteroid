@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=7abc
 
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-devicelock.git;protocol=https \
            file://0001-Use-libsystemd-instead-of-libsystemd-daemon.patch"
-SRCREV = "5e65cdaf4f072a243d56b5ed4a54ff4ce789adb6"
+SRCREV = "acc349bee2deb3ea287df8deeeff2bff17203048"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
