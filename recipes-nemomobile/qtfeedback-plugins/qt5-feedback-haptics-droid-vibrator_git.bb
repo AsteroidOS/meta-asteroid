@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://qfeedback.cpp;beginline=1;endline=41;md5=e4a4c22a3d93
 SRC_URI = "git://github.com/mer-hybris/qt5-feedback-haptics-droid-vibrator;protocol=https \
            file://0001-Fixes-build-with-OE.patch \
            file://droid-vibrator.ini"
-SRCREV = "e70cdbfdca7a6d87793604b6aed8231728f30c64"
+SRCREV = "d85df81d50ceebcf55263a4b7a0f5df94732b129"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
