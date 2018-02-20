@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=9d1d95673c01a94e06648bf72ecda12d"
 
 SRC_URI = "git://git.merproject.org/mer-core/qtaround.git;protocol=https \
            file://0001-Add-a-missing-math.h-include.patch"
-SRCREV = "bf7f438ea7281d3341f6b353a427a15b2cf10a7c"
+SRCREV = "468b9683308fd98c8ae449ee73f0044ac1e7a0e1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
