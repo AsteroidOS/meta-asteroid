@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://src/mnotification.cpp;beginline=1;endline=18;md5=5dd5
 
 SRC_URI = "git://git.merproject.org/mer-core/mlite.git;protocol=https \
            file://0001-MDesktopEntry-Allow-dynamic-locale-switch-by-disabli.patch"
-SRCREV = "144086d5f6c83abc721c8de503a83d4d1bb26fde"
+SRCREV = "16dbe04def90ad6e347c80c2b4e81443b03571b1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
