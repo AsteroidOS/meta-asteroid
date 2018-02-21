@@ -4,12 +4,12 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9d1d95673c01a94e06648bf72ecda12d"
 
 SRC_URI = "git://git.merproject.org/mer-core/statefs-providers.git;protocol=https"
-SRCREV = "a3fb4f3f81945b964b2748c0cbef45356c002c6f"
+SRCREV = "c5205f324fdc6de828522e86e53e53cd1ba7e004"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "statefs boost qtbase statefs-qt qtsensors mce"
+DEPENDS += "statefs boost qtbase statefs-qt qtsensors mce kf5bluezqt"
 RDEPENDS_${PN} += "statefs-loader-qt"
 inherit cmake_qt5
 
