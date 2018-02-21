@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
            file://buteo-session.service \
            file://usb-moded \
            file://init_ffs"
-SRCREV = "b2bcc5ba8d1bf3179c73a916f01ab4e0cf0a3526"
+SRCREV = "67da3f291e7594271bf5ed9faf44e6a8d8ed93e6"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
