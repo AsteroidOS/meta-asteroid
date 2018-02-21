@@ -21,4 +21,4 @@ do_install() {
     ROOT=${D} make install
 }
 
-FILES_${PN} += "/usr/share/dbus-1/services/profiled.service"
+FILES_${PN} += "/usr/share/dbus-1/services/profiled.service /usr/lib/systemd/user/profiled.service"
