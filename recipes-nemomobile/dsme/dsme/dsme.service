@@ -14,7 +14,7 @@ Environment=BOOTSTATE=USER
 Environment=DSME_SOCKFILE=/run/dsme.socket
 EnvironmentFile=-/run/systemd/boot-status/bootstate
 EnvironmentFile=-/var/lib/environment/dsme/*.conf
-ExecStart=/usr/sbin/dsme -v 4 -p /usr/lib/dsme/startup.so --systemd
+ExecStart=/usr/sbin/dsme -- -v 4 -p /usr/lib/dsme/startup.so --systemd
 Restart=always
 RestartSec=1
 StartLimitInterval=600

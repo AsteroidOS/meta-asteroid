@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/dsme.git;protocol=https \
     file://dsme.service"
-SRCREV = "0d43f45e5990f9658aa8d63c57213093d683ca71"
+SRCREV = "7124900a8673926446cbef4a75ea206275fbcb28"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -35,7 +35,6 @@ do_install_append() {
     ln -s ../dsme.service ${D}/lib/systemd/system/multi-user.target.wants/dsme.service
     install -d ${D}/var/lib/dsme
     [ ! -f ${D}/var/lib/dsme/alarm_queue_status ] && echo 0 > ${D}/var/lib/dsme/alarm_queue_status
-    rm ${D}/usr/lib/dsme/libstartup.so
 }
 
 FILES_${PN} += "/lib/systemd/"
