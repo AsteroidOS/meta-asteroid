@@ -1,10 +1,10 @@
 SUMMARY = "Plugin-based filesystem to access and change the state of the system "
-HOMEPAGE = "http://nemomobile.github.io/statefs/"
+HOMEPAGE = "https://git.merproject.org/mer-core/statefs"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f16c63ad20517dd81888a9ee32c4a0d4"
 
-SRC_URI = "git://github.com/nemomobile/statefs;protocol=https"
-SRCREV = "06e6d91e45cacc43f05ba739aec4ffc1163d2cf6"
+SRC_URI = "git://git.merproject.org/mer-core/statefs.git;protocol=https"
+SRCREV = "ef73da6fc0721eebedc25c5a7d09ee4b5dc3ba85"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
