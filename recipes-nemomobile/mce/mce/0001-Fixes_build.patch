@@ -1,17 +1,17 @@
-From 0d3f0e2a211a75a25557bc4421f9df5de93e9d27 Mon Sep 17 00:00:00 2001
+From 6d791c7121db5272590dcb9d4f225f5f9c9259c0 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Mon, 12 Sep 2016 18:56:52 +0200
+Date: Tue, 20 Feb 2018 15:05:21 +0100
 Subject: [PATCH] Fixes build
 
 ---
- Makefile | 104 +++++++++++++++++++++++++++++++--------------------------------
- 1 file changed, 52 insertions(+), 52 deletions(-)
+ Makefile | 98 ++++++++++++++++++++++++++++++++--------------------------------
+ 1 file changed, 49 insertions(+), 49 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index aaef621..0042d37 100644
+index 9d93ac2..d1d7602 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -73,7 +73,7 @@ endif
+@@ -85,7 +85,7 @@ endif
  PKG_CONFIG   ?= pkg-config
  
  # Whether to enable DEVEL release logging
@@ -20,7 +20,7 @@ index aaef621..0042d37 100644
  
  # Whether to enable support for libhybris plugin
  ENABLE_HYBRIS ?= y
-@@ -180,70 +180,70 @@ DBUSCONF              := mce.conf
+@@ -193,70 +193,70 @@ DBUSCONF              := mce.conf
  # ----------------------------------------------------------------------------
  
  # C Preprocessor
@@ -79,27 +79,6 @@ index aaef621..0042d37 100644
 -CFLAGS += -Waggregate-return
 -CFLAGS += -Wmissing-noreturn
 -CFLAGS += -Wnested-externs
--#CFLAGS += -Wchar-subscripts (-Wall does this)
--CFLAGS += -Wmissing-prototypes
--CFLAGS += -Wformat-security
--CFLAGS += -Wformat=2
--CFLAGS += -Wformat-nonliteral
--CFLAGS += -Winit-self
--CFLAGS += -Wswitch-default
--CFLAGS += -Wstrict-prototypes
--CFLAGS += -Wdeclaration-after-statement
--CFLAGS += -Wold-style-definition
--CFLAGS += -Wmissing-declarations
--CFLAGS += -Wmissing-include-dirs
--CFLAGS += -Wstrict-aliasing=2
--CFLAGS += -Wunsafe-loop-optimizations
--CFLAGS += -Winvalid-pch
--#CFLAGS += -Waddress  (-Wall does this)
--CFLAGS += -Wvolatile-register-var
--CFLAGS += -Wmissing-format-attribute
--CFLAGS += -Wstack-protector
--#CFLAGS += -Werror (OBS build might have different compiler)
--CFLAGS += -Wno-declaration-after-statement
 +override CFLAGS += -Wall
 +override CFLAGS += -Wextra
 +override CFLAGS += -Wpointer-arith
@@ -112,7 +91,21 @@ index aaef621..0042d37 100644
 +override CFLAGS += -Waggregate-return
 +override CFLAGS += -Wmissing-noreturn
 +override CFLAGS += -Wnested-externs
-+#override CFLAGS += -Wchar-subscripts (-Wall does this)
+ #CFLAGS += -Wchar-subscripts (-Wall does this)
+-CFLAGS += -Wmissing-prototypes
+-CFLAGS += -Wformat-security
+-CFLAGS += -Wformat=2
+-CFLAGS += -Wformat-nonliteral
+-CFLAGS += -Winit-self
+-CFLAGS += -Wswitch-default
+-CFLAGS += -Wstrict-prototypes
+-CFLAGS += -Wdeclaration-after-statement
+-CFLAGS += -Wold-style-definition
+-CFLAGS += -Wmissing-declarations
+-CFLAGS += -Wmissing-include-dirs
+-CFLAGS += -Wstrict-aliasing=3
+-CFLAGS += -Wunsafe-loop-optimizations
+-CFLAGS += -Winvalid-pch
 +override CFLAGS += -Wmissing-prototypes
 +override CFLAGS += -Wformat-security
 +override CFLAGS += -Wformat=2
@@ -124,19 +117,23 @@ index aaef621..0042d37 100644
 +override CFLAGS += -Wold-style-definition
 +override CFLAGS += -Wmissing-declarations
 +override CFLAGS += -Wmissing-include-dirs
-+override CFLAGS += -Wstrict-aliasing=2
++override CFLAGS += -Wstrict-aliasing=3
 +override CFLAGS += -Wunsafe-loop-optimizations
 +override CFLAGS += -Winvalid-pch
-+#override CFLAGS += -Waddress  (-Wall does this)
+ #CFLAGS += -Waddress  (-Wall does this)
+-CFLAGS += -Wvolatile-register-var
+-CFLAGS += -Wmissing-format-attribute
+-CFLAGS += -Wstack-protector
 +override CFLAGS += -Wvolatile-register-var
 +override CFLAGS += -Wmissing-format-attribute
 +override CFLAGS += -Wstack-protector
-+#override CFLAGS += -Werror (OBS build might have different compiler)
+ #CFLAGS += -Werror (OBS build might have different compiler)
+-CFLAGS += -Wno-declaration-after-statement
 +override CFLAGS += -Wno-declaration-after-statement
  
  # Linker
  LDLIBS   += -Wl,--as-needed
-@@ -260,7 +260,7 @@ MCE_PKG_NAMES += dbus-1
+@@ -273,7 +273,7 @@ MCE_PKG_NAMES += dbus-1
  MCE_PKG_NAMES += dbus-glib-1
  MCE_PKG_NAMES += dsme
  MCE_PKG_NAMES += libiphb
@@ -145,7 +142,7 @@ index aaef621..0042d37 100644
  MCE_PKG_NAMES += libngf0
  
  MCE_PKG_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(MCE_PKG_NAMES))
-@@ -305,7 +305,7 @@ ifeq ($(strip $(ENABLE_WAKELOCKS)),y)
+@@ -320,7 +320,7 @@ ifeq ($(strip $(ENABLE_WAKELOCKS)),y)
  MCE_CORE   += libwakelock.c
  endif
  
@@ -154,7 +151,7 @@ index aaef621..0042d37 100644
  mce : LDLIBS += $(MCE_LDLIBS)
  ifeq ($(ENABLE_HYBRIS),y)
  mce : LDLIBS += -ldl
-@@ -336,7 +336,7 @@ MODULE_LDLIBS += $(MODULE_PKG_LDLIBS)
+@@ -351,7 +351,7 @@ MODULE_LDLIBS += $(MODULE_PKG_LDLIBS)
  %.pic.o : %.c
  	$(CC) -c -o $@ $< -fPIC $(CPPFLAGS) $(CFLAGS)
  
@@ -163,7 +160,7 @@ index aaef621..0042d37 100644
  $(MODULE_DIR)/%.so : LDLIBS += $(MODULE_LDLIBS)
  $(MODULE_DIR)/%.so : $(MODULE_DIR)/%.pic.o
  	$(CC) -shared -o $@ $^ $(LDFLAGS) $(LDLIBS)
-@@ -355,11 +355,11 @@ TOOLS_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(TOOLS_PKG_NAMES))
+@@ -370,11 +370,11 @@ TOOLS_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(TOOLS_PKG_NAMES))
  TOOLS_CFLAGS += $(TOOLS_PKG_CFLAGS)
  TOOLS_LDLIBS += $(TOOLS_PKG_LDLIBS)
  
@@ -175,9 +172,9 @@ index aaef621..0042d37 100644
 -$(TOOLDIR)/evdev_trace : CFLAGS += $(TOOLS_CFLAGS)
 +$(TOOLDIR)/evdev_trace : override CFLAGS += $(TOOLS_CFLAGS)
  $(TOOLDIR)/evdev_trace : LDLIBS += $(TOOLS_LDLIBS)
- $(TOOLDIR)/evdev_trace : $(TOOLDIR)/evdev_trace.o evdev.o
+ $(TOOLDIR)/evdev_trace : $(TOOLDIR)/evdev_trace.o evdev.o $(TOOLDIR)/fileusers.o
  
-@@ -382,7 +382,7 @@ UTESTS_LDLIBS += $(UTESTS_PKG_LDLIBS)
+@@ -397,7 +397,7 @@ UTESTS_LDLIBS += $(UTESTS_PKG_LDLIBS)
  UTESTS_CFLAGS += -fdata-sections -ffunction-sections
  UTESTS_LDLIBS += -Wl,--gc-sections
  
@@ -187,5 +184,5 @@ index aaef621..0042d37 100644
  $(UTESTDIR)/% : LDLIBS += $(foreach fn_sym,$(LINK_STUBS),\
  				    -Wl,--defsym=$(fn_sym)=stub__$(fn_sym))
 -- 
-2.9.3
+2.14.3
 

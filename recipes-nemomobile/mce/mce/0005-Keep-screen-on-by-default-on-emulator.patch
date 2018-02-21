@@ -1,25 +1,25 @@
-From f71fd191356fa0a907d1a416a6cc306d56e68697 Mon Sep 17 00:00:00 2001
+From 977c36ad714032c9ce0c6a84dfd93cf09dfcc9bf Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Sun, 29 Oct 2017 16:01:41 +0100
+Date: Wed, 21 Feb 2018 15:54:02 +0100
 Subject: [PATCH] Keep screen on by default on emulator
 
 ---
- builtin-gconf.c | 2 +-
+ modules/display.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/builtin-gconf.c b/builtin-gconf.c
-index 4078518..c24d86b 100644
---- a/builtin-gconf.c
-+++ b/builtin-gconf.c
-@@ -1325,7 +1325,7 @@ static const setting_t gconf_defaults[] =
-     // MCE_GCONF_BLANKING_INHIBIT_MODE @ modules/display.h
-     .key  = "/system/osso/dsm/display/inhibit_blank_mode",
-     .type = "i",
--    .def  = "0",
-+    .def  = "3",
-   },
-   {
-     .key  = MCE_GCONF_KBD_SLIDE_INHIBIT,
+diff --git a/modules/display.h b/modules/display.h
+index 03dadb1..3656b4e 100644
+--- a/modules/display.h
++++ b/modules/display.h
+@@ -414,7 +414,7 @@ typedef enum {
+  * logic without modifying the timeout values.
+  */
+ # define MCE_SETTING_BLANKING_INHIBIT_MODE               MCE_SETTING_DISPLAY_PATH "/inhibit_blank_mode"
+-# define MCE_DEFAULT_BLANKING_INHIBIT_MODE               0 // = INHIBIT_OFF
++# define MCE_DEFAULT_BLANKING_INHIBIT_MODE               1 // = INHIBIT_ON
+ 
+ /** Kbd slide inhibit type */
+ typedef enum {
 -- 
 2.14.3
 

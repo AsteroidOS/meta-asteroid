@@ -1,48 +1,50 @@
-From 563e94abab883a78a95289b08552685dfa4357cd Mon Sep 17 00:00:00 2001
+From 43bc18a6b600ef405f1fe2aaa7cdae3f8fca70a0 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Mon, 8 May 2017 19:57:28 +0200
+Date: Tue, 20 Feb 2018 15:26:12 +0100
 Subject: [PATCH] Display: Sets dimming timeout to 10 sec and blanking timeout
  to 5 sec
 
 ---
- modules/display.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ modules/display.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/modules/display.h b/modules/display.h
-index 458eb09..d14f234 100644
+index 03dadb1..b765dc3 100644
 --- a/modules/display.h
 +++ b/modules/display.h
-@@ -275,10 +275,10 @@ typedef enum
- #define DEFAULT_DISP_BRIGHTNESS_STEP_SIZE	1
+@@ -274,11 +274,11 @@
+  * Hint for settings UI. Also used for adaptive dimming within mce.
+  */
+ # define MCE_SETTING_DISPLAY_DIM_TIMEOUT_LIST            MCE_SETTING_DISPLAY_PATH "/possible_display_dim_timeouts"
+-# define MCE_DEFAULT_DISPLAY_DIM_TIMEOUT_LIST            15,30,60,120,600
++# define MCE_DEFAULT_DISPLAY_DIM_TIMEOUT_LIST            10,30,60,120,600
  
- /** Default value for MCE_GCONF_DISPLAY_BLANK_TIMEOUT setting */
--#define DEFAULT_BLANK_TIMEOUT			3
-+#define DEFAULT_BLANK_TIMEOUT			5
+ /** Display dimming delay [s] */
+ # define MCE_SETTING_DISPLAY_DIM_TIMEOUT                 MCE_SETTING_DISPLAY_PATH "/display_dim_timeout"
+-# define MCE_DEFAULT_DISPLAY_DIM_TIMEOUT                 30
++# define MCE_DEFAULT_DISPLAY_DIM_TIMEOUT                 10
  
- /** Default value for MCE_GCONF_DISPLAY_BLANK_FROM_LOCKSCREEN_TIMEOUT setting */
--#define DEFAULT_BLANK_FROM_LOCKSCREEN_TIMEOUT	10
-+#define DEFAULT_BLANK_FROM_LOCKSCREEN_TIMEOUT	5
+ /** Display dimming delay when slidable hw keyboard is open [s]
+  *
+@@ -353,15 +353,15 @@
+  * Hint for settings UI. Not used by MCE itself.
+  */
+ # define MCE_SETTING_DISPLAY_BLANK_TIMEOUT_LIST          MCE_SETTING_DISPLAY_PATH "/possible_display_blank_timeouts"
+-# define MCE_DEFAULT_DISPLAY_BLANK_TIMEOUT_LIST          3,10,15
++# define MCE_DEFAULT_DISPLAY_BLANK_TIMEOUT_LIST          5,10,15
  
- /** Default value for MCE_GCONF_DISPLAY_BLANK_FROM_LPM_ON_TIMEOUT setting */
- #define DEFAULT_BLANK_FROM_LPM_ON_TIMEOUT	5
-@@ -293,7 +293,7 @@ typedef enum
- #define DEFAULT_ADAPTIVE_DIMMING_THRESHOLD	3000	/* 3 seconds */
+ /** Display blanking delay from dimmed state [s] */
+ # define MCE_SETTING_DISPLAY_BLANK_TIMEOUT               MCE_SETTING_DISPLAY_PATH "/display_blank_timeout"
+-# define MCE_DEFAULT_DISPLAY_BLANK_TIMEOUT               3
++# define MCE_DEFAULT_DISPLAY_BLANK_TIMEOUT               5
  
- /** Default dim timeout, in seconds */
--#define DEFAULT_DIM_TIMEOUT			30	/* 30 seconds */
-+#define DEFAULT_DIM_TIMEOUT			10	/* 10 seconds */
+ /** Display blanking delay from lockscreen [s] */
+ # define MCE_SETTING_DISPLAY_BLANK_FROM_LOCKSCREEN_TIMEOUT MCE_SETTING_DISPLAY_PATH "/display_blank_from_locksreen_timeout"
+-# define MCE_DEFAULT_DISPLAY_BLANK_FROM_LOCKSCREEN_TIMEOUT 10
++# define MCE_DEFAULT_DISPLAY_BLANK_FROM_LOCKSCREEN_TIMEOUT 5
  
- /** Minimum blanking delay after bootup, in seconds */
- #define AFTERBOOT_BLANKING_TIMEOUT		30
-@@ -379,7 +379,7 @@ enum
- #define DEFAULT_DISPLAY_OFF_OVERRIDE		DISPLAY_OFF_OVERRIDE_DISABLED
- 
- /** Default value for MCE_GCONF_DISPLAY_DIM_TIMEOUT_LIST setting */
--#define DEFAULT_DISPLAY_DIM_TIMEOUT_LIST	15,30,60,120,600
-+#define DEFAULT_DISPLAY_DIM_TIMEOUT_LIST	10,30,60,120,600
- 
- /** Use Orientation sensor GConf setting */
- # define MCE_GCONF_ORIENTATION_SENSOR_ENABLED   MCE_GCONF_DISPLAY_PATH"/orientation_sensor_enabled"
+ /** Display blanking delay from lpm-on state [s] */
+ # define MCE_SETTING_DISPLAY_BLANK_FROM_LPM_ON_TIMEOUT   MCE_SETTING_DISPLAY_PATH "/display_blank_from_lpm_on_timeout"
 -- 
-2.11.0
+2.14.3
 

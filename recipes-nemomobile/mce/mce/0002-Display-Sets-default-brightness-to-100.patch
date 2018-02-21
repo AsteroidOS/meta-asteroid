@@ -1,25 +1,25 @@
-From 985c1ffdbdee08f20270c66bd2a23fd460e144a4 Mon Sep 17 00:00:00 2001
+From 1ee33335f424d9e4994feab6f0d5cf1cfdbe9853 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Fri, 5 May 2017 14:26:01 +0200
+Date: Tue, 20 Feb 2018 15:07:14 +0100
 Subject: [PATCH] Display: Sets default brightness to 100%
 
 ---
- builtin-gconf.c | 2 +-
+ modules/display.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/builtin-gconf.c b/builtin-gconf.c
-index 4078518..4a9a953 100644
---- a/builtin-gconf.c
-+++ b/builtin-gconf.c
-@@ -1153,7 +1153,7 @@ static const setting_t gconf_defaults[] =
-   {
-     .key  = MCE_GCONF_DISPLAY_BRIGHTNESS,
-     .type = "i",
--    .def  = "3", // Note: Legacy value, migrated at mce startup
-+    .def  = "5", // Note: Legacy value, migrated at mce startup
-   },
-   {
-     .key  = MCE_GCONF_DISPLAY_BRIGHTNESS_LEVEL_SIZE,
+diff --git a/modules/display.h b/modules/display.h
+index 03dadb1..641162c 100644
+--- a/modules/display.h
++++ b/modules/display.h
+@@ -225,7 +225,7 @@
+  *       will migrate old-style values to [1,100] range on startup.
+  */
+ # define MCE_SETTING_DISPLAY_BRIGHTNESS                  MCE_SETTING_DISPLAY_PATH "/display_brightness"
+-# define MCE_DEFAULT_DISPLAY_BRIGHTNESS                  3 // uses legacy [1,5] range = 60%
++# define MCE_DEFAULT_DISPLAY_BRIGHTNESS                  5 // uses legacy [1,5] range = 60%
+ 
+ /** Default brightness fade duration [ms]
+  *
 -- 
-2.11.0
+2.14.3
 

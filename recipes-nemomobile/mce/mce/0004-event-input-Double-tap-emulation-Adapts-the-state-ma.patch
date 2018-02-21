@@ -1,334 +1,419 @@
-From a7fecf5d17c0c32c0bf0fb772f0cca60a242c97d Mon Sep 17 00:00:00 2001
+From b99d44adca3ed3a13067dcd00418ed55288f15a3 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Sun, 9 Jul 2017 18:03:19 +0100
-Subject: [PATCH] [event-input] Double-tap emulation: Adapts the state machine
- to a single tap to unlock behavior (after 200ms the screen is unlocked)
+Date: Wed, 21 Feb 2018 18:01:02 +0100
+Subject: [PATCH] Double-tap emulation: Adapts the state machine to a single
+ tap to unlock behavior (after 200ms the screen is unlocked)
 
 ---
- event-input.c | 229 ++++++++++------------------------------------------------
- 1 file changed, 39 insertions(+), 190 deletions(-)
+ event-input.c |  17 +----
+ multitouch.c  | 240 ++++++++++++++++++++++------------------------------------
+ multitouch.h  |   2 +-
+ 3 files changed, 96 insertions(+), 163 deletions(-)
 
 diff --git a/event-input.c b/event-input.c
-index 8114f46..37ef2b3 100644
+index d39ca76..9d9d4c7 100644
 --- a/event-input.c
 +++ b/event-input.c
-@@ -235,41 +235,19 @@ static const char       *evin_evdevtype_repr                    (evin_evdevtype_
- static evin_evdevtype_t  evin_evdevtype_from_info               (evin_evdevinfo_t *info);
+@@ -292,7 +292,7 @@ static evin_iomon_extra_t *evin_iomon_extra_create              (int fd, const c
  
- /* ------------------------------------------------------------------------- *
-- * DOUBLETAP_EMULATION
-+ * TAP_TO_UNLOCK
-  * ------------------------------------------------------------------------- */
+ // common rate limited activity generation
+ 
+-static void         evin_iomon_generate_activity                (struct input_event *ev, bool cooked, bool raw);
++void         evin_iomon_generate_activity                (struct input_event *ev, bool cooked, bool raw);
+ 
+ // event handling by device type
+ 
+@@ -1899,7 +1899,7 @@ evin_iomon_device_rem_all(void)
+  * @param cooked   True, if generic activity should be sent
+  * @param raw      True, if non-synthetized activity should be sent
+  */
+-static void
++void
+ evin_iomon_generate_activity(struct input_event *ev, bool cooked, bool raw)
+ {
+     static time_t t_cooked = 0;
+@@ -2014,27 +2014,16 @@ evin_iomon_touchscreen_cb(mce_io_mon_t *iomon, gpointer data, gsize bytes_read)
+ 
+     bool grabbed = datapipe_get_gint(touch_grab_wanted_pipe);
+ 
+-    bool doubletap = false;
+-
+     evin_iomon_extra_t *extra = mce_io_mon_get_user_data(iomon);
+     if( extra && extra->ex_mt_state ) {
+         bool touching_prev = mt_state_touching(extra->ex_mt_state);
+-        doubletap = mt_state_handle_event(extra->ex_mt_state, ev);
++        mt_state_handle_event(extra->ex_mt_state, ev);
+         bool touching_curr = mt_state_touching(extra->ex_mt_state);
+ 
+         if( touching_prev != touching_curr )
+             evin_touchstate_schedule_update();
+     }
  
 -#ifdef ENABLE_DOUBLETAP_EMULATION
+-    if( doubletap && evin_iomon_sw_gestures_allowed() ) {
+-        mce_log(LL_DEVEL, "[doubletap] emulated from touch input");
+-        ev->type  = EV_MSC;
+-        ev->code  = MSC_GESTURE;
+-        ev->value = GESTURE_DOUBLETAP;
+-    }
+-#endif
 -
--/** Maximum time betweem 1st click and 2nd release, in milliseconds */
--# define EVIN_DOUBLETAP_TIME_LIMIT 500
+     /* Power key up event from touch screen -> double tap gesture event */
+     if( ev->type == EV_KEY && ev->code == KEY_POWER && ev->value == 0 ) {
+         cover_state_t proximity_sensor_state =
+diff --git a/multitouch.c b/multitouch.c
+index 6191aed..0e6fe41 100644
+--- a/multitouch.c
++++ b/multitouch.c
+@@ -32,6 +32,14 @@
+ #include <unistd.h>
+ #include <inttypes.h>
+ 
++#include <glib/gstdio.h>
++#include <gio/gio.h>
++
++#include "datapipe.h"
++#include "evdev.h"
++#include "mce.h"
++#include "mce-log.h"
++
+ /* ========================================================================= *
+  * TYPES & FUNCTIONS
+  * ========================================================================= */
+@@ -67,43 +75,6 @@ struct mt_point_t
+ static void        mt_point_invalidate (mt_point_t *self);
+ static int         mt_point_distance2  (const mt_point_t *a, const mt_point_t *b);
+ 
+-/* ------------------------------------------------------------------------- *
+- * TOUCH_VECTOR
+- * ------------------------------------------------------------------------- */
 -
--/** Maximum distance between 1st and 2nd clicks, in pixels */
--# define EVIN_DOUBLETAP_DISTANCE_LIMIT 100
+-typedef struct mt_touch_t mt_touch_t;
 -
--/** History data for emulating double tap */
--typedef struct
+-/** Tracking data for start and end position of one touch sequence */
+-struct mt_touch_t
 -{
--    /** Timestamp from ending EV_SYN event */
--    struct timeval dt_time;
+-    /* Coordinate where first finger was detected on screen */
+-    mt_point_t mtt_beg_point;
 -
--    /** X coordinate accumulated from relative movements */
--    int dt_x;
-+#ifdef ENABLE_DOUBLETAP_EMULATION // Uses a similar behavior as the nemo's doubletap_emulation
- 
--    /** Y coordinate accumulated from relative movements */
--    int dt_y;
-+# define EVIN_TAP_MIN_TIME 200
- 
--    /** Bitmask for accumulating touch points */
--    int dt_click;
--} evin_doubletap_t;
-+static guint evin_tap_to_unlock_timer_id = 0;
- 
- static void         evin_doubletap_gconf_changed_cb             (GConfClient *const client, const guint id, GConfEntry *const entry, gpointer const data);
- 
--static int          evin_doubletap_within_time_limit            (const evin_doubletap_t *e1, const evin_doubletap_t *e2);
--static int          evin_doubletap_within_dist_limit            (const evin_doubletap_t *e1, const evin_doubletap_t *e2);
+-    /* Coordinate where last finger was lifted from screen */
+-    mt_point_t mtt_end_point;
 -
--static int          evin_doubletap_active_touch_points          (const evin_doubletap_t *e);
+-    /* Timestamp for: Touch started */
+-    int64_t    mtt_beg_tick;
 -
--static int          evin_doubletap_emulate                      (const struct input_event *eve);
-+static gboolean     evin_unlock_on_tap_cb                       (gpointer data);
-+static void         evin_unlock_on_tap                          (const struct input_event *eve);
- 
- #endif // ENABLE_DOUBLETAP_EMULATION
- 
-@@ -1493,138 +1471,46 @@ evin_doubletap_gconf_changed_cb(GConfClient *const client, const guint id,
-     }
- }
- 
--/** Check if two double tap history points are close enough in time
-- *
-- * @param e1 event data from the 1st click
-- * @param e2 event data from the 2nd release
-- *
-- * @return TRUE if e1 and e2 times are valid and close enough,
-- *         or FALSE otherwise
-- */
--static int
--evin_doubletap_within_time_limit(const evin_doubletap_t *e1, const evin_doubletap_t *e2)
-+static gboolean evin_unlock_on_tap_cb(gpointer data)
- {
--    static const struct timeval limit =
--    {
--        .tv_sec  = (EVIN_DOUBLETAP_TIME_LIMIT / 1000),
--        .tv_usec = (EVIN_DOUBLETAP_TIME_LIMIT % 1000) * 1000,
--    };
-+    struct input_event *ev = malloc(sizeof(struct input_event));
- 
--    struct timeval delta;
+-    /* Timestamp for: Touch ended */
+-    int64_t    mtt_end_tick;
 -
--    /* Reject empty/reset slots */
--    if( !timerisset(&e1->dt_time) || !timerisset(&e2->dt_time) )
--        return 0;
+-    /* Maximum number of fingers seen during the touch */
+-    size_t     mtt_max_fingers;
+-};
 -
--    timersub(&e2->dt_time, &e1->dt_time, &delta);
--    return timercmp(&delta, &limit, <);
--}
+-/** Maximum jitter allowed in double tap (pixel) coordinates */
+-#define MT_TOUCH_DBLTAP_DIST_MAX   100
 -
--/** Check if two double tap history points are close enough in pixels
-- *
-- * @param e1 event data from the 1st click
-- * @param e2 event data from the 2nd click
-- *
-- * @return TRUE if e1 and e2 positions are close enough, or FALSE otherwise
-- */
--static int
--evin_doubletap_within_dist_limit(const evin_doubletap_t *e1, const evin_doubletap_t *e2)
--{
--    int x = e2->dt_x - e1->dt_x;
--    int y = e2->dt_y - e1->dt_y;
--    int r = EVIN_DOUBLETAP_DISTANCE_LIMIT;
-+    if(!evin_tap_to_unlock_timer_id)
+-/** Maximum delay between double tap presses and releases [ms] */
+-#define MT_TOUCH_DBLTAP_DELAY_MAX  500
+-
+-/** Minimum delay between double tap presses and releases [ms] */
+-#define MT_TOUCH_DBLTAP_DELAY_MIN    1
+-
+-static bool        mt_touch_is_single_tap(const mt_touch_t *self);
+-static bool        mt_touch_is_double_tap(const mt_touch_t *self, const mt_touch_t *prev);
+-
+ /* ------------------------------------------------------------------------- *
+  * TOUCH_STATE
+  * ------------------------------------------------------------------------- */
+@@ -138,8 +109,10 @@ struct mt_state_t
+     /** Currently tracked primary touch point */
+     mt_point_t mts_point_tracked;
+ 
+-    /** Stats for the last 3 taps, used for double tap detection */
+-    mt_touch_t mts_tap_arr[3];
++    /** Timer used for long press detection */
++    guint      tap_to_unlock_timer_id;
++
++    size_t     current_seq_max_fingers;
+ 
+     /** Device type / protocol specific input event handler function */
+     void     (*mts_event_handler_cb)(mt_state_t *, const struct input_event *);
+@@ -149,7 +122,7 @@ struct mt_state_t
+ };
+ 
+ static void        mt_state_reset          (mt_state_t *self);
+-static bool        mt_state_update         (mt_state_t *self);
++static void        mt_state_update         (mt_state_t *self);
+ 
+ static void        mt_state_handle_event_a (mt_state_t *self, const struct input_event *ev);
+ static void        mt_state_handle_event_b (mt_state_t *self, const struct input_event *ev);
+@@ -157,10 +130,65 @@ static void        mt_state_handle_event_b (mt_state_t *self, const struct input
+ mt_state_t        *mt_state_create         (bool protocol_b);
+ void               mt_state_delete         (mt_state_t *self);
+ 
+-bool               mt_state_handle_event   (mt_state_t *self, const struct input_event *ev);
++void               mt_state_handle_event   (mt_state_t *self, const struct input_event *ev);
+ 
+ bool               mt_state_touching       (const mt_state_t *self);
+ 
++/* ------------------------------------------------------------------------- *
++ * LONG PRESS HANDLER
++ * ------------------------------------------------------------------------- */
++
++/** Minimum press time to unlock screen [ms] */
++#define MT_TOUCH_LONGPRESS_DELAY_MIN  200
++
++extern void evin_iomon_generate_activity (struct input_event *ev, bool cooked, bool raw);
++
++static gboolean mt_state_long_tap_cb(gpointer data)
++{
++    struct input_event *ev;
++    mt_state_t *self;
++
++    self = (mt_state_t *)data;
++
++    if(!self)
 +        goto EXIT;
- 
--    return (x*x + y*y) < (r*r);
--}
-+    evin_tap_to_unlock_timer_id = 0;
- 
--/** Accumulator steps for counting touch/mouse click events separately
-- *
-- *    2   2   2   1   1   0   0   0
-- *    8   4   0   6   2   8   4   0
-- * --------------------------------
-- *                             mmmm [ 3: 0]  BTN_MOUSE
-- *                         pppp     [ 7: 4]  ABS_MT_PRESSURE
-- *                     tttt         [11: 8]  ABS_MT_TOUCH_MAJOR
-- *                 iiii             [15:12]  ABS_MT_TRACKING_ID
-- * aaaabbbbccccdddd                 [31:16]  (reserved)
-- */
--enum {
++
++    self->tap_to_unlock_timer_id = 0;
++
++    if(self->current_seq_max_fingers != 1)
++        goto EXIT;
++
++    ev = malloc(sizeof(struct input_event));
++
++    mce_log(LL_CRUCIAL, "[longpress] double tap emulated from touch input");
++    mce_log(LL_DEVEL, "[longpress] double tap emulated from touch input");
++
 +    ev->type  = EV_MSC;
 +    ev->code  = MSC_GESTURE;
-+    ev->value = 0x4;
- 
--    SEEN_EVENT_MOUSE       = 1 <<  0,
--    SEEN_EVENT_PRESSURE    = 1 <<  4,
--    SEEN_EVENT_TOUCH_MAJOR = 1 <<  8,
--    SEEN_EVENT_TRACKING_ID = 1 << 12,
--};
-+    execute_datapipe(&touchscreen_pipe, &ev,
++    ev->value = GESTURE_DOUBLETAP;
++ 
++    /* Do not generate activity if ts input is grabbed */
++    if( !datapipe_get_gint(touch_grab_wanted_pipe) )
++        evin_iomon_generate_activity(ev, true, true);
++
++    submode_t submode = mce_get_submode_int32();
++
++    /* If the event eater is active, don't send anything */
++    if( submode & MCE_EVEATER_SUBMODE )
++        goto EXIT;
++
++    /* Gesture events count as actual non-synthetized
++     * user activity. */
++    evin_iomon_generate_activity(ev, false, true);
++
++    /* But otherwise are handled in powerkey.c. */
++    execute_datapipe(&keypress_pipe, &ev,
 +                     USE_INDATA, DONT_CACHE_INDATA);
- 
--/** Helper for probing no-touch vs single-touch vs multi-touch
-- *
-- * return 0 for no-touch, 1 for single touch, >1 for multi-touch
-- */
--static int
--evin_doubletap_active_touch_points(const evin_doubletap_t *e)
--{
--    /* The bit shuffling below calculates maximum number of mouse
--     * button click / touch point events accumulated to the history
--     * buffer to produce return value of
--     *
--     *   =0 -> no touch
--     *   =1 -> singletouch
--     *   >1 -> multitouch
--     *
--     * Note: If the event stream happens to report one ABS_MT_PRESSURE
--     * and two ABS_MT_TOUCH_MAJOR events / something similar it will
--     * be reported as "triple touch", but we do not need care as long
--     * as it is not "no touch" or "singletouch".
--     */
--
--    unsigned m = e->dt_click;
--    m |= (m >> 16);
--    m |= (m >>  8);
--    m |= (m >>  4);
--    return m & 15;
++
 +EXIT:
 +    return FALSE;
- }
- 
--/** Process mouse input events to simulate double tap
-+/** Process mouse input events to unlock
-  *
-- * Maintain a crude state machine, that will detect double clicks
-- * made with mouse when fed with evdev events from a mouse device.
-+ * Starts a timer when a tap is received and unlock the screen if
-+ * the tap is long enough
-  *
-  * @param eve input event
-- *
-- * @return TRUE if double tap sequence was detected, FALSE otherwise
-  */
--static int
--evin_doubletap_emulate(const struct input_event *eve)
-+static void
-+evin_unlock_on_tap(const struct input_event *eve)
- {
--    static evin_doubletap_t hist[4]; // click/release ring buffer
--
--    static unsigned i0       = 0; // current position
--    static int      x_accum  = 0; // x delta accumulator
--    static int      y_accum  = 0; // y delta accumulator
-     static bool     skip_syn = true; // flag: ignore SYN_REPORT
--
--    int result = FALSE; // assume: no doubletap
--
--    unsigned i1, i2, i3; // 3 last positions
-+    static unsigned dt_click = 0;
- 
-     switch( eve->type ) {
--    case EV_REL:
--        /* Accumulate X/Y position */
--        switch( eve->code ) {
--        case REL_X: x_accum += eve->value; break;
--        case REL_Y: y_accum += eve->value; break;
--        default: break;
--        }
--        break;
--
-     case EV_KEY:
-         switch( eve->code ) {
-         case BTN_MOUSE:
--            /* Store click/release and position */
-+            /* Store click/release */
-             if( eve->value )
--                hist[i0].dt_click += SEEN_EVENT_MOUSE;
--            hist[i0].dt_x = x_accum;
--            hist[i0].dt_y = y_accum;
-+                dt_click ++;
- 
-             /* We have a mouse click to process */
-             skip_syn = false;
-@@ -1648,25 +1534,22 @@ evin_doubletap_emulate(const struct input_event *eve)
-         switch( eve->code ) {
-         case ABS_MT_PRESSURE:
-             if( eve->value > 0 )
--                hist[i0].dt_click += SEEN_EVENT_PRESSURE;
-+                dt_click ++;
-             skip_syn = false;
-             break;
-         case ABS_MT_TOUCH_MAJOR:
-             if( eve->value > 0 )
--                hist[i0].dt_click += SEEN_EVENT_TOUCH_MAJOR;
-+                dt_click ++;
-             skip_syn = false;
-             break;
-         case ABS_MT_TRACKING_ID:
-             if( eve->value != -1 )
--                hist[i0].dt_click += SEEN_EVENT_TRACKING_ID;
-+                dt_click ++;
-             skip_syn = false;
-             break;
-         case ABS_MT_POSITION_X:
--            hist[i0].dt_x = eve->value;
--            skip_syn = false;
--            break;
-         case ABS_MT_POSITION_Y:
--            hist[i0].dt_y = eve->value;
-+            dt_click ++;
-             skip_syn = false;
-             break;
-         default:
-@@ -1692,50 +1575,20 @@ evin_doubletap_emulate(const struct input_event *eve)
-          * relevant is seen before that */
-         skip_syn = true;
- 
--        /* Set timestamp from syn event */
--        hist[i0].dt_time = eve->time;
--
--        /* Last event before current */
--        i1 = (i0 + 3) & 3;
--
--        int tp0 = evin_doubletap_active_touch_points(hist+i0);
--        int tp1 = evin_doubletap_active_touch_points(hist+i1);
--
--        if( tp0 != tp1 ) {
--            /* 2nd and 3rd last events before current */
--            i2 = (i0 + 2) & 3;
--            i3 = (i0 + 1) & 3;
--
--            int tp2 = evin_doubletap_active_touch_points(hist+i2);
--            int tp3 = evin_doubletap_active_touch_points(hist+i3);
--
--            /* Release after click after release after click,
--             * within the time and distance limits */
--            if( tp0 == 0 && tp1 == 1 && tp2 == 0 && tp3 == 1 &&
--                evin_doubletap_within_time_limit(&hist[i3], &hist[i0]) &&
--                evin_doubletap_within_dist_limit(&hist[i3], &hist[i1]) ) {
--                /* Reached DOUBLETAP state */
--                result = TRUE;
--
--                /* Reset history, so that triple click
--                 * will not produce 2 double taps etc */
--                memset(hist, 0, sizeof hist);
--                x_accum = y_accum = 0;
--            }
--
--            /* Move to the next slot */
--            i0 = (i0 + 1) & 3;
-+        if(dt_click && evin_tap_to_unlock_timer_id == 0) {
-+            evin_tap_to_unlock_timer_id =
-+                g_timeout_add(EVIN_TAP_MIN_TIME, evin_unlock_on_tap_cb, 0);
-+        } else if(!dt_click) {
-+            g_source_remove(evin_tap_to_unlock_timer_id);
-+            evin_tap_to_unlock_timer_id = 0;
-         }
-+        dt_click = 0;
- 
--        /* Reset the current position in the ring buffer */
--        memset(&hist[i0], 0, sizeof *hist);
-         break;
- 
-     default:
-         break;
-     }
--
--    return result;
- }
- 
- #endif /* ENABLE_DOUBLETAP_EMULATION */
-@@ -1934,6 +1787,7 @@ evin_iomon_touchscreen_cb(gpointer data, gsize bytes_read)
-     bool grabbed = datapipe_get_gint(touch_grab_active_pipe);
- 
- #ifdef ENABLE_DOUBLETAP_EMULATION
++}
 +
-     if( grabbed || fake_evin_doubletap_enabled ) {
-         /* Note: In case we happen to be in middle of display
-          *       state transition the double tap simulation must
-@@ -1947,12 +1801,7 @@ evin_iomon_touchscreen_cb(gpointer data, gsize bytes_read)
-         case MCE_DISPLAY_OFF:
-         case MCE_DISPLAY_LPM_OFF:
-         case MCE_DISPLAY_LPM_ON:
--            if( evin_doubletap_emulate(ev) ) {
--                mce_log(LL_DEVEL, "[doubletap] emulated from touch input");
--                ev->type  = EV_MSC;
--                ev->code  = MSC_GESTURE;
--                ev->value = 0x4;
--            }
-+            evin_unlock_on_tap(ev);
-             break;
-         default:
-         case MCE_DISPLAY_ON:
+ /* ========================================================================= *
+  * TOUCH_POINT
+  * ========================================================================= */
+@@ -191,74 +219,6 @@ static int mt_point_distance2(const mt_point_t *a, const mt_point_t *b)
+     return x*x + y*y;
+ }
+ 
+-/* ========================================================================= *
+- * TOUCH_VECTOR
+- * ========================================================================= */
+-
+-/** Predicate for: Touch vector represents a single tap
+- *
+- * @param self Touch vector object
+- *
+- * @return true if touch vector is tap, false otherwise
+- */
+-static bool mt_touch_is_single_tap(const mt_touch_t *self)
+-{
+-    bool is_single_tap = false;
+-
+-    if( !self )
+-        goto EXIT;
+-
+-    /* A tap is done using one finger */
+-    if( self->mtt_max_fingers != 1 )
+-        goto EXIT;
+-
+-    /* Touch release must happen close to the point of initial contact */
+-    int d2 = mt_point_distance2(&self->mtt_beg_point, &self->mtt_end_point);
+-    if( d2 > MT_TOUCH_DBLTAP_DIST_MAX * MT_TOUCH_DBLTAP_DIST_MAX )
+-        goto EXIT;
+-
+-    /* The touch duration must not be too short or too long */
+-    int64_t t = self->mtt_end_tick - self->mtt_beg_tick;
+-    if( t < MT_TOUCH_DBLTAP_DELAY_MIN || t > MT_TOUCH_DBLTAP_DELAY_MAX )
+-        goto EXIT;
+-
+-    is_single_tap = true;
+-
+-EXIT:
+-    return is_single_tap;
+-}
+-
+-/** Predicate for: Two touch vectors represent a double tap
+- *
+- * @param self Current touch vector object
+- * @param prev Previous touch vector object
+- *
+- * @return true if touch vector is double tap, false otherwise
+- */
+-static bool mt_touch_is_double_tap(const mt_touch_t *self, const mt_touch_t *prev)
+-{
+-    bool is_double_tap = false;
+-
+-    /* Both touch vectors must classify as single taps */
+-    if( !mt_touch_is_single_tap(self) || !mt_touch_is_single_tap(prev) )
+-        goto EXIT;
+-
+-    /* The second tap must start near to the end point of the 1st one */
+-    int d2 = mt_point_distance2(&self->mtt_beg_point, &prev->mtt_end_point);
+-    if( d2 > MT_TOUCH_DBLTAP_DIST_MAX * MT_TOUCH_DBLTAP_DIST_MAX )
+-        goto EXIT;
+-
+-    /* The delay between the taps must be sufficiently small too */
+-    int64_t t = self->mtt_beg_tick - prev->mtt_end_tick;
+-    if( t < MT_TOUCH_DBLTAP_DELAY_MIN || t > MT_TOUCH_DBLTAP_DELAY_MAX )
+-        goto EXIT;
+-
+-    is_double_tap = true;
+-
+-EXIT:
+-    return is_double_tap;
+-}
+-
+ /* ========================================================================= *
+  * TOUCH_STATE
+  * ========================================================================= */
+@@ -276,18 +236,20 @@ mt_state_reset(mt_state_t *self)
+         mt_point_invalidate(self->mts_point_array + i);
+ 
+     self->mts_point_slot = 0;
++
++    if(self->tap_to_unlock_timer_id != 0) {
++        g_source_remove(self->tap_to_unlock_timer_id);
++        self->tap_to_unlock_timer_id = 0;
++    }
+ }
+ 
+ /** Update touch position tracking state
+  *
+  * @param self  Multitouch state object
+- *
+- * @return true if a double tap was just detected, false otherwise
+  */
+-static bool
++static void
+ mt_state_update(mt_state_t *self)
+ {
+-    bool   dbltap_seen  = false;
+     size_t finger_count = 0;
+ 
+     /* Count fingers on screen and update position of one finger touch */
+@@ -307,43 +269,27 @@ mt_state_update(mt_state_t *self)
+ 
+     /* Skip the rest if the number of fingers on screen does not change */
+     if( self->mts_point_count == finger_count )
+-        goto EXIT;
++        return;
+ 
+-    /* Convert timestamp from input event to 1ms accurate tick counter */
+-    int64_t tick = self->mts_event_time.tv_sec * 1000LL + self->mts_event_time.tv_usec / 1000;
+-
+-    /* When initial touch is detected, update the history buffer to reflect
+-     * the current state of affairs */
++    /* When initial touch is detected, trigger a timeout for that sequence */
+     if( self->mts_point_count == 0 ) {
+-        memmove(self->mts_tap_arr+1, self->mts_tap_arr+0,
+-                sizeof self->mts_tap_arr - sizeof *self->mts_tap_arr);
+-
+-        self->mts_tap_arr[0].mtt_max_fingers = finger_count;
+-        self->mts_tap_arr[0].mtt_beg_point = self->mts_point_tracked;
+-        self->mts_tap_arr[0].mtt_beg_tick  = tick;
++        self->current_seq_max_fingers = finger_count;
++        self->tap_to_unlock_timer_id =
++            g_timeout_add(MT_TOUCH_LONGPRESS_DELAY_MIN,
++                    mt_state_long_tap_cb, self);
+     }
+ 
+     /* Maintain maximum number of fingers seen on screen */
+-    if( self->mts_tap_arr[0].mtt_max_fingers < finger_count )
+-        self->mts_tap_arr[0].mtt_max_fingers = finger_count;
+-
+-    /* Update touch end position and time */
+-    self->mts_tap_arr[0].mtt_end_point = self->mts_point_tracked;
+-    self->mts_tap_arr[0].mtt_end_tick  = tick;
+-
+-    /* When final finger is lifted, check if the history buffer content
+-     * looks like a double tap */
+-    if( finger_count == 0 ) {
+-        if( mt_touch_is_double_tap(self->mts_tap_arr+0, self->mts_tap_arr+1) ) {
+-            if( ! mt_touch_is_double_tap(self->mts_tap_arr+1, self->mts_tap_arr+2) )
+-                dbltap_seen = true;
+-        }
++    if( self->current_seq_max_fingers < finger_count )
++        self->current_seq_max_fingers = finger_count;
++
++    /* When last touch is detected, delete the current timeout */
++    if( finger_count == 0 && self->tap_to_unlock_timer_id != 0 ) {
++        g_source_remove(self->tap_to_unlock_timer_id);
++        self->tap_to_unlock_timer_id = 0;
+     }
+ 
+     self->mts_point_count = finger_count;
+-
+-EXIT:
+-    return dbltap_seen;
+ }
+ 
+ /** Handle multitouch protocol A event stream
+@@ -482,19 +428,15 @@ mt_state_handle_event_b(mt_state_t *self, const struct input_event *ev)
+  * @param self  Multitouch state object
+  * @param ev    Input event
+  */
+-bool
++void
+ mt_state_handle_event(mt_state_t *self, const struct input_event *ev)
+ {
+-    bool   dbltap = false;
+-
+     self->mts_event_time = ev->time;
+ 
+     self->mts_event_handler_cb(self, ev);
+ 
+     if( ev->type == EV_SYN && ev->code == SYN_REPORT )
+-        dbltap = mt_state_update(self);
+-
+-    return dbltap;
++        mt_state_update(self);
+ }
+ 
+ /** Check if there is at least one finger on screen at the momement
+@@ -541,6 +483,8 @@ mt_state_create(bool protocol_b)
+ 
+     self->mts_point_count = 0;
+ 
++    self->tap_to_unlock_timer_id = 0;
++
+     mt_state_reset(self);
+ 
+     mt_point_invalidate(&self->mts_mouse);
+diff --git a/multitouch.h b/multitouch.h
+index b65a554..7f0b18c 100644
+--- a/multitouch.h
++++ b/multitouch.h
+@@ -34,7 +34,7 @@ typedef struct mt_state_t mt_state_t;
+ 
+ mt_state_t        *mt_state_create       (bool protocol_b);
+ void               mt_state_delete       (mt_state_t *self);
+-bool               mt_state_handle_event (mt_state_t *self, const struct input_event *ev);
++void               mt_state_handle_event (mt_state_t *self, const struct input_event *ev);
+ bool               mt_state_touching     (const mt_state_t *self);
+ 
+ #endif /* MCE_MULTITOUCH_H_ */
 -- 
-2.7.4
+2.14.3
 
