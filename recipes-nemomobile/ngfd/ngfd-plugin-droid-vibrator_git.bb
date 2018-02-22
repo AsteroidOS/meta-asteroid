@@ -4,7 +4,7 @@ LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/mer-hybris/ngfd-plugin-droid-vibrator.git;protocol=https"
-SRCREV = "f24783d57914ffccb8ea2a2bb207864be3e0e24b"
+SRCREV = "d841e43dac31bebca3763001ac0ed958271aeb18"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
