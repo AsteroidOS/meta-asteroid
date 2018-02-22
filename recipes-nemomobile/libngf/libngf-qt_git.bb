@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://git.merproject.org/mer-core/libngf-qt.git;protocol=https"
-SRCREV = "43cadce94add865795d8aa92da958356cc12d291"
+SRCREV = "8fabfc5b13ce2e5d4d914e47303844a5c42b388b"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -18,5 +18,5 @@ do_install_append() {
     rmdir ${D}/include/ ${D}/lib/
 }
 
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/ngf"
-FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/ngf/.debug/"
+FILES_${PN} += "/usr/lib/qml/Nemo/Ngf"
+FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Ngf/.debug/"
