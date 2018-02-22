@@ -6,11 +6,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://git.merproject.org/mer-core/ngfd.git;protocol=https \
            file://ngfd.ini \
            file://ngfd.service \
-           file://chat.ini \
-           file://information_strong.ini \
-           file://0001-haptics-Always-vibrate-on-calendar-and-clock-events.patch \
+           file://events.d/ \
+           file://50-ffmemless.ini \
            file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch"
-SRCREV = "fbeea2a48bebd3faaac1ee84a144f797ac9006fc"
+SRCREV = "f400b0ade5ca13af7d7cca8d360117ca0b60f112"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -32,8 +31,10 @@ do_install_append() {
         ln -s /usr/lib/systemd/user/ngfd.service ${D}/home/ceres/.config/systemd/user/default.target.wants/ngfd.service
     fi
 
-    cp ../information_strong.ini ${D}/usr/share/ngfd/events.d/information_strong.ini
-    cp ../chat.ini ${D}/usr/share/ngfd/events.d/chat.ini
+    rm -r ${D}/usr/share/ngfd/events.d/
+    cp -r ../events.d/ ${D}/usr/share/ngfd/events.d/
+
+    cp ../50-ffmemless.ini ${D}/usr/share/ngfd/plugins.d/
 
     install -d ${D}/usr/share/sounds/
 }
