@@ -4,7 +4,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=30;md5=c9e59c313a1a503510332399ae73d430"
 
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-configuration.git;protocol=https"
-SRCREV = "363eed570ed2dcd6e7c0c4c62db170a77472497e"
+SRCREV = "d5aa1acefa102879bd4dfd2a7eee461a3f85df28"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative mlite"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/configuration/.debug"
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/configuration/"
+FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Configuration/.debug"
+FILES_${PN} += "/usr/lib/qml/Nemo/Configuration/"
