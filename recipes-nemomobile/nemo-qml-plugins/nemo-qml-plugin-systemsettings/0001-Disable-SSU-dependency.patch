@@ -1,0 +1,64 @@
+From e131c0ee861e4de36558951dc6c258cc6b9295cf Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Tue, 20 Feb 2018 14:46:26 +0100
+Subject: [PATCH] Disable SSU dependency
+
+---
+ src/deviceinfo.cpp | 21 ---------------------
+ src/src.pro        |  1 -
+ 2 files changed, 22 deletions(-)
+
+diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
+index db7941e..2f75861 100644
+--- a/src/deviceinfo.cpp
++++ b/src/deviceinfo.cpp
+@@ -33,8 +33,6 @@
+ 
+ #include <QSet>
+ 
+-#include <ssusysinfo.h>
+-
+ class DeviceInfoPrivate
+ {
+ public:
+@@ -47,25 +45,6 @@ public:
+ 
+ DeviceInfoPrivate::DeviceInfoPrivate()
+ {
+-    ssusysinfo_t *si = ssusysinfo_create();
+-
+-    hw_feature_t *features = ssusysinfo_get_hw_features(si);
+-    if (features) {
+-        for (size_t i = 0; features[i]; ++i) {
+-            m_features.insert(static_cast<DeviceInfo::Feature>(features[i]));
+-        }
+-        free(features);
+-    }
+-
+-    hw_key_t *keys = ssusysinfo_get_hw_keys(si);
+-    if (keys) {
+-        for (size_t i = 0; keys[i]; ++i) {
+-            m_keys.insert(static_cast<Qt::Key>(keys[i]));
+-        }
+-        free(keys);
+-    }
+-
+-    ssusysinfo_delete(si);
+ }
+ 
+ DeviceInfoPrivate::~DeviceInfoPrivate()
+diff --git a/src/src.pro b/src/src.pro
+index d86d61b..6f46264 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -7,7 +7,6 @@ QT -= gui
+ 
+ CONFIG += c++11 hide_symbols link_pkgconfig
+ PKGCONFIG += profile mlite5 mce timed-qt5 libshadowutils blkid libcrypto nemomodels-qt5 libsailfishkeyprovider connman-qt5
+-PKGCONFIG += ssu-sysinfo
+ 
+ system(qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
+ system(qdbusxml2cpp -c ConnmanVpnProxy -p connmanvpnproxy ../dbus/net.connman.vpn.xml -i qdbusxml2cpp_dbus_types.h)
+-- 
+2.14.3
+
