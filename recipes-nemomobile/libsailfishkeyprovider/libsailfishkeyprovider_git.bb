@@ -12,4 +12,4 @@ S = "${WORKDIR}/git"
 DEPENDS += "qtbase"
 inherit qmake5
 
-FILES_${PN}-dbg += "/opt/test/"
+FILES_${PN}-dbg += "/opt/tests/"
