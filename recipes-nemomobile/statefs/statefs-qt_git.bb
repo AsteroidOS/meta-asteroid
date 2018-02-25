@@ -23,4 +23,4 @@ do_configure_prepend() {
 
 FILES_${PN} = "/usr/bin/contextkit-monitor /usr/lib/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
 FILES_${PN}-dev = "/usr/lib/pkgconfig /usr/include/ /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so"
-FILES_${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/"
+FILES_${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/ /opt/tests/"
