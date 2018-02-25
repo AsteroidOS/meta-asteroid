@@ -14,5 +14,5 @@ DEPENDS += "ngfd libhybris"
 
 inherit cmake
 
-FILES_${PN} += "/usr/lib/ngf/"
+FILES_${PN} += "/usr/lib/ngf/ /usr/share/ngfd/plugind.d/"
 FILES_${PN}-dbg += "/usr/lib/ngf/.debug/"
