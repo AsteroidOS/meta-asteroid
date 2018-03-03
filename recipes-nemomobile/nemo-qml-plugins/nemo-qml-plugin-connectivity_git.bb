@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtdeclarative qtbase libconnman-qt5"
+DEPENDS += "qtdeclarative qtbase libconnman-qt5 qofonoext"
 
 FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Connectivity/.debug"
 FILES_${PN} += "/usr/lib/qml/Nemo/Connectivity/"
