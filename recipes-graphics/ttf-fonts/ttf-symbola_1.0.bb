@@ -10,12 +10,9 @@ INHIBIT_DEFAULT_DEPS = "1"
 inherit allarch
 inherit qmake5_paths
 
-S = "${WORKDIR}/symbola"
-SRC_URI = "https://github.com/ugjka/ttf-symbola/raw/master/Symbola.ttf;subdir=${S}"
-# If the file updates in the future, it won't stop compilation, but we'll see some warnings
-BB_STRICT_CHECKSUM = "0"
-SRC_URI[md5sum] = "156be6c48c85484c970d103657e14601"
-SRC_URI[sha256sum] = "98C20D0C96BBEE0CB8F125297BAD388210E2E901FEA89820697488AE0A57D688"
+SRC_URI = "git://github.com/ugjka/ttf-symbola.git;protocol=https"
+SRCREV = "43ba31a30c67d744e43bd9b54647618eb305a472"
+S = "${WORKDIR}/git"
 
 FONT_PACKAGES = "ttf-symbola"
 
