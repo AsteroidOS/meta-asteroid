@@ -13,3 +13,6 @@ EXTRA_USERS_PARAMS = "groupadd system; \
                       groupadd gps; \
                       groupadd -f -g 1024 mtp; \
                       useradd -p '' -G 'audio,video,system,gps,statefs,mtp' ceres"
+
+IMAGE_OVERHEAD_FACTOR = "1.0"
+IMAGE_ROOTFS_EXTRA_SPACE = "262144"
