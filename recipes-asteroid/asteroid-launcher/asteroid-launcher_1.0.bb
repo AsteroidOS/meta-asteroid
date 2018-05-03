@@ -3,11 +3,11 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-launcher"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd089f5d6221d9054029963e332"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=1.0 \
     file://asteroid-launcher.service \
     file://default.conf"
 SRC_URI_append_qemux86 = " file://qemu.conf file://kms-qemu.json"
-SRCREV = "${AUTOREV}"
+SRCREV = "1c96ced97f5ba1d8196bb5ace435803d509730fa"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

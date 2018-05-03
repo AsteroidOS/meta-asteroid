@@ -3,14 +3,14 @@ HOMEPAGE = "https://git.merproject.org/mer-core/lipstick"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https;branch=1.0 \
     file://0001-Disables-tests-and-doc.patch \
     file://0002-notificationcategories-use-ion-icons.patch \
     file://0003-Disable-USB-mode-notifications-on-connect.patch \
     file://0004-ScreenshotService-Use-system-bus-to-workaround-the-s.patch \
     file://0005-BluetoothAgent-Advertise-less-hardware-capabilities-.patch \
     file://Notifications/"
-SRCREV = "${AUTOREV}"
+SRCREV = "3dc5aaa67b419d25f0bca5460a74a811e46591c4"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

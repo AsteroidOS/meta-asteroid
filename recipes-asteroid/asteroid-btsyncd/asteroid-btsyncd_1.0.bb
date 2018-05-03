@@ -3,9 +3,9 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-btsyncd"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https;branch=1.0 \
     file://asteroid-btsyncd.service"
-SRCREV = "${AUTOREV}"
+SRCREV = "224cb0c2ea7c741dc7faaf2610dff18847bad2c9"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
