@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=65d3616852dbf7b1a6d4b53b00626032"
 SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https;branch=1.0 \
     file://locale.conf \
     file://localeEnv.conf"
-SRCREV = "853ffbd23fecf6e2e24d574c23bb8209377a2e99"
+SRCREV = "0491a31b96fcb6a206b6bef995827f5d4390ffcf"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

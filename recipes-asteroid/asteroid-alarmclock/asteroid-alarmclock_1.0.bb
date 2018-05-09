@@ -4,7 +4,7 @@ LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-alarmclock.git;protocol=https;branch=1.0"
-SRCREV = "d10f02ba807823b5722003d99e1516665466187b"
+SRCREV = "56cd8a8c869c1fb431c22a72f907c765ac34a6ef"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
