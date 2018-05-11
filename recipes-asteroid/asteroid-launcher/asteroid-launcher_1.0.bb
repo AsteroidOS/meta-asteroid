@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;bran
     file://asteroid-launcher.service \
     file://default.conf"
 SRC_URI_append_qemux86 = " file://qemu.conf file://kms-qemu.json"
-SRCREV = "ba8d1c4b2056fde26e03d2d42c161413e547e5e4"
+SRCREV = "99760d3c874009a641a74456fcb3046db21103e3"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
