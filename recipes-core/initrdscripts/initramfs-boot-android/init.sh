@@ -30,7 +30,7 @@ setup_devtmpfs() {
     test -c $1/dev/socket || mkdir -m 0755 $1/dev/socket
 }
 
-echo "Mounting relevant filesystems ..."
+info "Mounting relevant filesystems ..."
 mkdir -m 0755 /proc
 mount -t proc proc /proc
 mkdir -m 0755 /sys
