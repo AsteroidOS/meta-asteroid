@@ -5,17 +5,17 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/sensorfw.git;protocol=https \
            file://sensorfwd.service"
-SRCREV = "bcdff5b18a1f5d5a28533a2201c9b357a613bb53"
+SRCREV = "8bd068fb0210146c685c3c7fe148bb8e253e8ddd"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit qmake5
 
+EXTRA_QMAKEVARS_PRE = "CONFIG+=autohybris"
+
 do_configure_prepend() {
     sed -i '/include( doc\/doc.pri )/d' ../git/sensorfw.pro
-    sed -i 's@=/usr/include/android@=${STAGING_DIR_TARGET}/usr/include/android@' ../git/core/hybris.pro ../git/config.tests/hybris/hybris.pro ../git/adaptors/hybrisproximityadaptor/hybrisproximityadaptor.pro ../git/adaptors/hybrisorientationadaptor/hybrisorientationadaptor.pro ../git/adaptors/hybrismagnetometeradaptor/hybrismagnetometeradaptor.pro ../git/adaptors/hybrisgyroscopeadaptor/hybrisgyroscopeadaptor.pro ../git/adaptors/hybrisalsadaptor/hybrisalsadaptor.pro ../git/adaptors/hybrisaccelerometer/hybrisaccelerometer.pro ../git/adaptors/hybrispressureadaptor/hybrispressureadaptor.pro ../git/adaptors/hybrisstepcounteradaptor/hybrisstepcounteradaptor.pro
-
     sed -i 's:-L/usr/lib ::' ../git/core/hybris.pro
 }
 
