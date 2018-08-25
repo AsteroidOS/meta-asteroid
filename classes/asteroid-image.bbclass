@@ -2,7 +2,7 @@ inherit core-image
 inherit extrausers
 LICENSE = "GPL-2.0"
 
-IMAGE_FEATURES += "package-management"
+IMAGE_FEATURES += "package-management debug-tweaks"
 
 IMAGE_INSTALL += " \
 base-files base-passwd systemd busybox iproute2 connman pam-plugin-loginuid bluez5 pulseaudio-server openssh-sshd openssh-sftp-server openssh-scp statefs dsme mce ngfd timed sensorfw android-init mapplauncherd-booster-qtcomponents usb-moded ofono \
