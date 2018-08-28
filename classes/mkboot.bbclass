@@ -35,30 +35,26 @@ do_install_append() {
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
 }
 
-pkg_postinst_kernel-image_append () {
-    if [ x"$D" = "x" ] ; then
-        if [ ! -e /boot/boot.img ] ; then
-            # if the boot image is not available here something went wrong and we don't
-            # continue with anything that can be dangerous
-            exit 1
-        fi
-
-        BOOT_PARTITION_NAMES="LNX boot KERNEL"
-        for i in $BOOT_PARTITION_NAMES; do
-            path=$(find /dev -name "*$i*"|grep disk| head -n 1)
-            [ -n "$path" ] && break
-        done
-
-        if [ -z "$path" ] ; then
-            echo "Boot partition does not exist!"
-            exit 1
-        fi
-
-        echo "Flashing the new kernel /boot/boot.img to $path"
-        dd if=/boot/boot.img of=$path
-    else
+pkg_postinst_ontarget_${KERNEL_PACKAGE_NAME}-image_append () {
+    if [ ! -e /boot/boot.img ] ; then
+        # if the boot image is not available here something went wrong and we don't
+        # continue with anything that can be dangerous
         exit 1
     fi
+
+    BOOT_PARTITION_NAMES="LNX boot KERNEL"
+    for i in $BOOT_PARTITION_NAMES; do
+        path=$(find /dev -name "*$i*"|grep disk| head -n 1)
+        [ -n "$path" ] && break
+    done
+
+    if [ -z "$path" ] ; then
+        echo "Boot partition does not exist!"
+        exit 1
+    fi
+
+    echo "Flashing the new kernel /boot/boot.img to $path"
+    dd if=/boot/boot.img of=$path
 }
 
 FILES_${KERNEL_PACKAGE_NAME}-image += "/${KERNEL_IMAGEDEST}/boot.img"

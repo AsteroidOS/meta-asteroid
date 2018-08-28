@@ -42,9 +42,7 @@ do_install_append() {
     fi
 }
 
-pkg_postinst_${PN}() {
-#!/bin/sh -e
-if [ x"$D" = "x" ]; then
+pkg_postinst_ontarget_${PN}() {
     setcap CAP_SYS_ADMIN=ep /usr/bin/statefs
 
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-default.so
@@ -57,9 +55,6 @@ if [ x"$D" = "x" ]; then
     /usr/lib/statefs/provider-action register /usr/lib/statefs/libprovider-mce.so qt5 --system
     /usr/lib/statefs/provider-action register /usr/lib/statefs/libprovider-profile.so qt5
     /usr/lib/statefs/provider-action register /etc/timed-statefs.conf inout
-else
-    exit 1
-fi
 }
 
 FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /home/ceres/.config/systemd/user/default.target.wants/"

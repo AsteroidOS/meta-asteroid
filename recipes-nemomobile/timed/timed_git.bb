@@ -31,13 +31,8 @@ do_install_append() {
     cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
-pkg_postinst_${PN}() {
-#!/bin/sh -e
-if [ x"$D" = "x" ]; then
+pkg_postinst_ontarget_${PN}() {
     setcap cap_sys_time+ep /usr/bin/timed-qt5
-else
-    exit 1
-fi
 }
 
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
