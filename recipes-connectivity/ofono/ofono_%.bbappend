@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/ofono:"
 SRC_URI = "git://github.com/rilmodem/ofono;protocol=https \
            file://ofono.service \
            file://ofono \
+           file://use-python3.patch \
            file://0001-Makefile.am-Fixes-include-paths.patch"
 SRCREV = "efc9c0a85d32706bc088e449e847be41dcc73b3d"
 
