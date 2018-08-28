@@ -17,8 +17,8 @@ index 8b28613..4b7f016 100644
  
 -m4_define(pa_major, `echo $VERSION | cut -d. -f1 | cut -d- -f1`)
 -m4_define(pa_minor, `echo $VERSION | cut -d. -f2 | cut -d- -f1`)
-+m4_define(pa_major, `echo 10`)
-+m4_define(pa_minor, `echo 0`)
++m4_define(pa_major, `echo 11`)
++m4_define(pa_minor, `echo 1`)
  
  AC_SUBST(PA_MAJOR, pa_major)
  AC_SUBST(PA_MAJORMINOR, pa_major.pa_minor)
