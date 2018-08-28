@@ -1,36 +1,36 @@
-From dca3f379bc42ed7917efc243765e322dd2720f34 Mon Sep 17 00:00:00 2001
+From 4e49ed29f148d11f5184b645b833a42076b2d5b1 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 3 Oct 2016 19:43:09 +0200
 Subject: [PATCH] notificationcategories: use ion icons
 
 ---
- src/notificationcategories/device.added.conf                       | 2 +-
- src/notificationcategories/device.conf                             | 2 +-
- src/notificationcategories/device.error.conf                       | 2 +-
- src/notificationcategories/device.removed.conf                     | 2 +-
- src/notificationcategories/network.conf                            | 2 +-
- src/notificationcategories/network.connected.conf                  | 2 +-
- src/notificationcategories/network.disconnected.conf               | 2 +-
- src/notificationcategories/network.error.conf                      | 2 +-
- src/notificationcategories/x-nemo.battery.chargingcomplete.conf    | 2 +-
- src/notificationcategories/x-nemo.battery.chargingnotstarted.conf  | 2 +-
- src/notificationcategories/x-nemo.battery.conf                     | 2 +-
- src/notificationcategories/x-nemo.battery.enterpsm.conf            | 2 +-
- src/notificationcategories/x-nemo.battery.exitpsm.conf             | 2 +-
- src/notificationcategories/x-nemo.battery.lowbattery.conf          | 2 +-
- src/notificationcategories/x-nemo.battery.notenoughpower.conf      | 2 +-
- src/notificationcategories/x-nemo.battery.recharge.conf            | 2 +-
- src/notificationcategories/x-nemo.battery.removecharger.conf       | 2 +-
- src/notificationcategories/x-nemo.battery.shutdown.conf            | 2 +-
- src/notificationcategories/x-nemo.battery.temperature.conf         | 2 +-
- src/notificationcategories/x-nemo.connectionselector.cellular.conf | 2 +-
- src/notificationcategories/x-nemo.connectionselector.wifi.conf     | 2 +-
- src/notificationcategories/x-nemo.device.locked.conf               | 2 +-
- src/notificationcategories/x-nemo.system.diskspace.conf            | 6 +++---
+ src/notificationcategories/device.added.conf                | 2 +-
+ src/notificationcategories/device.conf                      | 2 +-
+ src/notificationcategories/device.error.conf                | 2 +-
+ src/notificationcategories/device.removed.conf              | 2 +-
+ src/notificationcategories/network.conf                     | 2 +-
+ src/notificationcategories/network.connected.conf           | 2 +-
+ src/notificationcategories/network.disconnected.conf        | 2 +-
+ src/notificationcategories/network.error.conf               | 2 +-
+ .../x-nemo.battery.chargingcomplete.conf                    | 2 +-
+ .../x-nemo.battery.chargingnotstarted.conf                  | 2 +-
+ src/notificationcategories/x-nemo.battery.conf              | 2 +-
+ src/notificationcategories/x-nemo.battery.enterpsm.conf     | 2 +-
+ src/notificationcategories/x-nemo.battery.exitpsm.conf      | 2 +-
+ src/notificationcategories/x-nemo.battery.lowbattery.conf   | 2 +-
+ .../x-nemo.battery.notenoughpower.conf                      | 2 +-
+ src/notificationcategories/x-nemo.battery.recharge.conf     | 2 +-
+ .../x-nemo.battery.removecharger.conf                       | 2 +-
+ src/notificationcategories/x-nemo.battery.shutdown.conf     | 2 +-
+ src/notificationcategories/x-nemo.battery.temperature.conf  | 2 +-
+ .../x-nemo.connectionselector.cellular.conf                 | 2 +-
+ .../x-nemo.connectionselector.wifi.conf                     | 2 +-
+ src/notificationcategories/x-nemo.device.locked.conf        | 2 +-
+ src/notificationcategories/x-nemo.system.diskspace.conf     | 6 +++---
  23 files changed, 25 insertions(+), 25 deletions(-)
 
 diff --git a/src/notificationcategories/device.added.conf b/src/notificationcategories/device.added.conf
-index 189c9e1..508bd80 100644
+index 189c9e1a..2fd6df9a 100644
 --- a/src/notificationcategories/device.added.conf
 +++ b/src/notificationcategories/device.added.conf
 @@ -1,4 +1,4 @@
@@ -40,7 +40,7 @@ index 189c9e1..508bd80 100644
  transient=true
  x-nemo-feedback=accessory_connected
 diff --git a/src/notificationcategories/device.conf b/src/notificationcategories/device.conf
-index b257b04..6941bf0 100644
+index b257b04e..6941bf04 100644
 --- a/src/notificationcategories/device.conf
 +++ b/src/notificationcategories/device.conf
 @@ -1,3 +1,3 @@
@@ -49,7 +49,7 @@ index b257b04..6941bf0 100644
  urgency=0
  transient=true
 diff --git a/src/notificationcategories/device.error.conf b/src/notificationcategories/device.error.conf
-index 2f39c64..2c6b9dd 100644
+index 2f39c645..1d0eb977 100644
 --- a/src/notificationcategories/device.error.conf
 +++ b/src/notificationcategories/device.error.conf
 @@ -1,4 +1,4 @@
@@ -59,7 +59,7 @@ index 2f39c64..2c6b9dd 100644
  transient=true
  x-nemo-feedback=general_warning
 diff --git a/src/notificationcategories/device.removed.conf b/src/notificationcategories/device.removed.conf
-index fc9b36a..8a6a6c7 100644
+index fc9b36a6..1e677a6b 100644
 --- a/src/notificationcategories/device.removed.conf
 +++ b/src/notificationcategories/device.removed.conf
 @@ -1,3 +1,3 @@
@@ -68,7 +68,7 @@ index fc9b36a..8a6a6c7 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/network.conf b/src/notificationcategories/network.conf
-index 94f144c..7be6202 100644
+index 94f144cb..7be62027 100644
 --- a/src/notificationcategories/network.conf
 +++ b/src/notificationcategories/network.conf
 @@ -1,3 +1,3 @@
@@ -77,7 +77,7 @@ index 94f144c..7be6202 100644
  urgency=0
  transient=true
 diff --git a/src/notificationcategories/network.connected.conf b/src/notificationcategories/network.connected.conf
-index 2c95596..b312f98 100644
+index 2c955962..b312f98a 100644
 --- a/src/notificationcategories/network.connected.conf
 +++ b/src/notificationcategories/network.connected.conf
 @@ -1,3 +1,3 @@
@@ -86,7 +86,7 @@ index 2c95596..b312f98 100644
  urgency=1
  transient=true
 diff --git a/src/notificationcategories/network.disconnected.conf b/src/notificationcategories/network.disconnected.conf
-index 2c95596..b312f98 100644
+index 2c955962..b312f98a 100644
 --- a/src/notificationcategories/network.disconnected.conf
 +++ b/src/notificationcategories/network.disconnected.conf
 @@ -1,3 +1,3 @@
@@ -95,7 +95,7 @@ index 2c95596..b312f98 100644
  urgency=1
  transient=true
 diff --git a/src/notificationcategories/network.error.conf b/src/notificationcategories/network.error.conf
-index a991e07..de453f7 100644
+index a991e076..de453f7c 100644
 --- a/src/notificationcategories/network.error.conf
 +++ b/src/notificationcategories/network.error.conf
 @@ -1,3 +1,3 @@
@@ -104,7 +104,7 @@ index a991e07..de453f7 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.battery.chargingcomplete.conf b/src/notificationcategories/x-nemo.battery.chargingcomplete.conf
-index 2b90ec0..402ae28 100644
+index 2b90ec06..402ae280 100644
 --- a/src/notificationcategories/x-nemo.battery.chargingcomplete.conf
 +++ b/src/notificationcategories/x-nemo.battery.chargingcomplete.conf
 @@ -1,3 +1,3 @@
@@ -113,7 +113,7 @@ index 2b90ec0..402ae28 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.battery.chargingnotstarted.conf b/src/notificationcategories/x-nemo.battery.chargingnotstarted.conf
-index 3e24652..3263e2e 100644
+index 3e24652f..3263e2e6 100644
 --- a/src/notificationcategories/x-nemo.battery.chargingnotstarted.conf
 +++ b/src/notificationcategories/x-nemo.battery.chargingnotstarted.conf
 @@ -1,4 +1,4 @@
@@ -123,7 +123,7 @@ index 3e24652..3263e2e 100644
  expireTimeout=60000
  x-nemo-feedback=general_warning
 diff --git a/src/notificationcategories/x-nemo.battery.conf b/src/notificationcategories/x-nemo.battery.conf
-index c4b94af..bcb0a04 100644
+index c4b94af8..bcb0a048 100644
 --- a/src/notificationcategories/x-nemo.battery.conf
 +++ b/src/notificationcategories/x-nemo.battery.conf
 @@ -1,4 +1,4 @@
@@ -133,7 +133,7 @@ index c4b94af..bcb0a04 100644
  transient=true
  x-nemo-feedback=charging_started
 diff --git a/src/notificationcategories/x-nemo.battery.enterpsm.conf b/src/notificationcategories/x-nemo.battery.enterpsm.conf
-index 32c9db7..0857ec0 100644
+index 32c9db7b..0857ec02 100644
 --- a/src/notificationcategories/x-nemo.battery.enterpsm.conf
 +++ b/src/notificationcategories/x-nemo.battery.enterpsm.conf
 @@ -1,4 +1,4 @@
@@ -143,7 +143,7 @@ index 32c9db7..0857ec0 100644
  transient=true
  x-nemo-feedback=battery_low
 diff --git a/src/notificationcategories/x-nemo.battery.exitpsm.conf b/src/notificationcategories/x-nemo.battery.exitpsm.conf
-index 80dfcff..72e2085 100644
+index 80dfcff0..72e20851 100644
 --- a/src/notificationcategories/x-nemo.battery.exitpsm.conf
 +++ b/src/notificationcategories/x-nemo.battery.exitpsm.conf
 @@ -1,3 +1,3 @@
@@ -152,7 +152,7 @@ index 80dfcff..72e2085 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.battery.lowbattery.conf b/src/notificationcategories/x-nemo.battery.lowbattery.conf
-index 9465dce..957a780 100644
+index 9465dce5..957a7809 100644
 --- a/src/notificationcategories/x-nemo.battery.lowbattery.conf
 +++ b/src/notificationcategories/x-nemo.battery.lowbattery.conf
 @@ -1,4 +1,4 @@
@@ -162,7 +162,7 @@ index 9465dce..957a780 100644
  expireTimeout=60000
  x-nemo-feedback=battery_low
 diff --git a/src/notificationcategories/x-nemo.battery.notenoughpower.conf b/src/notificationcategories/x-nemo.battery.notenoughpower.conf
-index f85dc4c..ef98ae6 100644
+index f85dc4c5..ef98ae65 100644
 --- a/src/notificationcategories/x-nemo.battery.notenoughpower.conf
 +++ b/src/notificationcategories/x-nemo.battery.notenoughpower.conf
 @@ -1,3 +1,3 @@
@@ -171,7 +171,7 @@ index f85dc4c..ef98ae6 100644
  urgency=2
  expireTimout=60000
 diff --git a/src/notificationcategories/x-nemo.battery.recharge.conf b/src/notificationcategories/x-nemo.battery.recharge.conf
-index b28757d..0da002a 100644
+index b28757d7..0da002ab 100644
 --- a/src/notificationcategories/x-nemo.battery.recharge.conf
 +++ b/src/notificationcategories/x-nemo.battery.recharge.conf
 @@ -1,4 +1,4 @@
@@ -181,7 +181,7 @@ index b28757d..0da002a 100644
  transient=true
  x-nemo-feedback=battery_empty
 diff --git a/src/notificationcategories/x-nemo.battery.removecharger.conf b/src/notificationcategories/x-nemo.battery.removecharger.conf
-index 725d47e..970417d 100644
+index 725d47e4..970417d9 100644
 --- a/src/notificationcategories/x-nemo.battery.removecharger.conf
 +++ b/src/notificationcategories/x-nemo.battery.removecharger.conf
 @@ -1,3 +1,3 @@
@@ -190,7 +190,7 @@ index 725d47e..970417d 100644
  urgency=2
  expireTimeout=60000
 diff --git a/src/notificationcategories/x-nemo.battery.shutdown.conf b/src/notificationcategories/x-nemo.battery.shutdown.conf
-index b28757d..0da002a 100644
+index b28757d7..0da002ab 100644
 --- a/src/notificationcategories/x-nemo.battery.shutdown.conf
 +++ b/src/notificationcategories/x-nemo.battery.shutdown.conf
 @@ -1,4 +1,4 @@
@@ -200,7 +200,7 @@ index b28757d..0da002a 100644
  transient=true
  x-nemo-feedback=battery_empty
 diff --git a/src/notificationcategories/x-nemo.battery.temperature.conf b/src/notificationcategories/x-nemo.battery.temperature.conf
-index 6b617c7..09d94f7 100644
+index 6b617c70..09d94f7e 100644
 --- a/src/notificationcategories/x-nemo.battery.temperature.conf
 +++ b/src/notificationcategories/x-nemo.battery.temperature.conf
 @@ -1,4 +1,4 @@
@@ -210,7 +210,7 @@ index 6b617c7..09d94f7 100644
  expireTimeout=60000
  x-nemo-feedback=general_warning
 diff --git a/src/notificationcategories/x-nemo.connectionselector.cellular.conf b/src/notificationcategories/x-nemo.connectionselector.cellular.conf
-index abed616..11575bf 100644
+index abed6166..11575bf5 100644
 --- a/src/notificationcategories/x-nemo.connectionselector.cellular.conf
 +++ b/src/notificationcategories/x-nemo.connectionselector.cellular.conf
 @@ -1,3 +1,3 @@
@@ -219,7 +219,7 @@ index abed616..11575bf 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.connectionselector.wifi.conf b/src/notificationcategories/x-nemo.connectionselector.wifi.conf
-index acff943..780ad2f 100644
+index acff943a..780ad2fe 100644
 --- a/src/notificationcategories/x-nemo.connectionselector.wifi.conf
 +++ b/src/notificationcategories/x-nemo.connectionselector.wifi.conf
 @@ -1,3 +1,3 @@
@@ -228,7 +228,7 @@ index acff943..780ad2f 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.device.locked.conf b/src/notificationcategories/x-nemo.device.locked.conf
-index b015f43..149c393 100644
+index b015f43c..149c393d 100644
 --- a/src/notificationcategories/x-nemo.device.locked.conf
 +++ b/src/notificationcategories/x-nemo.device.locked.conf
 @@ -1,3 +1,3 @@
@@ -237,7 +237,7 @@ index b015f43..149c393 100644
  urgency=2
  transient=true
 diff --git a/src/notificationcategories/x-nemo.system.diskspace.conf b/src/notificationcategories/x-nemo.system.diskspace.conf
-index 809a1e1..efef842 100644
+index 809a1e16..efef8429 100644
 --- a/src/notificationcategories/x-nemo.system.diskspace.conf
 +++ b/src/notificationcategories/x-nemo.system.diskspace.conf
 @@ -1,5 +1,5 @@
@@ -249,6 +249,3 @@ index 809a1e1..efef842 100644
 +x-nemo-icon=ios-warning
 +x-nemo-preview-icon=ios-settings
  x-nemo-priority=70
--- 
-2.9.3
-

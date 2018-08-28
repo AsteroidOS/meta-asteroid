@@ -1,4 +1,4 @@
-From d1701f01b300319c2c4a9e6cb7e891d8a68d1192 Mon Sep 17 00:00:00 2001
+From 46c9290b58958dff65119caf898ca821ba87e34f Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 28 Feb 2017 12:40:30 +0100
 Subject: [PATCH] Disables tests and doc
@@ -8,7 +8,7 @@ Subject: [PATCH] Disables tests and doc
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/lipstick.pro b/lipstick.pro
-index 78ee362d..28f07219 100644
+index 016139da..9fda0c5c 100644
 --- a/lipstick.pro
 +++ b/lipstick.pro
 @@ -1,5 +1,5 @@
@@ -18,6 +18,3 @@ index 78ee362d..28f07219 100644
  
  plugin.depends = src
  tools.depends = src
--- 
-2.11.0
-

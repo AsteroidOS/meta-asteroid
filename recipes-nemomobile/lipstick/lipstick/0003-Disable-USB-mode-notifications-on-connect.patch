@@ -1,4 +1,4 @@
-From 356916fcbbd151eb06bc5fcc72916c09331800d2 Mon Sep 17 00:00:00 2001
+From 67b4066d4e1ce6c048f3b6ebf805a52a87864339 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 13 Apr 2017 11:48:18 +0200
 Subject: [PATCH] Disable USB mode notifications on connect
@@ -8,15 +8,12 @@ Subject: [PATCH] Disable USB mode notifications on connect
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/notificationcategories/device.added.conf b/src/notificationcategories/device.added.conf
-index 508bd806..cd061671 100644
+index 2fd6df9a..c2b407d3 100644
 --- a/src/notificationcategories/device.added.conf
 +++ b/src/notificationcategories/device.added.conf
 @@ -1,4 +1,4 @@
- x-nemo-icon=usb
+ x-nemo-icon=ios-usb
 -urgency=2
 +urgency=0
  transient=true
  x-nemo-feedback=accessory_connected
--- 
-2.11.0
-
