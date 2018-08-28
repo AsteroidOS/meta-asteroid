@@ -10,7 +10,7 @@ SRCREV = "f4ddfe58bcee6a6928c9cf659c02c96520b24ba9"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-DEPENDS += "pulseaudio"
+DEPENDS += "pulseaudio libcheck"
 
 inherit autotools pkgconfig
 B = "${S}"
