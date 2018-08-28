@@ -59,4 +59,4 @@ pkg_postinst_kernel-image_append () {
     fi
 }
 
-FILES_kernel-image += "/${KERNEL_IMAGEDEST}/boot.img"
+FILES_${KERNEL_PACKAGE_NAME}-image += "/${KERNEL_IMAGEDEST}/boot.img"
