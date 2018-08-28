@@ -1,0 +1,26 @@
+From e7a56333775f4015f16ac87c2b4977e2bfe14a74 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 27 Aug 2018 20:09:37 +0200
+Subject: [PATCH] Hardcode the firmware-path value which can not be set to
+ multiple pdirectories from the Meson variable
+
+---
+ src/udev/udev-builtin-firmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/udev/udev-builtin-firmware.c b/src/udev/udev-builtin-firmware.c
+index bd8c2fb966..b56b34407b 100644
+--- a/src/udev/udev-builtin-firmware.c
++++ b/src/udev/udev-builtin-firmware.c
+@@ -74,7 +74,7 @@ exit:
+ 
+ static int builtin_firmware(struct udev_device *dev, int argc, char *argv[], bool test) {
+         struct udev *udev = udev_device_get_udev(dev);
+-        static const char *searchpath[] = { FIRMWARE_PATH };
++        static const char *searchpath[] = { "/lib/firmware/", "/etc/firmware/", "/system/etc/firmware/", "/vendor/firmware/"};
+         char loadpath[UTIL_PATH_SIZE];
+         char datapath[UTIL_PATH_SIZE];
+         char fwpath[UTIL_PATH_SIZE];
+-- 
+2.18.0
+

@@ -4,7 +4,8 @@ SRC_URI_append = " file://50-video.rules \
                   file://dbus.service \
                   file://dbus.socket \
                   file://dbus.conf \
-                  file://logind.conf"
+                  file://logind.conf \
+                  file://0001-Hardcode-the-firmware-path-value-which-can-not-be-se.patch"
 
 do_install_append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
