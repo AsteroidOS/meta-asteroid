@@ -7,7 +7,7 @@ PR = "r0"
 INHIBIT_DEFAULT_DEPS = "1"
 
 inherit allarch
-inherit qmake5_paths
+inherit fontcache
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https"
 SRCREV = "871b02849988786a76b5948857fdb541417dc94d"
