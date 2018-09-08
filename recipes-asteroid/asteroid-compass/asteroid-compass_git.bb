@@ -10,5 +10,5 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qml-asteroid"
+DEPENDS += "qml-asteroid qtdeclarative-native"
 RDEPENDS_${PN} += "qtsensors qtsensors-qmlplugins qtsensors-plugins"

@@ -13,7 +13,7 @@ inherit qmake5
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents"
+DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"
 RDEPENDS_${PN} += "qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
 
 do_configure_prepend() {
