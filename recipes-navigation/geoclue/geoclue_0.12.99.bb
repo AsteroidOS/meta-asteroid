@@ -8,7 +8,7 @@ SECTION = "console/network"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=149a9c1e8e40b7453ce8c62ed489f481"
 
-DEPENDS = "glib-2.0 dbus dbus-glib libxml2 libxslt-native dbus-glib-native"
+DEPENDS = "glib-2.0 dbus dbus-glib libxml2 libxslt-native dbus-glib-native python3-six-native"
 
 inherit autotools pkgconfig gtk-doc
 
