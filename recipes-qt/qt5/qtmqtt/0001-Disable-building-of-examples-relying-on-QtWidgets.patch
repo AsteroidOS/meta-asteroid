@@ -1,0 +1,25 @@
+From b2ab566a18c2b7a817951b45bc2b52431438b1e2 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 23 Sep 2018 21:47:31 +0200
+Subject: [PATCH] Disable building of examples relying on QtWidgets
+
+---
+ examples/mqtt/mqtt.pro | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/examples/mqtt/mqtt.pro b/examples/mqtt/mqtt.pro
+index 767ed5e..09dae5e 100644
+--- a/examples/mqtt/mqtt.pro
++++ b/examples/mqtt/mqtt.pro
+@@ -1,7 +1,4 @@
+ TEMPLATE = subdirs
+-SUBDIRS += \
+-           simpleclient \
+-           subscriptions
+ 
+ qtHaveModule(quick): SUBDIRS += quicksubscription
+ qtHaveModule(websockets): SUBDIRS += websocketsubscription
+-- 
+2.11.0
+
+
