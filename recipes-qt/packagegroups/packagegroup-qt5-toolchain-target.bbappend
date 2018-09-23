@@ -7,6 +7,7 @@ RDEPENDS_${PN}_remove = "qttools-mkspecs"
 RDEPENDS_${PN}_remove = "qttools-staticdev"
 RDEPENDS_${PN}_remove = "qtscript-dev"
 RDEPENDS_${PN}_remove = "qtscript-mkspecs"
+RDEPENDS_${PN}_remove = "qtcharts-mkspecs"
 
 RDEPENDS_${PN} += "qtvirtualkeyboard-dev"
 RDEPENDS_${PN} += "qtvirtualkeyboard-plugins"
