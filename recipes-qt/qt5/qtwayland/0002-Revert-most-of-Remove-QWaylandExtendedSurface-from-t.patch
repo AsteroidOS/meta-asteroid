@@ -1,41 +1,41 @@
-From f4c58632b4a701db245b3cfa4441a9eae0c71631 Mon Sep 17 00:00:00 2001
+From 6f538d1e52d61d46d9a7f9875463ffbf666a6e3a Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Sun, 9 Sep 2018 00:00:14 +0200
+Date: Mon, 1 Oct 2018 23:18:42 +0200
 Subject: [PATCH] Revert most of "Remove QWaylandExtendedSurface* from the
  private compositor API"
 
-This reverts most of the commit 42cf0bd5fa14075bf90e925010b36c83e03f7f87.
 ---
- src/compositor/extensions/extensions.pri      |   3 +
- .../extensions/qwlextendedsurface.cpp         | 188 ++++++++++++++++++
- .../extensions/qwlextendedsurface_p.h         | 159 +++++++++++++++
- 3 files changed, 350 insertions(+)
+ src/compositor/extensions/extensions.pri         |   3 +
+ src/compositor/extensions/qwlextendedsurface.cpp | 188 +++++++++++++++++++++++
+ src/compositor/extensions/qwlextendedsurface_p.h | 159 +++++++++++++++++++
+ sync.profile                                     |   2 +
+ 4 files changed, 352 insertions(+)
  create mode 100644 src/compositor/extensions/qwlextendedsurface.cpp
  create mode 100644 src/compositor/extensions/qwlextendedsurface_p.h
 
 diff --git a/src/compositor/extensions/extensions.pri b/src/compositor/extensions/extensions.pri
-index 68e473e1..30c1cc7a 100644
+index 8b36649e..93833462 100644
 --- a/src/compositor/extensions/extensions.pri
 +++ b/src/compositor/extensions/extensions.pri
-@@ -2,6 +2,7 @@ CONFIG += wayland-scanner
- CONFIG += generated_privates
- 
+@@ -5,6 +5,7 @@ CONFIG += generated_privates
+ private_headers.CONFIG += no_check_exist
+
  WAYLANDSERVERSOURCES += \
 +    ../extensions/surface-extension.xml \
      ../extensions/touch-extension.xml \
      ../extensions/qtkey-extension.xml \
      ../extensions/qt-windowmanager.xml \
-@@ -11,6 +12,7 @@ WAYLANDSERVERSOURCES += \
+@@ -14,6 +15,7 @@ WAYLANDSERVERSOURCES += \
      ../3rdparty/protocol/ivi-application.xml \
- 
+
  HEADERS += \
 +    extensions/qwlextendedsurface_p.h \
      extensions/qwlqttouch_p.h \
      extensions/qwlqtkey_p.h \
      extensions/qwaylandshell.h \
-@@ -34,6 +36,7 @@ HEADERS += \
+@@ -37,6 +39,7 @@ HEADERS += \
      extensions/qwaylandivisurface_p.h \
- 
+
  SOURCES += \
 +    extensions/qwlextendedsurface.cpp \
      extensions/qwlqttouch.cpp \
@@ -400,6 +400,26 @@ index 00000000..8ad89619
 +QT_END_NAMESPACE
 +
 +#endif // WLEXTENDEDSURFACE_H
--- 
-2.19.0.rc2
+diff --git a/sync.profile b/sync.profile
+index a2da7dbc..0e94624a 100644
+--- a/sync.profile
++++ b/sync.profile
+@@ -41,6 +41,7 @@
+         "^wayland-xdg-shell-unstable-v6-client-protocol.h",
+     ],
+     "$basedir/src/compositor" => [
++        "^qwayland-server-surface-extension.h",
+         "^qwayland-server-wayland.h",
+         "^qwayland-server-hardware-integration.h",
+         "^qwayland-server-ivi-application.h",
+@@ -51,6 +52,7 @@
+         "^qwayland-server-touch-extension.h",
+         "^qwayland-server-xdg-shell-unstable-v6.h",
+         "^qwayland-server-xdg-shell.h",
++        "^wayland-surface-extension-server-protocol.h",
+         "^wayland-hardware-integration-server-protocol.h",
+         "^wayland-ivi-application-server-protocol.h",
+         "^wayland-qt-windowmanager-server-protocol.h",
+--
+2.11.0
 
