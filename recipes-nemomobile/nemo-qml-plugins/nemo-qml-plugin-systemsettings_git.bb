@@ -4,6 +4,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/displaysettings.cpp;beginline=1;endline=31;md5=99ff23884718e3e2c85992a9294d18df"
 
 SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings.git;protocol=https \
+    file://location.conf \
     file://0001-Disable-SSU-dependency.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \
     file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch"
@@ -12,6 +13,10 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
+
+do_install_append() {
+    cp ${WORKDIR}/location.conf ${D}/etc/location/
+}
 
 DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5"
 RDEPENDS_${PN} += "profiled"
