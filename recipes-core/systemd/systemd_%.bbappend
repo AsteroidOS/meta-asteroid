@@ -1,7 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append = " file://50-video.rules \
-                  file://65-android.rules \
-                  file://0001-Hardcode-the-firmware-path-value-which-can-not-be-se.patch"
+                  file://65-android.rules"
 
 do_install_append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
