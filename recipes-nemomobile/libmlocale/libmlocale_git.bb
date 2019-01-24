@@ -7,7 +7,8 @@ SRC_URI = "git://git.merproject.org/mer-core/libmlocale.git;protocol=https \
            file://0001-MIcuConversions-Cast-a-pointer-with-reinterpret_cast.patch \
            file://0002-Disable-a-faulty-chinese-collision-text-building.patch \
            file://0003-Disable-tests-and-doc.patch \
-           file://0004-configure-Use-a-usr-prefix-by-default.patch"
+           file://0004-configure-Use-a-usr-prefix-by-default.patch \
+           file://0005-Make-the-usage-of-icu-namespace-explicit.patch"
 SRCREV = "8ba84e50a3ea099a9582dfb99b27078a6cedde3e"
 PR = "r1"
 PV = "+git${SRCPV}"
