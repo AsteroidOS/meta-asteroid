@@ -6,5 +6,6 @@ do_configure_prepend() {
     echo "#include <linux/compiler-gcc4.h>" > ${S}/include/linux/compiler-gcc5.h
     echo "#include <linux/compiler-gcc5.h>" > ${S}/include/linux/compiler-gcc6.h
     echo "#include <linux/compiler-gcc6.h>" > ${S}/include/linux/compiler-gcc7.h
+    echo "#include <linux/compiler-gcc7.h>" > ${S}/include/linux/compiler-gcc8.h
 }
 
