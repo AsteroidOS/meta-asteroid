@@ -13,9 +13,9 @@ SRC_URI += "file://1002-build-Install-pulsecore-headers.patch \
             file://default.pa"
 
 do_install_append() {
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/pulseaudio.service ]; then
-        ln -s /usr/lib/systemd/user/pulseaudio.service ${D}/home/ceres/.config/systemd/user/default.target.wants/pulseaudio.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/pulseaudio.service ]; then
+        ln -s /usr/lib/systemd/user/pulseaudio.service ${D}/usr/lib/systemd/user/default.target.wants/pulseaudio.service
     fi
 
     mkdir ${D}/etc/pulse/client.conf.d/
@@ -32,4 +32,4 @@ do_install_append() {
     cp -r ${WORKDIR}/nemo-pulseaudio-parameters ${D}/var/lib/nemo-pulseaudio-parameters
 }
 
-FILES_${PN}-server += "/home/ceres/.config/systemd/user/default.target.wants/ /var/lib/nemo-pulseaudio-parameters"
+FILES_${PN}-server += "/usr/lib/systemd/user/default.target.wants/ /var/lib/nemo-pulseaudio-parameters"

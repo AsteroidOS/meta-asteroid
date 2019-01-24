@@ -1,0 +1,96 @@
+From 376fe60640b05a8070eb5e10374e1c93fd4b4b1a Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 2 Dec 2018 21:04:05 +0100
+Subject: [PATCH] Replace usage of set_state with set_state_in_main_thread for
+ pulseaudio 12.2
+
+---
+ src/music/module-meego-music.c   | 2 +-
+ src/record/module-meego-record.c | 2 +-
+ src/voice/voice-raw-sink.c       | 2 +-
+ src/voice/voice-raw-source.c     | 2 +-
+ src/voice/voice-voip-sink.c      | 2 +-
+ src/voice/voice-voip-source.c    | 2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/music/module-meego-music.c b/src/music/module-meego-music.c
+index 0c72cbb..8ada198 100644
+--- a/src/music/module-meego-music.c
++++ b/src/music/module-meego-music.c
+@@ -568,7 +568,7 @@ int pa__init(pa_module*m) {
+     }
+ 
+     u->sink->parent.process_msg = sink_process_msg;
+-    u->sink->set_state = sink_set_state;
++    u->sink->set_state_in_main_thread = sink_set_state;
+     u->sink->update_requested_latency = sink_update_requested_latency;
+     u->sink->request_rewind = sink_request_rewind;
+     u->sink->userdata = u;
+diff --git a/src/record/module-meego-record.c b/src/record/module-meego-record.c
+index f6a93e9..a757f81 100644
+--- a/src/record/module-meego-record.c
++++ b/src/record/module-meego-record.c
+@@ -459,7 +459,7 @@ int pa__init(pa_module*m) {
+     }
+ 
+     u->source->parent.process_msg = source_process_msg;
+-    u->source->set_state = source_set_state;
++    u->source->set_state_in_main_thread = source_set_state;
+     u->source->update_requested_latency = source_update_requested_latency;
+ 
+     u->source->userdata = u;
+diff --git a/src/voice/voice-raw-sink.c b/src/voice/voice-raw-sink.c
+index 79f388e..9248ba1 100644
+--- a/src/voice/voice-raw-sink.c
++++ b/src/voice/voice-raw-sink.c
+@@ -139,7 +139,7 @@ int voice_init_raw_sink(struct userdata *u, const char *name) {
+     }
+ 
+     u->raw_sink->parent.process_msg = raw_sink_process_msg;
+-    u->raw_sink->set_state = raw_sink_set_state;
++    u->raw_sink->set_state_in_main_thread = raw_sink_set_state;
+     u->raw_sink->update_requested_latency = raw_sink_update_requested_latency;
+     u->raw_sink->request_rewind = raw_sink_request_rewind;
+     u->raw_sink->userdata = u;
+diff --git a/src/voice/voice-raw-source.c b/src/voice/voice-raw-source.c
+index 7346f07..f9f174f 100644
+--- a/src/voice/voice-raw-source.c
++++ b/src/voice/voice-raw-source.c
+@@ -104,7 +104,7 @@ int voice_init_raw_source(struct userdata *u, const char *name) {
+     }
+ 
+     u->raw_source->parent.process_msg = raw_source_process_msg;
+-    u->raw_source->set_state = raw_source_set_state;
++    u->raw_source->set_state_in_main_thread = raw_source_set_state;
+     u->raw_source->update_requested_latency = raw_source_update_requested_latency;
+     u->raw_source->userdata = u;
+     pa_source_set_asyncmsgq(u->raw_source, u->master_source->asyncmsgq);
+diff --git a/src/voice/voice-voip-sink.c b/src/voice/voice-voip-sink.c
+index 7d0c0eb..b064553 100644
+--- a/src/voice/voice-voip-sink.c
++++ b/src/voice/voice-voip-sink.c
+@@ -164,7 +164,7 @@ int voice_init_voip_sink(struct userdata *u, const char *name) {
+     }
+ 
+     u->voip_sink->parent.process_msg = voip_sink_process_msg;
+-    u->voip_sink->set_state = voip_sink_set_state;
++    u->voip_sink->set_state_in_main_thread = voip_sink_set_state;
+     u->voip_sink->update_requested_latency = voip_sink_update_requested_latency;
+     u->voip_sink->request_rewind = voip_sink_request_rewind;
+     u->voip_sink->userdata = u;
+diff --git a/src/voice/voice-voip-source.c b/src/voice/voice-voip-source.c
+index afd36b7..6fca246 100644
+--- a/src/voice/voice-voip-source.c
++++ b/src/voice/voice-voip-source.c
+@@ -120,7 +120,7 @@ int voice_init_voip_source(struct userdata *u, const char *name) {
+     }
+ 
+     u->voip_source->parent.process_msg = voip_source_process_msg;
+-    u->voip_source->set_state = voip_source_set_state;
++    u->voip_source->set_state_in_main_thread = voip_source_set_state;
+     u->raw_source->update_requested_latency = voip_source_update_requested_latency;
+     u->voip_source->userdata = u;
+ 
+-- 
+2.19.1
+
