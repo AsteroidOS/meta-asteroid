@@ -1,7 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_append = " file://50-video.rules \
                   file://65-android.rules \
-                  file://logind.conf \
                   file://0001-Hardcode-the-firmware-path-value-which-can-not-be-se.patch"
 
 do_install_append() {
@@ -13,8 +12,6 @@ do_install_append() {
     install -d ${D}/var/lib/systemd/linger
     touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
-
-    install -m 0644 ${WORKDIR}/logind.conf ${D}/etc/systemd/logind.conf
 }
 
 PACKAGECONFIG_append += "pam"
