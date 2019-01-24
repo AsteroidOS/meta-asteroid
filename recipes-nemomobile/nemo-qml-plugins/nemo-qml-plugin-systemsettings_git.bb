@@ -7,7 +7,8 @@ SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings.git;
     file://location.conf \
     file://0001-Disable-SSU-dependency.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \
-    file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch"
+    file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
+    file://0005-Disable-build-of-CertificatteModel-which-is-broken-w.patch"
 SRCREV = "0c3034612fabce0cca18366f6ac04020296428cf"
 PR = "r1"
 PV = "+git${SRCPV}"
