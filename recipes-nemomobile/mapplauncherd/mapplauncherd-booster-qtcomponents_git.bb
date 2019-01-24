@@ -23,9 +23,9 @@ do_configure_prepend() {
 }
 
 do_install_append() {
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-qtcomponents-qt5.service ]; then
-        ln -s /usr/lib/systemd/user/booster-qtcomponents-qt5.service ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-qtcomponents-qt5.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service ]; then
+        ln -s /usr/lib/systemd/user/booster-qtcomponents-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service
     fi
 
     install -d ${D}/var/lib/environment/mapplauncherd
@@ -33,5 +33,5 @@ do_install_append() {
     echo "QT_IM_MODULE=qtvirtualkeyboard" >> ${D}/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
 }
 
-FILES_${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5 /home/ceres/.config/systemd/user/default.target.wants/"
+FILES_${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5 /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

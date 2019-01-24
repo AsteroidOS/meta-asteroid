@@ -1,15 +1,15 @@
 [Unit]
-Description=Application launch booster for Qt5
+Description=Generic application launch booster
 After=dbus.socket
 Requires=dbus.socket
-Wants=booster-qt5-signal.service
 ConditionUser=!root
 
 [Service]
 Type=notify
-ExecStart=/usr/libexec/mapplauncherd/booster-qt5 --systemd
+ExecStart=/usr/libexec/mapplauncherd/booster-generic --systemd
 Restart=always
 RestartSec=1
+OOMScoreAdjust=-250
 
 [Install]
 WantedBy=user-session.target

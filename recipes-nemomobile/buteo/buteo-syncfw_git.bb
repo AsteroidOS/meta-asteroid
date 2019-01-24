@@ -20,14 +20,14 @@ do_configure_prepend() {
 do_install_append() {
     cp ${WORKDIR}/msyncd.service ${D}/usr/lib/systemd/user/msyncd.service
 
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/msyncd.service ]; then
-        ln -s /usr/lib/systemd/user/msyncd.service ${D}/home/ceres/.config/systemd/user/default.target.wants/msyncd.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/msyncd.service ]; then
+        ln -s /usr/lib/systemd/user/msyncd.service ${D}/usr/lib/systemd/user/default.target.wants/msyncd.service
     fi
 }
 
 DEPENDS = "libaccounts-qt5 libsignon-qt5 qtsystems nemo-keepalive"
 
-FILES_${PN} += "/usr/share/glib-2.0/schemas /usr/share/accounts/services/ /usr/lib/systemd /home/ceres/.config/systemd/user/default.target.wants/"
+FILES_${PN} += "/usr/share/glib-2.0/schemas /usr/share/accounts/services/ /usr/lib/systemd /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dev += "/usr/lib/libbuteosyncfw5.prl"
 FILES_${PN}-dbg += "/opt/tests/"

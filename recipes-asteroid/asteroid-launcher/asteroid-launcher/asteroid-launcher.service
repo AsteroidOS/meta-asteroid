@@ -1,6 +1,7 @@
 [Unit]
 Description=The wayland compositors and desktop of AsteroidOS
 Requires=dbus.socket
+ConditionUser=!root
 
 [Service]
 Type=notify

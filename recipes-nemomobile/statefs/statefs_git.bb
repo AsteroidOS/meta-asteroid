@@ -3,7 +3,8 @@ HOMEPAGE = "https://git.merproject.org/mer-core/statefs"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f16c63ad20517dd81888a9ee32c4a0d4"
 
-SRC_URI = "git://git.merproject.org/mer-core/statefs.git;protocol=https"
+SRC_URI = "git://git.merproject.org/mer-core/statefs.git;protocol=https \
+           file://statefs.service"
 SRCREV = "ef73da6fc0721eebedc25c5a7d09ee4b5dc3ba85"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -19,6 +20,7 @@ B = "${WORKDIR}/git"
 
 do_configure_prepend() {
     sed -i "/examples/d" CMakeLists.txt
+    cp ${WORKDIR}/statefs.service ${S}/statefs.service
 }
 
 do_install_append() {
@@ -32,10 +34,10 @@ do_install_append() {
 
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
     install -d ${D}/usr/lib/systemd/user/
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
     mv ${D}/usr/lib/systemd/system/statefs-system.service ${D}/lib/systemd/system/statefs-system.service
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/statefs.service ]; then
-        ln -s /usr/lib/systemd/user/statefs.service ${D}/home/ceres/.config/systemd/user/default.target.wants/statefs.service
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/statefs.service ]; then
+        ln -s /usr/lib/systemd/user/statefs.service ${D}/usr/lib/systemd/user/default.target.wants/statefs.service
     fi
     if [ ! -f ${D}/lib/systemd/system/multi-user.target.wants/statefs-system.service ]; then
         ln -s /lib/systemd/system/statefs-system.service ${D}/lib/systemd/system/multi-user.target.wants/statefs-system.service
@@ -57,5 +59,5 @@ pkg_postinst_ontarget_${PN}() {
     /usr/lib/statefs/provider-action register /etc/timed-statefs.conf inout
 }
 
-FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /home/ceres/.config/systemd/user/default.target.wants/"
+FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dbg += "/opt/"

@@ -2,6 +2,7 @@
 Description=Application launch booster for Qt Components on QtQuick2
 Requires=dbus.socket asteroid-launcher.service
 After=asteroid-launcher.service
+ConditionUser=!root
 
 [Service]
 Type=notify

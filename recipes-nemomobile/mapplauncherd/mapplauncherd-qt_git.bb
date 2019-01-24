@@ -22,12 +22,12 @@ do_configure_prepend() {
 
 do_install_append() {
     rm ${D}/usr/lib/systemd/user/booster-qt5-signal.service
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-qt5.service ]; then
-        ln -s /usr/lib/systemd/user/booster-qt5.service ${D}/home/ceres/.config/systemd/user/default.target.wants/booster-qt5.service
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service ]; then
+        ln -s /usr/lib/systemd/user/booster-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service
     fi
 }
 
-FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd /home/ceres/.config/systemd/user/default.target.wants/"
+FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dev += "/usr/share/mkspecs/features"
 FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

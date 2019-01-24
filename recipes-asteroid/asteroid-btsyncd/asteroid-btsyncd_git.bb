@@ -14,14 +14,14 @@ inherit qmake5 gsettings
 DEPENDS += "qtbase glibmm qtmpris statefs-qt timed qttools-native"
 RDEPENDS_${PN} += "glibmm qtmpris"
 
-FILES_${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /home/ceres/.config/systemd/user/default.target.wants/"
+FILES_${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
 
 do_install_append() {
     install -d ${D}/usr/lib/systemd/user/
-    install -d ${D}/home/ceres/.config/systemd/user/default.target.wants/
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
     cp ../asteroid-btsyncd.service ${D}/usr/lib/systemd/user/
-    if [ ! -f ${D}/home/ceres/.config/systemd/user/default.target.wants/asteroid-btsyncd.service ]; then
-        ln -s /usr/lib/systemd/user/asteroid-btsyncd.service ${D}/home/ceres/.config/systemd/user/default.target.wants/asteroid-btsyncd.service
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service ]; then
+        ln -s /usr/lib/systemd/user/asteroid-btsyncd.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service
     fi
 
     lrelease -idbased ${S}/i18n/asteroid-btsyncd.*.ts

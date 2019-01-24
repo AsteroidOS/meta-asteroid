@@ -1,6 +1,7 @@
 [Unit]
 Description=Non Graphical Feedback Daemon
 Requires=dbus.socket
+ConditionUser=!root
 
 [Service]
 Type=simple

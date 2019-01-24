@@ -2,6 +2,7 @@
 Description=Starts the BLE synchronization daemon
 Requires=dbus.socket
 After=bluetooth.service
+ConditionUser=!root
  
 [Service]
 Type=simple
