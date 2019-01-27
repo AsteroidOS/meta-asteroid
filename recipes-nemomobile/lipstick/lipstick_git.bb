@@ -39,4 +39,4 @@ FILES_${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
 FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
 FILES_${PN}-locale += "/usr/share/translations"
 
-INSANE_SKIP_${PN} += "dev-deps"
+INSANE_SKIP_${PN} += "dev-deps host-user-contaminated"
