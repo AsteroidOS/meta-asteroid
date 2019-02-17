@@ -71,3 +71,5 @@ do_install_append() {
 }
 
 FILES_${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
+
+INSANE_SKIP_${PN} = "ldflags"
