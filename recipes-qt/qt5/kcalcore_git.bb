@@ -11,4 +11,4 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-DEPENDS += "qtbase timed libical"
+DEPENDS += "qtbase timed libical bison-native"
