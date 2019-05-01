@@ -3,9 +3,9 @@ HOMEPAGE = "https://git.merproject.org/mer-core/sensorfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://git.merproject.org/mer-core/sensorfw.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/sensorfw.git;protocol=https \
            file://sensorfwd.service"
-SRCREV = "8bd068fb0210146c685c3c7fe148bb8e253e8ddd"
+SRCREV = "afc06f30205b6906d67b700e04d980a176b2b600"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
