@@ -1,5 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/libhybris:"
-SRC_URI += " file://0001-Disable-the-wifi-and-opencl-modules-as-their-necessa.patch;striplevel=2"
+SRCREV = "fae0a52632893cbf3bb7ce0762147b7067db176b"
 
 DEPENDS += " wayland "
 EXTRA_OECONF += " --enable-experimental --enable-wayland --with-default-egl-platform=wayland --with-default-hybris-ld-library-path=/usr/libexec/hal-droid/system/lib:/vendor/lib:/system/lib"
