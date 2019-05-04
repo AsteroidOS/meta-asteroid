@@ -1,0 +1,20 @@
+#!/bin/sh
+
+serial="$(cat /proc/cmdline | sed 's/.*androidboot.serialno=//' | sed 's/ .*//')"
+
+mkdir -p /config
+mount -t configfs none /config
+mkdir -p /config/usb_gadget/g1
+
+echo 0x0e8d > /config/usb_gadget/g1/idVendor
+echo 0x0010 > /config/usb_gadget/g1/idProduct
+
+mkdir -p /config/usb_gadget/g1/UDC
+
+mkdir /config/usb_gadget/g1/strings/0x409
+echo $serial > /config/usb_gadget/g1/strings/0x409/serialnumber
+echo AsteroidOS > /config/usb_gadget/g1/strings/0x409/manufacturer
+hostname > /config/usb_gadget/g1/strings/0x409/product
+
+mkdir -p /config/usb_gadget/g1/configs/b.1/strings/0x409
+mkdir -p /config/usb_gadget/g1/functions/

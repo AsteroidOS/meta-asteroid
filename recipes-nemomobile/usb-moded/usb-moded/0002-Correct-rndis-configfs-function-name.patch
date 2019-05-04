@@ -1,0 +1,39 @@
+From fe9dfabea9f0009efc61589d6a75565c9e365977 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 4 May 2019 00:51:22 +0200
+Subject: [PATCH] Correct rndis configfs function name
+
+---
+ scripts/set_usb_mode.sh  | 2 +-
+ src/usb_moded-configfs.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/set_usb_mode.sh b/scripts/set_usb_mode.sh
+index 25e35db..31759ab 100755
+--- a/scripts/set_usb_mode.sh
++++ b/scripts/set_usb_mode.sh
+@@ -18,7 +18,7 @@ UDC_DISABLE=""
+ FUNCTION_MASS_STORAGE="mass_storage.usb0"
+ 
+ # "developer_mode"
+-FUNCTION_RNDIS="rndis_bam.rndis"
++FUNCTION_RNDIS="rndis.rndis"
+ 
+ # "mtp_mode"
+ FUNCTION_MTP="ffs.mtp"
+diff --git a/src/usb_moded-configfs.c b/src/usb_moded-configfs.c
+index 8abb66d..5b79c00 100644
+--- a/src/usb_moded-configfs.c
++++ b/src/usb_moded-configfs.c
+@@ -54,7 +54,7 @@
+ #define DEFAULT_GADGET_CTRL_SERIAL       "strings/0x409/serialnumber"
+ 
+ #define DEFAULT_FUNCTION_MASS_STORAGE    "mass_storage.usb0"
+-#define DEFAULT_FUNCTION_RNDIS           "rndis_bam.rndis"
++#define DEFAULT_FUNCTION_RNDIS           "rndis.rndis"
+ #define DEFAULT_FUNCTION_MTP             "ffs.mtp"
+ 
+ #define DEFAULT_RNDIS_CTRL_WCEIS         "wceis"
+-- 
+2.20.1
+

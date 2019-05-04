@@ -3,14 +3,17 @@ HOMEPAGE = "https://github.com/philippedeswert/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-SRC_URI = "git://github.com/philippedeswert/usb-moded.git;protocol=https \
+SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https \
+           file://0001-Remove-hard-dependency-to-ssu-sysinfo-which-is-actua.patch \
+           file://0002-Correct-rndis-configfs-function-name.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
            file://udhcp-daemon.service \
            file://buteo-session.service \
            file://usb-moded \
-           file://init_ffs"
-SRCREV = "67da3f291e7594271bf5ed9faf44e6a8d8ed93e6"
+           file://init_ffs \
+           file://init_gfs"
+SRCREV = "e1e508ea95d89d352bdcf390c2a2fccbf584b909"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -65,6 +68,7 @@ do_install_append() {
 
     install -d ${D}/usr/bin/
     cp ../init_ffs ${D}/usr/bin/init_ffs
+    cp ../init_gfs ${D}/usr/bin/init_gfs
 
     install -d ${D}/var/lib/misc/
     touch ${D}/var/lib/misc/udhcpd.leases
