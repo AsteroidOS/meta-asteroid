@@ -1,0 +1,30 @@
+From 1b7eb9ccabc96ea8ee8b1a0bedb9de556155237b Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 26 May 2019 20:51:14 +0200
+Subject: [PATCH] hwcomposer_backend_v11: fix compatibility with qtbase 5.12
+
+---
+ hwcomposer/hwcomposer_backend_v11.cpp | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/hwcomposer/hwcomposer_backend_v11.cpp b/hwcomposer/hwcomposer_backend_v11.cpp
+index 318e456..1f6f4a6 100644
+--- a/hwcomposer/hwcomposer_backend_v11.cpp
++++ b/hwcomposer/hwcomposer_backend_v11.cpp
+@@ -424,8 +424,11 @@ void HwComposerBackend_v11::handleVSyncEvent()
+     QSet<QWindow *> pendingWindows = m_pendingUpdate;
+     m_pendingUpdate.clear();
+     foreach (QWindow *w, pendingWindows) {
+-        QWindowPrivate *wp = (QWindowPrivate *) QWindowPrivate::get(w);
+-        wp->deliverUpdateRequest();
++        QPlatformWindow *platformWindow = w->handle();
++        if (!platformWindow)
++            continue;
++
++        platformWindow->deliverUpdateRequest();
+     }
+ }
+ 
+-- 
+2.20.1
+

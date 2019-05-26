@@ -13,7 +13,8 @@ DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/andr
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https \
-           file://0003-Fix-build-with-Qt-5.9.patch;striplevel=2"
+           file://0003-Fix-build-with-Qt-5.9.patch;striplevel=2 \
+           file://0005-hwcomposer_backend_v11-fix-compatibility-with-qtbase.patch;striplevel=2"
 S = "${WORKDIR}/git/hwcomposer"
 SRCREV = "bb95d09b893761c25409363e15f7048739c436ba"
 
