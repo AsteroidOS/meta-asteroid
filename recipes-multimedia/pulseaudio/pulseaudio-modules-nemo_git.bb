@@ -4,10 +4,8 @@ LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/pulseaudio-modules-nemo.git;protocol=https \
-           file://0001-configure.ac-Check-hardfp-from-cross-compilation-too.patch \
-           file://0002-Install-modules-to-usr-lib-pulse-12.2.patch \
-           file://0003-Replace-usage-of-set_state-with-set_state_in_main_th.patch"
-SRCREV = "f4ddfe58bcee6a6928c9cf659c02c96520b24ba9"
+           file://0001-configure.ac-Check-hardfp-from-cross-compilation-too.patch"
+SRCREV = "2e771c3d088551ba54337ee3428e075334143b51"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
