@@ -3,10 +3,8 @@ HOMEPAGE = "https://github.com/mer-hybris/pulseaudio-modules-droid"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f294906e6e4eac9d917503a0bbd139b4"
 
-SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https \
-           file://0001-Use-pa_card_put-and-pa_card_choose_initial_profile.patch \
-           file://0002-Install-modules-to-usr-lib-pulse-12.2.patch"
-SRCREV = "e28d1e22d3b0963e457e4fa45b952536ca415c9e"
+SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https"
+SRCREV = "96c4e2ea97bd9fa488f47e6f687ddb22e4c64dd7"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
