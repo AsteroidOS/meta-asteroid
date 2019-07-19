@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 FILESEXTRAPATHS_append := "${THISDIR}/${PN}:"
 SRC_URI = "git://github.com/mer-hybris/ngfd-plugin-droid-vibrator.git;protocol=https \
            file://50-droid-vibrator.ini"
-SRCREV = "d841e43dac31bebca3763001ac0ed958271aeb18"
+SRCREV = "ecb6b8e4b5314aaae784121c946525e1fc8cd9ac"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
