@@ -1,0 +1,30 @@
+From c0d0d5bdc4e003dbf0e06a907dfceccbebb6798a Mon Sep 17 00:00:00 2001
+From: Mohammed Sameer <msameer@foolab.org>
+Date: Mon, 21 Apr 2014 18:23:16 +0300
+Subject: [PATCH 4/5] camerabin: install GST_PHOTOGRAPHY_PROP_EXPOSURE_MODE
+ interface property
+
+---
+ gst-libs/gst/interfaces/photography.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/gst-libs/gst/interfaces/photography.c b/gst-libs/gst/interfaces/photography.c
+index d5a1c85..5fe2412 100644
+--- a/gst-libs/gst/interfaces/photography.c
++++ b/gst-libs/gst/interfaces/photography.c
+@@ -723,4 +723,12 @@ gst_photography_iface_class_init (gpointer g_class)
+           "Which noise reduction modes are enabled (0 = disabled)",
+           GST_TYPE_PHOTOGRAPHY_NOISE_REDUCTION,
+           0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
++  /* Exposure mode */
++  g_object_interface_install_property (g_class,
++      g_param_spec_enum (GST_PHOTOGRAPHY_PROP_EXPOSURE_MODE,
++          "Exposure mode property",
++          "Exposure mode to either automatic or manual",
++          GST_TYPE_PHOTOGRAPHY_EXPOSURE_MODE,
++          0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+ }
+-- 
+2.22.0
+

@@ -1,0 +1,91 @@
+From ec24bd82d72ed4947df4d8471f965d7806875859 Mon Sep 17 00:00:00 2001
+From: Mohammed Sameer <msameer@foolab.org>
+Date: Fri, 18 Apr 2014 15:53:54 +0300
+Subject: [PATCH 3/5] photography: add missing vmethods
+
+---
+ gst-libs/gst/interfaces/photography.c | 12 +++++++++
+ gst-libs/gst/interfaces/photography.h | 37 +++++++++++++++++++++++++++
+ 2 files changed, 49 insertions(+)
+
+diff --git a/gst-libs/gst/interfaces/photography.c b/gst-libs/gst/interfaces/photography.c
+index 1799c52..d5a1c85 100644
+--- a/gst-libs/gst/interfaces/photography.c
++++ b/gst-libs/gst/interfaces/photography.c
+@@ -103,6 +103,18 @@ gst_photography_iface_base_init (GstPhotographyInterface * iface)
+   iface->set_autofocus = NULL;
+   iface->set_config = NULL;
+   iface->get_config = NULL;
++  iface->set_exposure_mode = NULL;
++  iface->get_exposure_mode = NULL;
++  iface->set_analog_gain = NULL;
++  iface->get_analog_gain = NULL;
++  iface->set_lens_focus = NULL;
++  iface->get_lens_focus = NULL;
++  iface->set_color_temperature = NULL;
++  iface->get_color_temperature = NULL;
++  iface->set_min_exposure_time = NULL;
++  iface->get_min_exposure_time = NULL;
++  iface->set_max_exposure_time = NULL;
++  iface->get_max_exposure_time = NULL;
+ }
+ 
+ #define GST_PHOTOGRAPHY_FUNC_TEMPLATE(function_name, param_type) \
+diff --git a/gst-libs/gst/interfaces/photography.h b/gst-libs/gst/interfaces/photography.h
+index 0475d71..932d15c 100644
+--- a/gst-libs/gst/interfaces/photography.h
++++ b/gst-libs/gst/interfaces/photography.h
+@@ -502,6 +502,18 @@ typedef void (*GstPhotographyCapturePrepared) (gpointer data, const GstCaps *con
+  * @set_config: vmethod to set all configuration parameters at once
+  * @get_config: vmethod to get all configuration parameters at once
+  * @get_image_capture_supported_caps: vmethod to get caps describing supported image capture formats
++ * @set_exposure_mode: vmethod to set exposure mode
++ * @get_exposure_mode: vmethod to get exposure mode
++ * @set_analog_gain: vmethod to set analog gain
++ * @get_analog_gain: vmethod to get analog gain
++ * @set_lens_focus: vmethod to set lens focus
++ * @get_lens_focus: vmethod to get lens focus
++ * @set_color_temperature: vmethod to set color temperature
++ * @get_color_temperature: vmethod to get color temperature
++ * @set_min_exposure_time: vmethod to set min exposure time
++ * @get_min_exposure_time: vmethod to get min exposure time
++ * @set_max_exposure_time: vmethod to set max exposure time
++ * @get_max_exposure_time: vmethod to get max exposure time
+  *
+  * #GstPhotographyInterface interface.
+  */
+@@ -546,6 +558,31 @@ typedef struct _GstPhotographyInterface
+   gboolean (*get_noise_reduction)    (GstPhotography * photo, GstPhotographyNoiseReduction * noise_reduction);
+   gboolean (*set_noise_reduction)    (GstPhotography * photo, GstPhotographyNoiseReduction noise_reduction);
+ 
++  gboolean (*set_exposure_mode) (GstPhotography * photo,
++    GstPhotographyExposureMode exposure_mode);
++  gboolean (*get_exposure_mode) (GstPhotography * photo,
++    GstPhotographyExposureMode * exposure_mode);
++  gboolean (*set_analog_gain) (GstPhotography * photo,
++    gfloat analog_gain);
++  gboolean (*get_analog_gain) (GstPhotography * photo,
++    gfloat * analog_gain);
++  gboolean (*set_lens_focus) (GstPhotography * photo,
++    gfloat lens_focus);
++  gboolean (*get_lens_focus) (GstPhotography * photo,
++    gfloat * lens_focus);
++  gboolean (*set_color_temperature) (GstPhotography * photo,
++    guint color_temperature);
++  gboolean (*get_color_temperature) (GstPhotography * photo,
++    guint * color_temperature);
++  gboolean (*set_min_exposure_time) (GstPhotography * photo,
++    guint min_exposure_time);
++  gboolean (*get_min_exposure_time) (GstPhotography * photo,
++    guint * min_exposure_time);
++  gboolean (*set_max_exposure_time) (GstPhotography * photo,
++    guint max_exposure_time);
++  gboolean (*get_max_exposure_time) (GstPhotography * photo,
++    guint * max_exposure_time);
++
+   /* FIXME: remove padding, not needed for interfaces */
+   /*< private > */
+   gpointer _gst_reserved[GST_PADDING];
+-- 
+2.22.0
+
