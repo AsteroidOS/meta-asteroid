@@ -1,0 +1,68 @@
+From a691842974997eddbc513be3ee9e71e4a4569805 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 25 Jul 2019 14:53:48 +0000
+Subject: [PATCH] Remove references to mode that are not in upstream
+ gstreamer1.0-plugins-bad
+
+---
+ gst/droidcamsrc/gstdroidcamsrcphotography.c |  11 +-
+ tools/gstdroidcamsrcconf.c                  |   7 -
+ 2 files changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/gst/droidcamsrc/gstdroidcamsrcphotography.c b/gst/droidcamsrc/gstdroidcamsrcphotography.c
+index 8c737b3..28d5263 100644
+--- a/gst/droidcamsrc/gstdroidcamsrcphotography.c
++++ b/gst/droidcamsrc/gstdroidcamsrcphotography.c
+@@ -159,11 +159,7 @@ struct DataEntry SceneValues[] = {
+   {GST_PHOTOGRAPHY_SCENE_MODE_FIREWORKS, "fireworks"},
+   {GST_PHOTOGRAPHY_SCENE_MODE_PARTY, "party"},
+   {GST_PHOTOGRAPHY_SCENE_MODE_CANDLELIGHT, "candlelight"},
+-  {GST_PHOTOGRAPHY_SCENE_MODE_BARCODE, "barcode"},
+-  {GST_PHOTOGRAPHY_SCENE_MODE_BACKLIGHT, "backlight"},
+-  {GST_PHOTOGRAPHY_SCENE_MODE_FLOWERS, "flowers"},
+-  {GST_PHOTOGRAPHY_SCENE_MODE_AR, "AR"},
+-  {GST_PHOTOGRAPHY_SCENE_MODE_HDR, "hdr"}
++  {GST_PHOTOGRAPHY_SCENE_MODE_BARCODE, "barcode"}
+ };
+ 
+ struct DataEntry ColourToneValues[] = {
+@@ -179,10 +175,7 @@ struct DataEntry ColourToneValues[] = {
+   {GST_PHOTOGRAPHY_COLOR_TONE_MODE_POSTERIZE, "posterize"},
+   {GST_PHOTOGRAPHY_COLOR_TONE_MODE_WHITEBOARD, "whiteboard"},
+   {GST_PHOTOGRAPHY_COLOR_TONE_MODE_BLACKBOARD, "blackboard"},
+-  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_AQUA, "aqua"},
+-  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_EMBOSS, "emboss"},
+-  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_SKETCH, "sketch"},
+-  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_NEON, "neon"}
++  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_AQUA, "aqua"}
+ };
+ 
+ struct DataEntry FlickerValues[] = {
+diff --git a/tools/gstdroidcamsrcconf.c b/tools/gstdroidcamsrcconf.c
+index a6d0f1e..bc09e8e 100644
+--- a/tools/gstdroidcamsrcconf.c
++++ b/tools/gstdroidcamsrcconf.c
+@@ -102,10 +102,6 @@ struct Node
+       ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_PARTY, "party"),
+       ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_CANDLELIGHT, "candlelight"),
+       ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_BARCODE, "barcode"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_BACKLIGHT, "backlight"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_FLOWERS, "flowers"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_AR, "AR"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_SCENE_MODE_HDR, "hdr"),
+       {NULL, -1}
+     }},
+   {"effect-values", "color-tone-mode", {
+@@ -125,9 +121,6 @@ struct Node
+       ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_WHITEBOARD, "whiteboard"),
+       ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_BLACKBOARD, "blackboard"),
+       ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_AQUA, "aqua"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_EMBOSS, "emboss"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_SKETCH, "sketch"),
+-      ADD_ENTRY (GST_PHOTOGRAPHY_COLOR_TONE_MODE_NEON, "neon"),
+       {NULL, -1}
+     }},
+   // Qualcomm ISO values (e.g. ISO100) and Intel (iso-100)
+-- 
+2.20.1
+
