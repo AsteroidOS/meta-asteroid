@@ -15,8 +15,8 @@ B = "${S}"
 DEPENDS += "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base libhybris gettext-native nemo-gst-interfaces libexif"
 
 do_configure_prepend() {
-    sed -i "s@/usr/share/droidmedia/hybris.c@/asteroid/build/tmp-glibc/work/armv7vet2hf-neon-oe-linux-gnueabi/gst-droid/+gitAUTOINC+0aeb90829c-r1/recipe-sysroot/usr/include/droidmedia/hybris.c@" gst-libs/gst/droid/Makefile.am gst/Makefile.am
-    sed -i "s@I/usr/include/droidmedia/@I/asteroid/build/tmp-glibc/work/armv7vet2hf-neon-oe-linux-gnueabi/gst-droid/+gitAUTOINC+0aeb90829c-r1/recipe-sysroot/usr/include/droidmedia/@" gst/droidcamsrc/Makefile.am gst/droideglsink/Makefile.am gst/droidcodec/Makefile.am gst/Makefile.am gst-libs/gst/droid/Makefile.am
+    sed -i "s@/usr/share/droidmedia/hybris.c@${STAGING_INCDIR}/droidmedia/hybris.c@" gst-libs/gst/droid/Makefile.am gst/Makefile.am
+    sed -i "s@I/usr/include/droidmedia/@I${STAGING_INCDIR}/droidmedia/@" gst/droidcamsrc/Makefile.am gst/droideglsink/Makefile.am gst/droidcodec/Makefile.am gst/Makefile.am gst-libs/gst/droid/Makefile.am
     NOCONFIGURE=1 ${S}/autogen.sh
 }
 
