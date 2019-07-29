@@ -1,0 +1,38 @@
+From 1ebcf4bd133450c30a926bc1e9fe94d79653aa6c Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sun, 28 Jul 2019 14:53:56 +0000
+Subject: [PATCH] NemoGstBufferOrientationMeta: Define a default init function
+ to avoid an error
+
+---
+ gst-libs/gst/meta/nemometa.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/gst-libs/gst/meta/nemometa.c b/gst-libs/gst/meta/nemometa.c
+index ef24a11..04a5d3c 100644
+--- a/gst-libs/gst/meta/nemometa.c
++++ b/gst-libs/gst/meta/nemometa.c
+@@ -35,6 +35,11 @@ nemo_gst_buffer_orientation_meta_api_get_type (void)
+   return type;
+ }
+ 
++static gboolean nemo_gst_buf_ori_meta_init(GstMeta *meta, G_GNUC_UNUSED gpointer params, G_GNUC_UNUSED GstBuffer *buffer)
++{
++	return TRUE;
++}
++
+ const GstMetaInfo *
+ nemo_gst_buffer_orientation_meta_get_info (void)
+ {
+@@ -44,7 +49,7 @@ nemo_gst_buffer_orientation_meta_get_info (void)
+     const GstMetaInfo *meta =
+       gst_meta_register (NEMO_GST_BUFFER_ORIENTATION_META_API_TYPE, "NemoGstBufferOrientationMeta",
+ 			 sizeof (NemoGstBufferOrientationMeta),
+-			 (GstMetaInitFunction) NULL,
++			 (GstMetaInitFunction) nemo_gst_buf_ori_meta_init,
+ 			 (GstMetaFreeFunction) NULL,
+ 			 (GstMetaTransformFunction)NULL);
+ 
+-- 
+2.20.1
+
