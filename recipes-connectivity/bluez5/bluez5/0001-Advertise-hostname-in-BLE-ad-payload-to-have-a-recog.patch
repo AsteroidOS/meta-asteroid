@@ -1,7 +1,8 @@
-From e9623b14f63648da3bd805b3138941cfc932a82a Mon Sep 17 00:00:00 2001
+From 7b7f01c648326fdced1fa58b01058a9644b47a2a Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 18 Oct 2017 22:10:56 +0200
 Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable
+
  name in AsteroidOSSync
 
 ---
@@ -9,11 +10,11 @@ Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable
  1 file changed, 31 insertions(+)
 
 diff --git a/src/shared/ad.c b/src/shared/ad.c
-index 1bf013d..d7b9a79 100644
+index 3ceb876..1a053f4 100644
 --- a/src/shared/ad.c
 +++ b/src/shared/ad.c
-@@ -110,6 +110,18 @@ void bt_ad_unref(struct bt_ad *ad)
- 	free(ad);
+@@ -169,6 +169,18 @@ static bool ad_replace_data(struct bt_ad *ad, uint8_t type, void *data,
+ 	return false;
  }
  
 +static size_t local_name_length()
@@ -31,7 +32,7 @@ index 1bf013d..d7b9a79 100644
  static size_t uuid_list_length(struct queue *uuid_queue)
  {
  	bool uuid16_included = false;
-@@ -187,6 +199,8 @@ static size_t calculate_length(struct bt_ad *ad)
+@@ -279,6 +291,8 @@ static size_t calculate_length(struct bt_ad *ad)
  {
  	size_t length = 0;
  
@@ -40,7 +41,7 @@ index 1bf013d..d7b9a79 100644
  	length += uuid_list_length(ad->service_uuids);
  
  	length += uuid_list_length(ad->solicit_uuids);
-@@ -198,6 +212,21 @@ static size_t calculate_length(struct bt_ad *ad)
+@@ -296,6 +310,21 @@ static size_t calculate_length(struct bt_ad *ad)
  	return length;
  }
  
@@ -62,7 +63,7 @@ index 1bf013d..d7b9a79 100644
  static void serialize_uuids(struct queue *uuids, uint8_t uuid_type,
  						uint8_t ad_type, uint8_t *buf,
  						uint8_t *pos)
-@@ -330,6 +359,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+@@ -479,6 +508,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
  	if (!adv_data)
  		return NULL;
  
@@ -71,6 +72,3 @@ index 1bf013d..d7b9a79 100644
  	serialize_service_uuids(ad->service_uuids, adv_data, &pos);
  
  	serialize_solicit_uuids(ad->solicit_uuids, adv_data, &pos);
--- 
-2.7.4
-
