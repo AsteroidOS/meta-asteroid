@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c
 PV = "5.6.1+gitr${SRCPV}"
 
 DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
+RDEPENDS_${PN} += " qtscenegraph-adaptation "
 
 # We need to be ${MACHINE_ARCH} as we need to compile the source against a specific
 # Android version we select per machine
