@@ -11,6 +11,8 @@ S = "${WORKDIR}/git"
 
 inherit waf
 
+B = "${S}"
+
 do_configure() {
     ./waf configure --prefix=$prefix --version=0.0.3
 }
