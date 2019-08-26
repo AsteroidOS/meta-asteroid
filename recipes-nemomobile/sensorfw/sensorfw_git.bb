@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://github.com/AsteroidOS/sensorfw.git;protocol=https \
            file://sensorfwd.service"
-SRCREV = "8fc503aa1467b6643fced156a3235c343479dbdd"
+SRCREV = "847718face9eff033ed1dbe5ac26c9882550f97e"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
