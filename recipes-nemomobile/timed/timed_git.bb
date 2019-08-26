@@ -33,10 +33,11 @@ do_install_append() {
     cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
-pkg_postinst_ontarget_${PN}() {
-    setcap cap_sys_time+ep /usr/bin/timed-qt5
+pkg_postinst_${PN}() {
+    setcap cap_sys_time+ep $D/usr/bin/timed-qt5
 }
 
+PACKAGE_WRITE_DEPS = "libcap-native"
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
 RDEPENDS_${PN} += "tzdata-timed libcap-bin tzdata"
 FILES_${PN} += "/usr/lib/ /usr/share/contextkit /usr/lib/systemd/user/default.target.wants/"
