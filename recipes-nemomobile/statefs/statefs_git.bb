@@ -44,9 +44,11 @@ do_install_append() {
     fi
 }
 
-pkg_postinst_ontarget_${PN}() {
-    setcap CAP_SYS_ADMIN=ep /usr/bin/statefs
+pkg_postinst_${PN}() {
+    setcap CAP_SYS_ADMIN=ep $D/usr/bin/statefs
+}
 
+pkg_postinst_ontarget_${PN}() {
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-default.so
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-inout.so
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-qt5.so
@@ -59,5 +61,6 @@ pkg_postinst_ontarget_${PN}() {
     /usr/lib/statefs/provider-action register /etc/timed-statefs.conf inout
 }
 
+PACKAGE_WRITE_DEPS = "libcap-native"
 FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dbg += "/opt/"
