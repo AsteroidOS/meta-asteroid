@@ -19,7 +19,7 @@ DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-nat
 
 do_install() {
     oe_runmake install DESTDIR=${D}
-    cp ../mce.service ${D}/lib/systemd/system/mce.service
+    install -m 0644 ${WORKDIR}/mce.service ${D}${systemd_system_unitdir}
     rm -r ${D}/var/run/
 }
 
