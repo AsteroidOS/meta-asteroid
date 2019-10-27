@@ -1,17 +1,17 @@
-From b35bf98949aadd87a62c576b96ac243ee892ce78 Mon Sep 17 00:00:00 2001
+From a68b2c4a4ec92ab8b92f8d7368cdcfbc4f5b1385 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 17 Sep 2015 13:32:00 +0200
 Subject: [PATCH] Forces GLES2 the dirty way
 
 ---
- src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp | 9 +++------
+ .../client/wayland-egl/qwaylandglcontext.cpp             | 9 +++------
  1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
-index 81c74a7..1c38350 100644
+index c9bd8375..e11ed2ff 100644
 --- a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
 +++ b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
-@@ -317,12 +317,9 @@ void QWaylandGLContext::updateGLFormat()
+@@ -342,12 +342,9 @@ void QWaylandGLContext::updateGLFormat()
              || m_format.renderableType() == QSurfaceFormat::OpenGLES) {
              const GLubyte *s = glGetString(GL_VERSION);
              if (s) {
@@ -27,6 +27,3 @@ index 81c74a7..1c38350 100644
              }
              m_format.setProfile(QSurfaceFormat::NoProfile);
              m_format.setOptions(QSurfaceFormat::FormatOptions());
--- 
-2.5.1
-
