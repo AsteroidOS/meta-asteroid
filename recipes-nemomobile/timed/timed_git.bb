@@ -38,8 +38,8 @@ pkg_postinst_${PN}() {
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
-DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase tzdata-timed"
-RDEPENDS_${PN} += "tzdata-timed libcap-bin tzdata"
+DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
+RDEPENDS_${PN} += "libcap-bin tzdata"
 FILES_${PN} += "/usr/lib/ /usr/share/contextkit /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
