@@ -28,7 +28,7 @@ RDEPENDS_${PN} += "buteo-mtp"
 do_configure_prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
     sed -i "s@shell@ceres@g" systemd/adbd-functionfs.sh
-    sed -i "s@ adbd.service@ android-tools-adbd.service@" ${S}/systemd/adbd-prepare.service
+    sed -i "s@adbd.service@android-tools-adbd.service@" ${S}/systemd/adbd-prepare.service
     sed -i "s@umount adb@umount /dev/usb-ffs/adb@" ${S}/systemd/adbd-prepare.service
 }
 
@@ -72,6 +72,8 @@ do_install_append() {
 
     install -d ${D}/var/lib/misc/
     touch ${D}/var/lib/misc/udhcpd.leases
+
+    touch ${D}/var/usb-debugging-enabled
 }
 
 FILES_${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
