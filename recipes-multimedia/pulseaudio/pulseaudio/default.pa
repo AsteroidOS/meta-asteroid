@@ -33,6 +33,23 @@ load-module module-match table=/etc/pulse/x-maemo-match.table key=application.na
 load-module module-droid-card source_channel_map=mono
 .endif
 
+### Automatically load driver modules for Bluetooth hardware
+.ifexists module-bluetooth-policy.so
+load-module module-bluetooth-policy
+.endif
+
+.ifexists module-bluetooth-discover.so
+load-module module-bluetooth-discover
+.endif
+
+#.ifexists module-bluez5-device.so
+#load-module module-bluez5-device
+#.endif
+
+.ifexists module-bluez5-discover.so
+load-module module-bluez5-discover
+.endif
+
 ### Automatically restore the volume of streams and devices
 load-module module-device-restore
 
@@ -41,6 +58,9 @@ load-module module-device-restore
 ### NOTE: This should be loaded as early as possible so that subsequent modules
 ### that look up the default sink/source get the right value
 load-module module-default-device-restore
+
+### Should be after module-*-restore
+load-module module-switch-on-port-available
 
 ### Automatically move streams to the default sink if the sink they are
 ### connected to dies, similar for sources

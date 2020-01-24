@@ -1,5 +1,4 @@
-RDEPENDS_pulseaudio-server_append = " pulseaudio-modules-nemo pulseaudio-module-dbus-protocol pulseaudio-module-match "
-
+RDEPENDS_pulseaudio-server_append = " pulseaudio-modules-nemo pulseaudio-module-dbus-protocol pulseaudio-module-match pulseaudio-module-switch-on-connect pulseaudio-module-bluetooth-discover pulseaudio-module-bluetooth-policy pulseaudio-module-bluez5-discover pulseaudio-module-bluez5-device "
 FILESEXTRAPATHS_prepend := "${THISDIR}/pulseaudio:"
 SRC_URI += "file://1002-build-Install-pulsecore-headers.patch \
             file://mainvolume-listening-time-notifier.conf \
