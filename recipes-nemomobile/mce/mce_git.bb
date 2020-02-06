@@ -3,14 +3,10 @@ HOMEPAGE = "https://git.merproject.org/mer-core/mce"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://git.merproject.org/mer-core/mce.git;protocol=https \
-    file://0001-Fixes_build.patch \
-    file://0002-Display-Sets-default-brightness-to-100.patch \
-    file://0003-Display-Sets-dimming-timeout-to-10-sec-and-blanking-.patch \
-    file://0004-event-input-Double-tap-emulation-Adapts-the-state-ma.patch \
+SRC_URI = "git://github.com/AsteroidOS/mce.git;protocol=https \
     file://mce.service"
-SRC_URI_append_qemux86 = " file://0005-Keep-screen-on-by-default-on-emulator.patch"
-SRCREV = "0510206026438b9de0d6a0f4d46e0c5674d37398"
+SRC_URI_append_qemux86 = " file://0001-Keep-screen-on-by-default-on-emulator.patch"
+SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
