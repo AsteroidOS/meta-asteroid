@@ -1,0 +1,8 @@
+#!/bin/sh
+root=$(mount | grep "on / " | awk -F' ' '{print $1}')
+if [[ $root == *"sdcard"* ]]; then
+  echo "Running on temporary installation, ignoring resize of filesystem."
+else
+  echo "Resizing root partition to fill userdata..."
+  resize2fs $root
+fi
