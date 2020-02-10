@@ -5,13 +5,16 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7ca
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-do_install_append() {
-    install -d ${D}${bindir}
-    cp ${WORKDIR}/resize_rootfs ${D}${bindir}
-}
+ALLOW_EMPTY_${PN} = "1"
 
 pkg_postinst_ontarget_${PN}() {
-    /usr/bin/resize_rootfs
+    root=`mount | grep "on / " | awk -F' ' '{print $1}'`
+    if [[ "$root" == *"sdcard"* ]]; then
+    echo "Running on temporary installation, ignoring resize of filesystem."
+    else
+    echo "Resizing root partition to fill userdata..."
+    resize2fs "$root"
+    fi
 }
 
 RDEPENDS_${PN} += "e2fsprogs-resize2fs"
