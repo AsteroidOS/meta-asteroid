@@ -16,3 +16,12 @@ EXTRA_USERS_PARAMS = "groupadd system; \
 
 IMAGE_OVERHEAD_FACTOR = "1.0"
 IMAGE_ROOTFS_EXTRA_SPACE = "131072"
+
+python do_package_index () {
+    from oe.rootfs import generate_index_files
+    generate_index_files(d)
+}
+do_package_index[dirs] = "${TOPDIR}"
+do_package_index[umask] = "022"
+do_package_index[file-checksums] += "${POSTINST_INTERCEPT_CHECKSUMS}"
+addtask do_package_index before do_rootfs
