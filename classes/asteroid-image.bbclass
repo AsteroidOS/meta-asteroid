@@ -15,7 +15,7 @@ EXTRA_USERS_PARAMS = "groupadd system; \
                       useradd -p '' -G 'audio,video,system,gps,statefs,mtp' ceres"
 
 IMAGE_OVERHEAD_FACTOR = "1.0"
-IMAGE_ROOTFS_EXTRA_SPACE = "262144"
+IMAGE_ROOTFS_EXTRA_SPACE = "131072"
 
 python do_package_index () {
     from oe.rootfs import generate_index_files
