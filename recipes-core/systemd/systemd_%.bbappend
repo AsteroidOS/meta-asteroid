@@ -15,6 +15,8 @@ do_install_append() {
 
 PACKAGECONFIG_append += "pam"
 
+PACKAGECONFIG_remove = "rfkill"
+
 RRECOMMENDS_${PN}_remove = "udev-hwdb"
 
 ALTERNATIVE_${PN} += "usrsbinhalt usrsbinreboot usrsbinshutdown usrsbinpoweroff"
