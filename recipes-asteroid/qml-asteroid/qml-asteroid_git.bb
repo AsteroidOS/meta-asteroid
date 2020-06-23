@@ -17,6 +17,10 @@ DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qt
 RDEPENDS_${PN} += "qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
 
 do_configure_prepend() {
+    if [ ${MACHINE_DISPLAY_FLAT_TIRE} ]
+    then
+        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=FLAT_TIRE=${MACHINE_DISPLAY_FLAT_TIRE}"
+    fi
     if [ ${MACHINE_DISPLAY_ROUND} = "true" ]
     then
         export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=ROUND_SCREEN"
