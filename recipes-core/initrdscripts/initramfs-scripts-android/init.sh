@@ -93,6 +93,11 @@ if [ -e $ANDROID_MEDIA_DIR/asteroidos.ext4 ] ; then
     [ $? -ne 0 ] || BOOT_DIR="/loop"
 fi
 
+if [ -x /init.machine ]; then
+    info "Run machine specific init"
+    /init.machine $BOOT_DIR > /dev/ttyprintk
+fi
+
 setup_devtmpfs $BOOT_DIR
 
 info "Move the /proc and /sys filesystems..."
