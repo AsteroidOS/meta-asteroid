@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://git.merproject.org/mer-core/timed.git;protocol=https \
     file://0001-Fixes-build.patch \
+    file://0002-Add-wakeup-event-for-use-with-ambient-mode.patch \
     file://timed-qt5.conf \
     file://timed-qt5.service"
 SRCREV = "c7c1380fcc72390d59f1dc3e01b0cff29207f293"
