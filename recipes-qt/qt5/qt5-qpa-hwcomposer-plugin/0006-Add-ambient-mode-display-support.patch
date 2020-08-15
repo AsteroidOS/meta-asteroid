@@ -1,4 +1,4 @@
-From 1c568ba41538408449a77e58357d16bbbb197bf4 Mon Sep 17 00:00:00 2001
+From c06799051caa6012abb49aa0475a38933dae6188 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Mon, 6 Jul 2020 22:03:51 +0200
 Subject: [PATCH] Add ambient mode display support. Add ability to keep the
@@ -29,7 +29,7 @@ index 5c579aa..fffc3d8 100644
      virtual float refreshRate() = 0;
  
 diff --git a/hwcomposer/hwcomposer_backend_v11.cpp b/hwcomposer/hwcomposer_backend_v11.cpp
-index 933fa17..353a144 100644
+index 933fa17..9e2a198 100644
 --- a/hwcomposer/hwcomposer_backend_v11.cpp
 +++ b/hwcomposer/hwcomposer_backend_v11.cpp
 @@ -320,6 +320,27 @@ HwComposerBackend_v11::swap(EGLNativeDisplayType display, EGLSurface surface)
@@ -39,16 +39,16 @@ index 933fa17..353a144 100644
 +bool HwComposerBackend_v11::ambientModeSupport()
 +{
 +#ifdef HWC_DEVICE_API_VERSION_1_4
-+        if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
-+            return true;
-+        } else
++    if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
++        return true;
++    } else
 +#endif
 +#ifdef HWC_DEVICE_API_VERSION_1_5
-+        if (hwc_version == HWC_DEVICE_API_VERSION_1_5) {
-+            return true;
-+        } else
++    if (hwc_version == HWC_DEVICE_API_VERSION_1_5) {
++        return true;
++    } else
 +#endif
-+            return false;
++    return false;
 +}
 +
 +void HwComposerBackend_v11::ambientModeEnabled(bool enable)
