@@ -1,0 +1,66 @@
+From ffb735aa1c63c0b5a55d20aa9278dbab1e2f45cd Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Sat, 3 Oct 2020 22:19:18 +0200
+Subject: [PATCH] xdg-shell: Add support for extended surfaces.
+
+---
+ src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp | 6 ++++++
+ src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h | 4 ++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
+index d2452aa4..14269b52 100644
+--- a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
++++ b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
+@@ -45,6 +45,7 @@
+ #include <QtWaylandClient/private/qwaylandinputdevice_p.h>
+ #include <QtWaylandClient/private/qwaylandscreen_p.h>
+ #include <QtWaylandClient/private/qwaylandabstractdecoration_p.h>
++#include <QtWaylandClient/private/qwaylandextendedsurface_p.h>
+ 
+ QT_BEGIN_NAMESPACE
+ 
+@@ -227,6 +228,9 @@ QWaylandXdgSurface::QWaylandXdgSurface(QWaylandXdgShell *shell, ::xdg_surface *s
+     Qt::WindowType type = window->window()->type();
+     auto *transientParent = window->transientParent();
+ 
++    if (window->display()->windowExtension())
++        m_extendedWindow = new QWaylandExtendedSurface(window);
++
+     if (type == Qt::ToolTip && transientParent) {
+         setPopup(transientParent);
+     } else if (type == Qt::Popup && transientParent && display->lastInputDevice()) {
+@@ -292,6 +296,8 @@ void QWaylandXdgSurface::setWindowFlags(Qt::WindowFlags flags)
+ {
+     if (m_toplevel)
+         m_toplevel->requestWindowFlags(flags);
++    if (m_extendedWindow)
++        m_extendedWindow->setWindowFlags(flags);
+ }
+ 
+ bool QWaylandXdgSurface::isExposed() const
+diff --git a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
+index 741b83cf..9e73a4f7 100644
+--- a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
++++ b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
+@@ -74,6 +74,7 @@ class QWaylandDisplay;
+ class QWaylandWindow;
+ class QWaylandInputDevice;
+ class QWaylandXdgShell;
++class QWaylandExtendedSurface;
+ 
+ class Q_WAYLAND_CLIENT_EXPORT QWaylandXdgSurface : public QWaylandShellSurface, public QtWayland::xdg_surface
+ {
+@@ -148,6 +149,9 @@ private:
+     bool m_configured = false;
+     QRegion m_exposeRegion;
+     uint m_pendingConfigureSerial = 0;
++    // There's really no need to have pending and applied state on wl-shell, but we do it just to
++    // keep the different shell implementations more similar.
++    QWaylandExtendedSurface *m_extendedWindow = nullptr;
+ 
+     friend class QWaylandXdgShell;
+ };
+-- 
+2.28.0
+
