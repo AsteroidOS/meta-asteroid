@@ -11,33 +11,8 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-PACKAGE_ARCH = "${MACHINE_ARCH}"
-
-DEPENDS += "qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"
-RDEPENDS_${PN} += "qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
-
-do_configure_prepend() {
-    if [ ${MACHINE_DISPLAY_FLAT_TIRE} ]
-    then
-        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=FLAT_TIRE=${MACHINE_DISPLAY_FLAT_TIRE}"
-    fi
-    if [ ${MACHINE_DISPLAY_BORDER_GESTURE_WIDTH} ]
-    then
-        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=BORDER_GESTURE_WIDTH=${MACHINE_DISPLAY_BORDER_GESTURE_WIDTH}"
-    fi
-    if [ ${MACHINE_DISPLAY_ROUND} = "true" ]
-    then
-        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=ROUND_SCREEN"
-    fi
-    if [ ${MACHINE_HAS_WLAN} = "true" ]
-    then
-        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=HAS_WLAN"
-    fi
-    if [ ${MACHINE_HAS_SPEAKER} = "true" ]
-    then
-        export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} DEFINES+=HAS_SPEAKER"
-    fi
-}
+DEPENDS += "asteroid-machine-config qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"
+RDEPENDS_${PN} += "asteroid-machine-config qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
 
 FILES_${PN} += "/usr/lib /usr/share/icons/asteroid/"
 FILES_${PN}-dbg += "/usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
