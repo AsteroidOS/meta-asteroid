@@ -25,4 +25,4 @@ do_package_index[depends] += "${PACKAGEINDEXDEPS}"
 do_package_index[dirs] = "${TOPDIR}"
 do_package_index[umask] = "022"
 do_package_index[file-checksums] += "${POSTINST_INTERCEPT_CHECKSUMS}"
-addtask do_package_index before do_rootfs
+addtask do_package_index after do_rootfs before do_image
