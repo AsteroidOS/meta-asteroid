@@ -7,7 +7,8 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit allarch fontcache
 
-SRC_URI = "git://github.com/googlefonts/noto-emoji;protocol=https"
+SRC_URI = "git://github.com/googlefonts/noto-emoji;protocol=https \
+    file://69-emoji.conf"
 SRCREV = "833a43d03246a9325e748a2d783006454d76ff66"
 
 PACKAGES = "${PN}-color ${PN}-regular"
@@ -15,13 +16,20 @@ FONT_PACKAGES = "${PN}-color ${PN}-regular"
 
 S = "${WORKDIR}/git"
 
-FILES_${PN} += "/home/ceres/.config/fontconfig/conf.d"
+FILES_${PN}-color += "/home/ceres/.config/fontconfig/conf.d"
+FILES_${PN}-regular += "/home/ceres/.config/fontconfig/conf.d"
 FILES_${PN}-color += "/usr/share/fonts/NotoColorEmoji.ttf"
 FILES_${PN}-regular += "/usr/share/fonts/NotoEmoji-Regular.ttf"
 
 do_install() {
     install -d ${D}/usr/share/fonts/
     find ./ -name '*.[to]tf' -exec install -m 0644 {} ${D}/usr/share/fonts \;
+
+    install -d ${D}/home/ceres/.config/fontconfig/conf.d/
+    install -m 644 ../69-emoji.conf ${D}/home/ceres/.config/fontconfig/conf.d/
 }
 
 do_compile[noexec] = "1"
+
+INSANE_SKIP_${PN}-color += "host-user-contaminated"
+INSANE_SKIP_${PN}-regular += "host-user-contaminated"
