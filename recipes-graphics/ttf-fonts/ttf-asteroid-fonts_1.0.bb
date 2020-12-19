@@ -9,8 +9,9 @@ INHIBIT_DEFAULT_DEPS = "1"
 inherit allarch
 inherit fontcache
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https"
-SRCREV = "871b02849988786a76b5948857fdb541417dc94d"
+SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https \
+    file://69-emoji.conf"
+SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/git"
 
 FONT_PACKAGES = "ttf-asteroid-fonts"
@@ -18,6 +19,12 @@ FONT_PACKAGES = "ttf-asteroid-fonts"
 do_install() {
     install -d ${D}/usr/share/fonts/
     find ./ -name '*.[to]tf' -exec install -m 0644 {} ${D}/usr/share/fonts \;
+
+    install -d ${D}/home/ceres/.config/fontconfig/conf.d/
+    install -m 644 ${WORKDIR}/69-emoji.conf ${D}/home/ceres/.config/fontconfig/conf.d/
 }
 
-FILES_${PN} += "/usr/share/fonts"
+FILES_${PN} += "/usr/share/fonts /home/ceres/.config/fontconfig/conf.d"
+
+# Installing files in `/home/ceres/`, owned by uid 1000, causes a host-contamination warning.
+INSANE_SKIP_${PN} += "host-user-contaminated"
