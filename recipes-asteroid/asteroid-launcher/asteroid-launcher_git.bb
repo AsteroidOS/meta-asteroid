@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "lipstick qttools-native timed"
-RDEPENDS_${PN} += "qtdeclarative-qmlplugins qml-asteroid qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration asteroid-wallpapers ttf-asteroid-fonts"
+RDEPENDS_${PN} += "qtdeclarative-qmlplugins qml-asteroid qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-contextkit nemo-qml-plugin-configuration asteroid-wallpapers"
 FILES_${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
 
 do_install_append() {
