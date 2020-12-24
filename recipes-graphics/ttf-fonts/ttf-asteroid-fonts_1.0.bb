@@ -2,7 +2,7 @@ SUMMARY = "AsteroidOS fonts set"
 SECTION = "fonts"
 HOMEPAGE = "https://github.com/AsteroidOS/asteroid-fonts"
 LICENSE = "OFL-1.1 & Apache-2.0 & CC-BY-3.0"
-LIC_FILES_CHKSUM = "file://README.md;beginline=6;endline=15;md5=f9ba0acd79b8f80c8b1efdb41a7ae34e"
+LIC_FILES_CHKSUM = "file://README.md;beginline=6;endline=15;md5=6ca7f8b58e9d2f7faf16259f81816ed5"
 PR = "r0"
 INHIBIT_DEFAULT_DEPS = "1"
 
