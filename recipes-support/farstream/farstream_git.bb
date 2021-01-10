@@ -8,7 +8,7 @@ SRC_URI = "https://freedesktop.org/software/farstream/releases/farstream/farstre
 SRC_URI[md5sum] = "a40d4c4bd0812c270069b9f97d74009b"
 SRC_URI[sha256sum] = "2b3b9c6b4f64ace8c83e03d1da5c5a2884c1cae10b35471072b574201ab38908"
 
-S = "${WORKDIR}/farstream-0.2.8/"
+S = "${WORKDIR}/farstream-0.2.8"
 
 DEPENDS += "libnice glib-2.0-native"
 
