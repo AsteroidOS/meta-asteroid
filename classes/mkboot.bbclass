@@ -4,10 +4,9 @@
 
 KERNEL_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}"
 
-do_compile[depends] += "initramfs-android-image:do_image_complete"
-DEPENDS += "mkbootimg-tools-native"
+do_deploy[depends] += "initramfs-android-image:do_image_complete mkbootimg-tools-native:do_populate_sysroot"
 
-do_compile_append() {
+do_deploy_append() {
     cd ${B}
     cp ${WORKDIR}/img_info .
     sed -i "s@%%KERNEL%%@${B}/${KERNEL_OUTPUT}@" img_info
@@ -15,9 +14,7 @@ do_compile_append() {
     sed -i "s@%%RAMDISK%%@${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz@" img_info
     sed -i "s@%%RAMDISK_SIZE%%@$(stat --printf="%s" ${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz)@" img_info
     mkboot . boot.img || { echo "mkboot failed"; exit 1; }
-}
 
-do_deploy_append() {
     # We're probably interested only in zImage KERNEL_IMAGETYPE, but keep
     # the for loop for consistency with other bbclasses
     for type in ${KERNEL_IMAGETYPES} ; do
@@ -26,11 +23,7 @@ do_deploy_append() {
         cp ${B}/boot.img ${DEPLOYDIR}/${base_name}.fastboot
         ln -sf ${base_name}.fastboot ${DEPLOYDIR}/${symlink_name}.fastboot
     done
-}
 
-# Update mechanism
-
-do_install_append() {
     install -d ${D}/${KERNEL_IMAGEDEST}
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
 }
