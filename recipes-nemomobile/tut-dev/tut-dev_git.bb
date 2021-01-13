@@ -11,8 +11,8 @@ S = "${WORKDIR}/git"
 
 inherit waf
 
-B = "${S}"
+WAF_PYTHON = "/usr/bin/python2"
 
 do_configure() {
-    ./waf configure --prefix=$prefix --version=0.0.3
+    ${WAF_PYTHON} ${S}/waf configure --destdir=${B} -b ${B} --prefix=$prefix --version=0.0.3
 }
