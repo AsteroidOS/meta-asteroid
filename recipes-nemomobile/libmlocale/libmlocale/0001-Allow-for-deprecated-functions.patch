@@ -1,0 +1,32 @@
+From 3b265885a56de94cea980e71182a77bd9db32224 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Wed, 6 Jan 2021 13:48:35 +0100
+Subject: [PATCH] Allow for deprecated functions.
+
+---
+ mkspecs/common.pri | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/mkspecs/common.pri b/mkspecs/common.pri
+index 27fa779a..67a8b6d4 100644
+--- a/mkspecs/common.pri
++++ b/mkspecs/common.pri
+@@ -15,18 +15,6 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) 2010 Nokia
+     include($${M_BUILD_TREE}/mkspecs/mlocaleconfig.pri)
+ }
+ 
+-#disable werrors on windows and freemantle (M_OS_MAEMO5 comes from meegotouchconfig.pri)
+-win32 {
+-    } else {
+-        contains( DEFINES, M_OS_MAEMO5 ) {
+-        } else { 
+-	    !contains( M_BUILD_FEATURES, no-werror ) {
+-	        QMAKE_CFLAGS *= -Werror
+-	        QMAKE_CXXFLAGS *= -Werror
+-            }
+-        }
+-    }
+-
+ mac {
+     INCLUDEPATH += include
+ }

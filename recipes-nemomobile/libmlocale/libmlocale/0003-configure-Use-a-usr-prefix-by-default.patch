@@ -1,4 +1,4 @@
-From 5efb61a37ffb71a563e17d2189784a474f7d7ac9 Mon Sep 17 00:00:00 2001
+From af600af994bd996dca43449a02d0493cf8550f0e Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 20 Feb 2018 14:31:55 +0100
 Subject: [PATCH] configure: Use a /usr/ prefix by default
@@ -8,7 +8,7 @@ Subject: [PATCH] configure: Use a /usr/ prefix by default
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure b/configure
-index 316a4153..571179af 100755
+index 4ebf56c6..81bded4b 100755
 --- a/configure
 +++ b/configure
 @@ -71,7 +71,7 @@ OPT_SHADOW=maybe
@@ -20,6 +20,3 @@ index 316a4153..571179af 100755
  M_INSTALL_SYSCONFDIR=/etc
  M_INSTALL_LIBDIR= # Will be $M_INSTALL_PREFIX/lib unless overriden
  
--- 
-2.14.3
-
