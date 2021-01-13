@@ -1,0 +1,22 @@
+From d0cc448630485a86b9da07841aded8bb42078fc5 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 20:54:24 +0100
+Subject: [PATCH] Don't use host libdir.
+
+---
+ src/stream-restore-nemo/Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/stream-restore-nemo/Makefile.am b/src/stream-restore-nemo/Makefile.am
+index 9042596..157367d 100644
+--- a/src/stream-restore-nemo/Makefile.am
++++ b/src/stream-restore-nemo/Makefile.am
+@@ -13,4 +13,4 @@ noinst_HEADERS = module-stream-restore-nemo-symdef.h
+ module_stream_restore_nemo_la_SOURCES = module-stream-restore-nemo.c
+ module_stream_restore_nemo_la_LDFLAGS = -module -avoid-version -Wl,-no-undefined
+ module_stream_restore_nemo_la_CFLAGS = $(AM_CFLAGS)
+-module_stream_restore_nemo_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -L$(libdir)/pulse-$(PA_MAJORMINOR)/modules -lprotocol-native
++module_stream_restore_nemo_la_LIBADD = $(top_builddir)/src/common/libmeego-common.la $(AM_LIBADD) -lprotocol-native
+-- 
+2.30.0
+
