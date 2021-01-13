@@ -1,0 +1,23 @@
+From ae1fd9d12eee0c2bad715dd17964b470b8596680 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 13:38:56 +0100
+Subject: [PATCH] Disable tests.
+
+---
+ Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 6c5cd94..e7bc34a 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,5 +1,5 @@
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = $(NGF_LIBRARY_NAME) examples tests
++SUBDIRS = $(NGF_LIBRARY_NAME) examples
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libngf0.pc
+-- 
+2.30.0
+
