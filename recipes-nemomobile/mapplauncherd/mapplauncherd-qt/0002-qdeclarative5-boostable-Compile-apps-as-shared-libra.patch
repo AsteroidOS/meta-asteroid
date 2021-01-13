@@ -1,0 +1,26 @@
+From 2512e5629672781bc94a92d91e3ab4f1ce8ce6c5 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Sat, 9 Jan 2021 15:04:25 +0100
+Subject: [PATCH] qdeclarative5-boostable: Compile apps as shared libraries. As
+ of glibc >= 2.30 it is no longer possible to load position independant code.
+ Compiling as a shared library solves this.
+
+---
+ data/pkgconfig/qdeclarative5-boostable.pc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/data/pkgconfig/qdeclarative5-boostable.pc b/data/pkgconfig/qdeclarative5-boostable.pc
+index 20b97f8..0e1191e 100644
+--- a/data/pkgconfig/qdeclarative5-boostable.pc
++++ b/data/pkgconfig/qdeclarative5-boostable.pc
+@@ -1,6 +1,6 @@
+ Name: qdeclarative5-boostable
+ Description: make application boostable by applauncherd
+ Version: 0.2.0
+-Libs: -pie -rdynamic -lmdeclarativecache5
++Libs: -shared -rdynamic -lmdeclarativecache5
+ Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I/usr/include/mdeclarativecache5
+ 
+-- 
+2.30.0
+
