@@ -1,0 +1,25 @@
+From 3c752a0a80599ede9121f2ddec7e3796a4c1ab49 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Tue, 5 Jan 2021 21:48:06 +0100
+Subject: [PATCH] Disable tests.
+
+---
+ keepalive.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/keepalive.pro b/keepalive.pro
+index 2ae9efe..55fc1ac 100644
+--- a/keepalive.pro
++++ b/keepalive.pro
+@@ -6,7 +6,7 @@ SUBDIRS += plugin
+ SUBDIRS += examples/backgroundactivity_periodic
+ SUBDIRS += examples/backgroundactivity_linger
+ SUBDIRS += examples/displayblanking
+-SUBDIRS += tests
++#SUBDIRS += tests
+ 
+ examples.files = examples/qml/*.qml
+ examples.path = $$[QT_INSTALL_EXAMPLES]/keepalive
+-- 
+2.30.0
+
