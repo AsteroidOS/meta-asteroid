@@ -1,4 +1,4 @@
-From 9fc0e12131816cc73b12cb6050ecd570f4bdc243 Mon Sep 17 00:00:00 2001
+From 90c146a7e2d7f902dca82a2c20d531c7512ee988 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 20 Feb 2018 14:17:51 +0100
 Subject: [PATCH] Disable tests and doc
@@ -8,12 +8,12 @@ Subject: [PATCH] Disable tests and doc
  1 file changed, 3 deletions(-)
 
 diff --git a/projects.pro b/projects.pro
-index 478c5840..a4950cdc 100644
+index ba85c995..d2ae9e12 100644
 --- a/projects.pro
 +++ b/projects.pro
-@@ -24,10 +24,7 @@ SUBDIRS += \
+@@ -19,10 +19,7 @@ isEqual( IN_PWD, $${OUT_PWD} ) {
+ SUBDIRS += \
      src \
-     src/icu-extradata \
      benchmarks \
 -    tests \
  
@@ -22,6 +22,3 @@ index 478c5840..a4950cdc 100644
  
  check.target = check
  check.CONFIG = recursive
--- 
-2.14.3
-
