@@ -51,19 +51,6 @@ index c78b33d..c14c5ae 100644
  }
  
  #if defined(HAVE_UUID_UUID_H)
-diff --git a/kcalcore/kcalcore.pro b/kcalcore/kcalcore.pro
-index afbd4b9..b505688 100644
---- a/kcalcore/kcalcore.pro
-+++ b/kcalcore/kcalcore.pro
-@@ -2,7 +2,7 @@ TEMPLATE = lib
- equals(QT_MAJOR_VERSION, 4): TARGET = kcalcoren
- equals(QT_MAJOR_VERSION, 5): TARGET = kcalcoren-qt5
- DEPENDPATH += . tests versit klibport kdedate
--INCLUDEPATH += . versit klibport kdedate tests /usr/include/libical
-+INCLUDEPATH += . versit klibport kdedate tests
- 
- VERSION += 4.10.2
- 
 -- 
 2.9.3
 
