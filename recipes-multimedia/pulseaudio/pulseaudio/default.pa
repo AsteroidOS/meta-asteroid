@@ -18,7 +18,7 @@
 ### Load several protocols
 load-module module-native-protocol-unix
 
-load-module module-droid-keepalive
+load-module module-keepalive
 
 load-module module-dbus-protocol
 
