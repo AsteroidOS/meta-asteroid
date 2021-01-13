@@ -1,0 +1,35 @@
+From 851a6f600f97cefbeac8b02b8c088a53abc821c3 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Wed, 6 Jan 2021 11:12:37 +0100
+Subject: [PATCH] Disable tests. Fixes compilation.
+
+---
+ kcalcore/kcalcore.pro | 3 +--
+ kcalcore/lib.pro      | 2 +-
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/kcalcore/kcalcore.pro b/kcalcore/kcalcore.pro
+index 55fb3f42e..0e52290e1 100644
+--- a/kcalcore/kcalcore.pro
++++ b/kcalcore/kcalcore.pro
+@@ -1,3 +1,2 @@
+ TEMPLATE=subdirs
+-SUBDIRS+=lib.pro tests
+-tests.depends = lib.pro
++SUBDIRS+=lib.pro
+diff --git a/kcalcore/lib.pro b/kcalcore/lib.pro
+index f952a4e01..7c611b621 100644
+--- a/kcalcore/lib.pro
++++ b/kcalcore/lib.pro
+@@ -1,7 +1,7 @@
+ TEMPLATE = lib
+ equals(QT_MAJOR_VERSION, 4): TARGET = kcalcoren
+ equals(QT_MAJOR_VERSION, 5): TARGET = kcalcoren-qt5
+-DEPENDPATH += . tests versit klibport kdedate
++DEPENDPATH += . versit klibport kdedate
+ INCLUDEPATH += . versit klibport kdedate
+ 
+ VERSION += 4.10.2
+-- 
+2.30.0
+
