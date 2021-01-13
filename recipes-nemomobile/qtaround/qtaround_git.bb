@@ -4,8 +4,8 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=9d1d95673c01a94e06648bf72ecda12d"
 
 SRC_URI = "git://git.merproject.org/mer-core/qtaround.git;protocol=https \
-           file://0001-Add-a-missing-math.h-include.patch"
-SRCREV = "468b9683308fd98c8ae449ee73f0044ac1e7a0e1"
+        file://0001-Disable-tests.patch"
+SRCREV = "41126faba34ff7ccf96e5eca64fd5754d521648a"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
