@@ -10,6 +10,8 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "c-ares"
 
+EXTRA_OECONF_remove = "--enable-external-ell"
+
 do_install_append() {
     install -d ${D}/lib/systemd/system/
     cp ${WORKDIR}/ofono.service ${D}/lib/systemd/system/ofono.service
