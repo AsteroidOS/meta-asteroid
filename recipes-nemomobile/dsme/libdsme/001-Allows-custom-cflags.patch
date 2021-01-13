@@ -5,17 +5,25 @@ Date:   Fri Jun 5 13:28:45 2015 +0200
     Allows use of custom CFLAGS
 
 diff --git a/Makefile b/Makefile
-index 18067ca..d1fa663 100644
+index 7aa145a..0738aa9 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -100,13 +100,13 @@ install_tests::
+@@ -103,17 +103,17 @@ install_tests::
  # Common options
  # ----------------------------------------------------------------------------
  
+-CFLAGS   += -std=c99
 -CFLAGS   += -O2
--CFLAGS   += -Wall -Wwrite-strings -Wmissing-prototypes -Werror
+-CFLAGS   += -Wall
+-CFLAGS   += -Wwrite-strings
+-CFLAGS   += -Wmissing-prototypes
+-CFLAGS   += -Werror
++override CFLAGS   += -std=c99
 +override CFLAGS   += -O2
-+override CFLAGS   += -Wall -Wwrite-strings -Wmissing-prototypes -Werror
++override CFLAGS   += -Wall
++override CFLAGS   += -Wwrite-strings
++override CFLAGS   += -Wmissing-prototypes
++override CFLAGS   += -Werror
  
 -CFLAGS   += -g
 -LDFLAGS  += -g
@@ -27,7 +35,7 @@ index 18067ca..d1fa663 100644
  
  # ----------------------------------------------------------------------------
  # libdsme$(SOVERS) and libdsme.a
-@@ -115,11 +115,11 @@ LDFLAGS  += -Wl,--as-needed
+@@ -122,11 +122,11 @@ LDFLAGS  += -Wl,--as-needed
  libdsme_OBJ += protocol.pic.o message.pic.o alarm_limit.pic.o
  libdsme_PC  += glib-2.0
  
@@ -42,7 +50,7 @@ index 18067ca..d1fa663 100644
  libdsme.a : $(patsubst %.pic.o, %.o, $(libdsme_OBJ))
  
  # ----------------------------------------------------------------------------
-@@ -145,6 +145,6 @@ libthermalmanager_dbus_if$(SOVERS) : $(libthermalmanager_dbus_if_OBJ)
+@@ -152,6 +152,6 @@ libthermalmanager_dbus_if$(SOVERS) : $(libthermalmanager_dbus_if_OBJ)
  ut_libdsme_OBJ += tests/ut_libdsme.o
  ut_libdsme_PC  += glib-2.0 check
  

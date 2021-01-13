@@ -6,9 +6,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 DEPENDS += " glib-2.0 libcheck pkgconfig-native"
 
 SRC_URI = "git://git.merproject.org/mer-core/libdsme.git;protocol=https \
-    file://001-Allows-custom-cflags.patch \
-    file://0002-Add-a-missing-header-include.patch"
-SRCREV = "28d3fea293eea73d961a25b44adbdd00c8b8ad4f"
+    file://001-Allows-custom-cflags.patch"
+SRCREV = "3633f59d801e576007a936ba88251a47d1b877f2"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
