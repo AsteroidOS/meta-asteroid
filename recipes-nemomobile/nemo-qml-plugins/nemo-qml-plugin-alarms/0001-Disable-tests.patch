@@ -1,0 +1,21 @@
+From e7994bebcb143eddd44801b5fad3309bbda891cf Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 14:31:23 +0100
+Subject: [PATCH] Disable tests.
+
+---
+ alarms.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/alarms.pro b/alarms.pro
+index b19e077..e3061ff 100644
+--- a/alarms.pro
++++ b/alarms.pro
+@@ -1,3 +1,3 @@
+ TEMPLATE = subdirs
+-SUBDIRS = src tests
++SUBDIRS = src
+ OTHER_FILES += rpm/*.spec
+-- 
+2.30.0
+
