@@ -1,0 +1,183 @@
+From db1b402804d28edaa5e1bc71e2c855655c39da3f Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Wed, 13 Jan 2021 13:58:34 +0100
+Subject: [PATCH] egl: Adapt wayland-egl to upstream and use upstream with
+ newer versions. A combined and adapted version based on: -
+ https://github.com/libhybris/libhybris/commit/43d250409bf8ed90cb4e8915ef58add43225022f#diff-303fb10aa41d95424ed314100ad1ccd24864cf2d0ebcab6720e688d210a782a6
+ -
+ https://github.com/libhybris/libhybris/commit/3f0656fcd34ec1ad6f5afa1013c45fd33efe4466#diff-d0704cfe161dc6120604de9c6524f33da849633485e6a5a3b973484e4656ef6d
+
+---
+ hybris/configure.ac                              |  7 ++++++-
+ hybris/egl/platforms/common/Makefile.am          |  5 ++++-
+ .../platforms/wayland/eglplatform_wayland.cpp    |  4 ++--
+ hybris/egl/platforms/wayland/wayland_window.cpp  | 16 ++++++++--------
+ hybris/egl/platforms/wayland/wayland_window.h    |  2 +-
+ 5 files changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/hybris/configure.ac b/hybris/configure.ac
+index b3ddc50..1b968b9 100644
+--- a/hybris/configure.ac
++++ b/hybris/configure.ac
+@@ -72,11 +72,15 @@ AC_ARG_ENABLE(mesa,
+   [mesa="no"])
+ AM_CONDITIONAL( [WANT_MESA], [test x"$mesa" = x"yes"])
+ 
++WANT_WAYLAND_EGL="no"
++
+ AC_ARG_ENABLE(wayland,
+   [  --enable-wayland            Enable wayland support (default=disabled)],
+   [wayland=$enableval
+ 	PKG_CHECK_MODULES(WAYLAND_CLIENT, wayland-client,, exit)
+ 	PKG_CHECK_MODULES(WAYLAND_SERVER, wayland-server,, exit)
++	PKG_CHECK_MODULES(WAYLAND_EGL, [wayland-egl >= 1.15], , [WANT_WAYLAND_EGL="yes"])
++	AC_DEFINE(WANT_WAYLAND_EGL, [], [We use internal Wayland EGL support])
+ 	WAYLAND_PREFIX=`$PKG_CONFIG --variable=prefix wayland-client`
+ 
+ 	AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner],, [${WAYLAND_PREFIX}/bin$PATH_SEPARATOR$PATH])
+@@ -84,6 +88,7 @@ AC_ARG_ENABLE(wayland,
+ ],
+   [wayland="no"])
+ AM_CONDITIONAL( [WANT_WAYLAND], [test x"$wayland" = x"yes"])
++AM_CONDITIONAL( [WANT_WAYLAND_EGL], [test x"$WANT_WAYLAND_EGL" = x"yes"])
+ 
+ AC_ARG_ENABLE(wayland_serverside_buffers,
+   [  --enable-wayland_serverside_buffers            Enable serverside buffer allocation for wayland (default=enabled)],
+@@ -300,7 +305,7 @@ AC_CONFIG_FILES([
+ 	tests/Makefile
+ ])
+ 
+-AM_COND_IF([WANT_WAYLAND], [AC_CONFIG_FILES([egl/platforms/common/wayland-egl.pc])])
++AM_COND_IF([WANT_WAYLAND_EGL], [AC_CONFIG_FILES([egl/platforms/common/wayland-egl.pc])])
+ AC_OUTPUT
+ 
+ echo
+diff --git a/hybris/egl/platforms/common/Makefile.am b/hybris/egl/platforms/common/Makefile.am
+index 3c3aa64..41d5002 100644
+--- a/hybris/egl/platforms/common/Makefile.am
++++ b/hybris/egl/platforms/common/Makefile.am
+@@ -11,10 +11,11 @@ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = hybris-egl-platform.pc
+ 
+ if WANT_WAYLAND
++if WANT_WAYLAND_EGL
+ lib_LTLIBRARIES += libwayland-egl.la
+ 
+ pkgconfig_DATA += wayland-egl.pc
+-
++endif
+ 
+ libhybris_eglplatformcommon_la_SOURCES += \
+ 	server_wlegl.cpp \
+@@ -35,6 +36,7 @@ BUILT_SOURCES = wayland-android-protocol.c \
+ %-client-protocol.h : %.xml
+ 	$(AM_V_GEN)$(WAYLAND_SCANNER) client-header < $< > $@
+ 
++if WANT_WAYLAND_EGL
+ libwayland_egl_la_SOURCES = wayland-egl.c
+ 
+ libwayland_egl_la_CFLAGS = -I. -I$(top_srcdir)/include $(ANDROID_HEADERS_CFLAGS) $(WAYLAND_CLIENT_CFLAGS) $(WAYLAND_SERVER_CFLAGS)
+@@ -56,6 +58,7 @@ libwayland_egl_la_LDFLAGS = \
+ 	-version-info "1":"0"
+ 
+ endif
++endif
+ 
+ libhybris_eglplatformcommon_la_CFLAGS = -I$(top_srcdir)/include $(ANDROID_HEADERS_CFLAGS) -I$(top_srcdir)/egl -I$(top_srcdir)/common/
+ if WANT_WAYLAND
+diff --git a/hybris/egl/platforms/wayland/eglplatform_wayland.cpp b/hybris/egl/platforms/wayland/eglplatform_wayland.cpp
+index 191ae76..9980e1b 100644
+--- a/hybris/egl/platforms/wayland/eglplatform_wayland.cpp
++++ b/hybris/egl/platforms/wayland/eglplatform_wayland.cpp
+@@ -51,7 +51,7 @@ extern "C" {
+ #include <hybris/gralloc/gralloc.h>
+ #include "wayland_window.h"
+ #include "logging.h"
+-#include "wayland-egl-priv.h"
++#include "wayland-egl-backend.h"
+ #include "server_wlegl_buffer.h"
+ #include "wayland-android-client-protocol.h"
+ 
+@@ -199,7 +199,7 @@ extern "C" int waylandws_post(EGLNativeWindowType win, void *buffer)
+ {
+ 	struct wl_egl_window *eglwin = (struct wl_egl_window *) win;
+ 
+-	return ((WaylandNativeWindow *) eglwin->nativewindow)->postBuffer((ANativeWindowBuffer *) buffer);
++	return ((WaylandNativeWindow *) eglwin->driver_private)->postBuffer((ANativeWindowBuffer *) buffer);
+ }
+ 
+ extern "C" wl_buffer *waylandws_createWlBuffer(EGLDisplay dpy, EGLImageKHR image)
+diff --git a/hybris/egl/platforms/wayland/wayland_window.cpp b/hybris/egl/platforms/wayland/wayland_window.cpp
+index f89c5d8..af9d1f3 100644
+--- a/hybris/egl/platforms/wayland/wayland_window.cpp
++++ b/hybris/egl/platforms/wayland/wayland_window.cpp
+@@ -27,7 +27,7 @@
+ 
+ #include <android-config.h>
+ #include "wayland_window.h"
+-#include "wayland-egl-priv.h"
++#include "wayland-egl-backend.h"
+ #include <assert.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -97,12 +97,12 @@ void WaylandNativeWindow::resize(unsigned int width, unsigned int height)
+ void WaylandNativeWindow::resize_callback(struct wl_egl_window *egl_window, void *)
+ {
+     TRACE("%dx%d",egl_window->width,egl_window->height);
+-    ((WaylandNativeWindow *) egl_window->nativewindow)->resize(egl_window->width, egl_window->height);
++    ((WaylandNativeWindow *) egl_window->driver_private)->resize(egl_window->width, egl_window->height);
+ }
+ 
+-void WaylandNativeWindow::free_callback(struct wl_egl_window *egl_window, void *)
++void WaylandNativeWindow::destroy_window_callback(void *data)
+ {
+-    WaylandNativeWindow *native = (WaylandNativeWindow*)egl_window->nativewindow;
++    WaylandNativeWindow *native = (WaylandNativeWindow*)data;
+ 
+     native->lock();
+     native->m_window = 0;
+@@ -183,14 +183,14 @@ WaylandNativeWindow::WaylandNativeWindow(struct wl_egl_window *window, struct wl
+ 
+     HYBRIS_TRACE_BEGIN("wayland-platform", "create_window", "");
+     this->m_window = window;
+-    this->m_window->nativewindow = (void *) this;
++    this->m_window->driver_private = (void *) this;
+     this->m_display = display;
+     this->m_width = window->width;
+     this->m_height = window->height;
+     this->m_defaultWidth = window->width;
+     this->m_defaultHeight = window->height;
+     this->m_window->resize_callback = resize_callback;
+-    this->m_window->free_callback = free_callback;
++    this->m_window->destroy_window_callback = destroy_window_callback;
+     this->frame_callback = NULL;
+     this->wl_queue = wl_display_create_queue(display);
+     this->m_format = 1;
+@@ -220,9 +220,9 @@ WaylandNativeWindow::~WaylandNativeWindow()
+         wl_callback_destroy(frame_callback);
+     wl_event_queue_destroy(wl_queue);
+     if (m_window) {
+-	    m_window->nativewindow = NULL;
++	    m_window->driver_private = NULL;
+ 	    m_window->resize_callback = NULL;
+-	    m_window->free_callback = NULL;
++	    m_window->destroy_window_callback = NULL;
+     }
+ }
+ 
+diff --git a/hybris/egl/platforms/wayland/wayland_window.h b/hybris/egl/platforms/wayland/wayland_window.h
+index 126254c..503a112 100644
+--- a/hybris/egl/platforms/wayland/wayland_window.h
++++ b/hybris/egl/platforms/wayland/wayland_window.h
+@@ -161,7 +161,7 @@ public:
+     static void registry_handle_global(void *data, struct wl_registry *registry, uint32_t name,
+                        const char *interface, uint32_t version);
+     static void resize_callback(struct wl_egl_window *egl_window, void *);
+-    static void free_callback(struct wl_egl_window *egl_window, void *);
++    static void destroy_window_callback(void *driver_private);
+     struct wl_event_queue *wl_queue;
+ 
+ protected:
+-- 
+2.30.0
+
