@@ -6,7 +6,7 @@ SRC_URI = "git://github.com/rilmodem/ofono;protocol=https \
            file://0001-Makefile.am-Fixes-include-paths.patch"
 SRCREV = "efc9c0a85d32706bc088e449e847be41dcc73b3d"
 
-S = "${WORKDIR}/git/"
+S = "${WORKDIR}/git"
 
 DEPENDS += "c-ares"
 
