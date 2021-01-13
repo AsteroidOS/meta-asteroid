@@ -1,0 +1,30 @@
+From e00faa4b03fc6ad8aa608b7077b6fcc4853eb163 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 13:55:44 +0100
+Subject: [PATCH] Disable tests and docs.
+
+---
+ mkcal.pro | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/mkcal.pro b/mkcal.pro
+index e0596ae..a2acb91 100644
+--- a/mkcal.pro
++++ b/mkcal.pro
+@@ -1,12 +1,11 @@
+ # QMake project file for libmkcal
+ 
+ TEMPLATE = subdirs
+-SUBDIRS = src tests tools
++SUBDIRS = src tools
+ 
+ # add to Qt 5 also when qmfclient is ported
+ #SUBDIRS += plugins
+ 
+-include(doc/doc.pro)
+ # make coverage
+ coverage.CONFIG += recursive
+ QMAKE_EXTRA_TARGETS += coverage
+-- 
+2.30.0
+
