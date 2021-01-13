@@ -5,8 +5,10 @@ LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd.git;protocol=https \
            file://0001-booster-generic-Fix-path-to-tibapplauncherd.patch \
+           file://0002-Fix-reference-to-host-lib.patch \
+           file://0003-Fix-dynamic-opening-issues.patch \
            file://booster-generic.service"
-SRCREV = "64396438670aa7ecf3de968d24c139c84b757eb2"
+SRCREV = "7091378e7d1de0c26cdfcf74951ee1688f029b9d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
