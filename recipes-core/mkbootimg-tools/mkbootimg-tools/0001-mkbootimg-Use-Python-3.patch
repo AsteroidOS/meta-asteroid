@@ -1,0 +1,22 @@
+From 7646240b44b587c29608b244a7bbfdf5b03fbd28 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 18:46:15 +0100
+Subject: [PATCH] mkbootimg: Use Python 3.
+
+---
+ mkbootimg | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mkbootimg b/mkbootimg
+index aea2585..7279a67 100755
+--- a/mkbootimg
++++ b/mkbootimg
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/python3
+ # Copyright 2015, The Android Open Source Project
+ #
+ # Licensed under the Apache License, Version 2.0 (the "License");
+-- 
+2.30.0
+
