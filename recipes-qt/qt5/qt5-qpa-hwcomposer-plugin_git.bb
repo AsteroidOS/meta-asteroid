@@ -4,7 +4,7 @@ sometimes also SoC type (generic, qcom, exynos4, ...)."
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c08382077db2dbc01b1b5536ec6665"
 
-PV = "5.6.1+gitr${SRCPV}"
+PV = "5.15.0+gitr${SRCPV}"
 
 DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
 RDEPENDS_${PN} += " qtscenegraph-adaptation "
@@ -14,14 +14,9 @@ RDEPENDS_${PN} += " qtscenegraph-adaptation "
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https \
-           file://0003-Fix-build-with-Qt-5.9.patch;striplevel=2 \
-           file://0005-hwcomposer_backend_v11-fix-compatibility-with-qtbase.patch;striplevel=2 \
-           file://0006-Add-ambient-mode-display-support.patch;striplevel=2 \
-           file://0007-backend-setInteractive-based-on-display-state.patch;striplevel=2 \
-           file://0008-backend-Don-t-crash-when-power-HAL-doesn-t-exist.patch;striplevel=2 \
-"
+        file://0001-Add-ambient-mode-display-support.patch;striplevel=2 "
 S = "${WORKDIR}/git/hwcomposer"
-SRCREV = "bb95d09b893761c25409363e15f7048739c436ba"
+SRCREV = "e9b72254c368d82961913f1a28134f472076f3d6"
 
 inherit qmake5
 
