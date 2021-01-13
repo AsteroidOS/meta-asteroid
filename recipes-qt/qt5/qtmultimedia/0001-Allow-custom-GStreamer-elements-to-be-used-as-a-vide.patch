@@ -1,4 +1,4 @@
-From d4c9cec06d7ca6a5bf0712ae61c3da30b37e4e9c Mon Sep 17 00:00:00 2001
+From ba86d82b9c81812254958211b5b8c12a87f4cb75 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 31 Jul 2019 13:48:48 +0200
 Subject: [PATCH] Allow custom GStreamer elements to be used as a video sinks
@@ -6,23 +6,23 @@ Subject: [PATCH] Allow custom GStreamer elements to be used as a video sinks
 ---
  src/gsttools/gsttools.pro                     |  2 ++
  src/gsttools/qgstreamervideosinkcontrol.cpp   | 32 +++++++++++++++++++
+ src/gsttools/qgstreamervideosinkcontrol_p.h   | 30 +++++++++++++++++
  src/multimedia/controls/controls.pri          |  4 ++-
  .../controls/qgstreamerelementcontrol.cpp     | 11 +++++++
  .../controls/qgstreamerelementcontrol_p.h     | 23 +++++++++++++
- .../qgstreamervideosinkcontrol_p.h            | 30 +++++++++++++++++
  .../gstreamer/camerabin/camerabinservice.cpp  |  3 ++
  .../mediaplayer/qgstreamerplayerservice.cpp   |  3 ++
  8 files changed, 107 insertions(+), 1 deletion(-)
  create mode 100644 src/gsttools/qgstreamervideosinkcontrol.cpp
+ create mode 100644 src/gsttools/qgstreamervideosinkcontrol_p.h
  create mode 100644 src/multimedia/controls/qgstreamerelementcontrol.cpp
  create mode 100644 src/multimedia/controls/qgstreamerelementcontrol_p.h
- create mode 100644 src/multimedia/gsttools_headers/qgstreamervideosinkcontrol_p.h
 
 diff --git a/src/gsttools/gsttools.pro b/src/gsttools/gsttools.pro
-index ca111b3f..a35ef4a7 100644
+index 0127cbe9..60203d88 100644
 --- a/src/gsttools/gsttools.pro
 +++ b/src/gsttools/gsttools.pro
-@@ -34,6 +34,7 @@ PRIVATE_HEADERS += \
+@@ -28,6 +28,7 @@ PRIVATE_HEADERS += \
      qgstcodecsinfo_p.h \
      qgstreamervideoprobecontrol_p.h \
      qgstreameraudioprobecontrol_p.h \
@@ -30,7 +30,7 @@ index ca111b3f..a35ef4a7 100644
      qgstreamervideowindow_p.h \
      qgstreamervideooverlay_p.h \
      qgsttools_global_p.h \
-@@ -53,6 +54,7 @@ SOURCES += \
+@@ -47,6 +48,7 @@ SOURCES += \
      qgstcodecsinfo.cpp \
      qgstreamervideoprobecontrol.cpp \
      qgstreameraudioprobecontrol.cpp \
@@ -76,6 +76,42 @@ index 00000000..50951575
 +        emit sinkChanged();
 +    }
 +}
+diff --git a/src/gsttools/qgstreamervideosinkcontrol_p.h b/src/gsttools/qgstreamervideosinkcontrol_p.h
+new file mode 100644
+index 00000000..a17a9fc1
+--- /dev/null
++++ b/src/gsttools/qgstreamervideosinkcontrol_p.h
+@@ -0,0 +1,30 @@
++#ifndef QGSTREAMERVIDEOSINKCONTROL_P_H
++#define QGSTREAMERVIDEOSINKCONTROL_P_H
++
++#include <private/qgsttools_global_p.h>
++#include <private/qgstreamerelementcontrol_p.h>
++#include <private/qgstreamervideorendererinterface_p.h>
++
++class Q_GSTTOOLS_EXPORT QGStreamerVideoSinkControl
++        : public QGStreamerElementControl
++        , public QGstreamerVideoRendererInterface
++{
++    Q_OBJECT
++    Q_INTERFACES(QGstreamerVideoRendererInterface)
++public:
++    QGStreamerVideoSinkControl(QObject *parent = 0);
++    ~QGStreamerVideoSinkControl();
++
++    GstElement *videoSink();
++    void setElement(GstElement *element);
++
++Q_SIGNALS:
++    void sinkChanged();
++    void readyChanged(bool);
++
++private:
++    GstElement *m_videoSink;
++};
++
++#endif
++
 diff --git a/src/multimedia/controls/controls.pri b/src/multimedia/controls/controls.pri
 index cfebe977..8b815c33 100644
 --- a/src/multimedia/controls/controls.pri
@@ -143,42 +179,6 @@ index 00000000..f066827e
 +
 +#endif
 +
-diff --git a/src/multimedia/gsttools_headers/qgstreamervideosinkcontrol_p.h b/src/multimedia/gsttools_headers/qgstreamervideosinkcontrol_p.h
-new file mode 100644
-index 00000000..a17a9fc1
---- /dev/null
-+++ b/src/multimedia/gsttools_headers/qgstreamervideosinkcontrol_p.h
-@@ -0,0 +1,30 @@
-+#ifndef QGSTREAMERVIDEOSINKCONTROL_P_H
-+#define QGSTREAMERVIDEOSINKCONTROL_P_H
-+
-+#include <private/qgsttools_global_p.h>
-+#include <private/qgstreamerelementcontrol_p.h>
-+#include <private/qgstreamervideorendererinterface_p.h>
-+
-+class Q_GSTTOOLS_EXPORT QGStreamerVideoSinkControl
-+        : public QGStreamerElementControl
-+        , public QGstreamerVideoRendererInterface
-+{
-+    Q_OBJECT
-+    Q_INTERFACES(QGstreamerVideoRendererInterface)
-+public:
-+    QGStreamerVideoSinkControl(QObject *parent = 0);
-+    ~QGStreamerVideoSinkControl();
-+
-+    GstElement *videoSink();
-+    void setElement(GstElement *element);
-+
-+Q_SIGNALS:
-+    void sinkChanged();
-+    void readyChanged(bool);
-+
-+private:
-+    GstElement *m_videoSink;
-+};
-+
-+#endif
-+
 diff --git a/src/plugins/gstreamer/camerabin/camerabinservice.cpp b/src/plugins/gstreamer/camerabin/camerabinservice.cpp
 index a68ecfdb..81ef4984 100644
 --- a/src/plugins/gstreamer/camerabin/camerabinservice.cpp
@@ -201,7 +201,7 @@ index a68ecfdb..81ef4984 100644
              m_videoOutput = m_videoWindow;
          }
 diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayerservice.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayerservice.cpp
-index 0712f6e6..25666f0b 100644
+index 4bf4a0a5..1a4d294a 100644
 --- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayerservice.cpp
 +++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayerservice.cpp
 @@ -54,6 +54,7 @@
@@ -210,9 +210,9 @@ index 0712f6e6..25666f0b 100644
  #include <private/qgstreamervideorenderer_p.h>
 +#include <private/qgstreamervideosinkcontrol_p.h>
  
- #if QT_CONFIG(mirclient) && defined (__arm__)
- #include "private/qgstreamermirtexturerenderer_p.h"
-@@ -156,6 +157,8 @@ QMediaControl *QGstreamerPlayerService::requestControl(const char *name)
+ #include "qgstreamerstreamscontrol.h"
+ #include <private/qgstreameraudioprobecontrol_p.h>
+@@ -137,6 +138,8 @@ QMediaControl *QGstreamerPlayerService::requestControl(const char *name)
      if (!m_videoOutput) {
          if (qstrcmp(name, QVideoRendererControl_iid) == 0)
              m_videoOutput = m_videoRenderer;
@@ -222,5 +222,5 @@ index 0712f6e6..25666f0b 100644
              m_videoOutput = m_videoWindow;
  #if defined(HAVE_WIDGETS)
 -- 
-2.23.0.rc0
+2.30.0
 
