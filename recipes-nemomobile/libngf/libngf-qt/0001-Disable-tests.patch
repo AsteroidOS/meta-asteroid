@@ -1,0 +1,32 @@
+From 3d9235ad347a8cd91db9e447ed23685209f57d59 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Fri, 8 Jan 2021 13:36:29 +0100
+Subject: [PATCH] Disable tests.
+
+---
+ libngf-qt.pro | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/libngf-qt.pro b/libngf-qt.pro
+index 85b0b11..ed88304 100644
+--- a/libngf-qt.pro
++++ b/libngf-qt.pro
+@@ -3,14 +3,12 @@ isEmpty(PREFIX) {
+     PREFIX = /usr/local
+ }
+ TEMPLATE = subdirs
+-SUBDIRS += src declarative tests
++SUBDIRS += src declarative
+ 
+ # No need to build this, but if you want then 'qmake EXAMPLE=1 && make'
+ count(EXAMPLE, 1) {
+     SUBDIRS += example
+ }
+ 
+-include(doc/doc.pri)
+-
+ # adds 'coverage' make target
+ include(coverage.pri)
+-- 
+2.30.0
+
