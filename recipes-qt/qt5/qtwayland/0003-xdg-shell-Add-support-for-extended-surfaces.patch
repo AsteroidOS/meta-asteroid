@@ -1,4 +1,4 @@
-From ffb735aa1c63c0b5a55d20aa9278dbab1e2f45cd Mon Sep 17 00:00:00 2001
+From b1332a0a8abfba31479f9b892027f75947fb2fae Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 3 Oct 2020 22:19:18 +0200
 Subject: [PATCH] xdg-shell: Add support for extended surfaces.
@@ -9,7 +9,7 @@ Subject: [PATCH] xdg-shell: Add support for extended surfaces.
  2 files changed, 10 insertions(+)
 
 diff --git a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
-index d2452aa4..14269b52 100644
+index b6d23ac1..febbe1e5 100644
 --- a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
 +++ b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell.cpp
 @@ -45,6 +45,7 @@
@@ -18,9 +18,9 @@ index d2452aa4..14269b52 100644
  #include <QtWaylandClient/private/qwaylandabstractdecoration_p.h>
 +#include <QtWaylandClient/private/qwaylandextendedsurface_p.h>
  
- QT_BEGIN_NAMESPACE
+ #include <QtGui/private/qwindow_p.h>
  
-@@ -227,6 +228,9 @@ QWaylandXdgSurface::QWaylandXdgSurface(QWaylandXdgShell *shell, ::xdg_surface *s
+@@ -242,6 +243,9 @@ QWaylandXdgSurface::QWaylandXdgSurface(QWaylandXdgShell *shell, ::xdg_surface *s
      Qt::WindowType type = window->window()->type();
      auto *transientParent = window->transientParent();
  
@@ -30,7 +30,7 @@ index d2452aa4..14269b52 100644
      if (type == Qt::ToolTip && transientParent) {
          setPopup(transientParent);
      } else if (type == Qt::Popup && transientParent && display->lastInputDevice()) {
-@@ -292,6 +296,8 @@ void QWaylandXdgSurface::setWindowFlags(Qt::WindowFlags flags)
+@@ -314,6 +318,8 @@ void QWaylandXdgSurface::setWindowFlags(Qt::WindowFlags flags)
  {
      if (m_toplevel)
          m_toplevel->requestWindowFlags(flags);
@@ -40,10 +40,10 @@ index d2452aa4..14269b52 100644
  
  bool QWaylandXdgSurface::isExposed() const
 diff --git a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
-index 741b83cf..9e73a4f7 100644
+index 0c98be35..2183cae1 100644
 --- a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
 +++ b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
-@@ -74,6 +74,7 @@ class QWaylandDisplay;
+@@ -72,6 +72,7 @@ class QWaylandDisplay;
  class QWaylandWindow;
  class QWaylandInputDevice;
  class QWaylandXdgShell;
@@ -51,7 +51,7 @@ index 741b83cf..9e73a4f7 100644
  
  class Q_WAYLAND_CLIENT_EXPORT QWaylandXdgSurface : public QWaylandShellSurface, public QtWayland::xdg_surface
  {
-@@ -148,6 +149,9 @@ private:
+@@ -153,6 +154,9 @@ private:
      bool m_configured = false;
      QRegion m_exposeRegion;
      uint m_pendingConfigureSerial = 0;
@@ -61,6 +61,3 @@ index 741b83cf..9e73a4f7 100644
  
      friend class QWaylandXdgShell;
  };
--- 
-2.28.0
-
