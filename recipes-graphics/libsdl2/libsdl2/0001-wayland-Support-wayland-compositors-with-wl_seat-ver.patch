@@ -1,0 +1,95 @@
+From 0dd862c9644545ef15ad53e95d1c8b542e6220fe Mon Sep 17 00:00:00 2001
+From: "Ryan C. Gordon" <icculus@icculus.org>
+Date: Tue, 7 Apr 2020 13:30:46 -0400
+Subject: [PATCH] wayland: Support wayland compositors with wl_seat version < 5
+ (thanks, Nia!).
+
+Fixes Bugzilla #5074.
+
+--HG--
+extra : rebase_source : fbd363d59805effdf0bb54640ce94bc00bb52109
+---
+ src/video/wayland/SDL_waylandevents.c   | 17 +++++++++++------
+ src/video/wayland/SDL_waylandevents_c.h |  2 +-
+ src/video/wayland/SDL_waylandvideo.c    |  2 +-
+ 3 files changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/src/video/wayland/SDL_waylandevents.c b/src/video/wayland/SDL_waylandevents.c
+index 3e52705b8..2ec5b19a4 100644
+--- a/src/video/wayland/SDL_waylandevents.c
++++ b/src/video/wayland/SDL_waylandevents.c
+@@ -42,7 +42,15 @@
+ #include "xdg-shell-client-protocol.h"
+ #include "xdg-shell-unstable-v6-client-protocol.h"
+ 
++#ifdef SDL_INPUT_LINUXEV
+ #include <linux/input.h>
++#else
++#define BTN_LEFT    (0x110)
++#define BTN_RIGHT   (0x111)
++#define BTN_MIDDLE  (0x112)
++#define BTN_SIDE    (0x113)
++#define BTN_EXTRA   (0x114)
++#endif
+ #include <sys/select.h>
+ #include <sys/mman.h>
+ #include <poll.h>
+@@ -436,7 +444,7 @@ pointer_handle_axis(void *data, struct wl_pointer *pointer,
+ {
+     struct SDL_WaylandInput *input = data;
+ 
+-    if(wl_seat_interface.version >= 5)
++    if(wl_seat_get_version(input->seat) >= 5)
+         pointer_handle_axis_common(input, SDL_FALSE, axis, value);
+     else
+         pointer_handle_axis_common_v1(input, time, axis, value);
+@@ -997,7 +1005,7 @@ static const struct wl_data_device_listener data_device_listener = {
+ };
+ 
+ void
+-Wayland_display_add_input(SDL_VideoData *d, uint32_t id)
++Wayland_display_add_input(SDL_VideoData *d, uint32_t id, uint32_t version)
+ {
+     struct SDL_WaylandInput *input;
+     SDL_WaylandDataDevice *data_device = NULL;
+@@ -1007,10 +1015,7 @@ Wayland_display_add_input(SDL_VideoData *d, uint32_t id)
+         return;
+ 
+     input->display = d;
+-    if (wl_seat_interface.version >= 5)
+-        input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, 5);
+-    else
+-        input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, 1);
++    input->seat = wl_registry_bind(d->registry, id, &wl_seat_interface, SDL_min(5, version));
+     input->sx_w = wl_fixed_from_int(0);
+     input->sy_w = wl_fixed_from_int(0);
+     d->input = input;
+diff --git a/src/video/wayland/SDL_waylandevents_c.h b/src/video/wayland/SDL_waylandevents_c.h
+index c8f67d675..f8ba197d8 100644
+--- a/src/video/wayland/SDL_waylandevents_c.h
++++ b/src/video/wayland/SDL_waylandevents_c.h
+@@ -32,7 +32,7 @@ struct SDL_WaylandInput;
+ 
+ extern void Wayland_PumpEvents(_THIS);
+ 
+-extern void Wayland_display_add_input(SDL_VideoData *d, uint32_t id);
++extern void Wayland_display_add_input(SDL_VideoData *d, uint32_t id, uint32_t version);
+ extern void Wayland_display_destroy_input(SDL_VideoData *d);
+ 
+ extern SDL_WaylandDataDevice* Wayland_get_data_device(struct SDL_WaylandInput *input);
+diff --git a/src/video/wayland/SDL_waylandvideo.c b/src/video/wayland/SDL_waylandvideo.c
+index 5c331f3ee..a3144b84e 100644
+--- a/src/video/wayland/SDL_waylandvideo.c
++++ b/src/video/wayland/SDL_waylandvideo.c
+@@ -364,7 +364,7 @@ display_handle_global(void *data, struct wl_registry *registry, uint32_t id,
+     } else if (strcmp(interface, "wl_output") == 0) {
+         Wayland_add_display(d, id);
+     } else if (strcmp(interface, "wl_seat") == 0) {
+-        Wayland_display_add_input(d, id);
++        Wayland_display_add_input(d, id, version);
+     } else if (strcmp(interface, "xdg_wm_base") == 0) {
+         d->shell.xdg = wl_registry_bind(d->registry, id, &xdg_wm_base_interface, 1);
+         xdg_wm_base_add_listener(d->shell.xdg, &shell_listener_xdg, NULL);
+-- 
+2.30.0
+
