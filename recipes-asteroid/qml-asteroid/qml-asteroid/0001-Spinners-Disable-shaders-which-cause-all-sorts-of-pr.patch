@@ -1,4 +1,4 @@
-From 5f61a4cc0e34e15c289c66bea9f4aefb0b8fc6ff Mon Sep 17 00:00:00 2001
+From 72ce1af1dda062594003083494e0c99111649234 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Sun, 3 Dec 2017 00:37:37 +0100
 Subject: [PATCH] Spinners: Disable shaders which cause all sorts of problems
@@ -10,7 +10,7 @@ Subject: [PATCH] Spinners: Disable shaders which cause all sorts of problems
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/controls/qml/CircularSpinner.qml b/src/controls/qml/CircularSpinner.qml
-index 2b83d8a..129bba8 100644
+index 2dc3c6b..db19f83 100644
 --- a/src/controls/qml/CircularSpinner.qml
 +++ b/src/controls/qml/CircularSpinner.qml
 @@ -45,7 +45,7 @@ PathView {
@@ -21,9 +21,9 @@ index 2b83d8a..129bba8 100644
 +    layer.enabled: false
      layer.effect: ShaderEffect {
          fragmentShader: "
-         varying highp vec2 qt_TexCoord0;
+         precision mediump float;
 diff --git a/src/controls/qml/Spinner.qml b/src/controls/qml/Spinner.qml
-index 053c1fd..1e3df55 100644
+index b7cd76b..62be3ec 100644
 --- a/src/controls/qml/Spinner.qml
 +++ b/src/controls/qml/Spinner.qml
 @@ -40,7 +40,7 @@ ListView {
@@ -34,7 +34,4 @@ index 053c1fd..1e3df55 100644
 +    layer.enabled: false
      layer.effect: ShaderEffect {
          fragmentShader: "
-         varying highp vec2 qt_TexCoord0;
--- 
-2.14.3
-
+         precision mediump float;
