@@ -17,6 +17,8 @@ PACKAGECONFIG_append += "pam"
 
 PACKAGECONFIG_remove = "rfkill"
 
+PACKAGECONFIG_remove = "timesyncd"
+
 RRECOMMENDS_${PN}_remove = "udev-hwdb"
 
 ALTERNATIVE_${PN} += "usrsbinhalt usrsbinreboot usrsbinshutdown usrsbinpoweroff"
