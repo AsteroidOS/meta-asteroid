@@ -18,9 +18,14 @@ deltask do_install
 deltask do_populate_lic
 deltask do_populate_sysroot
 
+def get_package_feed_depends(d):
+    tasks = d.getVar("SSTATETASKS").split()
+    package_feed = d.getVar('PACKAGE_FEED')
+    return " ".join(oe.utils.build_depends_string(package_feed, task) for task in tasks)
+
 do_package_index[nostamp] = "1"
 do_package_index[depends] += "${PACKAGEINDEXDEPS}"
-do_package_index[depends] += "${@oe.utils.build_depends_string(d.getVar('PACKAGE_FEED'), 'do_package_write_ipk')}"
+do_package_index[depends] += "${@get_package_feed_depends(d)}"
 
 python do_package_index() {
     from oe.rootfs import generate_index_files
