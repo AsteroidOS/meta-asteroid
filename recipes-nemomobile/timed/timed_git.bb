@@ -8,19 +8,21 @@ SRC_URI = "git://git.merproject.org/mer-core/timed.git;protocol=https \
     file://0002-Add-wakeup-event-for-use-with-ambient-mode.patch \
     file://timed-qt5.conf \
     file://timed-qt5.service"
-SRCREV = "c7c1380fcc72390d59f1dc3e01b0cff29207f293"
+SRCREV = "d136e845f5d2da8bb43cdd70b283300a8b8cd3b9"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5
-
+inherit qmake5 useradd
 B = "${S}"
+
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = "sailfish-datetime"
 
 do_configure_prepend() {
     mkdir -p src/h/timed-qt5/
     cp src/lib/qmacro.h src/h/timed-qt5/qmacro.h
-    sed -i "s@<policy user=\"nemo\">@<policy user=\"ceres\">@" src/server/timed-qt5.conf src/server/timed.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
+    sed -i "s@<policy user=\"nemo\">@<policy user=\"ceres\">@" src/server/timed-qt5.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
     cp ${WORKDIR}/timed-qt5.service ${S}/src/server/timed-qt5.service
 }
 
@@ -30,6 +32,7 @@ do_install_append() {
         ln -s /usr/lib/systemd/user/timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service
     fi
     install -d ${D}/var/lib/timed/
+    install -g sailfish-datetime -m 2775 -d ${D}/var/lib/timed/shared_settings/
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime
     cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
@@ -39,9 +42,9 @@ pkg_postinst_${PN}() {
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
-DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
+DEPENDS += "pcre systemd tzdata libiodata-native libiodata qtbase sailfish-access-control"
 RDEPENDS_${PN} += "libcap-bin tzdata"
-FILES_${PN} += "/usr/lib/ /usr/share/contextkit /usr/lib/systemd/user/default.target.wants/"
+FILES_${PN} += "/usr/lib/ /usr/lib/systemd/user/default.target.wants/"
 FILES_${PN}-dev += "/usr/share/mkspecs"
 FILES_${PN}-dbg += "/opt"
 INSANE_SKIP_${PN} += "dev-deps"
