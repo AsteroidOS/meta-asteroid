@@ -13,7 +13,7 @@ EXTRA_USERS_PARAMS = "groupadd system; \
                       groupadd statefs; \
                       groupadd gps; \
                       groupadd -f -g 1024 mtp; \
-                      useradd -p '' -G 'audio,video,system,gps,statefs,mtp' ceres"
+                      useradd -p '' -G 'audio,video,system,gps,statefs,sailfish-datetime,mtp' ceres"
 
 IMAGE_OVERHEAD_FACTOR = "1.0"
 IMAGE_ROOTFS_EXTRA_SPACE = "131072"
