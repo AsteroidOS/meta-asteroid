@@ -3,8 +3,8 @@ HOMEPAGE = "https://github.com/philippedeswert/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https \
-           file://0001-Remove-hard-dependency-to-ssu-sysinfo-which-is-actua.patch \
+SRC_URI = "gitsm://git.merproject.org/mer-core/usb-moded.git;protocol=https \
+           file://0001-usb-moded-common-Add-errno.h.patch \
            file://0002-Correct-rndis-configfs-function-name.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
@@ -13,7 +13,7 @@ SRC_URI = "git://git.merproject.org/mer-core/usb-moded.git;protocol=https \
            file://usb-moded \
            file://init_ffs \
            file://init_gfs"
-SRCREV = "e1e508ea95d89d352bdcf390c2a2fccbf584b909"
+SRCREV = "10c2f53a4122a241b76f871a871c53363abe74bc"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -22,7 +22,7 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
-DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd buteo-mtp"
+DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
 RDEPENDS_${PN} += "buteo-mtp"
 
 do_configure_prepend() {
