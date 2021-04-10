@@ -43,7 +43,7 @@ index 32b3b39..3f3df56 100644
 +++ b/mts/platform/storage/fsstorageplugin/watch-memory.xml
 @@ -1,4 +1,4 @@
  <?xml version="1.0" encoding="UTF-8"?>
--<storage name="media" path="/home/ceres" description="Phone Memory">
+-<storage name="media" path="/home/nemo" description="Phone Memory">
 +<storage name="media" path="/home/ceres" description="Watch Memory">
      <blacklist>homedir-blacklist.conf</blacklist>
  </storage>
