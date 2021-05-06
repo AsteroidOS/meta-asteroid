@@ -1,0 +1,38 @@
+From 8b8d271db718866a777ab9d5876a9c42455856cb Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Sat, 1 May 2021 15:08:17 +0200
+Subject: [PATCH] Report support for only 2.0 instead of 3.0. It looks like we
+ experience glitches when supporting 3.0.
+
+---
+ hybris/glesv2/glesv2.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/hybris/glesv2/glesv2.c b/hybris/glesv2/glesv2.c
+index 716bbde..ed7f366 100644
+--- a/hybris/glesv2/glesv2.c
++++ b/hybris/glesv2/glesv2.c
+@@ -105,7 +105,19 @@ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetShaderiv, GLuint, GLenum, GLint *);
+ HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderInfoLog, GLuint, GLsizei, GLsizei *, GLchar *);
+ HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderPrecisionFormat, GLenum, GLenum, GLint *, GLint *);
+ HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderSource, GLuint, GLsizei, GLsizei *, GLchar *);
+-HYBRIS_IMPLEMENT_FUNCTION1(glesv2, const GLubyte *, glGetString, GLenum);
++const GLubyte* glGetString (GLenum n1)
++{
++        static const GLubyte * (*f)(GLenum) FP_ATTRIB = NULL;
++        HYBRIS_DLSYSM(glesv2, &f, "glGetString");
++       // Some platforms have glitchy 3.0 driver. Report only 2.0 support.
++	if (n1 == GL_VERSION) {
++		static GLubyte glGetString_versionString[64];
++		snprintf((char *)glGetString_versionString, sizeof(glGetString_versionString), "OpenGL ES 2.0 (%s)", f(n1));
++		return glGetString_versionString;
++	}
++
++       return f(n1);
++}
+ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetTexParameterfv, GLenum, GLenum, GLfloat *);
+ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetTexParameteriv, GLenum, GLenum, GLint *);
+ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetUniformfv, GLuint, GLint, GLfloat *);
+-- 
+2.31.1
+
