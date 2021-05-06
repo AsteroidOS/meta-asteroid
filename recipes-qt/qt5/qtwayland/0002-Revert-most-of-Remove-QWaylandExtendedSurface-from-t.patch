@@ -1,4 +1,4 @@
-From 4915791a5581196ec5f29b6e5a1a82e195482cf8 Mon Sep 17 00:00:00 2001
+From c79cc3285f49494054cd923f8558b14905f5218c Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 1 Oct 2018 23:18:42 +0200
 Subject: [PATCH] Revert most of "Remove QWaylandExtendedSurface* from the
@@ -14,7 +14,7 @@ Subject: [PATCH] Revert most of "Remove QWaylandExtendedSurface* from the
  create mode 100644 src/compositor/extensions/qwlextendedsurface_p.h
 
 diff --git a/src/compositor/extensions/extensions.pri b/src/compositor/extensions/extensions.pri
-index 64b1439b..8b6ca62a 100644
+index e52bbfd6..ef1b552d 100644
 --- a/src/compositor/extensions/extensions.pri
 +++ b/src/compositor/extensions/extensions.pri
 @@ -5,6 +5,7 @@ CONFIG += generated_privates
@@ -25,15 +25,15 @@ index 64b1439b..8b6ca62a 100644
      ../extensions/touch-extension.xml \
      ../extensions/qt-key-unstable-v1.xml \
      ../extensions/qt-windowmanager.xml \
-@@ -19,6 +20,7 @@ WAYLANDSERVERSOURCES += \
-     ../3rdparty/protocol/idle-inhibit-unstable-v1.xml \
+@@ -20,6 +21,7 @@ WAYLANDSERVERSOURCES += \
+     ../extensions/qt-texture-sharing-unstable-v1.xml \
  
  HEADERS += \
 +    extensions/qwlextendedsurface_p.h \
      extensions/qwlqttouch_p.h \
      extensions/qwlqtkey_p.h \
      extensions/qwaylandshell.h \
-@@ -54,6 +56,7 @@ HEADERS += \
+@@ -55,6 +57,7 @@ HEADERS += \
      extensions/qwaylandivisurface_p.h \
  
  SOURCES += \
