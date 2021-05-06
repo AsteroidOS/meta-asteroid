@@ -1,4 +1,4 @@
-From b1332a0a8abfba31479f9b892027f75947fb2fae Mon Sep 17 00:00:00 2001
+From 0b1b556eb06cd5e5c249310f0eb39382f57aef14 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 3 Oct 2020 22:19:18 +0200
 Subject: [PATCH] xdg-shell: Add support for extended surfaces.
