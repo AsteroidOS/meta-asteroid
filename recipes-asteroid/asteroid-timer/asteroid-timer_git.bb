@@ -8,7 +8,12 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit cmake_qt5
 
-DEPENDS += "qml-asteroid nemo-qml-plugin-dbus nemo-keepalive qtdeclarative-native"
+DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-dbus nemo-keepalive qttools-native qtdeclarative-native"
 RDEPENDS_${PN} += "nemo-keepalive"
+
+do_install_append() {
+    # This app only uses translations for the desktop shortcut.
+    rm -rvf ${D}/usr/share/translations/
+}
