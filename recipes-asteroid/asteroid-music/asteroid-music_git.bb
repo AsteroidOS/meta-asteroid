@@ -8,14 +8,8 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit cmake_qt5
 
-DEPENDS += "qml-asteroid qtmpris qttools-native qtdeclarative-native"
+DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtmpris qttools-native qtdeclarative-native"
 RDEPENDS_${PN} += "qtmpris"
 FILES_${PN} += "/usr/share/translations/"
-
-do_install_append() {
-    lrelease -idbased ${S}/i18n/asteroid-music.*.ts
-    install -d ${D}/usr/share/translations/
-    cp ${S}/i18n/asteroid-music.*.qm ${D}/usr/share/translations/
-}

@@ -8,14 +8,8 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit cmake_qt5
 
-DEPENDS += "qml-asteroid nemo-qml-plugin-alarms qttools-native qtdeclarative-native"
+DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-alarms qttools-native qtdeclarative-native"
 RDEPENDS_${PN} += "nemo-qml-plugin-alarms"
 FILES_${PN} += "/usr/share/translations/ /usr/lib/systemd/user/alarmpresenter.service /usr/share/dbus-1/services/com.nokia.voland.service"
-
-do_install_append() {
-    lrelease -idbased ${S}/alarmclock/i18n/asteroid-alarmclock.*.ts
-    install -d ${D}/usr/share/translations/
-    cp ${S}/alarmclock/i18n/asteroid-alarmclock.*.qm ${D}/usr/share/translations/
-}

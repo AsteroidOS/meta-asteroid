@@ -8,14 +8,8 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit cmake_qt5
 
-DEPENDS += "qml-asteroid nemo-qml-plugin-calendar qttools-native qtdeclarative-native"
+DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-calendar qttools-native qtdeclarative-native"
 RDEPENDS_${PN} += "nemo-qml-plugin-calendar"
 FILES_${PN} += "/usr/share/translations/"
-
-do_install_append() {
-    lrelease -idbased ${S}/i18n/asteroid-calendar.*.ts
-    install -d ${D}/usr/share/translations/
-    cp ${S}/i18n/asteroid-calendar.*.qm ${D}/usr/share/translations/
-}
