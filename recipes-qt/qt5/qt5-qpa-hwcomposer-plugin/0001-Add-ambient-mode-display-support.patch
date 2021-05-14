@@ -1,4 +1,4 @@
-From 51da4301b1b26ad9f33db8a1c161d25c04c1e2e1 Mon Sep 17 00:00:00 2001
+From ea68e0623472bd7a8b003248cb68f026aa2b04ac Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Fri, 8 Jan 2021 17:10:03 +0100
 Subject: [PATCH] Add ambient mode display support. Add ability to keep the
@@ -8,17 +8,17 @@ Subject: [PATCH] Add ambient mode display support. Add ability to keep the
  work.
 
 ---
- hwcomposer/hwcomposer_backend.cpp     | 20 ++++++++++--
- hwcomposer/hwcomposer_backend.h       |  4 +++
- hwcomposer/hwcomposer_backend_v11.cpp | 46 +++++++++++++++++++++++++--
- hwcomposer/hwcomposer_backend_v11.h   |  6 +++-
- hwcomposer/hwcomposer_context.cpp     | 16 +++++++++-
- hwcomposer/hwcomposer_context.h       |  3 ++
- hwcomposer/qeglfsintegration.cpp      |  6 ++++
- 7 files changed, 94 insertions(+), 7 deletions(-)
+ hwcomposer/hwcomposer_backend.cpp     | 24 +++++++++++++++++--
+ hwcomposer/hwcomposer_backend.h       |  4 ++++
+ hwcomposer/hwcomposer_backend_v11.cpp | 33 +++++++++++++++++++++++----
+ hwcomposer/hwcomposer_backend_v11.h   |  9 +++++++-
+ hwcomposer/hwcomposer_context.cpp     | 16 ++++++++++++-
+ hwcomposer/hwcomposer_context.h       |  3 +++
+ hwcomposer/qeglfsintegration.cpp      |  6 +++++
+ 7 files changed, 87 insertions(+), 8 deletions(-)
 
 diff --git a/hwcomposer/hwcomposer_backend.cpp b/hwcomposer/hwcomposer_backend.cpp
-index 69506c4..2fc2107 100644
+index 69506c4..643714a 100644
 --- a/hwcomposer/hwcomposer_backend.cpp
 +++ b/hwcomposer/hwcomposer_backend.cpp
 @@ -75,6 +75,7 @@ HwComposerBackend::create()
@@ -29,7 +29,7 @@ index 69506c4..2fc2107 100644
      void *libminisf;
      void (*startMiniSurfaceFlinger)(void) = NULL;
  
-@@ -100,7 +101,22 @@ HwComposerBackend::create()
+@@ -100,7 +101,26 @@ HwComposerBackend::create()
      if (startMiniSurfaceFlinger) {
  	startMiniSurfaceFlinger();
      } else {
@@ -48,12 +48,16 @@ index 69506c4..2fc2107 100644
 +        fprintf(stderr, " * Name: %s\n", pwr_module->common.name);
 +        fprintf(stderr, " * Author: %s\n", pwr_module->common.author);
 +        fprintf(stderr, "== power module ==\n");
++        // Some platforms require explicitly setting a powerhint in order for the PowerHAL to load.
++        // This rule indicates that the user is interacting with the device.
++        // Use NULL to indicate an unknown estimate length of interaction.
++        pwr_module->powerHint(pwr_module, POWER_HINT_INTERACTION, NULL);
 +    } else {
 +        fprintf(stderr, "PowerHAL is missing or not working, display doze mode may not work\n");
      }
  
      // Open hardware composer
-@@ -166,7 +182,7 @@ HwComposerBackend::create()
+@@ -166,7 +186,7 @@ HwComposerBackend::create()
  #endif
              // HWC_NUM_DISPLAY_TYPES is the actual size of the array, otherwise
              // underrun/overruns happen
@@ -92,7 +96,7 @@ index 77c0b88..9d876e9 100644
  };
  
 diff --git a/hwcomposer/hwcomposer_backend_v11.cpp b/hwcomposer/hwcomposer_backend_v11.cpp
-index 23e51ab..136698e 100644
+index 23e51ab..8f158cd 100644
 --- a/hwcomposer/hwcomposer_backend_v11.cpp
 +++ b/hwcomposer/hwcomposer_backend_v11.cpp
 @@ -178,10 +178,11 @@ void HWComposer::present(HWComposerNativeWindowBuffer *buffer)
@@ -108,25 +112,10 @@ index 23e51ab..136698e 100644
      , hwc_mList(NULL)
      , num_displays(num_displays)
      , m_displayOff(true)
-@@ -346,6 +347,28 @@ HwComposerBackend_v11::swap(EGLNativeDisplayType display, EGLSurface surface)
+@@ -346,6 +347,13 @@ HwComposerBackend_v11::swap(EGLNativeDisplayType display, EGLSurface surface)
  #endif
  }
  
-+bool HwComposerBackend_v11::ambientModeSupport()
-+{
-+#ifdef HWC_DEVICE_API_VERSION_1_4
-+    if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
-+        return true;
-+    } else
-+#endif
-+#ifdef HWC_DEVICE_API_VERSION_1_5
-+    if (hwc_version == HWC_DEVICE_API_VERSION_1_5) {
-+        return true;
-+    } else
-+#endif
-+    return false;
-+}
-+
 +void HwComposerBackend_v11::ambientModeEnabled(bool enable)
 +{
 +    if (ambientModeSupport()) {
@@ -137,7 +126,7 @@ index 23e51ab..136698e 100644
  void
  HwComposerBackend_v11::sleepDisplay(bool sleep)
  {
-@@ -359,16 +382,33 @@ HwComposerBackend_v11::sleepDisplay(bool sleep)
+@@ -359,16 +367,33 @@ HwComposerBackend_v11::sleepDisplay(bool sleep)
  
  #ifdef HWC_DEVICE_API_VERSION_1_4
          if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
@@ -159,7 +148,8 @@ index 23e51ab..136698e 100644
 +            }
          } else
  #endif
-             HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, 1));
+-            HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, 1));
++            HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, m_ambientMode ? 0 : 1));
 +
 +        // Enter non-interactive state after turning off the screen.
 +        if (pwr_device) {
@@ -174,10 +164,10 @@ index 23e51ab..136698e 100644
          if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
              HWC_PLUGIN_EXPECT_ZERO(hwc_device->setPowerMode(hwc_device, 0, HWC_POWER_MODE_NORMAL));
 diff --git a/hwcomposer/hwcomposer_backend_v11.h b/hwcomposer/hwcomposer_backend_v11.h
-index 838557f..73c8471 100644
+index 838557f..240033c 100644
 --- a/hwcomposer/hwcomposer_backend_v11.h
 +++ b/hwcomposer/hwcomposer_backend_v11.h
-@@ -56,13 +56,15 @@ class QWindow;
+@@ -56,13 +56,18 @@ class QWindow;
  
  class HwComposerBackend_v11 : public QObject, public HwComposerBackend {
  public:
@@ -189,12 +179,15 @@ index 838557f..73c8471 100644
      virtual EGLNativeWindowType createWindow(int width, int height);
      virtual void destroyWindow(EGLNativeWindowType window);
      virtual void swap(EGLNativeDisplayType display, EGLSurface surface);
-+    virtual bool ambientModeSupport() Q_DECL_OVERRIDE;
++    virtual bool ambientModeSupport() Q_DECL_OVERRIDE
++    {
++        return true;
++    };
 +    virtual void ambientModeEnabled(bool enable) Q_DECL_OVERRIDE;
      virtual void sleepDisplay(bool sleep);
      virtual float refreshRate();
      virtual bool getScreenSizes(int *width, int *height, float *physical_width, float *physical_height);
-@@ -76,11 +78,13 @@ public:
+@@ -76,11 +81,13 @@ public:
  private:
      int getSingleAttribute(uint32_t attribute);
      hwc_composer_device_1_t *hwc_device;
@@ -288,5 +281,5 @@ index 81cc83d..e14bdfd 100644
          // Called from lipstick to turn off the display (src/homeapplication.cpp)
          mHwc->sleepDisplay(true);
 -- 
-2.30.0
+2.31.1
 
