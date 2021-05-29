@@ -11,8 +11,4 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtsensors qttools-native qtdeclarative-native"
-
-do_install_append() {
-    # This app only uses translations for the desktop shortcut.
-    rm -rvf ${D}/usr/share/translations/
-}
+FILES_${PN} += "/usr/share/translations/"
