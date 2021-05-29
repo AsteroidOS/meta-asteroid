@@ -1,0 +1,94 @@
+From a10620ad5ae8c8a17a4968a9862ed3d2771139c8 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Sun, 21 Mar 2021 23:03:07 +0100
+Subject: [PATCH] Don't include dev headers.
+
+---
+ Makefile.custom     | 10 +---------
+ dsme/Makefile.am    | 12 ++++++------
+ modules/Makefile.am |  6 +++---
+ 3 files changed, 10 insertions(+), 18 deletions(-)
+
+diff --git a/Makefile.custom b/Makefile.custom
+index c086afa..3064fb0 100644
+--- a/Makefile.custom
++++ b/Makefile.custom
+@@ -108,7 +108,7 @@ distclean:: clean
+ mostlyclean::
+ 	$(RM) *.o *~ *.bak */*.o */*~ */*.bak
+ 
+-install :: install_main install_plugin_devel
++install :: install_main
+ 
+ install_main::
+ 	# sbin executables
+@@ -132,14 +132,6 @@ install_main::
+ 	install -d -m 755 $(DESTDIR)/opt/tests/dsme-tests
+ 	install -m 644 tests/tests.xml $(DESTDIR)/opt/tests/dsme-tests
+ 
+-install_plugin_devel::
+-	# devel headers dir
+-	install -d -m 755 $(DESTDIR)$(_INCLUDEDIR)/dsme-plugin
+-	install -m 644 $(PLUGIN_DEVEL_HEADERS) $(DESTDIR)$(_INCLUDEDIR)/dsme-plugin/
+-
+-	# dsme-plugin pkg-config file
+-	install -D -m 644 dsme-plugin.pc $(DESTDIR)$(_LIBDIR)/pkgconfig/dsme-plugin.pc
+-
+ # ----------------------------------------------------------------------------
+ # Build rules
+ # ----------------------------------------------------------------------------
+diff --git a/dsme/Makefile.am b/dsme/Makefile.am
+index 32bf241..638a259 100644
+--- a/dsme/Makefile.am
++++ b/dsme/Makefile.am
+@@ -11,7 +11,7 @@ ACLOCAL_AMFLAGS = -I m4
+ #
+ dbusdir = @sysconfdir@/dbus-1/system.d
+ pkgsysconfdir = @sysconfdir@/@PACKAGE@
+-dsmeplugindir = $(includedir)/dsme-plugin
++#dsmeplugindir = $(includedir)/dsme-plugin
+ pkgconfigdir = $(libdir)/pkgconfig
+ 
+ #
+@@ -54,11 +54,11 @@ noinst_HEADERS = dsme-rd-mode.h \
+                  ../include/dsme/dsmesock.h \
+                  ../include/dsme/oom.h
+ 
+-dsmeplugin_HEADERS = ../include/dsme/logging.h \
+-                     ../include/dsme/modulebase.h \
+-                     ../include/dsme/modules.h \
+-                     ../include/dsme/timers.h \
+-                     ../include/dsme/mainloop.h
++#dsmeplugin_HEADERS = ../include/dsme/logging.h \
++#                     ../include/dsme/modulebase.h \
++#                     ../include/dsme/modules.h \
++#                     ../include/dsme/timers.h \
++#                     ../include/dsme/mainloop.h
+ 
+ #
+ # Data
+diff --git a/modules/Makefile.am b/modules/Makefile.am
+index 63878c7..da8d826 100644
+--- a/modules/Makefile.am
++++ b/modules/Makefile.am
+@@ -27,14 +27,14 @@ noinst_HEADERS = runlevel.h \
+                  thermalmanager.h \
+                  state-internal.h
+ 
+-dsmeplugin_HEADERS = dbusproxy.h \
+-                     dsme_dbus.h
++#dsmeplugin_HEADERS = dbusproxy.h \
++#                     dsme_dbus.h
+ 
+ #
+ ## Additional dirs
+ #
+ pkgsysconfdir = @sysconfdir@
+-dsmeplugindir = $(includedir)/dsme-plugin
++#dsmeplugindir = $(includedir)/dsme-plugin
+ 
+ if WANT_GENERIC_THERMAL_MGMT
+ pkglib_LTLIBRARIES += thermalsensor_generic.la
+-- 
+2.31.0
+

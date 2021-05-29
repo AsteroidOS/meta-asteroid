@@ -3,14 +3,15 @@ HOMEPAGE = "https://git.merproject.org/mer-core/dsme"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://git.merproject.org/mer-core/dsme.git;protocol=https \
+SRC_URI = "gitsm://git.merproject.org/mer-core/dsme.git;protocol=https \
+    file://0001-Don-t-include-dev-headers.patch \
     file://dsme.service"
-SRCREV = "7124900a8673926446cbef4a75ea206275fbcb28"
+SRCREV = "070fc0f87d3704424a61c5c1d547aa057183408c"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib mce"
+DEPENDS += "qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib mce cryptsetup"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
