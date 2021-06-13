@@ -1,7 +1,7 @@
 From 22d79a9cf447566c04c50b4bf338668d214e6731 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 9 Jan 2021 16:34:06 +0100
-Subject: [PATCH] Set version to 13 to support PulseAudio 13.
+Subject: [PATCH] Set version to support PulseAudio 14.
 
 ---
  .tarball-version | 1 +
@@ -14,7 +14,7 @@ index 0000000..02161ca
 --- /dev/null
 +++ b/.tarball-version
 @@ -0,0 +1 @@
-+13.0.0
++14.2.0
 -- 
 2.30.0
 
