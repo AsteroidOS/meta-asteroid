@@ -4,18 +4,16 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://git.merproject.org/mer-core/mce-dev.git;protocol=https"
-SRCREV = "27897482278236ad3d7bd227823b78e43a409569"
+SRCREV = "9d2cb2a0393d903c84bde4c6acb212dc6a30f780"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
+
+ALLOW_EMPTY_${PN} = "1"
 
 do_compile() {
 }
 
 do_install() {
-    install -d ${D}/usr/include/mce/
-    cp include/mce/* ${D}/usr/include/mce/
-
-    install -d ${D}/usr/lib/pkgconfig/
-    cp mce.pc ${D}/usr/lib/pkgconfig/
+    oe_runmake install 'DESTDIR=${D}' 'PCDIR=${libdir}/pkgconfig'
 }
