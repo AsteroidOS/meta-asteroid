@@ -8,6 +8,8 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
+ALLOW_EMPTY_${PN} = "1"
+
 EXTRA_OECMAKE += "-DBUILD_TESTING=off -DBUILD_HTML_DOCS=OFF -DBUILD_QTHELP_DOCS=ON"
 
 inherit cmake
