@@ -93,6 +93,27 @@ if [ -e $ANDROID_MEDIA_DIR/asteroidos.ext4 ] ; then
     [ $? -ne 0 ] || BOOT_DIR="/loop"
 fi
 
+if [ ! -e $system_partition ] ; then
+    info "Mounting system..."
+    mkdir -m 0777 $BOOT_DIR/system
+    mount -t auto -o ro /dev/$system_partition $BOOT_DIR/system
+    mount --bind $BOOT_DIR/system /system
+fi
+
+if [ ! -e $vendor_partition ] ; then
+    info "Mounting vendor..."
+    mkdir -m 0777 $BOOT_DIR/vendor
+    mount -t auto -o ro /dev/$vendor_partition $BOOT_DIR/vendor
+    mount --bind $BOOT_DIR/vendor /vendor
+fi
+
+if [ ! -e $firmware_partition ] ; then
+    info "Mounting firmware..."
+    mkdir -m 0777 $BOOT_DIR/firmware
+    mount -t auto -o ro /dev/$firmware_partition $BOOT_DIR/firmware
+    mount --bind $BOOT_DIR/firmware /firmware
+fi
+
 if [ -x /init.machine ]; then
     info "Run machine specific init"
     /init.machine $BOOT_DIR > /dev/ttyprintk
