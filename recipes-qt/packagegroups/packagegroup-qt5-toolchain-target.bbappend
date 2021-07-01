@@ -9,6 +9,9 @@ RDEPENDS_${PN}_remove = "qtscript-dev"
 RDEPENDS_${PN}_remove = "qtscript-mkspecs"
 RDEPENDS_${PN}_remove = "qtcharts-mkspecs"
 
+RDEPENDS_${PN} += "extra-cmake-modules-dev"
+RDEPENDS_${PN} += "mcedevel-dev"
+
 RDEPENDS_${PN} += "qtvirtualkeyboard-dev"
 RDEPENDS_${PN} += "qtvirtualkeyboard-plugins"
 

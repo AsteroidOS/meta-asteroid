@@ -1,49 +1,24 @@
-From a26713acf58a39fa1a51cae3e85f5dc391100f24 Mon Sep 17 00:00:00 2001
+From 68e353c4bec81fbd420a39a67691a230bd96126c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Juho=20H=C3=A4m=C3=A4l=C3=A4inen?=
  <juho.hamalainen@tieto.com>
 Date: Thu, 5 Feb 2015 11:00:52 +0200
-Subject: [PATCH 1002/1011] build: Install pulsecore headers.
+Subject: [PATCH] build: Install pulsecore headers.
 
 This is for building out-of-tree modules. Upstream doesn't want to
 support out-of-tree modules, so this patch is not upstreamable.
 Mer/Nemo should try to not depend on any out-of-tree modules.
 ---
- Makefile.am           |   2 +-
- configure.ac          |   1 +
- libpulse-simple.pc.in |   2 +-
- libpulse.pc.in        |   2 +-
- pulsecore.pc.in       |  12 +++++
- src/Makefile.am       | 134 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 150 insertions(+), 3 deletions(-)
+ libpulse-simple.pc.in     |   2 +-
+ libpulse.pc.in            |   2 +-
+ meson.build               |   1 +
+ pulsecore.pc.in           |  12 ++++
+ src/Makefile.am           | 134 ++++++++++++++++++++++++++++++++++++++
+ src/pulsecore/meson.build |  52 +++++++++++++++
+ 6 files changed, 201 insertions(+), 2 deletions(-)
  create mode 100644 pulsecore.pc.in
 
-diff --git a/Makefile.am b/Makefile.am
-index 13bc469..9771fac 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -53,7 +53,7 @@ dist_vapi_DATA = \
- 		vala/libpulse-simple.deps vala/libpulse-simple.vapi
- 
- pkgconfigdir = $(libdir)/pkgconfig
--pkgconfig_DATA = libpulse.pc libpulse-simple.pc
-+pkgconfig_DATA = libpulse.pc libpulse-simple.pc pulsecore.pc
- 
- if HAVE_GLIB20
- pkgconfig_DATA += \
-diff --git a/configure.ac b/configure.ac
-index 4edc8e0..70b50d0 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1515,6 +1515,7 @@ man/Makefile
- libpulse.pc
- libpulse-simple.pc
- libpulse-mainloop-glib.pc
-+pulsecore.pc
- doxygen/Makefile
- doxygen/doxygen.conf
- src/pulse/version.h
 diff --git a/libpulse-simple.pc.in b/libpulse-simple.pc.in
-index dc855fd..c034241 100644
+index dc855fd5a..c034241d1 100644
 --- a/libpulse-simple.pc.in
 +++ b/libpulse-simple.pc.in
 @@ -5,7 +5,7 @@ includedir=@includedir@
@@ -56,7 +31,7 @@ index dc855fd..c034241 100644
  Libs.private: -L${libdir}/pulseaudio -lpulsecommon-@PA_MAJORMINOR@
  Cflags: -I${includedir} -D_REENTRANT
 diff --git a/libpulse.pc.in b/libpulse.pc.in
-index 23d888b..5e7e75f 100644
+index 23d888bb9..5e7e75f14 100644
 --- a/libpulse.pc.in
 +++ b/libpulse.pc.in
 @@ -6,7 +6,7 @@ modlibexecdir=@modlibexecdir@
@@ -68,9 +43,21 @@ index 23d888b..5e7e75f 100644
  Libs: -L${libdir} -lpulse @PTHREAD_LIBS@
  Libs.private: -L${libdir}/pulseaudio -lpulsecommon-@PA_MAJORMINOR@
  Cflags: -I${includedir} -D_REENTRANT
+diff --git a/meson.build b/meson.build
+index a5263215c..9afc9e516 100644
+--- a/meson.build
++++ b/meson.build
+@@ -732,6 +732,7 @@ pc_cdata.set('PTHREAD_LIBS', '-pthread')
+ pc_files = [
+   'libpulse.pc',
+   'libpulse-simple.pc',
++  'pulsecore.pc',
+ ]
+ 
+ if glib_dep.found()
 diff --git a/pulsecore.pc.in b/pulsecore.pc.in
 new file mode 100644
-index 0000000..b5b4a9b
+index 000000000..b5b4a9bdf
 --- /dev/null
 +++ b/pulsecore.pc.in
 @@ -0,0 +1,12 @@
@@ -87,7 +74,7 @@ index 0000000..b5b4a9b
 +Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-@PA_MAJORMINOR@/modules -lpulsecore-@PA_MAJORMINOR@ -lpulsecommon-@PA_MAJORMINOR@ -lpulse @PTHREAD_LIBS@
 +Cflags: -D_REENTRANT -D__INCLUDED_FROM_PULSE_AUDIO -DPA_DEFAULT_CONFIG_DIR=\"@PA_DEFAULT_CONFIG_DIR@\" -I${includedir}
 diff --git a/src/Makefile.am b/src/Makefile.am
-index b600dfb..7e76b51 100644
+index 454b644bb..2b083c01a 100644
 --- a/src/Makefile.am
 +++ b/src/Makefile.am
 @@ -23,6 +23,7 @@
@@ -98,10 +85,11 @@ index b600dfb..7e76b51 100644
  pulselibexecdir=$(libexecdir)/pulse
  if HAVE_X11
  xdgautostartdir=$(sysconfdir)/xdg/autostart
-@@ -799,6 +800,139 @@ libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
+@@ -850,6 +851,139 @@ libpulsecommon_@PA_MAJORMINOR@_la_CFLAGS += $(DBUS_CFLAGS)
+ libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
  endif
  
- ###################################
++###################################
 +#         Pulsecore headers       #
 +###################################
 +
@@ -234,10 +222,128 @@ index b600dfb..7e76b51 100644
 +		pulsecore/x11prop.h \
 +		pulsecore/x11wrap.h
 +
-+###################################
+ ###################################
  #         Client library          #
  ###################################
+diff --git a/src/pulsecore/meson.build b/src/pulsecore/meson.build
+index 99a702ea1..6fa847a0a 100644
+--- a/src/pulsecore/meson.build
++++ b/src/pulsecore/meson.build
+@@ -58,42 +58,77 @@ libpulsecore_sources = [
+ ]
+ 
+ libpulsecore_headers = [
++  'atomic.h',
+   'asyncmsgq.h',
+   'asyncq.h',
++  'aupdate.h',
+   'auth-cookie.h',
+   'card.h',
+   'cli-command.h',
+   'cli-text.h',
+   'client.h',
++  'conf-parser.h',
+   'core.h',
++  'core-error.h',
++  'core-rtclock.h',
+   'core-scache.h',
+   'core-subscribe.h',
++  'core-util.h',
+   'cpu.h',
+   'cpu-arm.h',
+   'cpu-orc.h',
+   'cpu-x86.h',
++  'creds.h',
+   'database.h',
++  'dbus-util.h',
++  'dynarray.h',
+   'device-port.h',
++  'fdsem.h',
+   'ffmpeg/avcodec.h',
+   'ffmpeg/dsputil.h',
+   'filter/biquad.h',
+   'filter/crossover.h',
+   'filter/lfe-filter.h',
++  'hashmap.h',
+   'hook-list.h',
++  'i18n.h',
++  'idxset.h',
++  'iochannel.h',
++  'ipacl.h',
++  'llist.h',
++  'log.h',
+   'ltdl-helper.h',
+   'message-handler.h',
++  'macro.h',
++  'mem.h',
++  'memblock.h',
++  'memblockq.h',
++  'memchunk.h',
+   'mix.h',
+   'modargs.h',
+   'modinfo.h',
+   'module.h',
+   'msgobject.h',
++  'mutex.h',
+   'namereg.h',
++  'native-common.h',
+   'object.h',
++  'once.h',
++  'packet.h',
++  'pdispatch.h',
+   'play-memblockq.h',
+   'play-memchunk.h',
++  'pstream.h',
++  'pstream-util.h',
++  'proplist-util.h',
++  'protocol-native.h',
++  'queue.h',
++  'refcnt.h',
+   'remap.h',
+   'resampler.h',
+   'rtpoll.h',
++  'sample-util.h',
++  'semaphore.h',
+   'sconv.h',
+   'sconv-s16be.h',
+   'sconv-s16le.h',
+@@ -101,12 +136,19 @@ libpulsecore_headers = [
+   'sink-input.h',
+   'sink.h',
+   'sioman.h',
++  'socket.h',
+   'sound-file-stream.h',
+   'sound-file.h',
+   'source-output.h',
+   'source.h',
++  'srbchannel.h',
+   'start-child.h',
++  'strbuf.h',
++  'strlist.h',
++  'time-smoother.h',
++  'thread.h',
+   'stream-util.h',
++  'tagstruct.h',
+   'thread-mq.h',
+   'typedefs.h',
+ ]
+@@ -204,6 +246,16 @@ libpulsecore = shared_library('pulsecore-' + pa_version_major_minor,
+ 
+ libpulsecore_dep = declare_dependency(link_with: libpulsecore)
+ 
++install_headers(
++  libpulsecore_headers,
++  subdir : 'pulsecore'
++)
++
++install_headers(
++  'filter/lfe-filter.h',
++  subdir : 'pulsecore/filter'
++)
++
+ # Internal libraries for modules
+ # TODO: understand 'c_args' and 'dependencies' better, maybe we can remove some
  
 -- 
-2.11.0
+2.31.1
 
