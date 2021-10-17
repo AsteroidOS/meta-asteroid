@@ -1,9 +1,9 @@
 SUMMARY = "Plugin-based filesystem to access and change the state of the system "
-HOMEPAGE = "https://git.merproject.org/mer-core/statefs"
+HOMEPAGE = "https://github.com/sailfishos/statefs"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f16c63ad20517dd81888a9ee32c4a0d4"
 
-SRC_URI = "git://git.merproject.org/mer-core/statefs.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/statefs.git;protocol=https \
            file://statefs.service"
 SRCREV = "ef73da6fc0721eebedc25c5a7d09ee4b5dc3ba85"
 PR = "r1"

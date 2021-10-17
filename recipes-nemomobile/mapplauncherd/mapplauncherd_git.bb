@@ -1,9 +1,9 @@
 SUMMARY = "Daemon that helps to launch applications faster by preloading dynamically linked libraries and caching stuff"
-HOMEPAGE = "https://git.merproject.org/mer-core/mapplauncherd"
+HOMEPAGE = "https://github.com/sailfishos/mapplauncherd"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=243b725d71bb5df4a1e5920b344b86ad"
 
-SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/mapplauncherd.git;protocol=https \
            file://0001-booster-generic-Fix-path-to-tibapplauncherd.patch \
            file://0002-Fix-reference-to-host-lib.patch \
            file://0003-Fix-dynamic-opening-issues.patch \

@@ -1,9 +1,9 @@
 SUMMARY = "QML Plugin for system settings on Nemo"
-HOMEPAGE = "https://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings"
+HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/displaysettings.cpp;beginline=1;endline=31;md5=99ff23884718e3e2c85992a9294d18df"
 
-SRC_URI = "git://git.merproject.org/mer-core/nemo-qml-plugin-systemsettings.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protocol=https \
     file://location.conf \
     file://0001-Disable-SSU-dependency.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \

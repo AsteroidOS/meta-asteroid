@@ -1,9 +1,9 @@
 SUMMARY = "Qt plugin for mapplauncherd"
-HOMEPAGE = "https://git.merproject.org/mer-core/mapplauncherd-qt"
+HOMEPAGE = "https://github.com/sailfishos/mapplauncherd-qt"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://qtbooster/qtbooster.cpp;beginline=1;endline=18;md5=fb70bd5bb640878875111d8161fa303c"
 
-SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd-qt.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/mapplauncherd-qt.git;protocol=https \
            file://0001-mdeclarativecache5-Share-same-mdeclarativecache_pre_.patch \
            file://0002-qdeclarative5-boostable-Compile-apps-as-shared-libra.patch \
            file://booster-qt5.service"

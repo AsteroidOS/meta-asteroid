@@ -1,9 +1,9 @@
 SUMMARY = "TUT is a small and portable unit test framework for C++."
-HOMEPAGE = "https://git.merproject.org/mer-core/tut"
+HOMEPAGE = "https://github.com/sailfishos/tut"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1ed345ec14e0abcb47bf8689dd00eea0"
 
-SRC_URI = "git://git.merproject.org/mer-core/tut.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/tut.git;protocol=https"
 SRCREV = "70d36f056fb84ac902b0e240151e58412c5a30f1"
 PR = "r1"
 PV = "+git${SRCPV}"
