@@ -1,9 +1,9 @@
 SUMMARY = "QtComponents plugin for mapplauncherd"
-HOMEPAGE = "https://git.merproject.org/mer-core/mapplauncherd-booster-qtcomponents"
+HOMEPAGE = "https://github.com/sailfishos/mapplauncherd-booster-qtcomponents"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://src/qmlbooster.cpp;beginline=1;endline=18;md5=7e2bc276f949feb1d8229e665a6a2559"
 
-SRC_URI = "git://git.merproject.org/mer-core/mapplauncherd-booster-qtcomponents.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/mapplauncherd-booster-qtcomponents.git;protocol=https \
           file://booster-qtcomponents-qt5.service \
           file://preload.qml"
 SRCREV = "0905e88e4091df667baa2155b7cf1683552b1e79"

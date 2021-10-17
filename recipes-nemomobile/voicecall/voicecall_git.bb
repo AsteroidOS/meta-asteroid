@@ -1,9 +1,9 @@
 SUMMARY = "voicecall is a daemon (and QML plugin) for implementing dialer UIs"
-HOMEPAGE = "https://git.merproject.org/mer-core/voicecall"
+HOMEPAGE = "https://github.com/sailfishos/voicecall"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://plugins/providers/ofono/src/ofonovoicecallhandler.cpp;beginline=1;endline=20;md5=7f57bb9f2a19d976f63ad5deb007d7a2"
 
-SRC_URI = "git://git.merproject.org/mer-core/voicecall.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/voicecall.git;protocol=https \
            file://0001-Fixes-build.patch"
 SRCREV = "aa8876d6b0969a4e2d0bd9565e87967142b84792"
 PR = "r1"

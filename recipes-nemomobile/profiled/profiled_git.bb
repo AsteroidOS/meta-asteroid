@@ -1,9 +1,9 @@
 SUMMARY = "Daemon for device profile handling."
-HOMEPAGE = "https://git.merproject.org/mer-core/profiled"
+HOMEPAGE = "https://github.com/sailfishos/profiled"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://mainloop.c;beginline=1;endline=35;md5=5c3ca83e642104421900fdd3ecb1176e"
 
-SRC_URI = "git://git.merproject.org/mer-core/profiled.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/profiled.git;protocol=https \
     file://0001-Fixes-build.patch"
 SRCREV = "bf70ccf650330f1e2bc23b689e51015bb034b77d"
 PR = "r1"

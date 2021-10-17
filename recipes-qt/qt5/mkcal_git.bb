@@ -1,9 +1,9 @@
 SUMMARY = "Mer's fork of KCal"
-HOMEPAGE = "https://git.merproject.org/mer-core/mkcal"
+HOMEPAGE = "https://github.com/sailfishos/mkcal"
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://src/mkcal_export.h;beginline=1;endline=20;md5=6b5a610cd22589226883c2df189ff891"
 
-SRC_URI = "git://git.merproject.org/mer-core/mkcal.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/mkcal.git;protocol=https \
            file://0001-Removes-unused-reference-to-host-include-directories.patch \
            file://0002-Fixes-an-incorrect-returned-variable.patch \
            file://0003-Disable-tests-and-docs.patch"

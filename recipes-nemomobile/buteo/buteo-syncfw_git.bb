@@ -1,9 +1,9 @@
 SUMMARY = "NemoMobile's Buteo Synchronization daemon"
-HOMEPAGE = "https://git.merproject.org/mer-core/buteo-syncfw"
+HOMEPAGE = "https://github.com/sailfishos/buteo-syncfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=93ae0a8ec7ecf7709c725bd232bbafc6"
 
-SRC_URI = "git://git.merproject.org/mer-core/buteo-syncfw.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/buteo-syncfw.git;protocol=https \
            file://msyncd.service"
 SRCREV = "dc1483848049ad028cfdbdf563a9a6ce31032c59"
 PR = "r1"

@@ -1,9 +1,9 @@
 SUMMARY = "Nemomobile's libiodata"
-HOMEPAGE = "https://git.merproject.org/mer-core/libiodata"
+HOMEPAGE = "https://github.com/sailfishos/libiodata"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://git.merproject.org/mer-core/libiodata.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/libiodata.git;protocol=https"
 SRCREV = "7c2c0274c397a19fa9d855cd0116c37ae459ec54"
 PR = "r1"
 PV = "+git${SRCPV}"

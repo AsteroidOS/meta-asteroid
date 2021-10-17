@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/philippedeswert/usb-moded"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-SRC_URI = "gitsm://git.merproject.org/mer-core/usb-moded.git;protocol=https \
+SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https \
            file://0001-usb-moded-common-Add-errno.h.patch \
            file://0002-Correct-rndis-configfs-function-name.patch \
            file://usb-moded.service \

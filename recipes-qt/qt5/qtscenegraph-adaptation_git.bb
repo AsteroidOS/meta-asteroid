@@ -7,11 +7,11 @@ LIC_FILES_CHKSUM = " \
 "
 
 PV = "5.8.0+git${SRCPV}"
-SRCREV = "7c877513744a6de89f174f3f446538f2f24ed4be"
+SRCREV = "13394b94c6c406fafdd7a95edc12938efeb4d66a"
 
 DEPENDS = "qtbase libhybris qtwayland virtual/android-headers qtdeclarative"
 
-SRC_URI = "git://git.merproject.org/Tofe/qtscenegraph-adaptation.git;branch=tofe/qt5.8;protocol=https"
+SRC_URI = "git://github.com/sailfishos/qtscenegraph-adaptation.git;protocol=https"
 S = "${WORKDIR}/git"
 
 inherit qmake5

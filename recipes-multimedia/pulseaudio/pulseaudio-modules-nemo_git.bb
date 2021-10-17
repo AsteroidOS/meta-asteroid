@@ -1,9 +1,9 @@
 SUMMARY = "Nemo plugin for PulseAudio"
-HOMEPAGE = "https://git.merproject.org/mer-core/pulseaudio-modules-nemo"
+HOMEPAGE = "https://github.com/sailfishos/pulseaudio-modules-nemo"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://git.merproject.org/mer-core/pulseaudio-modules-nemo.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/pulseaudio-modules-nemo.git;protocol=https \
            file://0001-configure.ac-Check-hardfp-from-cross-compilation-too.patch \
            file://0002-Set-version-to-support-PulseAudio-14.patch"
 SRCREV = "d0dfdc3f895680f0c8839809f13f950090a77369"

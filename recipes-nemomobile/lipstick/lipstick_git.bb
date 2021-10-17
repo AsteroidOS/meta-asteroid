@@ -1,5 +1,5 @@
 SUMMARY = "Lipstick is a project aimed at offering easy to modify user experiences for varying mobile device form factors, e.g. handsets, netbooks, tablets."
-HOMEPAGE = "https://git.merproject.org/mer-core/lipstick"
+HOMEPAGE = "https://github.com/sailfishos/lipstick"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
