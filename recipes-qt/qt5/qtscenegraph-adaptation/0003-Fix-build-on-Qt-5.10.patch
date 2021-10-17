@@ -1,0 +1,29 @@
+From 4d40d2863d142fe0d0656e749c36780082446e9d Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Mon, 11 Jun 2018 12:59:13 +0000
+Subject: [PATCH 3/4] Fix build on Qt >= 5.10
+
+---
+ customcontext/customcontext.pro | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/customcontext/customcontext.pro b/customcontext/customcontext.pro
+index 2cda8e5..8b981c9 100644
+--- a/customcontext/customcontext.pro
++++ b/customcontext/customcontext.pro
+@@ -3,10 +3,10 @@ TARGET=customcontext
+ 
+ CONFIG += plugin
+ 
+-contains(QT_VERSION, ^5\\.[2-9]\\..*) {
++equals(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 1) {
+     message("Using Qt 5.2 or later")
+     CONFIG += customcontext_qt520
+-}
++} 
+ 
+ QT += gui-private core-private quick-private qml-private
+ !customcontext_qt520:{
+-- 
+2.33.0
+

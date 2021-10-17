@@ -1,0 +1,364 @@
+From 0b04ba319338f632bc119431f11893568dbcbae1 Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Fri, 21 Jul 2017 18:52:31 +0000
+Subject: [PATCH 1/4] customcontext: Adapt for Qt 5.8
+
+Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
+---
+ customcontext/context.cpp       | 59 +++++++++++++++++----------------
+ customcontext/context.h         | 40 +++++++++++++++++++---
+ customcontext/pluginmain.cpp    |  5 +++
+ customcontext/pluginmain.h      |  1 +
+ customcontext/programbinary.cpp | 10 +++---
+ 5 files changed, 77 insertions(+), 38 deletions(-)
+
+diff --git a/customcontext/context.cpp b/customcontext/context.cpp
+index 9637397..3526a4b 100644
+--- a/customcontext/context.cpp
++++ b/customcontext/context.cpp
+@@ -94,14 +94,6 @@
+ #include <private/qsgdefaultrectanglenode_p.h>
+ #endif
+ 
+-#if QT_VERSION >= 0x050200
+-#define CONTEXT_CLASS RenderContext
+-#define CONTEXT_CLASS_BASE QSGRenderContext
+-#else
+-#define CONTEXT_CLASS Context
+-#define CONTEXT_CLASS_BASE QSGContext
+-#endif
+-
+ #if QT_VERSION >= 0x050200
+ #ifndef QSG_NO_RENDERER_TIMING
+ static bool qsg_render_timing = !qgetenv("QSG_RENDER_TIMING").isEmpty();
+@@ -113,7 +105,7 @@ namespace CustomContext
+ 
+ #if QT_VERSION >= 0x050200
+ RenderContext::RenderContext(QSGContext *ctx)
+-    : QSGRenderContext(ctx)
++    : RENDER_CONTEXT_CLASS_BASE(ctx)
+ {
+ #ifdef CUSTOMCONTEXT_DITHER
+     m_dither = qgetenv("CUSTOMCONTEXT_NO_DITHER").isEmpty();
+@@ -147,7 +139,7 @@ QSGMaterialShader *RenderContext::prepareMaterial(QSGMaterial *material)
+ 
+     shader = material->createShader();
+     compile(shader, material);
+-    QSGRenderContext::initialize(shader);
++    RENDER_CONTEXT_CLASS_BASE::initialize(shader);
+     m_materials[type] = shader;
+ 
+ #ifndef QSG_NO_RENDER_TIMING
+@@ -161,7 +153,7 @@ QSGMaterialShader *RenderContext::prepareMaterial(QSGMaterial *material)
+ #endif  //QT_VERSION >= 0x050200
+ 
+ Context::Context(QObject *parent)
+-    : QSGContext(parent)
++    : CONTEXT_CLASS_BASE(parent)
+     , m_sampleCount(0)
+     , m_useMultisampling(false)
+ #ifdef CUSTOMCONTEXT_HYBRISTEXTURE
+@@ -302,15 +294,22 @@ void Context::renderContextInitialized(QSGRenderContext *ctx)
+ 
+ #endif // CUSTOMCONTEXT_HYBRISTEXTURE
+ 
+-    QSGContext::renderContextInitialized(ctx);
++    CONTEXT_CLASS_BASE::renderContextInitialized(ctx);
+ }
+ 
+ 
+ 
+ 
+ 
+-void CONTEXT_CLASS::initialize(QOpenGLContext *context)
++#if QT_VERSION >= 0x050800
++void RENDER_CONTEXT_CLASS::initialize(void *inCtx)
+ {
++    QOpenGLContext *context = static_cast<QOpenGLContext*>(inCtx);
++#else
++void RENDER_CONTEXT_CLASS::initialize(QOpenGLContext *inCtx)
++{
++    QOpenGLContext *context = inCtx;
++#endif
+ 
+ #ifdef CUSTOMCONTEXT_DITHER
+     if (m_dither)
+@@ -401,12 +400,12 @@ void CONTEXT_CLASS::initialize(QOpenGLContext *context)
+ #endif
+ #endif
+ 
+-    CONTEXT_CLASS_BASE::initialize(context);
++    RENDER_CONTEXT_CLASS_BASE::initialize(inCtx);
+ }
+ 
+-void CONTEXT_CLASS::invalidate()
++void RENDER_CONTEXT_CLASS::invalidate()
+ {
+-    CONTEXT_CLASS_BASE::invalidate();
++    RENDER_CONTEXT_CLASS_BASE::invalidate();
+ 
+ #ifdef CUSTOMCONTEXT_DITHER
+     delete m_ditherProgram;
+@@ -439,7 +438,7 @@ QSurfaceFormat Context::defaultSurfaceFormat() const
+ #endif
+ 
+ #if QT_VERSION >= 0x050600
+-QSGTexture *CONTEXT_CLASS::createTexture(const QImage &image, uint flags) const
++QSGTexture *RENDER_CONTEXT_CLASS::createTexture(const QImage &image, uint flags) const
+ {
+     if (flags & QQuickWindow::TextureCanUseAtlas) {
+ #ifdef CUSTOMCONTEXT_ATLASTEXTURE
+@@ -484,12 +483,12 @@ QSGTexture *CONTEXT_CLASS::createTexture(const QImage &image, uint flags) const
+ #endif
+ 
+ 
+-    return CONTEXT_CLASS_BASE::createTexture(image, flags);
++    return RENDER_CONTEXT_CLASS_BASE::createTexture(image, flags);
+ }
+ 
+ #else
+ 
+-QSGTexture *CONTEXT_CLASS::createTexture(const QImage &image) const
++QSGTexture *RENDER_CONTEXT_CLASS::createTexture(const QImage &image) const
+ {
+ #ifdef CUSTOMCONTEXT_ATLASTEXTURE
+     if (m_atlasTexture) {
+@@ -504,7 +503,7 @@ QSGTexture *CONTEXT_CLASS::createTexture(const QImage &image) const
+         return new MacTexture(image);
+ #endif
+ 
+-    return CONTEXT_CLASS_BASE::createTexture(image);
++    return RENDER_CONTEXT_CLASS_BASE::createTexture(image);
+ }
+ 
+ #if QT_VERSION >= 0x050200
+@@ -537,7 +536,7 @@ QSGTexture *RenderContext::createTextureNoAtlas(const QImage &image) const
+     }
+ #endif
+ 
+-    return CONTEXT_CLASS_BASE::createTextureNoAtlas(image);
++    return RENDER_CONTEXT_CLASS_BASE::createTextureNoAtlas(image);
+ }
+ 
+ // Qt 5.2 branch
+@@ -547,7 +546,7 @@ QSGTexture *RenderContext::createTextureNoAtlas(const QImage &image) const
+ #endif
+ 
+ 
+-QSGRenderer *CONTEXT_CLASS::createRenderer()
++QSGRenderer *RENDER_CONTEXT_CLASS::createRenderer()
+ {
+ #ifdef CUSTOMCONTEXT_OVERLAPRENDERER
+     if (m_overlapRenderer) {
+@@ -560,7 +559,7 @@ QSGRenderer *CONTEXT_CLASS::createRenderer()
+ #ifdef CUSTOMCONTEXT_SIMPLERENDERER
+     return new QSGSimpleRenderer::Renderer(this);
+ #endif
+-    return CONTEXT_CLASS_BASE::createRenderer();
++    return RENDER_CONTEXT_CLASS_BASE::createRenderer();
+ }
+ 
+ 
+@@ -576,7 +575,7 @@ QAnimationDriver *Context::createAnimationDriver(QObject *parent)
+         return new SwapListeningAnimationDriver();
+ #endif
+ 
+-   return QSGContext::createAnimationDriver(parent);
++   return CONTEXT_CLASS_BASE::createAnimationDriver(parent);
+ }
+ 
+ 
+@@ -616,9 +615,13 @@ QQuickTextureFactory *Context::createTextureFactory(const QImage &image)
+ 
+ 
+ 
+-void CONTEXT_CLASS::renderNextFrame(QSGRenderer *renderer, GLuint fbo)
++#if QT_VERSION >= 0x050800
++void RENDER_CONTEXT_CLASS::renderNextFrame(QSGRenderer *renderer, uint fbo)
++#else
++void RENDER_CONTEXT_CLASS::renderNextFrame(QSGRenderer *renderer, GLuint fbo)
++#endif
+ {
+-    CONTEXT_CLASS_BASE::renderNextFrame(renderer, fbo);
++    RENDER_CONTEXT_CLASS_BASE::renderNextFrame(renderer, fbo);
+ 
+ #ifdef CUSTOMCONTEXT_DITHER
+     if (m_dither) {
+@@ -653,12 +656,12 @@ public:
+ 
+ QSGImageNode *Context::createImageNode()
+ {
+-    return m_defaultImageNodes ? QSGContext::createImageNode() : new MSAAImageNode();
++    return m_defaultImageNodes ? CONTEXT_CLASS_BASE::createImageNode() : new MSAAImageNode();
+ }
+ 
+ QSGRectangleNode *Context::createRectangleNode()
+ {
+-    return m_defaultRectangleNodes ? QSGContext::createRectangleNode() : new MSAARectangleNode();
++    return m_defaultRectangleNodes ? CONTEXT_CLASS_BASE::createRectangleNode() : new MSAARectangleNode();
+ }
+ #endif
+ 
+diff --git a/customcontext/context.h b/customcontext/context.h
+index 913f82b..c6367bf 100644
+--- a/customcontext/context.h
++++ b/customcontext/context.h
+@@ -59,22 +59,51 @@
+ #include "threaduploadtexture.h"
+ #endif
+ 
++#if QT_VERSION >= 0x050800
++#include <private/qsgdefaultcontext_p.h>
++#include <private/qsgdefaultrendercontext_p.h>
++#endif
+ 
+ #if QT_VERSION >= 0x050200
+ struct QSGMaterialType;
+ #endif
+ 
++#if QT_VERSION >= 0x050800
++#define CONTEXT_CLASS Context
++#define CONTEXT_CLASS_BASE QSGDefaultContext
++#define RENDER_CONTEXT_CLASS RenderContext
++#define RENDER_CONTEXT_CLASS_BASE QSGDefaultRenderContext
++#define COMPILESHADER_METHOD compileShader
++#elif QT_VERSION >= 0x050200
++#define CONTEXT_CLASS Context
++#define CONTEXT_CLASS_BASE QSGContext
++#define RENDER_CONTEXT_CLASS RenderContext
++#define RENDER_CONTEXT_CLASS_BASE QSGRenderContext
++#define COMPILESHADER_METHOD compile
++#else
++#define CONTEXT_CLASS Context
++#define CONTEXT_CLASS_BASE QSGContext
++#define RENDER_CONTEXT_CLASS Context
++#define RENDER_CONTEXT_CLASS_BASE QSGContext
++#define COMPILESHADER_METHOD compile
++#endif
++
+ namespace CustomContext
+ {
+ 
+ #if QT_VERSION >= 0x050200
+-class RenderContext : public QSGRenderContext
++class RenderContext : public RENDER_CONTEXT_CLASS_BASE
+ {
+ public:
+     RenderContext(QSGContext *ctx);
++#if QT_VERSION < 0x050800
+     void initialize(QOpenGLContext *context);
+-    void invalidate();
+     void renderNextFrame(QSGRenderer *renderer, GLuint fbo);
++#else
++    void initialize(void *context);
++    void renderNextFrame(QSGRenderer *renderer, uint fbo);
++#endif
++    void invalidate();
+ 
+ #if QT_VERSION < 0x050600
+     QSGTexture *createTexture(const QImage &image) const;
+@@ -86,7 +115,7 @@ public:
+     QSGRenderer *createRenderer();
+ 
+ #ifdef PROGRAM_BINARY
+-    void compile(QSGMaterialShader *shader, QSGMaterial *material, const char *vertex = 0, const char *fragment = 0);
++    void COMPILESHADER_METHOD(QSGMaterialShader *shader, QSGMaterial *material, const char *vertex = 0, const char *fragment = 0);
+ #endif
+ 
+ #ifdef CUSTOMCONTEXT_DITHER
+@@ -110,7 +139,7 @@ public:
+ };
+ #endif
+ 
+-class Context : public QSGContext
++class Context : public CONTEXT_CLASS_BASE
+ {
+     Q_OBJECT
+ public:
+@@ -123,9 +152,10 @@ public:
+     void initialize(QOpenGLContext *context);
+     void invalidate();
+     void renderNextFrame(QSGRenderer *renderer, GLuint fbo);
++
+     QSGTexture *createTexture(const QImage &image) const;
+     QSGRenderer *createRenderer();
+-#endif
++#endif 
+ 
+     QAnimationDriver *createAnimationDriver(QObject *parent);
+ #ifdef CUSTOMCONTEXT_SURFACEFORMAT
+diff --git a/customcontext/pluginmain.cpp b/customcontext/pluginmain.cpp
+index 6c97182..7f934f2 100644
+--- a/customcontext/pluginmain.cpp
++++ b/customcontext/pluginmain.cpp
+@@ -60,6 +60,11 @@ QSGContext *ContextPlugin::create(const QString &) const
+     return instance;
+ }
+ 
++QSGContextFactoryInterface::Flags ContextPlugin::flags(const QString &key) const
++{
++    return 0; // should it be SupportsShaderEffectNode ?
++}
++
+ QQuickTextureFactory *ContextPlugin::createTextureFactoryFromImage(const QImage &image)
+ {
+     return instance ? instance->createTextureFactory(image) : 0;
+diff --git a/customcontext/pluginmain.h b/customcontext/pluginmain.h
+index 8557785..518b948 100644
+--- a/customcontext/pluginmain.h
++++ b/customcontext/pluginmain.h
+@@ -60,6 +60,7 @@ public:
+ 
+     QStringList keys() const;
+     QSGContext *create(const QString &key) const;
++    QSGContextFactoryInterface::Flags flags(const QString &key) const;
+     QQuickTextureFactory *createTextureFactoryFromImage(const QImage &image);
+ 
+     static CustomContext::Context *instance;
+diff --git a/customcontext/programbinary.cpp b/customcontext/programbinary.cpp
+index 066967a..b2862d3 100644
+--- a/customcontext/programbinary.cpp
++++ b/customcontext/programbinary.cpp
+@@ -161,7 +161,7 @@ public:
+ 
+     void sanityCheck();
+ 
+-    void compileAndInsert(QSGRenderContext *rc, const QByteArray &key, QSGMaterialShader *s, QSGMaterial *m, const char *v, const char *f);
++    void compileAndInsert(RENDER_CONTEXT_CLASS_BASE *rc, const QByteArray &key, QSGMaterialShader *s, QSGMaterial *m, const char *v, const char *f);
+ 
+ private:
+     QCryptographicHash m_hash;
+@@ -239,10 +239,10 @@ void ProgramBinaryStore::purge(const QByteArray &key)
+         file.remove();
+ }
+ 
+-void ProgramBinaryStore::compileAndInsert(QSGRenderContext *rc, const QByteArray &key, QSGMaterialShader *s, QSGMaterial *m, const char *v, const char *f)
++void ProgramBinaryStore::compileAndInsert(RENDER_CONTEXT_CLASS_BASE *rc, const QByteArray &key, QSGMaterialShader *s, QSGMaterial *m, const char *v, const char *f)
+ {
+     // Use the baseclass impl to do the actual compilation
+-    rc->QSGRenderContext::compile(s, m, v, f);
++    rc->RENDER_CONTEXT_CLASS_BASE::COMPILESHADER_METHOD(s, m, v, f);
+     QOpenGLShaderProgram *p = s->program();
+     if (p->isLinked()) {
+         ProgramBinary *b = new ProgramBinary;
+@@ -264,7 +264,7 @@ void ProgramBinaryStore::compileAndInsert(QSGRenderContext *rc, const QByteArray
+     }
+ }
+ 
+-void RenderContext::compile(QSGMaterialShader *shader, QSGMaterial *material, const char *vertex, const char *fragment)
++void RenderContext::COMPILESHADER_METHOD(QSGMaterialShader *shader, QSGMaterial *material, const char *vertex, const char *fragment)
+ {
+     ProgramBinaryStore *store = ProgramBinaryStore::self();
+     if (!store->hasOpenGLES3())
+@@ -272,7 +272,7 @@ void RenderContext::compile(QSGMaterialShader *shader, QSGMaterial *material, co
+ 
+     // We cannot cache shaders which have custom compilation
+     if (material->flags() & QSGMaterial::CustomCompileStep) {
+-        QSGRenderContext::compile(shader, material, vertex, fragment);
++        RENDER_CONTEXT_CLASS_BASE::COMPILESHADER_METHOD(shader, material, vertex, fragment);
+         return;
+     }
+ 
+-- 
+2.33.0
+

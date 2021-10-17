@@ -1,0 +1,45 @@
+From e8eb567b7674e12dd38c9833bbb5befe0bcef82f Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Fri, 15 Sep 2017 16:46:52 +0000
+Subject: [PATCH 2/4] Fix build for Qt<5.8
+
+Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
+---
+ customcontext/pluginmain.cpp | 2 ++
+ customcontext/pluginmain.h   | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/customcontext/pluginmain.cpp b/customcontext/pluginmain.cpp
+index 7f934f2..8030a7e 100644
+--- a/customcontext/pluginmain.cpp
++++ b/customcontext/pluginmain.cpp
+@@ -60,10 +60,12 @@ QSGContext *ContextPlugin::create(const QString &) const
+     return instance;
+ }
+ 
++#if QT_VERSION >= 0x050800
+ QSGContextFactoryInterface::Flags ContextPlugin::flags(const QString &key) const
+ {
+     return 0; // should it be SupportsShaderEffectNode ?
+ }
++#endif
+ 
+ QQuickTextureFactory *ContextPlugin::createTextureFactoryFromImage(const QImage &image)
+ {
+diff --git a/customcontext/pluginmain.h b/customcontext/pluginmain.h
+index 518b948..e072388 100644
+--- a/customcontext/pluginmain.h
++++ b/customcontext/pluginmain.h
+@@ -60,7 +60,9 @@ public:
+ 
+     QStringList keys() const;
+     QSGContext *create(const QString &key) const;
++#if QT_VERSION >= 0x050800
+     QSGContextFactoryInterface::Flags flags(const QString &key) const;
++#endif
+     QQuickTextureFactory *createTextureFactoryFromImage(const QImage &image);
+ 
+     static CustomContext::Context *instance;
+-- 
+2.33.0
+
