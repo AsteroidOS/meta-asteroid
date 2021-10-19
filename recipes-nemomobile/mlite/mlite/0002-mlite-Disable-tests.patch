@@ -1,0 +1,24 @@
+From e0ea6c4315ca595c08ecff16169f9bb1fb081bd4 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Sat, 16 Oct 2021 19:33:26 +0200
+Subject: [PATCH 1/2] mlite: Disable tests.
+
+---
+ mlite.pro | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/mlite.pro b/mlite.pro
+index 48bed35..6be58c5 100644
+--- a/mlite.pro
++++ b/mlite.pro
+@@ -1,7 +1,6 @@
+ TEMPLATE = subdirs
+ SUBDIRS = \
+         src \
+-        tests \
+         tools
+ 
+ tests.depends = src
+-- 
+2.33.0
+
