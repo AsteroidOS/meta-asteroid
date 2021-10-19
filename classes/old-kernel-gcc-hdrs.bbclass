@@ -9,5 +9,6 @@ do_configure:prepend() {
     echo "#include <linux/compiler-gcc7.h>" > ${S}/include/linux/compiler-gcc8.h
     echo "#include <linux/compiler-gcc8.h>" > ${S}/include/linux/compiler-gcc9.h
     echo "#include <linux/compiler-gcc9.h>" > ${S}/include/linux/compiler-gcc10.h
+    echo "#include <linux/compiler-gcc10.h>" > ${S}/include/linux/compiler-gcc11.h
 }
 
