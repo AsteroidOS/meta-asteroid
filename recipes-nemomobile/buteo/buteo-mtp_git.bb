@@ -18,12 +18,12 @@ inherit qmake5
 
 EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 
-do_install_append() {
+do_install:append() {
     mkdir -p ${D}/lib/systemd/system/local-fs.target.wants
     ln -s ../dev-mtp.mount ${D}/lib/systemd/system/local-fs.target.wants
 }
 
 DEPENDS += "buteo-syncfw statefs-qt libqtsparql"
 
-FILES_${PN} += "/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
+FILES:${PN} += "/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"

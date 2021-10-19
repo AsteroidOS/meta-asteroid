@@ -1,5 +1,5 @@
-RDEPENDS_pulseaudio-server_append = " pulseaudio-modules-nemo pulseaudio-module-dbus-protocol pulseaudio-module-match pulseaudio-module-switch-on-connect pulseaudio-module-bluetooth-discover pulseaudio-module-bluetooth-policy pulseaudio-module-bluez5-discover pulseaudio-module-bluez5-device "
-FILESEXTRAPATHS_prepend := "${THISDIR}/pulseaudio:"
+RDEPENDS:pulseaudio-server:append = " pulseaudio-modules-nemo pulseaudio-module-dbus-protocol pulseaudio-module-match pulseaudio-module-switch-on-connect pulseaudio-module-bluetooth-discover pulseaudio-module-bluetooth-policy pulseaudio-module-bluez5-discover pulseaudio-module-bluez5-device "
+FILESEXTRAPATHS:prepend := "${THISDIR}/pulseaudio:"
 SRC_URI += "file://1002-build-Install-pulsecore-headers.patch \
             file://mainvolume-listening-time-notifier.conf \
             file://nemo-pulseaudio-parameters \
@@ -11,7 +11,7 @@ SRC_URI += "file://1002-build-Install-pulsecore-headers.patch \
             file://client.conf \
             file://default.pa"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/pulseaudio.service ]; then
         ln -s /usr/lib/systemd/user/pulseaudio.service ${D}/usr/lib/systemd/user/default.target.wants/pulseaudio.service
@@ -31,4 +31,4 @@ do_install_append() {
     cp -r ${WORKDIR}/nemo-pulseaudio-parameters ${D}/var/lib/nemo-pulseaudio-parameters
 }
 
-FILES_${PN}-server += "/usr/lib/systemd/user/default.target.wants/ /var/lib/nemo-pulseaudio-parameters"
+FILES:${PN}-server += "/usr/lib/systemd/user/default.target.wants/ /var/lib/nemo-pulseaudio-parameters"

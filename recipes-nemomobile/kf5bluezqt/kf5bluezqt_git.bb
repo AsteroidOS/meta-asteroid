@@ -12,9 +12,9 @@ S = "${WORKDIR}/git"
 DEPENDS += "qtbase qtdeclarative"
 inherit qmake5
 
-do_configure_prepend() {
+do_configure:prepend() {
     export EXTRA_QMAKEVARS_PRE="${EXTRA_QMAKEVARS_PRE} KF5BLUEZQT_BLUEZ_VERSION=5"
     sed -i "s@-L\$\$PWD/../@-L${B}/bluez-qt/src/@" ../git/bluez-qt/src/imports/imports.pro
 }
 
-FILES_${PN} += "${libdir}/qml/org/kde/bluezqt"
+FILES:${PN} += "${libdir}/qml/org/kde/bluezqt"

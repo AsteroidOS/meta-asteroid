@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 DESCRIPTION = "System specific changes for the Qt Quick Scene Graph."
 LICENSE = "LGPL-2.1 & GPL-3.0"
 LIC_FILES_CHKSUM = " \
@@ -22,5 +22,5 @@ inherit qmake5
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=surfaceformat CONFIG+=programbinary CONFIG+=hybristexture"
 
-FILES_${PN} += "${OE_QMAKE_PATH_PLUGINS}"
+FILES:${PN} += "${OE_QMAKE_PATH_PLUGINS}"
 

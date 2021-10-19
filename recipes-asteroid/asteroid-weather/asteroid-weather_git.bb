@@ -11,5 +11,5 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-configuration qttools-native qtdeclarative-native"
-RDEPENDS_${PN} += "nemo-qml-plugin-configuration"
-FILES_${PN} += "/usr/share/translations/"
+RDEPENDS:${PN} += "nemo-qml-plugin-configuration"
+FILES:${PN} += "/usr/share/translations/"

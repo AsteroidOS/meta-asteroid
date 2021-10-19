@@ -14,5 +14,5 @@ DEPENDS += "pulseaudio glib-2.0 libsndfile1 ngfd"
 
 inherit cmake
 
-FILES_${PN} += "/usr/lib/ngf/"
-FILES_${PN}-dbg += "/usr/lib/ngf/.debug/"
+FILES:${PN} += "/usr/lib/ngf/"
+FILES:${PN}-dbg += "/usr/lib/ngf/.debug/"

@@ -12,7 +12,7 @@ inherit qmake5
 B = "${S}"
 DEPENDS += "qtbase bison-native flex-native"
 
-do_configure_prepend () {
+do_configure:prepend () {
     export IODATA_VERSION=0.19.8
     sed -i "s@define LOG_LEVEL LOG_WARNING@define LOG_LEVEL LOG_NONE@" src/log.h
     cd src/
@@ -29,5 +29,5 @@ do_install () {
 
 BBCLASSEXTEND = "native"
 
-FILES_${PN}-dbg += "/usr/share/iodata-qt5-tests"
-FILES_${PN}-dev += "/usr/share/mkspecs"
+FILES:${PN}-dbg += "/usr/share/iodata-qt5-tests"
+FILES:${PN}-dev += "/usr/share/mkspecs"

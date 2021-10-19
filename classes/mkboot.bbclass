@@ -6,7 +6,7 @@ KERNEL_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}"
 
 do_deploy[depends] += "initramfs-android-image:do_image_complete mkbootimg-tools-native:do_populate_sysroot"
 
-do_deploy_append() {
+do_deploy:append() {
     cd ${B}
     cp ${WORKDIR}/img_info .
     sed -i "s@%%KERNEL%%@${B}/${KERNEL_OUTPUT}@" img_info
@@ -28,7 +28,7 @@ do_deploy_append() {
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
 }
 
-pkg_postinst_ontarget_${KERNEL_PACKAGE_NAME}-image_append () {
+pkg_postinst_ontarget:${KERNEL_PACKAGE_NAME}-image:append () {
     if [ ! -e /boot/boot.img ] ; then
         # if the boot image is not available here something went wrong and we don't
         # continue with anything that can be dangerous
@@ -50,4 +50,4 @@ pkg_postinst_ontarget_${KERNEL_PACKAGE_NAME}-image_append () {
     dd if=/boot/boot.img of=$path
 }
 
-FILES_${KERNEL_PACKAGE_NAME}-image += "/${KERNEL_IMAGEDEST}/boot.img"
+FILES:${KERNEL_PACKAGE_NAME}-image += "/${KERNEL_IMAGEDEST}/boot.img"

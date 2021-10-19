@@ -11,13 +11,13 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-RDEPENDS_${PN} += "source-han-sans-cn-fonts source-han-sans-kr-fonts ttf-lohit ttf-dejavu-sans"
+RDEPENDS:${PN} += "source-han-sans-cn-fonts source-han-sans-kr-fonts ttf-lohit ttf-dejavu-sans"
 
-FILES_${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/"
+FILES:${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/"
 
-INSANE_SKIP_${PN} += "host-user-contaminated"
+INSANE_SKIP:${PN} += "host-user-contaminated"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/etc/systemd/system/user@.service.d/
     cp ../localeEnv.conf ${D}/etc/systemd/system/user@.service.d/locale.conf
 

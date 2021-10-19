@@ -10,14 +10,14 @@ S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
-do_configure_prepend() {
+do_configure:prepend() {
     ${S}/autogen.sh
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/lib/systemd/system/basic.target.wants/
     cp ${WORKDIR}/firmwared.service ${D}/lib/systemd/system/
     ln -s ../firmwared.service ${D}/lib/systemd/system/basic.target.wants/firmwared.service
 }
 
-FILES_${PN} += "/lib/systemd/system/"
+FILES:${PN} += "/lib/systemd/system/"

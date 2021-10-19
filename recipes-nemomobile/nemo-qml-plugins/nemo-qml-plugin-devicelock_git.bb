@@ -13,11 +13,11 @@ inherit qmake5
 
 B = "${S}"
 
-do_compile_append() {
+do_compile:append() {
      sed -i "s@-L${S}/src/hostlib/../lib @@" ./src/hostlib/pkgconfig/nemodevicelock-host.pc
 }
 
 DEPENDS += "qtdeclarative nemo-keepalive nemo-qml-plugin-dbus mlite dbus"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/devicelock/.debug"
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/devicelock/ /lib/systemd/system/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/devicelock/.debug"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/devicelock/ /lib/systemd/system/"

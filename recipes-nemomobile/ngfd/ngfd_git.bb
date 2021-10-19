@@ -18,11 +18,11 @@ B = "${S}"
 
 DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib profiled mce"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@src data doc tests@src data@" ${S}/Makefile.am
 }
 
-do_install_append() {
+do_install:append() {
     cp ../ngfd.ini ${D}/usr/share/ngfd/ngfd.ini
 
     install -d ${D}/usr/lib/systemd/user/
@@ -42,5 +42,5 @@ do_install_append() {
 
 inherit autotools pkgconfig
 
-FILES_${PN}-dbg += "/usr/lib/ngf/.debug/"
-FILES_${PN} += "/usr/lib/ngf /usr/share/dbus-1 /usr/lib/systemd/ /usr/share/sounds/ /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dbg += "/usr/lib/ngf/.debug/"
+FILES:${PN} += "/usr/lib/ngf /usr/share/dbus-1 /usr/lib/systemd/ /usr/share/sounds/ /usr/lib/systemd/user/default.target.wants/"

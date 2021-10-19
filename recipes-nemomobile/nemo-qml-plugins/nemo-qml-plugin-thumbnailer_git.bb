@@ -12,7 +12,7 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Thumbnailer/.debug"
-FILES_${PN} += "/usr/lib/qml/Nemo/Thumbnailer/"
-FILES_${PN} += "/usr/lib/libnemothumbnailer-qt5.prl"
-FILES_${PN} += "/usr/lib/oneshot.d/remove-obsolete-nemothumbs-cache-dir"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Thumbnailer/.debug"
+FILES:${PN} += "/usr/lib/qml/Nemo/Thumbnailer/"
+FILES:${PN} += "/usr/lib/libnemothumbnailer-qt5.prl"
+FILES:${PN} += "/usr/lib/oneshot.d/remove-obsolete-nemothumbs-cache-dir"

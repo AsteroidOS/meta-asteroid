@@ -23,16 +23,16 @@ inherit autotools pkgconfig
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
 DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd buteo-mtp"
-RDEPENDS_${PN} += "buteo-mtp"
+RDEPENDS:${PN} += "buteo-mtp"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
     sed -i "s@shell@ceres@g" systemd/adbd-functionfs.sh
     sed -i "s@adbd.service@android-tools-adbd.service@" ${S}/systemd/adbd-prepare.service
     sed -i "s@umount adb@umount /dev/usb-ffs/adb@" ${S}/systemd/adbd-prepare.service
 }
 
-do_install_append() {
+do_install:append() {
     install -m 644 -D src/usb_moded-dbus.h ${D}/usr/include/usb-moded/usb_moded-dbus.h
     install -m 644 -D src/usb_moded-modes.h ${D}/usr/include/usb-moded/usb_moded-modes.h
     install -m 644 -D src/usb_moded-appsync-dbus.h ${D}/usr/include/usb-moded/usb_moded-appsync-dbus.h
@@ -76,6 +76,6 @@ do_install_append() {
     touch ${D}/var/usb-debugging-enabled
 }
 
-FILES_${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
+FILES:${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
 
-INSANE_SKIP_${PN} = "ldflags"
+INSANE_SKIP:${PN} = "ldflags"

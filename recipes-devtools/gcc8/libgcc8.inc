@@ -2,7 +2,7 @@ require libgcc8-common.inc
 
 DEPENDS = "virtual/${TARGET_PREFIX}gcc8 virtual/${TARGET_PREFIX}g++8 virtual/${MLPREFIX}libc"
 
-do_install_append_class-target () {
+do_install:append:class-target () {
 	if [ "${TCLIBC}" != "glibc" ]; then
 		case "${TARGET_OS}" in
 			"linux-musl" | "linux-*spe") extra_target_os="linux";;
@@ -28,12 +28,12 @@ PACKAGES = "\
 
 # All libgcc source is marked with the exception.
 #
-LICENSE_${PN} = "GPL-3.0-with-GCC-exception"
-LICENSE_${PN}-dev = "GPL-3.0-with-GCC-exception"
-LICENSE_${PN}-dbg = "GPL-3.0-with-GCC-exception"
+LICENSE:${PN} = "GPL-3.0-with-GCC-exception"
+LICENSE:${PN}-dev = "GPL-3.0-with-GCC-exception"
+LICENSE:${PN}-dbg = "GPL-3.0-with-GCC-exception"
 
 
-FILES_${PN}-dev = "\
+FILES:${PN}-dev = "\
     ${base_libdir}/libgcc*.so \
     ${@oe.utils.conditional('BASETARGET_SYS', '${TARGET_SYS}', '', '${libdir}/${BASETARGET_SYS}', d)} \
     ${libdir}/${TARGET_SYS}/${BINV}* \
@@ -45,5 +45,5 @@ do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_rpm[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 
-INSANE_SKIP_${PN}-dev = "staticdev"
+INSANE_SKIP:${PN}-dev = "staticdev"
 

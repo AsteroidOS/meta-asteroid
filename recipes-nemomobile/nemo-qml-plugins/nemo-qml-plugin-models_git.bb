@@ -12,6 +12,6 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative timed libmlocale"
 
-FILES_${PN}-dev += "/usr/lib/libnemomodels-qt5.prl"
-FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/models/.debug"
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/models/"
+FILES:${PN}-dev += "/usr/lib/libnemomodels-qt5.prl"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/models/.debug"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/models/"

@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative kcalcore mkcal libaccounts-qt5"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/calendar/.debug"
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/calendar/ /usr/share/dbus-1/services/org.nemomobile.calendardataservice.service"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/calendar/.debug"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/calendar/ /usr/share/dbus-1/services/org.nemomobile.calendardataservice.service"

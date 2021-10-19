@@ -14,6 +14,6 @@ DEPENDS += "pulseaudio libcheck"
 inherit autotools pkgconfig
 B = "${S}"
 
-FILES_${PN} += "/usr/lib/pulse-14.2/modules"
-FILES_${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
-FILES_${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"
+FILES:${PN} += "/usr/lib/pulse-14.2/modules"
+FILES:${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
+FILES:${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"

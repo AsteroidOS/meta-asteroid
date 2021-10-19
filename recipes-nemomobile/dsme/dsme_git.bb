@@ -17,7 +17,7 @@ B = "${WORKDIR}/git"
 # Poweron-timer needs libcal but I can't find it
 EXTRA_OECONF= " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-validatorlistener --disable-static --includedir=${STAGING_INCDIR} --oldincludedir=${STAGING_INCDIR}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@<policy user=\"root\">@<policy user=\"ceres\">@" dsme/dsme.conf
     sed -i "s@-L/lib -lsystemd-daemon@-lsystemd@" dsme/Makefile.am
     sed -i "s@LDFLAGS \= \-pthread@LDFLAGS \= \-L${STAGING_DIR_TARGET}/usr/lib \-pthread@" modules/Makefile.am
@@ -28,7 +28,7 @@ do_compile() {
     oe_runmake V=1
 }
 
-do_install_append() {
+do_install:append() {
     install -D -m 644 reboot-via-dsme.sh ${D}/etc/profile.d/reboot-via-dsme.sh
     install -D -m 644 ../dsme.service ${D}/lib/systemd/system/dsme.service
     install -d ${D}/lib/systemd/system/multi-user.target.wants/
@@ -37,5 +37,5 @@ do_install_append() {
     [ ! -f ${D}/var/lib/dsme/alarm_queue_status ] && echo 0 > ${D}/var/lib/dsme/alarm_queue_status
 }
 
-FILES_${PN} += "/lib/systemd/"
-FILES_${PN}-dbg += "/opt"
+FILES:${PN} += "/lib/systemd/"
+FILES:${PN}-dbg += "/opt"

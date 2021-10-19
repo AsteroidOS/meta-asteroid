@@ -12,6 +12,6 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Notifications/.debug"
-FILES_${PN}-dev += "/usr/lib/libnemonotifications-qt5.prl"
-FILES_${PN} += "/usr/lib/qml/Nemo/Notifications/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Notifications/.debug"
+FILES:${PN}-dev += "/usr/lib/libnemonotifications-qt5.prl"
+FILES:${PN} += "/usr/lib/qml/Nemo/Notifications/"

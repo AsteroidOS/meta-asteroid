@@ -13,11 +13,11 @@ S = "${WORKDIR}/git"
 DEPENDS += " qtbase qtdeclarative libngf dbus"
 inherit qmake5
 
-do_install_append() {
+do_install:append() {
     mv ${D}/lib/* ${D}/usr/lib/
     mv ${D}/include/* ${D}/usr/include/
     rmdir ${D}/include/ ${D}/lib/
 }
 
-FILES_${PN} += "/usr/lib/qml/Nemo/Ngf"
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Ngf/.debug/"
+FILES:${PN} += "/usr/lib/qml/Nemo/Ngf"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Ngf/.debug/"

@@ -1,1 +1,1 @@
-RDEPENDS_${PN}_remove = "lxc"
+RDEPENDS:${PN}:remove = "lxc"

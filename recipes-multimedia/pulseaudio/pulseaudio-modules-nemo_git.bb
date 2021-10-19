@@ -15,11 +15,11 @@ DEPENDS += "pulseaudio libcheck"
 inherit autotools pkgconfig
 B = "${S}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@pa_config_parse(conf, NULL, items, NULL, NULL);@pa_config_parse(conf, NULL, items, NULL, false, NULL);@" src/mainvolume/module-meego-mainvolume.c
     sed -i "s@pa_tagstruct_new(NULL, 0);@pa_tagstruct_new();@" src/stream-restore-nemo/module-stream-restore-nemo.c
 }
 
-FILES_${PN} += "/usr/lib/pulse-14.2/modules"
-FILES_${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
-FILES_${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"
+FILES:${PN} += "/usr/lib/pulse-14.2/modules"
+FILES:${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
+FILES:${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"

@@ -13,4 +13,4 @@ inherit qmake5
 
 DEPENDS += "qtmultimedia nemo-gst-interfaces"
 
-FILES_${PN} += "/usr/lib/plugins/video/declarativevideobackend/libgstnemovideotexturebackend.so"
+FILES:${PN} += "/usr/lib/plugins/video/declarativevideobackend/libgstnemovideotexturebackend.so"

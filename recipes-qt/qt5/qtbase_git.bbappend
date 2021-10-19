@@ -1,12 +1,12 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/qtbase:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/qtbase:"
 SRC_URI += " file://0002-qplatforminputcontextfactory-Use-qtvirtualkeyboard-b.patch"
 
 # Remove dependencies to mesa
-PACKAGECONFIG_remove = "tests"
-PACKAGECONFIG_remove = "widgets"
-PACKAGECONFIG_remove = "gl"
-PACKAGECONFIG_append = "gles2 mtdev sql-sqlite glib fontconfig gif"
-PACKAGECONFIG_GL_append_qemux86 = " eglfs gbm kms"
+PACKAGECONFIG:remove = "tests"
+PACKAGECONFIG:remove = "widgets"
+PACKAGECONFIG:remove = "gl"
+PACKAGECONFIG:append = "gles2 mtdev sql-sqlite glib fontconfig gif"
+PACKAGECONFIG_GL:append:qemux86 = " eglfs gbm kms"
 
 QT_CONFIG_FLAGS += "--no-feature-getentropy"
 

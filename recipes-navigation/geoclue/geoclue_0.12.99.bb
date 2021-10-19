@@ -22,7 +22,7 @@ B = "${S}"
 # Without this line, package is delcared a library and named libgeoclue*
 AUTO_LIBNAME_PKGS = ""
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${datadir}/dbus-1/services \
     ${datadir}/geoclue-providers \
     ${datadir}/glib-2.0/schemas \

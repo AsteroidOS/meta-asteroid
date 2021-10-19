@@ -14,4 +14,4 @@ do_install() {
     cp ${S}/src/* ${D}/usr/share/icons/asteroid/
 }
 
-FILES_${PN} = "/usr/share/icons/asteroid/"
+FILES:${PN} = "/usr/share/icons/asteroid/"

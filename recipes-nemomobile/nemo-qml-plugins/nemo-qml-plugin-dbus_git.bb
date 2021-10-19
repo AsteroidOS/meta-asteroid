@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "dbus qtdeclarative qtbase"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/DBus/.debug"
-FILES_${PN} += "/usr/lib/qml/Nemo/DBus/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/DBus/.debug"
+FILES:${PN} += "/usr/lib/qml/Nemo/DBus/"

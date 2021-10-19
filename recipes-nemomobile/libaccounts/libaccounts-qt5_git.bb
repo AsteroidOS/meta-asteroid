@@ -10,14 +10,14 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/doc.pri/d" ${S}/accounts-qt.pro
 }
 
-do_install_append() {
+do_install:append() {
     rm -r ${D}/usr/bin/
 }
 
 DEPENDS += "qtbase libaccounts-glib "
 
-FILES_${PN}-dev += "/usr/lib/cmake/AccountsQt5"
+FILES:${PN}-dev += "/usr/lib/cmake/AccountsQt5"

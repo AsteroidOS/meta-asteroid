@@ -27,11 +27,11 @@ python do_generate_config () {
         config.write(machine_conf)
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/etc/asteroid/
     install -m 644 ${WORKDIR}/machine.conf ${D}/etc/asteroid/machine.conf
 }
 
 addtask do_generate_config before do_install
 
-FILES_${PN} += "/etc/asteroid/"
+FILES:${PN} += "/etc/asteroid/"

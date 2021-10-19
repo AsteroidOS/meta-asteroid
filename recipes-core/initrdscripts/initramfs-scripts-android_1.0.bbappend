@@ -1,3 +1,3 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 S = "${WORKDIR}"
-RDEPENDS_${PN} += "e2fsprogs-e2fsck psplash android-tools-adbd"
+RDEPENDS:${PN} += "e2fsprogs-e2fsck psplash android-tools-adbd"

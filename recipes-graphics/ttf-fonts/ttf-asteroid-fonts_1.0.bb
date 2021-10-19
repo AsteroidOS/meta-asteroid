@@ -24,7 +24,7 @@ do_install() {
     install -m 644 ${WORKDIR}/69-emoji.conf ${D}/home/ceres/.config/fontconfig/conf.d/
 }
 
-FILES_${PN} += "/usr/share/fonts /home/ceres/.config/fontconfig/conf.d"
+FILES:${PN} += "/usr/share/fonts /home/ceres/.config/fontconfig/conf.d"
 
 # Installing files in `/home/ceres/`, owned by uid 1000, causes a host-contamination warning.
-INSANE_SKIP_${PN} += "host-user-contaminated"
+INSANE_SKIP:${PN} += "host-user-contaminated"

@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/AsteroidOS/mce.git;protocol=https \
     file://mce.service"
-SRC_URI_append_qemux86 = " file://0001-Keep-screen-on-by-default-on-emulator.patch"
+SRC_URI:append:qemux86 = " file://0001-Keep-screen-on-by-default-on-emulator.patch"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -19,5 +19,5 @@ do_install() {
     rm -r ${D}/var/run/
 }
 
-FILES_${PN} += " /run/mce /lib/systemd/system "
-FILES_${PN}-dbg += "/usr/lib/mce/modules/.debug"
+FILES:${PN} += " /run/mce /lib/systemd/system "
+FILES:${PN}-dbg += "/usr/lib/mce/modules/.debug"

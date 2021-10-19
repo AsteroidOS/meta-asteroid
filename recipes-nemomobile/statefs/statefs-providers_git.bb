@@ -10,11 +10,11 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "statefs boost qtbase statefs-qt qtsensors mce kf5bluezqt"
-RDEPENDS_${PN} += "statefs-loader-qt"
+RDEPENDS:${PN} += "statefs-loader-qt"
 inherit cmake_qt5
 
 EXTRA_OECMAKE=" -DVERSION=x.x.x -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
-FILES_${PN} = "/usr/share/statefs /usr/lib/"
-FILES_${PN}-dbg = "/usr/lib/statefs/.debug/ /usr/lib/.debug/ /usr/src/"
-FILES_${PN}-dev = "/usr/lib/pkgconfig/ /usr/include"
+FILES:${PN} = "/usr/share/statefs /usr/lib/"
+FILES:${PN}-dbg = "/usr/lib/statefs/.debug/ /usr/lib/.debug/ /usr/src/"
+FILES:${PN}-dev = "/usr/lib/pkgconfig/ /usr/include"

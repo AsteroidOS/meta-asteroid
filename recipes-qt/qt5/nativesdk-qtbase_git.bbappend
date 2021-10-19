@@ -1,1 +1,1 @@
-RDEPENDS_${PN}-tools-dev += "python"
+RDEPENDS:${PN}-tools-dev += "python"

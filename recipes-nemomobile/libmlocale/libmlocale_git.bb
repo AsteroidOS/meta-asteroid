@@ -12,13 +12,13 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-do_configure_prepend() {
+do_configure:prepend() {
     ../git/configure
 }
 
 DEPENDS += "qtbase icu-native qttools-native"
 inherit qmake5
 
-FILES_${PN}-dev += "/usr/share/mkspecs/ /usr/lib/libmlocale5.prl"
-FILES_${PN}-dbg += "/usr/lib/libmlocale-benchmarks5 /usr/share/libmlocale-benchmarks5"
-FILES_${PN} += "/usr/share/mlocale5"
+FILES:${PN}-dev += "/usr/share/mkspecs/ /usr/lib/libmlocale5.prl"
+FILES:${PN}-dbg += "/usr/lib/libmlocale-benchmarks5 /usr/share/libmlocale-benchmarks5"
+FILES:${PN} += "/usr/share/mlocale5"

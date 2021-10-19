@@ -10,16 +10,16 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/doc.pri/d" ${S}/signon.pro ${S}/lib/SignOn/SignOn.pro ${S}/lib/plugins/plugins.pro
 }
 
-do_install_append() {
+do_install:append() {
     if [ -d "${D}/usr/lib64/" ]; then
         mv ${D}/usr/lib64/ ${D}/usr/lib/
     fi
 }
 
 DEPENDS += "qtbase"
-FILES_${PN} += "/usr/share/dbus-1/ /usr/lib/signon/"
-FILES_${PN}-dev += "/usr/lib/cmake/"
+FILES:${PN} += "/usr/share/dbus-1/ /usr/lib/signon/"
+FILES:${PN}-dev += "/usr/lib/cmake/"

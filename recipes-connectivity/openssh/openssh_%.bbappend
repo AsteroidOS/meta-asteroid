@@ -1,3 +1,3 @@
-PACKAGECONFIG_remove = "rng-tools"
+PACKAGECONFIG:remove = "rng-tools"
 
-EXTRA_OECONF_append = " --with-sandbox=rlimit"
+EXTRA_OECONF:append = " --with-sandbox=rlimit"

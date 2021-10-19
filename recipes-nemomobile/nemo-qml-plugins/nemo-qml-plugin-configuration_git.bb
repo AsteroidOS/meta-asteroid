@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative mlite"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Configuration/.debug"
-FILES_${PN} += "/usr/lib/qml/Nemo/Configuration/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Configuration/.debug"
+FILES:${PN} += "/usr/lib/qml/Nemo/Configuration/"

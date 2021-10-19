@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/connman:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/connman:"
 SRC_URI += "file://settings \
             file://connman-dbus.conf"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/var/lib/connman/
     cp ${WORKDIR}/settings ${D}/var/lib/connman/settings
     install -d ${D}/etc/dbus-1/system.d/

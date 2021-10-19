@@ -13,4 +13,4 @@ DEPENDS += "profiled qtbase"
 B = "${WORKDIR}/git" 
 inherit qmake5
 
-FILES_${PN}-dbg += "/usr/share/libprofile-qt5-tests/ /usr/lib/libprofile-qt5-tests/"
+FILES:${PN}-dbg += "/usr/share/libprofile-qt5-tests/ /usr/lib/libprofile-qt5-tests/"
