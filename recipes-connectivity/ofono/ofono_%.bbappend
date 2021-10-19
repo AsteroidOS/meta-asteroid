@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/ofono:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/ofono:"
 SRC_URI = "git://github.com/rilmodem/ofono;protocol=https \
            file://ofono.service \
            file://ofono \
@@ -10,9 +10,9 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "c-ares"
 
-EXTRA_OECONF_remove = "--enable-external-ell"
+EXTRA_OECONF:remove = "--enable-external-ell"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/lib/systemd/system/
     cp ${WORKDIR}/ofono.service ${D}/lib/systemd/system/ofono.service
 }

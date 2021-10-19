@@ -13,8 +13,8 @@ S = "${WORKDIR}/git"
 DEPENDS += "geoclue libhybris libconnman-qt5 libqofono qofonoext"
 inherit qmake5
 
-do_install_append() {
+do_install:append() {
     chmod 04755 ${D}/usr/libexec/geoclue-hybris
 }
 
-FILES_${PN} += "/usr/share/dbus-1 /usr/share/geoclue-providers"
+FILES:${PN} += "/usr/share/dbus-1 /usr/share/geoclue-providers"

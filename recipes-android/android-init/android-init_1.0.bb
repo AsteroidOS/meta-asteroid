@@ -16,4 +16,4 @@ do_install() {
     ln -s ../android-init.service ${D}/lib/systemd/system/multi-user.target.wants/android-init.service
 }
 
-FILES_${PN} += "/init.rc /lib/systemd/system/"
+FILES:${PN} += "/init.rc /lib/systemd/system/"

@@ -1,6 +1,6 @@
 PACKAGECONFIG = "geoclue"
-RDEPENDS_${PN} += "geoclue"
+RDEPENDS:${PN} += "geoclue"
 
-do_install_append() {
+do_install:append() {
     rm ${D}/usr/lib/plugins/position/libqtposition_geoclue2.so
 }

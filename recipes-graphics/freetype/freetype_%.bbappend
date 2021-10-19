@@ -1,1 +1,1 @@
-PACKAGECONFIG_append = " pixmap"
+PACKAGECONFIG:append = " pixmap"

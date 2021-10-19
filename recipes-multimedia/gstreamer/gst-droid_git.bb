@@ -14,11 +14,11 @@ S = "${WORKDIR}/git"
 B = "${S}"
 DEPENDS += "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base libhybris gettext-native nemo-gst-interfaces libexif"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@/usr/share/droidmedia/hybris.c@${STAGING_INCDIR}/droidmedia/hybris.c@" gst-libs/gst/droid/Makefile.am gst/Makefile.am
     sed -i "s@I/usr/include/droidmedia/@I${STAGING_INCDIR}/droidmedia/@" gst/droidcamsrc/Makefile.am gst/droideglsink/Makefile.am gst/droidcodec/Makefile.am gst/Makefile.am gst-libs/gst/droid/Makefile.am
     NOCONFIGURE=1 ${S}/autogen.sh
 }
 
-FILES_${PN} += "/usr/lib/gstreamer-1.0/libgstdroid.so"
-FILES_${PN}-staticdev += "/usr/lib/gstreamer-1.0/libgstdroid.a"
+FILES:${PN} += "/usr/lib/gstreamer-1.0/libgstdroid.so"
+FILES:${PN}-staticdev += "/usr/lib/gstreamer-1.0/libgstdroid.a"

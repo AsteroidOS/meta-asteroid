@@ -9,7 +9,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-do_compile_prepend() {
+do_compile:prepend() {
     sed -i "s@\$(top_builddir)/src/libresource.la@libresource.la@g" src/Makefile
 }
 

@@ -15,13 +15,13 @@ inherit qmake5
 B = "${WORKDIR}/git" 
 # Out of dir build breaks mlite5.pc installation
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/tests/d" ${S}/mlite.pro
 }
 
-do_install_append() {
+do_install:append() {
     cd src/
     cp *.h MDConfGroup MNotificationGroup MRemoteAction MExport MDesktopEntry MNotification MGConfItem  ${D}/usr/include/mlite5/
 }
 
-FILES_${PN}-dbg += "/opt"
+FILES:${PN}-dbg += "/opt"

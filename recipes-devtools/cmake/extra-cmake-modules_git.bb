@@ -8,10 +8,10 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
 EXTRA_OECMAKE += "-DBUILD_TESTING=off -DBUILD_HTML_DOCS=OFF -DBUILD_QTHELP_DOCS=ON"
 
 inherit cmake
 
-FILES_${PN}-dev += "${datadir}/ECM"
+FILES:${PN}-dev += "${datadir}/ECM"

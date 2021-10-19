@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c
 PV = "5.15.0+gitr${SRCPV}"
 
 DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
-RDEPENDS_${PN} += " qtscenegraph-adaptation "
+RDEPENDS:${PN} += " qtscenegraph-adaptation "
 
 # We need to be ${MACHINE_ARCH} as we need to compile the source against a specific
 # Android version we select per machine
@@ -24,10 +24,10 @@ inherit qmake5
 #   /OE/build/owpb/webos-ports/tmp-eglibc/sysroots/tenderloin/usr/lib/cmake/Qt5Gui/Qt5Gui_QEglFSIntegrationPlugin.cmake
 #   Matched in manifest-tenderloin-qtbase.populate_sysroot
 #   Please verify which package should provide the above files.
-do_install_append() {
+do_install:append() {
     rm -vf ${D}${libdir}/cmake/Qt5Gui/Qt5Gui_QEglFSIntegrationPlugin.cmake
 }
 
-FILES_${PN} += "${libdir}/plugins/platforms/libhwcomposer.so"
-FILES_${PN}-dbg += "${libdir}/plugins/platforms/.debug/libhwcomposer.so"
-FILES_${PN}-dev += "${libdir}/cmake"
+FILES:${PN} += "${libdir}/plugins/platforms/libhwcomposer.so"
+FILES:${PN}-dbg += "${libdir}/plugins/platforms/.debug/libhwcomposer.so"
+FILES:${PN}-dev += "${libdir}/cmake"

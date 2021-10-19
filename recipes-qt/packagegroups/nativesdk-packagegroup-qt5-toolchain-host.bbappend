@@ -1,3 +1,3 @@
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     nativesdk-qtdeclarative-tools \
 "

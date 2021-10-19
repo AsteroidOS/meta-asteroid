@@ -1,2 +1,2 @@
-PACKAGECONFIG_append = " gui "
-PACKAGECONFIG_CONFARGS_append = " -make tools "
+PACKAGECONFIG:append = " gui "
+PACKAGECONFIG_CONFARGS:append = " -make tools "

@@ -15,4 +15,4 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 
-FILES_${PN}-dbg += "/opt"
+FILES:${PN}-dbg += "/opt"

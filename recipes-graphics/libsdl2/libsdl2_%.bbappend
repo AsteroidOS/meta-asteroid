@@ -1,1 +1,1 @@
-PACKAGECONFIG_remove = "opengl"
+PACKAGECONFIG:remove = "opengl"

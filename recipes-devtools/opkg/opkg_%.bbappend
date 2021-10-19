@@ -1,1 +1,1 @@
-PACKAGECONFIG_append = " curl"
+PACKAGECONFIG:append = " curl"

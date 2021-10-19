@@ -12,7 +12,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-do_compile_prepend () {
+do_compile:prepend () {
     export CFLAGS="$CFLAGS -fPIC"
 }
 
@@ -20,7 +20,7 @@ do_install() {
 	oe_runmake install DESTDIR=${D}
 }
 
-do_install_append() {
+do_install:append() {
     cd ${D}/usr/lib/
 
     # Fix broken symlinks
@@ -36,4 +36,4 @@ do_install_append() {
     ln -s libthermalmanager_dbus_if.so.0.3.0 libthermalmanager_dbus_if.so.0.3
 }
 
-FILES_${PN}-dbg += "/opt"
+FILES:${PN}-dbg += "/opt"

@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdbusextended qtdeclarative"
-RDEPENDS_${PN} += "qtdbusextended"
+RDEPENDS:${PN} += "qtdbusextended"
 
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/mpris"
-FILES_${PN}-dev += "/usr/lib/mkspecs"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/mpris"
+FILES:${PN}-dev += "/usr/lib/mkspecs"

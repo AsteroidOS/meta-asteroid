@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative timed mce"
 
-FILES_${PN}-dbg += "/usr/lib/qml/Nemo/Time/.debug /opt/"
-FILES_${PN} += "/usr/lib/qml/Nemo/Time/ "
+FILES:${PN}-dbg += "/usr/lib/qml/Nemo/Time/.debug /opt/"
+FILES:${PN} += "/usr/lib/qml/Nemo/Time/ "

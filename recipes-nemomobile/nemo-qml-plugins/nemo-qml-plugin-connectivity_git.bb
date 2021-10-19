@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase libconnman-qt5 qofonoext"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Connectivity/.debug"
-FILES_${PN} += "/usr/lib/qml/Nemo/Connectivity/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Connectivity/.debug"
+FILES:${PN} += "/usr/lib/qml/Nemo/Connectivity/"

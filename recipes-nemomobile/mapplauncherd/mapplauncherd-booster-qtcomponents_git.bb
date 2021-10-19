@@ -13,16 +13,16 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase"
-RDEPENDS_${PN} += "mapplauncherd"
+RDEPENDS:${PN} += "mapplauncherd"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd/@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd ${STAGING_INCDIR}/mdeclarativecache5/@" ${S}/booster-qtcomponents.pro
     sed -i "s@LIBS += -lapplauncherd@LIBS += -lapplauncherd -lmdeclarativecache5@" ${S}/booster-qtcomponents.pro
     cp ${WORKDIR}/booster-qtcomponents-qt5.service ${S}/data/booster-qtcomponents-qt5.service
     cp ${WORKDIR}/preload.qml ${S}/qml-qt5/preload.qml
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service ]; then
         ln -s /usr/lib/systemd/user/booster-qtcomponents-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qtcomponents-qt5.service
@@ -33,5 +33,5 @@ do_install_append() {
     echo "QT_IM_MODULE=qtvirtualkeyboard" >> ${D}/var/lib/environment/mapplauncherd/qtcomponents-qt5.conf
 }
 
-FILES_${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5 /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
+FILES:${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-qtcomponents-qt5 /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

@@ -15,7 +15,7 @@ S = "${WORKDIR}/git"
 
 EXTRA_OEMESON = "-Dpy-overrides-dir=/usr/lib/python3.8/dist-packages/gi/overrides/"
 
-do_install_append() {
+do_install:append() {
     rm -r ${D}/usr/share/gettext/
     rm -r ${D}/usr/lib/girepository-1.0/
 }
@@ -24,5 +24,5 @@ DEPENDS += "glib-2.0 glib-2.0-native vala-native python3-pygobject-native gobjec
 
 DEPENDS += "libcheck libxml2 sqlite3"
 
-FILES_${PN} += "/usr/share/dbus-1 /usr/share/backup-framework /usr/share/xml/accounts/schema/dtd"
-FILES_${PN}-dev += "/usr/share/vala/vapi /usr/lib/python3.8/dist-packages/gi/overrides/"
+FILES:${PN} += "/usr/share/dbus-1 /usr/share/backup-framework /usr/share/xml/accounts/schema/dtd"
+FILES:${PN}-dev += "/usr/share/vala/vapi /usr/lib/python3.8/dist-packages/gi/overrides/"

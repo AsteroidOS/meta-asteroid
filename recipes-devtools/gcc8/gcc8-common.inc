@@ -11,7 +11,7 @@ inherit autotools gettext texinfo
 
 BPN = "gcc8"
 COMPILERDEP = "virtual/${MLPREFIX}${TARGET_PREFIX}gcc8:do_gcc_stash_builddir"
-COMPILERDEP_class-nativesdk = "virtual/${TARGET_PREFIX}gcc8-crosssdk:do_gcc_stash_builddir"
+COMPILERDEP:class-nativesdk = "virtual/${TARGET_PREFIX}gcc8-crosssdk:do_gcc_stash_builddir"
 
 python extract_stashed_builddir () {
     src = d.expand("${COMPONENTS_DIR}/${BUILD_ARCH}/gcc8-stashed-builddir-${TARGET_SYS}")
@@ -88,7 +88,7 @@ def get_tune_parameters(tune, d):
 
 get_tune_parameters[vardepsexclude] = "AVAILTUNES TUNE_CCARGS OVERRIDES TUNE_FEATURES BASE_LIB BASELIB TUNE_ARCH ABIEXTENSION TARGET_FPU TUNE_PKGARCH PACKAGE_EXTRA_ARCHS"
 
-DEBIANNAME_${MLPREFIX}libgcc8 = "libgcc1"
+DEBIANNAME:${MLPREFIX}libgcc8 = "libgcc1"
 
 MIRRORS =+ "\
 ${GNU_MIRROR}/gcc    ftp://gcc.gnu.org/pub/gcc/releases/ \n \

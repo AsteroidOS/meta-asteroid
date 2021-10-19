@@ -12,4 +12,4 @@ S = "${WORKDIR}/git"
 DEPENDS += "ofono qtbase libqofono qtsystems"
 inherit qmake5
 
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/ofono/"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/ofono/"

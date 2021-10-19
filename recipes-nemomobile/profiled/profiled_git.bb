@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 DEPENDS += "glib-2.0 dbus dbus-glib pkgconfig-native"
 B = "${WORKDIR}/git"
 
-do_compile_prepend() {
+do_compile:prepend() {
     export CFLAGS="-std=c11 $CFLAGS"
 }
 
@@ -21,4 +21,4 @@ do_install() {
     ROOT=${D} make install
 }
 
-FILES_${PN} += "/usr/share/dbus-1/services/profiled.service /usr/lib/systemd/user/profiled.service"
+FILES:${PN} += "/usr/share/dbus-1/services/profiled.service /usr/lib/systemd/user/profiled.service"

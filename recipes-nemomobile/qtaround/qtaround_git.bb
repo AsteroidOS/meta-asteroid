@@ -15,4 +15,4 @@ inherit cmake_qt5
 
 EXTRA_OECMAKE=" -DVERSION=0.2.6 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
-FILES_${PN}-dbg += "/opt"
+FILES:${PN}-dbg += "/opt"

@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 DEPENDS += "gdk-pixbuf-native"
 SRC_URI += "file://psplash-colors.h \
             file://psplash-bar-img.png \
@@ -10,7 +10,7 @@ SPLASH_IMAGES = "file://psplash-img-320.png;outsuffix=default"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-do_configure_append () {
+do_configure:append () {
     cd ${S}
     cp ../psplash-config.h ./psplash-config.h
     cp ../psplash-colors.h ./psplash-colors.h
@@ -18,4 +18,4 @@ do_configure_append () {
     ./make-image-header.sh ./psplash-bar.png BAR
 }
 
-FILES_${PN} += "/lib/systemd/system/"
+FILES:${PN} += "/lib/systemd/system/"

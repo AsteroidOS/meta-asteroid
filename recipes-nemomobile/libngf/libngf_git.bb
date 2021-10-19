@@ -11,6 +11,6 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 dbus dbus-glib libcheck"
-RDEPENDS_${PN} += "ngfd"
+RDEPENDS:${PN} += "ngfd"
 
 inherit autotools pkgconfig

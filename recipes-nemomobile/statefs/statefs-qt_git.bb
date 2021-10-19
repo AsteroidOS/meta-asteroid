@@ -10,17 +10,17 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-INSANE_SKIP_${PN} += "dev-deps"
+INSANE_SKIP:${PN} += "dev-deps"
 DEPENDS += " qtbase qtdeclarative cor qtaround"
 inherit cmake_qt5
 
 B = "${WORKDIR}/git"
 EXTRA_OECMAKE=" -DVERSION=0.2.51 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@DESTINATION include/qt5@DESTINATION include@" CMakeLists.txt
 }
 
-FILES_${PN} = "/usr/bin/contextkit-monitor /usr/lib/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
-FILES_${PN}-dev = "/usr/lib/pkgconfig /usr/include/ /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so"
-FILES_${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/ /opt/tests/"
+FILES:${PN} = "/usr/bin/contextkit-monitor /usr/lib/ /usr/lib/libstatefs-qt5.so /usr/lib/libcontextkit-statefs-qt5.so"
+FILES:${PN}-dev = "/usr/lib/pkgconfig /usr/include/ /usr/lib/qt5/qml/Mer/State/libstatefs-declarative.so"
+FILES:${PN}-dbg = "/usr/lib/qt5/qml/Mer/State/.debug/ /usr/src /usr/bin/.debug/ /usr/lib/.debug/ /opt/tests/"

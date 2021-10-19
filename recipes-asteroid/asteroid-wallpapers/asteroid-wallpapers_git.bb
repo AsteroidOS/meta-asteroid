@@ -14,4 +14,4 @@ do_install() {
     cp ${S}/480x480/* ${D}/usr/share/asteroid-launcher/wallpapers/
 }
 
-FILES_${PN} = "/usr/share/asteroid-launcher/wallpapers/"
+FILES:${PN} = "/usr/share/asteroid-launcher/wallpapers/"

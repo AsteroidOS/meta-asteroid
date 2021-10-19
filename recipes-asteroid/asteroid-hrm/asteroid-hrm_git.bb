@@ -11,4 +11,4 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtsensors qttools-native qtdeclarative-native"
-FILES_${PN} += "/usr/share/translations/"
+FILES:${PN} += "/usr/share/translations/"

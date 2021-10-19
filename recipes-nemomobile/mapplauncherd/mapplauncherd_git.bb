@@ -18,19 +18,19 @@ DEPENDS += "dbus systemd"
 inherit cmake
 B = "${S}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i '/Target for documentation/,$d' ${S}/CMakeLists.txt
     sed -i 's@-L/lib -lsystemd-daemon@-lsystemd@' ${S}/src/launcherlib/CMakeLists.txt
     cp ${WORKDIR}/booster-generic.service ${S}/src/booster-generic/booster-generic.service
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service ]; then
         ln -s /usr/lib/systemd/user/booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
     fi
 }
 
-FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
-FILES_${PN}-dev = "/usr/include/"
+FILES:${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
+FILES:${PN}-dev = "/usr/include/"

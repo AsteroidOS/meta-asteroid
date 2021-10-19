@@ -15,4 +15,4 @@ inherit qmake5
 
 B = "${WORKDIR}/git"
 
-FILES_${PN}-dbg += "/usr/lib/libresourceqt-qt5-tests /usr/share"
+FILES:${PN}-dbg += "/usr/lib/libresourceqt-qt5-tests /usr/share"

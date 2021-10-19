@@ -13,6 +13,6 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtbase"
-RDEPENDS_${PN} += "qtbase"
+RDEPENDS:${PN} += "qtbase"
 
-FILES_${PN}-dev += "/usr/lib/mkspecs"
+FILES:${PN}-dev += "/usr/lib/mkspecs"

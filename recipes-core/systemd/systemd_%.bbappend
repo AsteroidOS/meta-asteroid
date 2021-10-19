@@ -1,8 +1,8 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI_append = " file://50-video.rules \
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+SRC_URI:append = " file://50-video.rules \
                   file://65-android.rules"
 
-do_install_append() {
+do_install:append() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
     install -m 0644 ${WORKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
     install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
@@ -13,15 +13,15 @@ do_install_append() {
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
 }
 
-PACKAGECONFIG_append += "pam"
+PACKAGECONFIG:append += "pam"
 
-PACKAGECONFIG_remove = "rfkill"
+PACKAGECONFIG:remove = "rfkill"
 
-PACKAGECONFIG_remove = "timesyncd"
+PACKAGECONFIG:remove = "timesyncd"
 
-RRECOMMENDS_${PN}_remove = "udev-hwdb"
+RRECOMMENDS:${PN}:remove = "udev-hwdb"
 
-ALTERNATIVE_${PN} += "usrsbinhalt usrsbinreboot usrsbinshutdown usrsbinpoweroff"
+ALTERNATIVE:${PN} += "usrsbinhalt usrsbinreboot usrsbinshutdown usrsbinpoweroff"
 
 ALTERNATIVE_TARGET[usrsbinhalt] = "${base_bindir}/systemctl"
 ALTERNATIVE_LINK_NAME[usrsbinhalt] = "${sbindir}/halt"

@@ -14,14 +14,14 @@ S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase mapplauncherd"
-RDEPENDS_${PN} += "mapplauncherd"
+RDEPENDS:${PN} += "mapplauncherd"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd@" ${S}/qtbooster/qtbooster.pro
     cp ${WORKDIR}/booster-qt5.service ${S}/data/booster-qt5.service
 }
 
-do_install_append() {
+do_install:append() {
     rm ${D}/usr/lib/systemd/user/booster-qt5-signal.service
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service ]; then
@@ -29,6 +29,6 @@ do_install_append() {
     fi
 }
 
-FILES_${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dev += "/usr/share/mkspecs/features"
-FILES_${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
+FILES:${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dev += "/usr/share/mkspecs/features"
+FILES:${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"

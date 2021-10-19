@@ -13,11 +13,11 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-do_configure_append() {
+do_configure:append() {
     chmod +x ${S}/tools/*
 }
 
 DEPENDS += "qtbase telepathy-farstream"
 inherit cmake_qt5
 
-FILES_${PN}-dev += "/usr/lib/cmake"
+FILES:${PN}-dev += "/usr/lib/cmake"

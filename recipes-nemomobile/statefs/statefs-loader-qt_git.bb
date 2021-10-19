@@ -15,5 +15,5 @@ inherit cmake_qt5
 B = "${WORKDIR}/git"
 EXTRA_OECMAKE=" -DUSEQT=5 -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${STAGING_DIR_NATIVE}/usr/bin/"
 
-FILES_${PN} += "/usr/lib/statefs/"
-FILES_${PN}-dbg += "/usr/lib/statefs/.debug/"
+FILES:${PN} += "/usr/lib/statefs/"
+FILES:${PN}-dbg += "/usr/lib/statefs/.debug/"

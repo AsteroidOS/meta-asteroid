@@ -11,19 +11,19 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "boost fuse cor"
-RDEPENDS_${PN} += "statefs-providers util-linux-getopt"
+RDEPENDS:${PN} += "statefs-providers util-linux-getopt"
 EXTRA_OECMAKE=" -DVERSION=0.3.0 -DENABLE_USER_SESSION=ON -DSYSTEMD_USER_UNIT_DIR=/usr/lib/systemd/user/"
 
 inherit cmake
 
 B = "${WORKDIR}/git"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/examples/d" CMakeLists.txt
     cp ${WORKDIR}/statefs.service ${S}/statefs.service
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/etc/sysconfig/statefs/
     echo "STATEFS_GID=1007" > ${D}/etc/sysconfig/statefs/system.conf
     echo "STATEFS_UMASK=0002" >> ${D}/etc/sysconfig/statefs/system.conf
@@ -44,11 +44,11 @@ do_install_append() {
     fi
 }
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
     setcap CAP_SYS_ADMIN=ep $D/usr/bin/statefs
 }
 
-pkg_postinst_ontarget_${PN}() {
+pkg_postinst_ontarget:${PN}() {
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-default.so
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-inout.so
     /usr/lib/statefs/loader-action register /usr/lib/statefs/libloader-qt5.so
@@ -62,5 +62,5 @@ pkg_postinst_ontarget_${PN}() {
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
-FILES_${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dbg += "/opt/"
+FILES:${PN} += "/lib/systemd/ /usr/lib/systemd /var/lib/statefs/ /etc/sysconfig/statefs/ /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dbg += "/opt/"

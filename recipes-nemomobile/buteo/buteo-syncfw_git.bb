@@ -13,11 +13,11 @@ inherit qmake5 gsettings
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/doc/d" ${S}/buteo-sync.pro
 }
 
-do_install_append() {
+do_install:append() {
     cp ${WORKDIR}/msyncd.service ${D}/usr/lib/systemd/user/msyncd.service
 
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
@@ -28,6 +28,6 @@ do_install_append() {
 
 DEPENDS = "libaccounts-qt5 libsignon-qt5 qtsystems nemo-keepalive"
 
-FILES_${PN} += "/usr/share/glib-2.0/schemas /usr/share/accounts/services/ /usr/lib/systemd /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dev += "/usr/lib/libbuteosyncfw5.prl"
-FILES_${PN}-dbg += "/opt/tests/"
+FILES:${PN} += "/usr/share/glib-2.0/schemas /usr/share/accounts/services/ /usr/lib/systemd /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dev += "/usr/lib/libbuteosyncfw5.prl"
+FILES:${PN}-dbg += "/opt/tests/"

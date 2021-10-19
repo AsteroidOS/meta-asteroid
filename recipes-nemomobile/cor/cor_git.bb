@@ -16,4 +16,4 @@ inherit cmake
 DEPENDS += "udev tut-dev"
 EXTRA_OECMAKE=" -DVERSION=0.1.17"
 
-FILES_${PN}-dbg += "/opt /usr/lib/cmake/cor"
+FILES:${PN}-dbg += "/opt /usr/lib/cmake/cor"

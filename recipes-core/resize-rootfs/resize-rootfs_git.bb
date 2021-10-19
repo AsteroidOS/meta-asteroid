@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7ca
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"
 
-pkg_postinst_ontarget_${PN}() {
+pkg_postinst_ontarget:${PN}() {
     root=`mount | grep "on / " | awk -F' ' '{print $1}'`
     if [[ "$root" == *"sdcard"* ]]; then
     echo "Running on temporary installation, ignoring resize of filesystem."
@@ -17,4 +17,4 @@ pkg_postinst_ontarget_${PN}() {
     fi
 }
 
-RDEPENDS_${PN} += "e2fsprogs-resize2fs"
+RDEPENDS:${PN} += "e2fsprogs-resize2fs"

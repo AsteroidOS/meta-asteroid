@@ -15,12 +15,12 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5
 
-do_install_append() {
+do_install:append() {
     cp ${WORKDIR}/location.conf ${D}/etc/location/
 }
 
 DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5"
-RDEPENDS_${PN} += "profiled"
+RDEPENDS:${PN} += "profiled"
 
-FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/ /usr/lib/systemd"
+FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/ /usr/lib/systemd"

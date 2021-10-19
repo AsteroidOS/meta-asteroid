@@ -15,4 +15,4 @@ inherit qmake5
 
 B = "${S}"
 
-FILES_${PN} += "/usr/lib/systemd /usr/lib/qml/org/nemomobile/voicecall/"
+FILES:${PN} += "/usr/lib/systemd /usr/lib/qml/org/nemomobile/voicecall/"

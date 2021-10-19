@@ -18,11 +18,11 @@ S = "${WORKDIR}/git"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt statefs-qt mce usb-moded-qt5 systemd wayland nemo-keepalive qttools-native"
-RDEPENDS_${PN} += "${PN}-locale"
+RDEPENDS:${PN} += "${PN}-locale"
 
 inherit qmake5
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/share/icons/hicolor/86x86/apps/
 
     rm -r ${D}/usr/share/translations/source/
@@ -34,9 +34,9 @@ do_install_append() {
     cp -r ${WORKDIR}/Notifications/* ${D}/home/ceres/.local/share/system/privileged/Notifications/
 }
 
-FILES_${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir /usr/share/icons/hicolor/86x86/apps/ /home/ceres/.local/share/system/privileged/Notifications"
-FILES_${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
-FILES_${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
-FILES_${PN}-locale += "/usr/share/translations"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/lib/qml/org/nemomobile/lipstick/qmldir /usr/share/icons/hicolor/86x86/apps/ /home/ceres/.local/share/system/privileged/Notifications"
+FILES:${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
+FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
+FILES:${PN}-locale += "/usr/share/translations"
 
-INSANE_SKIP_${PN} += "dev-deps host-user-contaminated"
+INSANE_SKIP:${PN} += "dev-deps host-user-contaminated"

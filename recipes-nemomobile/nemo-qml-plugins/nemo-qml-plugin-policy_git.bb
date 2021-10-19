@@ -12,5 +12,5 @@ inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase libresourceqt"
 
-FILES_${PN}-dbg += "/opt /usr/lib/qml/Nemo/Policy/.debug"
-FILES_${PN} += "/usr/lib/qml/Nemo/Policy/"
+FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Policy/.debug"
+FILES:${PN} += "/usr/lib/qml/Nemo/Policy/"

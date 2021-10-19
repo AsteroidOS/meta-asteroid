@@ -14,18 +14,18 @@ EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 
 DEPENDS += "qtbase qtdeclarative"
 
-do_configure_prepend() {
+do_configure:prepend() {
     ./configure -prefix /usr/
     sed -i "s@src tests examples@src@" projects.pro
     sed -i "/doc.pri/d" projects.pro
     export QT_SELECT=5
 }
 
-do_install_append() {
+do_install:append() {
     sed -i "s@-L/[^ ]*@@" ${D}/usr/lib/pkgconfig/*.pc
 }
 
 B="${S}"
 
-FILES_${PN} += "/usr/lib/qml/QtSparql/ /usr/lib/plugins/sparqldrivers/"
-FILES_${PN}-dev += "/usr/share/mkspecs/features/ /usr/lib/libQt5Sparql.prl"
+FILES:${PN} += "/usr/lib/qml/QtSparql/ /usr/lib/plugins/sparqldrivers/"
+FILES:${PN}-dev += "/usr/share/mkspecs/features/ /usr/lib/libQt5Sparql.prl"

@@ -17,14 +17,14 @@ inherit qmake5
 
 B = "${S}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     mkdir -p src/h/timed-qt5/
     cp src/lib/qmacro.h src/h/timed-qt5/qmacro.h
     sed -i "s@<policy user=\"nemo\">@<policy user=\"ceres\">@" src/server/timed-qt5.conf src/server/timed.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
     cp ${WORKDIR}/timed-qt5.service ${S}/src/server/timed-qt5.service
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service ]; then
         ln -s /usr/lib/systemd/user/timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service
@@ -34,14 +34,14 @@ do_install_append() {
     cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
-pkg_postinst_${PN}() {
+pkg_postinst:${PN}() {
     setcap cap_sys_time+ep $D/usr/bin/timed-qt5
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
 DEPENDS += "pcre systemd tzdata libiodata-native libiodata statefs-qt qtbase"
-RDEPENDS_${PN} += "libcap-bin tzdata"
-FILES_${PN} += "/usr/lib/ /usr/share/contextkit /usr/lib/systemd/user/default.target.wants/"
-FILES_${PN}-dev += "/usr/share/mkspecs"
-FILES_${PN}-dbg += "/opt"
-INSANE_SKIP_${PN} += "dev-deps"
+RDEPENDS:${PN} += "libcap-bin tzdata"
+FILES:${PN} += "/usr/lib/ /usr/share/contextkit /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN}-dev += "/usr/share/mkspecs"
+FILES:${PN}-dbg += "/opt"
+INSANE_SKIP:${PN} += "dev-deps"

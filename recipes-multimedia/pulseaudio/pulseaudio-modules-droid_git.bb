@@ -10,15 +10,15 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libhybris"
-RDEPENDS_${PN} += "pulseaudio-module-keepalive"
+RDEPENDS:${PN} += "pulseaudio-module-keepalive"
 
 inherit autotools pkgconfig
 B = "${S}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     sed -i "/define QCOM_HARDWARE/d" src/common/droid-util-51.h
 }
 
-FILES_${PN} += "/usr/lib/pulse-14.2/modules"
-FILES_${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
-FILES_${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"
+FILES:${PN} += "/usr/lib/pulse-14.2/modules"
+FILES:${PN}-dbg += "/usr/lib/pulse-14.2/modules/.debug/"
+FILES:${PN}-staticdev += "/usr/lib/pulse-14.2/modules/*.a"
