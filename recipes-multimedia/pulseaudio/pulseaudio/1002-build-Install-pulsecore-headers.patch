@@ -1,4 +1,4 @@
-From 68e353c4bec81fbd420a39a67691a230bd96126c Mon Sep 17 00:00:00 2001
+From a15c0b75bbaec9af8ba6e46e892d4696243a6286 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Juho=20H=C3=A4m=C3=A4l=C3=A4inen?=
  <juho.hamalainen@tieto.com>
 Date: Thu, 5 Feb 2015 11:00:52 +0200
@@ -8,13 +8,12 @@ This is for building out-of-tree modules. Upstream doesn't want to
 support out-of-tree modules, so this patch is not upstreamable.
 Mer/Nemo should try to not depend on any out-of-tree modules.
 ---
- libpulse-simple.pc.in     |   2 +-
- libpulse.pc.in            |   2 +-
- meson.build               |   1 +
- pulsecore.pc.in           |  12 ++++
- src/Makefile.am           | 134 ++++++++++++++++++++++++++++++++++++++
- src/pulsecore/meson.build |  52 +++++++++++++++
- 6 files changed, 201 insertions(+), 2 deletions(-)
+ libpulse-simple.pc.in     |  2 +-
+ libpulse.pc.in            |  2 +-
+ meson.build               |  1 +
+ pulsecore.pc.in           | 12 +++++++++
+ src/pulsecore/meson.build | 52 +++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 67 insertions(+), 2 deletions(-)
  create mode 100644 pulsecore.pc.in
 
 diff --git a/libpulse-simple.pc.in b/libpulse-simple.pc.in
@@ -44,10 +43,10 @@ index 23d888bb9..5e7e75f14 100644
  Libs.private: -L${libdir}/pulseaudio -lpulsecommon-@PA_MAJORMINOR@
  Cflags: -I${includedir} -D_REENTRANT
 diff --git a/meson.build b/meson.build
-index a5263215c..9afc9e516 100644
+index d7e468cab..e4bb1722b 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -732,6 +732,7 @@ pc_cdata.set('PTHREAD_LIBS', '-pthread')
+@@ -828,6 +828,7 @@ pc_cdata.set('PTHREAD_LIBS', '-pthread')
  pc_files = [
    'libpulse.pc',
    'libpulse-simple.pc',
@@ -73,160 +72,8 @@ index 000000000..b5b4a9bdf
 +Version: @PA_MAJORMINOR@
 +Libs: -L${libdir} -L${libdir}/pulseaudio -L${libdir}/pulse-@PA_MAJORMINOR@/modules -lpulsecore-@PA_MAJORMINOR@ -lpulsecommon-@PA_MAJORMINOR@ -lpulse @PTHREAD_LIBS@
 +Cflags: -D_REENTRANT -D__INCLUDED_FROM_PULSE_AUDIO -DPA_DEFAULT_CONFIG_DIR=\"@PA_DEFAULT_CONFIG_DIR@\" -I${includedir}
-diff --git a/src/Makefile.am b/src/Makefile.am
-index 454b644bb..2b083c01a 100644
---- a/src/Makefile.am
-+++ b/src/Makefile.am
-@@ -23,6 +23,7 @@
- 
- pulseincludedir=$(includedir)/pulse
- pulsecoreincludedir=$(includedir)/pulsecore
-+pulsecorefilterincludedir=$(includedir)/pulsecore/filter
- pulselibexecdir=$(libexecdir)/pulse
- if HAVE_X11
- xdgautostartdir=$(sysconfdir)/xdg/autostart
-@@ -850,6 +851,139 @@ libpulsecommon_@PA_MAJORMINOR@_la_CFLAGS += $(DBUS_CFLAGS)
- libpulsecommon_@PA_MAJORMINOR@_la_LIBADD += $(DBUS_LIBS)
- endif
- 
-+###################################
-+#         Pulsecore headers       #
-+###################################
-+
-+pulsecorefilterinclude_HEADERS = \
-+		pulsecore/filter/lfe-filter.h
-+
-+pulsecoreinclude_HEADERS = \
-+		pulsecore/arpa-inet.h \
-+		pulsecore/asyncmsgq.h \
-+		pulsecore/asyncq.h \
-+		pulsecore/atomic.h \
-+		pulsecore/aupdate.h \
-+		pulsecore/auth-cookie.h \
-+		pulsecore/authkey.h \
-+		pulsecore/avahi-wrap.h \
-+		pulsecore/bitset.h \
-+		pulsecore/card.h \
-+		pulsecore/cli-command.h \
-+		pulsecore/client.h \
-+		pulsecore/cli.h \
-+		pulsecore/cli-text.h \
-+		pulsecore/conf-parser.h \
-+		pulsecore/core-error.h \
-+		pulsecore/core-format.h \
-+		pulsecore/core.h \
-+		pulsecore/core-rtclock.h \
-+		pulsecore/core-scache.h \
-+		pulsecore/core-subscribe.h \
-+		pulsecore/core-util.h \
-+		pulsecore/cpu-arm.h \
-+		pulsecore/cpu.h \
-+		pulsecore/cpu-orc.h \
-+		pulsecore/cpu-x86.h \
-+		pulsecore/creds.h \
-+		pulsecore/database.h \
-+		pulsecore/dbus-shared.h \
-+		pulsecore/dbus-util.h \
-+		pulsecore/device-port.h \
-+		pulsecore/dynarray.h \
-+		pulsecore/endianmacros.h \
-+		pulsecore/esound.h \
-+		pulsecore/fdsem.h \
-+		pulsecore/flist.h \
-+		pulsecore/g711.h \
-+		pulsecore/hashmap.h \
-+		pulsecore/hook-list.h \
-+		pulsecore/i18n.h \
-+		pulsecore/idxset.h \
-+		pulsecore/iochannel.h \
-+		pulsecore/ioline.h \
-+		pulsecore/ipacl.h \
-+		pulsecore/llist.h \
-+		pulsecore/lock-autospawn.h \
-+		pulsecore/log.h \
-+		pulsecore/ltdl-helper.h \
-+		pulsecore/macro.h \
-+		pulsecore/mcalign.h \
-+		pulsecore/mem.h \
-+		pulsecore/memblock.h \
-+		pulsecore/memblockq.h \
-+		pulsecore/memchunk.h \
-+		pulsecore/memtrap.h \
-+		pulsecore/mime-type.h \
-+		pulsecore/mix.h \
-+		pulsecore/modargs.h \
-+		pulsecore/modinfo.h \
-+		pulsecore/module.h \
-+		pulsecore/msgobject.h \
-+		pulsecore/mutex.h \
-+		pulsecore/namereg.h \
-+		pulsecore/native-common.h \
-+		pulsecore/object.h \
-+		pulsecore/once.h \
-+		pulsecore/packet.h \
-+		pulsecore/parseaddr.h \
-+		pulsecore/pdispatch.h \
-+		pulsecore/pid.h \
-+		pulsecore/pipe.h \
-+		pulsecore/play-memblockq.h \
-+		pulsecore/play-memchunk.h \
-+		pulsecore/poll.h \
-+		pulsecore/proplist-util.h \
-+		pulsecore/protocol-cli.h \
-+		pulsecore/protocol-dbus.h \
-+		pulsecore/protocol-esound.h \
-+		pulsecore/protocol-http.h \
-+		pulsecore/protocol-native.h \
-+		pulsecore/protocol-simple.h \
-+		pulsecore/pstream.h \
-+		pulsecore/pstream-util.h \
-+		pulsecore/queue.h \
-+		pulsecore/random.h \
-+		pulsecore/ratelimit.h \
-+		pulsecore/refcnt.h \
-+		pulsecore/remap.h \
-+		pulsecore/resampler.h \
-+		pulsecore/rtkit.h \
-+		pulsecore/rtpoll.h \
-+		pulsecore/sample-util.h \
-+		pulsecore/sconv.h \
-+		pulsecore/sconv-s16be.h \
-+		pulsecore/sconv-s16le.h \
-+		pulsecore/semaphore.h \
-+		pulsecore/shared.h \
-+		pulsecore/shm.h \
-+		pulsecore/sink.h \
-+		pulsecore/sink-input.h \
-+		pulsecore/sioman.h \
-+		pulsecore/sndfile-util.h \
-+		pulsecore/socket-client.h \
-+		pulsecore/socket.h \
-+		pulsecore/socket-server.h \
-+		pulsecore/socket-util.h \
-+		pulsecore/sound-file.h \
-+		pulsecore/sound-file-stream.h \
-+		pulsecore/source.h \
-+		pulsecore/source-output.h \
-+		pulsecore/srbchannel.h \
-+		pulsecore/start-child.h \
-+		pulsecore/strbuf.h \
-+		pulsecore/stream-util.h \
-+		pulsecore/strlist.h \
-+		pulsecore/tagstruct.h \
-+		pulsecore/thread.h \
-+		pulsecore/thread-mq.h \
-+		pulsecore/time-smoother.h \
-+		pulsecore/tokenizer.h \
-+		pulsecore/typedefs.h \
-+		pulsecore/usergroup.h \
-+		pulsecore/x11prop.h \
-+		pulsecore/x11wrap.h
-+
- ###################################
- #         Client library          #
- ###################################
 diff --git a/src/pulsecore/meson.build b/src/pulsecore/meson.build
-index 99a702ea1..6fa847a0a 100644
+index d7f9ef2cf..3aa5d478b 100644
 --- a/src/pulsecore/meson.build
 +++ b/src/pulsecore/meson.build
 @@ -58,42 +58,77 @@ libpulsecore_sources = [
@@ -327,7 +174,7 @@ index 99a702ea1..6fa847a0a 100644
    'thread-mq.h',
    'typedefs.h',
  ]
-@@ -204,6 +246,16 @@ libpulsecore = shared_library('pulsecore-' + pa_version_major_minor,
+@@ -227,6 +269,16 @@ libpulsecore = shared_library('pulsecore-' + pa_version_major_minor,
  
  libpulsecore_dep = declare_dependency(link_with: libpulsecore)
  
@@ -345,5 +192,5 @@ index 99a702ea1..6fa847a0a 100644
  # TODO: understand 'c_args' and 'dependencies' better, maybe we can remove some
  
 -- 
-2.31.1
+2.33.0
 
