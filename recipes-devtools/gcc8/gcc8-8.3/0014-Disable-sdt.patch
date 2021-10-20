@@ -46,14 +46,14 @@ index 134c2c2f156..5111ec0aabb 100755
 +#fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_sys_sdt_h" >&5
  $as_echo "$have_sys_sdt_h" >&6; }
- 
+
 diff --git a/gcc/configure.ac b/gcc/configure.ac
 index 0c3c82e4ff7..3e09af916fd 100644
 --- a/gcc/configure.ac
 +++ b/gcc/configure.ac
 @@ -5943,15 +5943,15 @@ fi
  AC_SUBST([enable_default_ssp])
- 
+
  # Test for <sys/sdt.h> on the target.
 -GCC_TARGET_TEMPLATE([HAVE_SYS_SDT_H])
 -AC_MSG_CHECKING(sys/sdt.h in the target C library)
@@ -73,7 +73,7 @@ index 0c3c82e4ff7..3e09af916fd 100644
 +#            [Define if your target C library provides sys/sdt.h])
 +#fi
 +#AC_MSG_RESULT($have_sys_sdt_h)
- 
+
  # Check if TFmode long double should be used by default or not.
  # Some glibc targets used DFmode long double, but with glibc 2.4
 diff --git a/libstdc++-v3/configure b/libstdc++-v3/configure
@@ -83,18 +83,18 @@ index 5535bfa2b5a..13d793f5059 100755
 @@ -21786,11 +21786,11 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
  ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
  ac_compiler_gnu=$ac_cv_c_compiler_gnu
- 
+
 -  if test $glibcxx_cv_sys_sdt_h = yes; then
 +#  if test $glibcxx_cv_sys_sdt_h = yes; then
- 
+
 -$as_echo "#define HAVE_SYS_SDT_H 1" >>confdefs.h
 +#$as_echo "#define HAVE_SYS_SDT_H 1" >>confdefs.h
- 
+
 -  fi
 +#  fi
    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $glibcxx_cv_sys_sdt_h" >&5
  $as_echo "$glibcxx_cv_sys_sdt_h" >&6; }
- 
+
 diff --git a/libstdc++-v3/configure.ac b/libstdc++-v3/configure.ac
 index 0ef96270c9c..afe55a1b215 100644
 --- a/libstdc++-v3/configure.ac
@@ -105,9 +105,8 @@ index 0ef96270c9c..afe55a1b215 100644
  GLIBCXX_CHECK_SYSCTL_HW_NCPU
 -GLIBCXX_CHECK_SDT_H
 +#GLIBCXX_CHECK_SDT_H
- 
+
  # Check for available headers.
  AC_CHECK_HEADERS([endian.h execinfo.h float.h fp.h ieeefp.h inttypes.h \
--- 
+--
 2.21.0
-

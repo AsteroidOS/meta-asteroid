@@ -16,16 +16,15 @@ index 619e113e2b8..ee8b44f9374 100644
 +++ b/gcc/config/rs6000/linux64.h
 @@ -421,9 +421,9 @@ extern int dot_symbols;
  #endif
- 
+
  #define MUSL_DYNAMIC_LINKER32 \
 -  "/lib/ld-musl-powerpc" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
 +  SYSTEMLIBS_DIR "ld-musl-powerpc" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
  #define MUSL_DYNAMIC_LINKER64 \
 -  "/lib/ld-musl-powerpc64" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
 +  SYSTEMLIBS_DIR "ld-musl-powerpc64" MUSL_DYNAMIC_LINKER_E "%{msoft-float:-sf}.so.1"
- 
+
  #define UCLIBC_DYNAMIC_LINKER32 SYSTEMLIBS_DIR "ld-uClibc.so.0"
  #define UCLIBC_DYNAMIC_LINKER64 SYSTEMLIBS_DIR "ld64-uClibc.so.0"
--- 
+--
 2.21.0
-

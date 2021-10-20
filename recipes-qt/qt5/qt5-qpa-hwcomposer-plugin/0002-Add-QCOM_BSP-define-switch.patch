@@ -18,12 +18,11 @@ index 417f80c..c228926 100644
 @@ -33,6 +33,8 @@ QT += core-private compositor-private gui-private platformsupport-private
  DEFINES += QEGL_EXTRA_DEBUG
  CONFIG += egl qpa/genericunixfontdatabase
- 
+
 +DEFINES += QCOM_BSP
 +
  CONFIG += link_pkgconfig
- 
- # For linking against libQt5PlatformSupport.a
--- 
-1.9.1
 
+ # For linking against libQt5PlatformSupport.a
+--
+1.9.1

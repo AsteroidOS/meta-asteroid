@@ -16,6 +16,5 @@ index b19e077..e3061ff 100644
 -SUBDIRS = src tests
 +SUBDIRS = src
  OTHER_FILES += rpm/*.spec
--- 
+--
 2.30.0
-

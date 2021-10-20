@@ -17,8 +17,7 @@ index 48bed35..6be58c5 100644
          src \
 -        tests \
          tools
- 
- tests.depends = src
--- 
-2.33.0
 
+ tests.depends = src
+--
+2.33.0

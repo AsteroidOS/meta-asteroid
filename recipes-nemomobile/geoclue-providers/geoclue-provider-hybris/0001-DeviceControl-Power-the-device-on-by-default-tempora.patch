@@ -13,13 +13,12 @@ index fe03d27..ce3d578 100644
 +++ b/devicecontrol.cpp
 @@ -17,7 +17,7 @@
  #include <QtDBus/QDBusVariant>
- 
+
  DeviceControl::DeviceControl(QObject *parent)
 -:   QObject(parent), m_powered(false)
 +:   QObject(parent), m_powered(true)
  {
      new DeviceAdaptor(this);
  }
--- 
+--
 2.7.4
-

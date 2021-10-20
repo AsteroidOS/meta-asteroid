@@ -26,6 +26,5 @@ index 0121fba707f..52bdbdb5f9c 100644
  	    dir="$libdir"
  	    absdir="$libdir"
  	  fi
--- 
+--
 2.21.0
-

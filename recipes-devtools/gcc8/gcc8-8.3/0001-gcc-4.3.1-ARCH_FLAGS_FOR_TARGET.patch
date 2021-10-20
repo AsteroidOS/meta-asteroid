@@ -18,7 +18,7 @@ index 0601395512f..8c5b1e9d561 100755
 @@ -7507,7 +7507,7 @@ fi
  # for target_alias and gcc doesn't manage it consistently.
  target_configargs="--cache-file=./config.cache ${target_configargs}"
- 
+
 -FLAGS_FOR_TARGET=
 +FLAGS_FOR_TARGET="$ARCH_FLAGS_FOR_TARGET"
  case " $target_configdirs " in
@@ -31,12 +31,11 @@ index c3433336523..69c31c65ad7 100644
 @@ -3096,7 +3096,7 @@ fi
  # for target_alias and gcc doesn't manage it consistently.
  target_configargs="--cache-file=./config.cache ${target_configargs}"
- 
+
 -FLAGS_FOR_TARGET=
 +FLAGS_FOR_TARGET="$ARCH_FLAGS_FOR_TARGET"
  case " $target_configdirs " in
   *" newlib "*)
    case " $target_configargs " in
--- 
+--
 2.21.0
-

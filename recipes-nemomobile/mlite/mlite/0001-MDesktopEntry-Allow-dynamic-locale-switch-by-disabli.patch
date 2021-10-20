@@ -14,7 +14,7 @@ index 3c976d5..2f25685 100644
 +++ b/src/mdesktopentry.cpp
 @@ -66,7 +66,7 @@ bool GKeyFileWrapper::load(QIODevice &device)
      QByteArray contents = device.readAll();
- 
+
      GError *err = NULL;
 -    if (!g_key_file_load_from_data(m_key_file, contents.constData(), contents.size(), G_KEY_FILE_NONE, &err)) {
 +    if (!g_key_file_load_from_data(m_key_file, contents.constData(), contents.size(), G_KEY_FILE_KEEP_TRANSLATIONS, &err)) {
@@ -22,11 +22,11 @@ index 3c976d5..2f25685 100644
          g_clear_error(&err);
          return false;
 @@ -129,9 +129,10 @@ QString GKeyFileWrapper::localizedValue(const QString &section, const QString &k
- 
+
      QByteArray section_utf8 = section.toUtf8();
      QByteArray key_utf8 = key.toUtf8();
 +    QByteArray locale_utf8 = qgetenv("LANG");
- 
+
      GError *err = NULL;
 -    gchar *value = g_key_file_get_locale_string(m_key_file, section_utf8.constData(), key_utf8.constData(), NULL, &err);
 +    gchar *value = g_key_file_get_locale_string(m_key_file, section_utf8.constData(), key_utf8.constData(), locale_utf8.constData(), &err);
@@ -36,21 +36,20 @@ index 3c976d5..2f25685 100644
 @@ -411,9 +412,6 @@ QString MDesktopEntry::name() const
  {
      Q_D(const MDesktopEntry);
- 
+
 -    if (!d->translatedName.isNull())
 -        return d->translatedName;
 -
      QString name;
- 
+
      if (contains(DesktopEntrySection, LogicalIdKey)) {
 @@ -435,7 +433,6 @@ QString MDesktopEntry::name() const
          name = d->keyFile.localizedValue(DesktopEntrySection, NameKey);
      }
- 
+
 -    d->translatedName = name;
      return name;
  }
- 
--- 
-2.14.3
 
+--
+2.14.3

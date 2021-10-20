@@ -13,18 +13,17 @@ index e0596ae..a2acb91 100644
 +++ b/mkcal.pro
 @@ -1,12 +1,11 @@
  # QMake project file for libmkcal
- 
+
  TEMPLATE = subdirs
 -SUBDIRS = src tests tools
 +SUBDIRS = src tools
- 
+
  # add to Qt 5 also when qmfclient is ported
  #SUBDIRS += plugins
- 
+
 -include(doc/doc.pro)
  # make coverage
  coverage.CONFIG += recursive
  QMAKE_EXTRA_TARGETS += coverage
--- 
+--
 2.30.0
-

@@ -41,7 +41,7 @@ index 7e25942..7c28921 100644
  #include <QDBusAbstractAdaptor>
  #include <QDBusMessage>
 +#include <QDateTime>
- 
+
  #include "../lib/event-io.h"
  #include "../lib/wall-info.h"
 diff --git a/src/server/config.type.cpp b/src/server/config.type.cpp
@@ -271,14 +271,14 @@ index 0d82af6..24cf620 100644
 --- a/src/server/server.pro
 +++ b/src/server/server.pro
 @@ -12,7 +12,7 @@ INCLUDEPATH += ../h
- 
+
  QMAKE_LIBDIR_FLAGS += -L../lib -L../voland
  equals(QT_MAJOR_VERSION, 4): LIBS += -ltimed -ltimed-voland
 -equals(QT_MAJOR_VERSION, 5): LIBS += -ltimed-qt5 -ltimed-voland-qt5
 +equals(QT_MAJOR_VERSION, 5): LIBS += -ltimed-qt5 -ltimed-voland-qt5 -liodata-qt5
- 
+
  IODATA_TYPES = queue.type config.type settings.type customization.type tzdata.type
- 
+
 @@ -72,7 +72,13 @@ SOURCES += \
      ofonomodemmanager.cpp \
      modemwatcher.cpp \
@@ -291,12 +291,12 @@ index 0d82af6..24cf620 100644
 +    settings.type.cpp \
 +    timed-cust-rc.type.cpp \
 +    tzdata.type.cpp
- 
+
  SOURCES += credentials.cpp
  HEADERS += credentials.h
 @@ -87,7 +93,7 @@ SOURCES += notification.cpp
  HEADERS += notification.h
- 
+
  CONFIG += link_pkgconfig
 -PKGCONFIG += libpcrecpp libsystemd-daemon
 +PKGCONFIG += libpcrecpp libsystemd
@@ -491,6 +491,5 @@ index 0000000..4a2e83b
 +#include <iodata-qt5/validator>
 +iodata::validator * tzdata_validator() ;
 +#endif
--- 
+--
 2.1.4
-

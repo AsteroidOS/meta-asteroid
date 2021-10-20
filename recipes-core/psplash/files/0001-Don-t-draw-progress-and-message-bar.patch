@@ -13,19 +13,19 @@ index 1a56629..fbfb823 100644
 +++ b/psplash.c
 @@ -312,7 +312,7 @@ main (int argc, char** argv)
  			 POKY_IMG_RLE_PIXEL_DATA);
- 
+
    /* Draw progress bar border */
 -  psplash_fb_draw_image (fb, 
-+/*  psplash_fb_draw_image (fb, 
++/*  psplash_fb_draw_image (fb,
  			 (fb->width  - BAR_IMG_WIDTH)/2, 
  			 SPLIT_LINE_POS(fb),
  			 BAR_IMG_WIDTH,
 @@ -325,7 +325,7 @@ main (int argc, char** argv)
- 
+
  #ifdef PSPLASH_STARTUP_MSG
    psplash_draw_msg (fb, PSPLASH_STARTUP_MSG);
 -#endif
 +#endif */
- 
+
    /* Scene set so let's flip the buffers. */
    /* The first time we also synchronize the buffers so we can build on an

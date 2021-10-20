@@ -47,16 +47,16 @@ index 02ab336..88b0648 100644
 --- a/include/ChangeLog
 +++ b/include/ChangeLog
 @@ -2,6 +2,11 @@
- 
+
  	* GCC 8.3.0 released.
- 
+
 +2018-12-07  Nick Clifton  <nickc@redhat.com>
 +
 +	* demangle.h (DMGL_NO_RECURSE_LIMIT): Define.
 +	(DEMANGLE_RECURSION_LIMIT): Define
 +
  2018-07-26  Release Manager
- 
+
  	* GCC 8.2.0 released.
 diff --git a/include/demangle.h b/include/demangle.h
 index b8d57cf..9bb8a19 100644
@@ -65,20 +65,20 @@ index b8d57cf..9bb8a19 100644
 @@ -68,6 +68,17 @@ extern "C" {
  /* If none of these are set, use 'current_demangling_style' as the default. */
  #define DMGL_STYLE_MASK (DMGL_AUTO|DMGL_GNU|DMGL_LUCID|DMGL_ARM|DMGL_HP|DMGL_EDG|DMGL_GNU_V3|DMGL_JAVA|DMGL_GNAT|DMGL_DLANG|DMGL_RUST)
- 
+
 +/* Disable a limit on the depth of recursion in mangled strings.
 +   Note if this limit is disabled then stack exhaustion is possible when
 +   demangling pathologically complicated strings.  Bug reports about stack
-+   exhaustion when the option is enabled will be rejected.  */  
-+#define DMGL_NO_RECURSE_LIMIT (1 << 18)	
++   exhaustion when the option is enabled will be rejected.  */
++#define DMGL_NO_RECURSE_LIMIT (1 << 18)
 +
 +/* If DMGL_NO_RECURSE_LIMIT is not enabled, then this is the value used as
 +   the maximum depth of recursion allowed.  It should be enough for any
 +   real-world mangled name.  */
 +#define DEMANGLE_RECURSION_LIMIT 1024
-+  
++
  /* Enumeration of possible demangling styles.
- 
+
     Lucid and ARM styles are still kept logically distinct, even though
 diff --git a/libiberty/ChangeLog b/libiberty/ChangeLog
 index 1dd05da..2f77038 100644
@@ -87,7 +87,7 @@ index 1dd05da..2f77038 100644
 @@ -9,6 +9,29 @@
  	(simple_object_copy_lto_debug_sections): Create file in binary
  	mode.
- 
+
 +2018-12-07  Nick Clifton  <nickc@redhat.com>
 +
 +	PR 87681
@@ -112,7 +112,7 @@ index 1dd05da..2f77038 100644
 +	failure result.
 +
  2018-07-26  Release Manager
- 
+
  	* GCC 8.2.0 released.
 diff --git a/libiberty/cp-demangle.c b/libiberty/cp-demangle.c
 index 3f2a097..c374e46 100644
@@ -124,7 +124,7 @@ index 3f2a097..c374e46 100644
  {
 -  struct demangle_component *ret;
 +  struct demangle_component *ret = NULL;
- 
+
 -  if (! d_check_char (di, 'F'))
 -    return NULL;
 -  if (d_peek_char (di) == 'Y')
@@ -142,7 +142,7 @@ index 3f2a097..c374e46 100644
      }
 -  ret = d_bare_function_type (di, 1);
 -  ret = d_ref_qualifier (di, ret);
- 
+
 -  if (! d_check_char (di, 'E'))
 -    return NULL;
 +  if (d_check_char (di, 'F'))
@@ -155,7 +155,7 @@ index 3f2a097..c374e46 100644
 +	}
 +      ret = d_bare_function_type (di, 1);
 +      ret = d_ref_qualifier (di, ret);
-+      
++
 +      if (! d_check_char (di, 'E'))
 +	ret = NULL;
 +    }
@@ -164,19 +164,19 @@ index 3f2a097..c374e46 100644
 +    di->recursion_level --;
    return ret;
  }
- 
+
 @@ -6188,6 +6202,7 @@ cplus_demangle_init_info (const char *mangled, int options, size_t len,
    di->expansion = 0;
    di->is_expression = 0;
    di->is_conversion = 0;
 +  di->recursion_level = 0;
  }
- 
+
  /* Internal implementation for the demangler.  If MANGLED is a g++ v3 ABI
 @@ -6227,6 +6242,20 @@ d_demangle_callback (const char *mangled, int options,
- 
+
    cplus_demangle_init_info (mangled, options, strlen (mangled), &di);
- 
+
 +  /* PR 87675 - Check for a mangled string that is so long
 +     that we do not have enough stack space to demangle it.  */
 +  if (((options & DMGL_NO_RECURSE_LIMIT) == 0)
@@ -206,7 +206,7 @@ index 51b8a24..d87a830 100644
 +     the current recursion level.  */
 +  unsigned int recursion_level;
  };
- 
+
  /* To avoid running past the ending '\0', don't:
 diff --git a/libiberty/cplus-dem.c b/libiberty/cplus-dem.c
 index 6d58bd8..8b9646f 100644
@@ -218,7 +218,7 @@ index 6d58bd8..8b9646f 100644
    int nproctypes;
 +  unsigned int recursion_level;
  };
- 
+
  #define PRINT_ANSI_QUALIFIERS (work -> options & DMGL_ANSI)
 @@ -1292,12 +1293,14 @@ squangle_mop_up (struct work_stuff *work)
        free ((char *) work -> btypevec);
@@ -234,9 +234,9 @@ index 6d58bd8..8b9646f 100644
 +      work->numk = 0;
      }
  }
- 
+
 @@ -1331,8 +1334,15 @@ work_stuff_copy_to_from (struct work_stuff *to, struct work_stuff *from)
- 
+
    for (i = 0; i < from->numk; i++)
      {
 -      int len = strlen (from->ktypevec[i]) + 1;
@@ -247,13 +247,13 @@ index 6d58bd8..8b9646f 100644
 +	  to->ktypevec[i] = NULL;
 +	  continue;
 +	}
- 
+
 +      len = strlen (from->ktypevec[i]) + 1;
        to->ktypevec[i] = XNEWVEC (char, len);
        memcpy (to->ktypevec[i], from->ktypevec[i], len);
      }
 @@ -1342,8 +1352,15 @@ work_stuff_copy_to_from (struct work_stuff *to, struct work_stuff *from)
- 
+
    for (i = 0; i < from->numb; i++)
      {
 -      int len = strlen (from->btypevec[i]) + 1;
@@ -264,13 +264,13 @@ index 6d58bd8..8b9646f 100644
 +	  to->btypevec[i] = NULL;
 +	  continue;
 +	}
- 
+
 +      len = strlen (from->btypevec[i]) + 1;
        to->btypevec[i] = XNEWVEC (char , len);
        memcpy (to->btypevec[i], from->btypevec[i], len);
      }
 @@ -1401,6 +1418,7 @@ delete_non_B_K_work_stuff (struct work_stuff *work)
- 
+
        free ((char*) work->tmpl_argvec);
        work->tmpl_argvec = NULL;
 +      work->ntmpl_args = 0;
@@ -279,7 +279,7 @@ index 6d58bd8..8b9646f 100644
      {
 @@ -4477,6 +4495,7 @@ remember_Btype (struct work_stuff *work, const char *start,
  }
- 
+
  /* Lose all the info related to B and K type codes. */
 +
  static void
@@ -291,12 +291,12 @@ index 6d58bd8..8b9646f 100644
  }
 +
  /* Forget the remembered types, but not the type vector itself.  */
- 
+
  static void
 @@ -4696,6 +4716,16 @@ demangle_nested_args (struct work_stuff *work, const char **mangled,
    int result;
    int saved_nrepeats;
- 
+
 +  if ((work->options & DMGL_NO_RECURSE_LIMIT) == 0)
 +    {
 +      if (work->recursion_level > DEMANGLE_RECURSION_LIMIT)
@@ -313,13 +313,12 @@ index 6d58bd8..8b9646f 100644
 @@ -4722,6 +4752,9 @@ demangle_nested_args (struct work_stuff *work, const char **mangled,
    --work->forgetting_types;
    work->nrepeats = saved_nrepeats;
- 
+
 +  if ((work->options & DMGL_NO_RECURSE_LIMIT) == 0)
 +    --work->recursion_level;
 +
    return result;
  }
- 
--- 
-2.7.4
 
+--
+2.7.4

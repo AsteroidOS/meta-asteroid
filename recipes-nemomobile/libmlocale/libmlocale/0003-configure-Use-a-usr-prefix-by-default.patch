@@ -19,4 +19,4 @@ index 4ebf56c6..81bded4b 100755
 +M_INSTALL_PREFIX=/usr
  M_INSTALL_SYSCONFDIR=/etc
  M_INSTALL_LIBDIR= # Will be $M_INSTALL_PREFIX/lib unless overriden
- 
+

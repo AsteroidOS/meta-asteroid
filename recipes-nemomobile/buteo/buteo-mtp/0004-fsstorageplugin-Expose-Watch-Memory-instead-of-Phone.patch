@@ -18,13 +18,13 @@ index 218a398..12fc919 100644
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 @@ -50,7 +50,7 @@ LIBS    += -lmeegomtp
  target.path = /usr/lib/mtp
- 
+
  configuration.path = /etc/fsstorage.d
 -configuration.files = phone-memory.xml homedir-blacklist.conf sd-card.xml
 +configuration.files = watch-memory.xml homedir-blacklist.conf
- 
+
  INSTALLS += target configuration
- 
+
 diff --git a/mts/platform/storage/fsstorageplugin/sd-card.xml b/mts/platform/storage/fsstorageplugin/sd-card.xml
 deleted file mode 100644
 index a625537..0000000
@@ -47,6 +47,5 @@ index 32b3b39..3f3df56 100644
 +<storage name="media" path="/home/ceres" description="Watch Memory">
      <blacklist>homedir-blacklist.conf</blacklist>
  </storage>
--- 
+--
 2.11.0
-

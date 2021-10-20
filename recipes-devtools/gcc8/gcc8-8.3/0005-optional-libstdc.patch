@@ -31,7 +31,7 @@ index f591b39be5a..2955fcea867 100644
 @@ -1901,6 +1901,10 @@ nostdinc++
  C++ ObjC++
  Do not search standard system include directories for C++.
- 
+
 +nostdlib++
 +Driver
 +Do not link standard C++ runtime library
@@ -73,11 +73,11 @@ index fb228631a42..310ba8109ed 100644
 +-shared  -shared-libgcc  -symbolic -nostdlib++ @gol
  -T @var{script}  -Wl,@var{option}  -Xlinker @var{option} @gol
  -u @var{symbol}  -z @var{keyword}}
- 
+
 @@ -12359,6 +12362,33 @@ library subroutines.
  constructors are called; @pxref{Collect2,,@code{collect2}, gccint,
  GNU Compiler Collection (GCC) Internals}.)
- 
+
 +@item -nostdlib++
 +@opindex nostdlib++
 +Do not use the standard system C++ runtime libraries when linking.
@@ -119,7 +119,6 @@ index 02b3cd39fc2..8cd27a5dad5 100644
 +    %{!nostdlib++:}\
      %{!nostdlib:%{!nostartfiles:%E}} %{T*}  \n%(post_link) }}}}}}"
  #endif
- 
--- 
-2.21.0
 
+--
+2.21.0

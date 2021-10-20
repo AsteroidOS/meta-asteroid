@@ -19,7 +19,7 @@ index 8cd27a5dad5..d355d65583a 100644
 +++ b/gcc/gcc.c
 @@ -4677,6 +4677,15 @@ set_collect_gcc_options (void)
  		sizeof ("COLLECT_GCC_OPTIONS=") - 1);
- 
+
    first_time = TRUE;
 +#ifdef HAVE_LD_SYSROOT
 +  if (target_system_root_changed && target_system_root)
@@ -33,6 +33,5 @@ index 8cd27a5dad5..d355d65583a 100644
    for (i = 0; (int) i < n_switches; i++)
      {
        const char *const *args;
--- 
+--
 2.21.0
-

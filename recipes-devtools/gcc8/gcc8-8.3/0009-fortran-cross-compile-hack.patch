@@ -20,7 +20,7 @@ index 91fce8fecd0..6747f86eb98 100755
 --- a/libgfortran/configure
 +++ b/libgfortran/configure
 @@ -12883,7 +12883,7 @@ esac
- 
+
  # We need gfortran to compile parts of the library
  #AC_PROG_FC(gfortran)
 -FC="$GFORTRAN"
@@ -33,14 +33,13 @@ index bf6d3634dda..9dbe43cc616 100644
 --- a/libgfortran/configure.ac
 +++ b/libgfortran/configure.ac
 @@ -250,7 +250,7 @@ AC_SUBST(enable_static)
- 
+
  # We need gfortran to compile parts of the library
  #AC_PROG_FC(gfortran)
 -FC="$GFORTRAN"
 +#FC="$GFORTRAN"
  AC_PROG_FC(gfortran)
- 
- # extra LD Flags which are required for targets
--- 
-2.21.0
 
+ # extra LD Flags which are required for targets
+--
+2.21.0

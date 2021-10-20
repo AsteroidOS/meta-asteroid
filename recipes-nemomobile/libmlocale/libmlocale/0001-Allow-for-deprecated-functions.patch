@@ -14,7 +14,7 @@ index 27fa779a..67a8b6d4 100644
 @@ -15,18 +15,6 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) 2010 Nokia
      include($${M_BUILD_TREE}/mkspecs/mlocaleconfig.pri)
  }
- 
+
 -#disable werrors on windows and freemantle (M_OS_MAEMO5 comes from meegotouchconfig.pri)
 -win32 {
 -    } else {

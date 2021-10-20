@@ -18,7 +18,7 @@ index 719e8c8..e4092c1 100644
  # include <glib.h>
 +#include <errno.h>
 +#include <unistd.h>
- 
+
  /* ========================================================================= *
   * Types
 diff --git a/src/usb_moded-sigpipe.h b/src/usb_moded-sigpipe.h
@@ -27,12 +27,11 @@ index fcea271..3e3e3fc 100644
 +++ b/src/usb_moded-sigpipe.h
 @@ -26,6 +26,7 @@
  # define USB_MODED_SIGPIPE_H_
- 
+
  #include <stdbool.h>
 +#include <errno.h>
- 
+
  /* ========================================================================= *
   * Prototypes
--- 
+--
 2.31.1
-

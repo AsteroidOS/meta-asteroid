@@ -35,6 +35,5 @@ index 1367136bfac..71a8275c39f 100644
  	srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`; \
  	for file in $$headers; do \
  	  if [ -f $$file ] ; then \
--- 
+--
 2.21.0
-

@@ -45,7 +45,7 @@ index 5111ec0aabb..3d9dcbdc93d 100755
 +  esac
  done
  tmake_file="${tmake_file_}"
- 
+
 @@ -12152,6 +12162,10 @@ tm_file_list="options.h"
  tm_include_list="options.h insn-constants.h"
  for f in $tm_file; do
@@ -85,7 +85,7 @@ index 3e09af916fd..e09c840b605 100644
 +  esac
  done
  tmake_file="${tmake_file_}"
- 
+
 @@ -1916,6 +1926,10 @@ tm_file_list="options.h"
  tm_include_list="options.h insn-constants.h"
  for f in $tm_file; do
@@ -97,6 +97,5 @@ index 3e09af916fd..e09c840b605 100644
      ./* )
         f=`echo $f | sed 's/^..//'`
         tm_file_list="${tm_file_list} $f"
--- 
+--
 2.21.0
-

@@ -17,9 +17,9 @@ index 3526a4b..9f96637 100644
 --- a/customcontext/context.cpp
 +++ b/customcontext/context.cpp
 @@ -301,7 +301,10 @@ void Context::renderContextInitialized(QSGRenderContext *ctx)
- 
- 
- 
+
+
+
 -#if QT_VERSION >= 0x050800
 +#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 +void RENDER_CONTEXT_CLASS::initialize(const InitParams *inCtx)
@@ -44,6 +44,5 @@ index c6367bf..850ed90 100644
      void initialize(QOpenGLContext *context);
      void renderNextFrame(QSGRenderer *renderer, GLuint fbo);
  #else
--- 
+--
 2.33.0
-

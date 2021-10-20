@@ -15,13 +15,12 @@ index a054d00..f8f304c 100644
 @@ -200,6 +200,9 @@ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode
          emit currentIndexChanged();
      }
- 
+
 +    QDBusInterface systemdInterface("org.nemomobile.lipstick", "/org/nemomobile/lipstick/localemanager", "org.nemomobile.lipstick", QDBusConnection::systemBus());
 +    systemdInterface.call("selectLocale", localeCode);
 +
      if (updateMode == UpdateAndReboot) {
          QDBusInterface dsmeInterface("com.nokia.dsme", "/com/nokia/dsme/request", "com.nokia.dsme.request",
                                       QDBusConnection::systemBus());
--- 
+--
 2.14.3
-

@@ -16,7 +16,7 @@ index 3ceb876..1a053f4 100644
 @@ -169,6 +169,18 @@ static bool ad_replace_data(struct bt_ad *ad, uint8_t type, void *data,
  	return false;
  }
- 
+
 +static size_t local_name_length()
 +{
 +	size_t length = 0;
@@ -35,16 +35,16 @@ index 3ceb876..1a053f4 100644
 @@ -279,6 +291,8 @@ static size_t calculate_length(struct bt_ad *ad)
  {
  	size_t length = 0;
- 
+
 +	length += local_name_length();
 +
  	length += uuid_list_length(ad->service_uuids);
- 
+
  	length += uuid_list_length(ad->solicit_uuids);
 @@ -296,6 +310,21 @@ static size_t calculate_length(struct bt_ad *ad)
  	return length;
  }
- 
+
 +static void serialize_local_name(uint8_t *buf, uint8_t *pos)
 +{
 +	char hostname[8];
@@ -66,9 +66,9 @@ index 3ceb876..1a053f4 100644
 @@ -479,6 +508,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
  	if (!adv_data)
  		return NULL;
- 
+
 +	serialize_local_name(adv_data, &pos);
 +
  	serialize_service_uuids(ad->service_uuids, adv_data, &pos);
- 
+
  	serialize_solicit_uuids(ad->solicit_uuids, adv_data, &pos);

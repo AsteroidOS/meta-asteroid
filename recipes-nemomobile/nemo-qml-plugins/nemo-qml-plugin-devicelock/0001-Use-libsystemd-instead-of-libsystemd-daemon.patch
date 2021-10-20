@@ -18,8 +18,7 @@ index 9cc66f6..88adb94 100644
 -        libsystemd-daemon \
 +        libsystemd \
          mlite5
- 
- INCLUDEPATH += \
--- 
-2.7.4
 
+ INCLUDEPATH += \
+--
+2.7.4

@@ -14,13 +14,12 @@ index 8b28613..15b07f4 100644
 +++ b/configure.ac
 @@ -221,7 +221,7 @@ if test "x$x86" = xyes ; then
  fi
- 
+
  AC_MSG_CHECKING([If we are using hardfp tool chain])
 -case `echo | gcc -v -xc -o - - 2>&1 | grep COLLECT_GCC_OPTIONS | tail -1` in
 +case `echo | $CC -v -xc -o - - 2>&1 | grep COLLECT_GCC_OPTIONS | tail -1` in
       *float-abi=hard*) hardfp=yes; AC_MSG_RESULT([yes]) ;;
       *) hardfp=no; AC_MSG_RESULT([no]) ;;
  esac
--- 
+--
 2.7.4
-

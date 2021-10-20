@@ -14,7 +14,7 @@ index 622eac9..73ccdc8 100644
 +++ b/mdeclarativecache5/mdeclarativecache.cpp
 @@ -61,13 +61,7 @@ void MDeclarativeCachePrivate::populate()
      cachePopulated = true;
-     
+
      static const char *const emptyString = "";
 -    static const QString appNameFormat = "mdeclarativecache_pre_initialized_qapplication-%1";
 -    static QByteArray appName;
@@ -24,9 +24,8 @@ index 622eac9..73ccdc8 100644
 -    // a dbus service with the application's name.
 -    appName = appNameFormat.arg(getpid()).toLatin1();
 +    static QByteArray appName = "mdeclarativecache_pre_initialized_qapplication";
- 
-     // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
-     // arguments are known (in MDeclarativeCachePrivate::qApplication). 
--- 
-2.7.4
 
+     // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
+     // arguments are known (in MDeclarativeCachePrivate::qApplication).
+--
+2.7.4

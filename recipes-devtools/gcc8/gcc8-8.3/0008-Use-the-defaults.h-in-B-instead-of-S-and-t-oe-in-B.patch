@@ -32,7 +32,7 @@ index 20bee0494b1..1367136bfac 100644
 +++ b/gcc/Makefile.in
 @@ -538,7 +538,7 @@ TARGET_SYSTEM_ROOT = @TARGET_SYSTEM_ROOT@
  TARGET_SYSTEM_ROOT_DEFINE = @TARGET_SYSTEM_ROOT_DEFINE@
- 
+
  xmake_file=@xmake_file@
 -tmake_file=@tmake_file@
 +tmake_file=@tmake_file@ ./t-oe
@@ -83,14 +83,13 @@ index 0f75c863c0b..68d8d6613cf 100644
  	    else
  		echo "# include \"$file\"" >> ${output}T
 @@ -106,7 +106,7 @@ esac
- 
+
  # If we postponed including defaults.h, add the #include now.
  if test x"$postpone_defaults_h" = x"yes"; then
 -    echo "# include \"defaults.h\"" >> ${output}T
 +    echo "# include \"./defaults.h\"" >> ${output}T
  fi
- 
- # Add multiple inclusion protection guard, part two.
--- 
-2.21.0
 
+ # Add multiple inclusion protection guard, part two.
+--
+2.21.0

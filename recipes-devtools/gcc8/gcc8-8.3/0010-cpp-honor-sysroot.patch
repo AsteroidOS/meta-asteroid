@@ -49,6 +49,5 @@ index d355d65583a..570cdc00034 100644
    {".s", "@assembler", 0, 0, 0},
    {"@assembler",
     "%{!M:%{!MM:%{!E:%{!S:as %(asm_debug) %(asm_options) %i %A }}}}", 0, 0, 0},
--- 
+--
 2.21.0
-

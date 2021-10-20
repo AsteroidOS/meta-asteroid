@@ -16,14 +16,14 @@ index 7f934f2..8030a7e 100644
 @@ -60,10 +60,12 @@ QSGContext *ContextPlugin::create(const QString &) const
      return instance;
  }
- 
+
 +#if QT_VERSION >= 0x050800
  QSGContextFactoryInterface::Flags ContextPlugin::flags(const QString &key) const
  {
      return 0; // should it be SupportsShaderEffectNode ?
  }
 +#endif
- 
+
  QQuickTextureFactory *ContextPlugin::createTextureFactoryFromImage(const QImage &image)
  {
 diff --git a/customcontext/pluginmain.h b/customcontext/pluginmain.h
@@ -31,15 +31,14 @@ index 518b948..e072388 100644
 --- a/customcontext/pluginmain.h
 +++ b/customcontext/pluginmain.h
 @@ -60,7 +60,9 @@ public:
- 
+
      QStringList keys() const;
      QSGContext *create(const QString &key) const;
 +#if QT_VERSION >= 0x050800
      QSGContextFactoryInterface::Flags flags(const QString &key) const;
 +#endif
      QQuickTextureFactory *createTextureFactoryFromImage(const QImage &image);
- 
-     static CustomContext::Context *instance;
--- 
-2.33.0
 
+     static CustomContext::Context *instance;
+--
+2.33.0

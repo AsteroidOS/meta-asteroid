@@ -62,7 +62,7 @@ index cd0c7fbe961..f6f3aa077c8 100644
 +	  len += MAX ((suffix_len + multi_os_dir_len), multiarch_len);
  	  path = XNEWVEC (char, len);
  	}
- 
+
 @@ -2539,6 +2539,33 @@ for_each_path (const struct path_prefix *paths,
  	  /* Look first in MACHINE/VERSION subdirectory.  */
  	  if (!skip_multi_dir)
@@ -97,6 +97,5 @@ index cd0c7fbe961..f6f3aa077c8 100644
  	      memcpy (path + len, multi_suffix, suffix_len + 1);
  	      ret = callback (path, callback_info);
  	      if (ret)
--- 
+--
 2.21.0
-

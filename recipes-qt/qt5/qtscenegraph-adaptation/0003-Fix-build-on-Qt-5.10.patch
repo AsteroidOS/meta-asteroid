@@ -12,18 +12,17 @@ index 2cda8e5..8b981c9 100644
 --- a/customcontext/customcontext.pro
 +++ b/customcontext/customcontext.pro
 @@ -3,10 +3,10 @@ TARGET=customcontext
- 
+
  CONFIG += plugin
- 
+
 -contains(QT_VERSION, ^5\\.[2-9]\\..*) {
 +equals(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 1) {
      message("Using Qt 5.2 or later")
      CONFIG += customcontext_qt520
 -}
-+} 
- 
++}
+
  QT += gui-private core-private quick-private qml-private
  !customcontext_qt520:{
--- 
+--
 2.33.0
-

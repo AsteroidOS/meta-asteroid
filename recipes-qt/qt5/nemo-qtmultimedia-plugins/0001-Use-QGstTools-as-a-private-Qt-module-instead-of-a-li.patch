@@ -18,18 +18,17 @@ index 6803c26..61954da 100644
 -        qtmultimediaquicktools-private
 +        qtmultimediaquicktools-private \
 +        multimediagsttools-private
- 
+
  CONFIG += plugin hide_symbols link_pkgconfig
- 
+
 @@ -16,8 +17,6 @@ PKGCONFIG +=\
          gstreamer-1.0 \
          nemo-gstreamer-interfaces-1.0
- 
+
 -LIBS += -lqgsttools_p
 -
  # It won't compile without this,
  # the issue is Xlib.h defines Bool as int but  QJsonValue.h has an enum with Bool = 0x1 --> int = 0x1 -> BOOM!
  DEFINES += MESA_EGL_NO_X11_HEADERS
--- 
+--
 2.20.1
-

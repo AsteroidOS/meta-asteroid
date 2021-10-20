@@ -20,7 +20,6 @@ index 20b97f8..0e1191e 100644
 -Libs: -pie -rdynamic -lmdeclarativecache5
 +Libs: -shared -rdynamic -lmdeclarativecache5
  Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I/usr/include/mdeclarativecache5
- 
--- 
-2.30.0
 
+--
+2.30.0

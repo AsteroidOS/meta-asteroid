@@ -15,6 +15,6 @@ index 016139da..9fda0c5c 100644
  TEMPLATE = subdirs
 -SUBDIRS += src plugin tools tests doc
 +SUBDIRS += src plugin tools
- 
+
  plugin.depends = src
  tools.depends = src

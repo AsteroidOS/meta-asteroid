@@ -14,14 +14,14 @@ index f9e9be5a..72bbc596 100644
 --- a/src/homeapplication.cpp
 +++ b/src/homeapplication.cpp
 @@ -119,9 +119,8 @@ HomeApplication::HomeApplication(int &argc, char **argv, const QString &qmlPath)
- 
+
      m_screenshotService = new ScreenshotService(this);
      new ScreenshotServiceAdaptor(m_screenshotService);
 -    QDBusConnection sessionBus = QDBusConnection::sessionBus();
- 
+
 -    registerDBusObject(sessionBus, LIPSTICK_DBUS_SCREENSHOT_PATH, m_screenshotService);
 +    registerDBusObject(systemBus, LIPSTICK_DBUS_SCREENSHOT_PATH, m_screenshotService);
- 
+
      // Setting up the context and engine things
      qmlEngine->rootContext()->setContextProperty("initialSize", QGuiApplication::primaryScreen()->size());
 diff --git a/tools/screenshottool/screenshottool b/tools/screenshottool/screenshottool
@@ -30,7 +30,7 @@ index 64d6b9a9..56fd45a8 100755
 +++ b/tools/screenshottool/screenshottool
 @@ -15,5 +15,5 @@ else
  fi
- 
+
  sleep "${DELAY}"
 -dbus-send --type=method_call --dest=org.nemomobile.lipstick /org/nemomobile/lipstick/screenshot org.nemomobile.lipstick.saveScreenshot "string:${SCREENSHOTPATH}"
 +dbus-send --system --type=method_call --dest=org.nemomobile.lipstick /org/nemomobile/lipstick/screenshot org.nemomobile.lipstick.saveScreenshot "string:${SCREENSHOTPATH}"

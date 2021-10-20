@@ -13,13 +13,12 @@ index 153c496..f339ce1 100644
 +++ b/include/cor/util.hpp
 @@ -2,7 +2,7 @@
  #define _COR_UTIL_HPP_
- 
+
  #include <cor/error.hpp>
 -
 +#include <functional>
  #include <unistd.h>
- 
- #include <vector>
--- 
-2.14.2
 
+ #include <vector>
+--
+2.14.2

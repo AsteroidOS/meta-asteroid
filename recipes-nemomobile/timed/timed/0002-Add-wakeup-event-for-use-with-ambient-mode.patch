@@ -33,19 +33,19 @@ index 7c28921..f7a6491 100644
    void next_bootup_event(int next_boot_event, int next_non_boot_event);
    void alarm_triggers_changed(Maemo::Timed::Event::Triggers);
 +  void wakeup_event();
- 
+
  public slots:
- 
+
 diff --git a/src/server/machine.cpp b/src/server/machine.cpp
 index 6977fb0..dee03cf 100644
 --- a/src/server/machine.cpp
 +++ b/src/server/machine.cpp
 @@ -116,6 +116,7 @@ machine_t::machine_t(const Timed *daemon) : timed(daemon)
    state_armed->open() ;
- 
+
    QObject::connect(state_dlg_wait, SIGNAL(voland_needed()), this, SIGNAL(voland_needed())) ;
 +  QObject::connect(state_dlg_wait, SIGNAL(wakeup_event()), this, SIGNAL(wakeup_event())) ;
- 
+
    QObject::connect(state_dlg_wait, SIGNAL(closed()), state_dlg_requ, SLOT(open())) ;
    QObject::connect(state_dlg_wait, SIGNAL(closed()), state_dlg_user, SLOT(open())) ;
 diff --git a/src/server/machine.h b/src/server/machine.h
@@ -87,7 +87,7 @@ index 02a7d74..f840a74 100644
 +  }
    abstract_gate_state_t::enter(e) ;
  }
- 
+
 diff --git a/src/server/state.h b/src/server/state.h
 index 92046e5..0e84ccb 100644
 --- a/src/server/state.h
@@ -105,7 +105,7 @@ index 1d1179a..aa386d0 100644
 --- a/src/server/timed.cpp
 +++ b/src/server/timed.cpp
 @@ -316,6 +316,7 @@ void Timed::init_create_event_machine()
- 
+
    // Forward signal from am to DBUS via com_nokia_time DBUS adaptor
    QObject::connect(am, SIGNAL(next_bootup_event(int,int)), this, SIGNAL(next_bootup_event(int,int)));
 +  QObject::connect(am, SIGNAL(wakeup_event()), this, SIGNAL(wakeup_event()));
@@ -124,6 +124,5 @@ index e7cb2a7..2bdd62b 100644
    // void settings_changed_1(bool system_time) ;
  public:
    Timed(int ac, char **av) ;
--- 
+--
 2.28.0
-

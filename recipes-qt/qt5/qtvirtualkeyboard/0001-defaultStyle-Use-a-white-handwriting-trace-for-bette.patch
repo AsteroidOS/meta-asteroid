@@ -28,6 +28,5 @@ index fa9c699..90db8e7 100644
              ctx.lineCap = "round"
              ctx.fillStyle = ctx.strokeStyle
          }
--- 
+--
 2.11.0
-
