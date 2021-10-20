@@ -19,7 +19,7 @@ index 4879a9c..fc6a786 100644
  endif
 -SUBDIRS += egl glesv1 glesv2 ui sf input camera vibrator media wifi opencl
 +SUBDIRS += egl glesv1 glesv2 ui sf input camera vibrator media
- 
+
  if HAS_LIBNFC_NXP_HEADERS
  SUBDIRS += libnfc_nxp libnfc_ndef_nxp
 diff --git a/hybris/tests/Makefile.am b/hybris/tests/Makefile.am
@@ -34,13 +34,13 @@ index 242436b..625aa4b 100644
 -	test_opencl \
 -	test_wifi
 +	test_gps
- 
+
  if HAS_ANDROID_4_2_0
  bin_PROGRAMS += test_hwcomposer
 @@ -211,18 +209,3 @@ test_vibrator_LDADD = \
  	$(top_builddir)/hardware/libhardware.la \
  	$(top_builddir)/vibrator/libvibrator.la
- 
+
 -test_wifi_SOURCES = test_wifi.c
 -test_wifi_CFLAGS = \
 -	-I$(top_srcdir)/include \
@@ -56,6 +56,5 @@ index 242436b..625aa4b 100644
 -	$(top_builddir)/common/libhybris-common.la \
 -	$(top_builddir)/opencl/libOpenCL.la
 -
--- 
+--
 2.19.0
-

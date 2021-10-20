@@ -14,7 +14,7 @@ index 2a74720..068b555 100644
 @@ -136,15 +136,6 @@ macro_log_feature(QT_GLIB_SUPPORT "Qt Glib Support"
  # reset flags
  set(CMAKE_REQUIRED_FLAGS "")
- 
+
 -# Find python version >= 2.7
 -set(REQUIRED_PY 2.7)
 -find_package(PythonLibrary ${REQUIRED_PY} REQUIRED)
@@ -27,6 +27,5 @@ index 2a74720..068b555 100644
  # Check for dbus-python
  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import dbus.mainloop.glib"
                  RESULT_VARIABLE PYTHON_DBUS_RESULT)
--- 
+--
 2.7.4
-

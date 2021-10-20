@@ -114,7 +114,7 @@ index e2ebfd34214..fa41e7112e0 100644
 @@ -1537,6 +1537,55 @@
  	* config/arm/neon.md (movv4hf, movv8hf): Refactored to..
  	(mov<mov>): ..this and enable unconditionally.
- 
+
 +2018-11-22  Thomas Preud'homme  <thomas.preudhomme@linaro.org>
 +
 +	* target-insns.def (stack_protect_combined_set): Define new standard
@@ -165,7 +165,7 @@ index e2ebfd34214..fa41e7112e0 100644
 +	legal.
 +
  2018-11-22  Uros Bizjak  <ubizjak@gmail.com>
- 
+
  	Backport from mainline
 diff --git a/gcc/cfgexpand.c b/gcc/cfgexpand.c
 index 8fa392fcd8a..21bdcdaeaa3 100644
@@ -173,7 +173,7 @@ index 8fa392fcd8a..21bdcdaeaa3 100644
 +++ b/gcc/cfgexpand.c
 @@ -6185,6 +6185,23 @@ stack_protect_prologue (void)
    rtx x, y;
- 
+
    x = expand_normal (crtl->stack_protect_guard);
 +
 +  if (targetm.have_stack_protect_combined_set () && guard_decl)
@@ -224,7 +224,7 @@ index 8393f0b87f3..12417de5102 100644
 @@ -7379,21 +7379,34 @@ legitimate_pic_operand_p (rtx x)
    return 1;
  }
- 
+
 -/* Record that the current function needs a PIC register.  Initialize
 -   cfun->machine->pic_reg if we have not already done so.  */
 +/* Record that the current function needs a PIC register.  If PIC_REG is null,
@@ -236,7 +236,7 @@ index 8393f0b87f3..12417de5102 100644
 +   if not already done so (crtl->uses_pic_offset_table is null).  Note that
 +   nonnull PIC_REG is only supported iff COMPUTE_NOW is true and null PIC_REG
 +   is only supported iff COMPUTE_NOW is false.  */
- 
+
  static void
 -require_pic_register (void)
 +require_pic_register (rtx pic_reg, bool compute_now)
@@ -264,18 +264,18 @@ index 8393f0b87f3..12417de5102 100644
 @@ -7409,8 +7422,10 @@ require_pic_register (void)
  	{
  	  rtx_insn *seq, *insn;
- 
+
 +	  if (pic_reg == NULL_RTX)
 +	    pic_reg = gen_reg_rtx (Pmode);
  	  if (!cfun->machine->pic_reg)
 -	    cfun->machine->pic_reg = gen_reg_rtx (Pmode);
 +	    cfun->machine->pic_reg = pic_reg;
- 
+
  	  /* Play games to avoid marking the function as needing pic
  	     if we are being called as part of the cost-estimation
 @@ -7421,11 +7436,12 @@ require_pic_register (void)
  	      start_sequence ();
- 
+
  	      if (TARGET_THUMB1 && arm_pic_register != INVALID_REGNUM
 -		  && arm_pic_register > LAST_LO_REGNUM)
 +		  && arm_pic_register > LAST_LO_REGNUM
@@ -285,7 +285,7 @@ index 8393f0b87f3..12417de5102 100644
  	      else
 -		arm_load_pic_register (0UL);
 +		arm_load_pic_register (0UL, pic_reg);
- 
+
  	      seq = get_insns ();
  	      end_sequence ();
 @@ -7438,16 +7454,33 @@ require_pic_register (void)
@@ -304,7 +304,7 @@ index 8393f0b87f3..12417de5102 100644
  	}
      }
  }
- 
+
 +/* Legitimize PIC load to ORIG into REG.  If REG is NULL, a new pseudo is
 +   created to hold the result of the load.  If not NULL, PIC_REG indicates
 +   which register to use as PIC register, otherwise it is decided by register
@@ -327,23 +327,23 @@ index 8393f0b87f3..12417de5102 100644
      {
 @@ -7480,9 +7513,12 @@ legitimize_pic_address (rtx orig, machine_mode mode, rtx reg)
  	  rtx mem;
- 
+
  	  /* If this function doesn't have a pic register, create one now.  */
 -	  require_pic_register ();
 +	  require_pic_register (pic_reg, compute_now);
 +
 +	  if (pic_reg == NULL_RTX)
 +	    pic_reg = cfun->machine->pic_reg;
- 
+
 -	  pat = gen_calculate_pic_address (reg, cfun->machine->pic_reg, orig);
 +	  pat = gen_calculate_pic_address (reg, pic_reg, orig);
- 
+
  	  /* Make the MEM as close to a constant as possible.  */
  	  mem = SET_SRC (pat);
 @@ -7531,9 +7567,11 @@ legitimize_pic_address (rtx orig, machine_mode mode, rtx reg)
- 
+
        gcc_assert (GET_CODE (XEXP (orig, 0)) == PLUS);
- 
+
 -      base = legitimize_pic_address (XEXP (XEXP (orig, 0), 0), Pmode, reg);
 +      base = legitimize_pic_address (XEXP (XEXP (orig, 0), 0), Pmode, reg,
 +				     pic_reg, compute_now);
@@ -351,24 +351,24 @@ index 8393f0b87f3..12417de5102 100644
 -				       base == reg ? 0 : reg);
 +				       base == reg ? 0 : reg, pic_reg,
 +				       compute_now);
- 
+
        if (CONST_INT_P (offset))
  	{
 @@ -7633,16 +7671,17 @@ static GTY(()) int pic_labelno;
     low register.  */
- 
+
  void
 -arm_load_pic_register (unsigned long saved_regs ATTRIBUTE_UNUSED)
 +arm_load_pic_register (unsigned long saved_regs ATTRIBUTE_UNUSED, rtx pic_reg)
  {
 -  rtx l1, labelno, pic_tmp, pic_rtx, pic_reg;
 +  rtx l1, labelno, pic_tmp, pic_rtx;
- 
+
    if (crtl->uses_pic_offset_table == 0 || TARGET_SINGLE_PIC_BASE)
      return;
- 
+
    gcc_assert (flag_pic);
- 
+
 -  pic_reg = cfun->machine->pic_reg;
 +  if (pic_reg == NULL_RTX)
 +    pic_reg = cfun->machine->pic_reg;
@@ -382,7 +382,7 @@ index 8393f0b87f3..12417de5102 100644
 -      rtx new_x = legitimize_pic_address (orig_x, mode, NULL_RTX);
 +      rtx new_x = legitimize_pic_address (orig_x, mode, NULL_RTX, NULL_RTX,
 +					  false /*compute_now*/);
- 
+
        if (new_x != orig_x)
  	x = new_x;
 @@ -8786,7 +8826,8 @@ thumb_legitimize_address (rtx x, rtx orig_x, machine_mode mode)
@@ -392,7 +392,7 @@ index 8393f0b87f3..12417de5102 100644
 -      rtx new_x = legitimize_pic_address (orig_x, mode, NULL_RTX);
 +      rtx new_x = legitimize_pic_address (orig_x, mode, NULL_RTX, NULL_RTX,
 +					  false /*compute_now*/);
- 
+
        if (new_x != orig_x)
  	x = new_x;
 @@ -18074,7 +18115,7 @@ arm_emit_call_insn (rtx pat, rtx addr, bool sibcall)
@@ -403,7 +403,7 @@ index 8393f0b87f3..12417de5102 100644
 +      require_pic_register (NULL_RTX, false /*compute_now*/);
        use_reg (&CALL_INSN_FUNCTION_USAGE (insn), cfun->machine->pic_reg);
      }
- 
+
 @@ -22006,7 +22047,7 @@ arm_expand_prologue (void)
        mask &= THUMB2_WORK_REGS;
        if (!IS_NESTED (func_type))
@@ -411,7 +411,7 @@ index 8393f0b87f3..12417de5102 100644
 -      arm_load_pic_register (mask);
 +      arm_load_pic_register (mask, NULL_RTX);
      }
- 
+
    /* If we are profiling, make sure no instructions are scheduled before
 @@ -25237,7 +25278,7 @@ thumb1_expand_prologue (void)
    /* Load the pic register before setting the frame pointer,
@@ -419,7 +419,7 @@ index 8393f0b87f3..12417de5102 100644
    if (flag_pic && arm_pic_register != INVALID_REGNUM)
 -    arm_load_pic_register (live_regs_mask);
 +    arm_load_pic_register (live_regs_mask, NULL_RTX);
- 
+
    if (!frame_pointer_needed && CALLER_INTERWORKING_SLOT_SIZE > 0)
      emit_move_insn (gen_rtx_REG (Pmode, ARM_HARD_FRAME_POINTER_REGNUM),
 diff --git a/gcc/config/arm/arm.md b/gcc/config/arm/arm.md
@@ -444,11 +444,11 @@ index c8dc9474b1b..f6196e93168 100644
 +    arm_load_pic_register (1UL << 3, NULL_RTX);
    DONE;
  }")
- 
+
 @@ -8634,6 +8635,164 @@
     (set_attr "conds" "clob")]
  )
- 
+
 +;; Named patterns for stack smashing protection.
 +(define_expand "stack_protect_combined_set"
 +  [(parallel
@@ -617,7 +617,7 @@ index 7e198f9bce4..69718ee9c7a 100644
 @@ -31,6 +31,23 @@
  	      || REGNO_REG_CLASS (REGNO (op)) != NO_REGS));
  })
- 
+
 +; Predicate for stack protector guard's address in
 +; stack_protect_combined_set_insn and stack_protect_combined_test_insn patterns
 +(define_predicate "guard_addr_operand"
@@ -672,7 +672,7 @@ index 19416736ef9..8f9dbcb08dc 100644
 +  UNSPEC_SP_TEST	; Represent the testing of stack protector's canary
 +			; against the guard.
  ])
- 
+
  (define_c_enum "unspec" [
 diff --git a/gcc/doc/md.texi b/gcc/doc/md.texi
 index 295fc1f1143..895309b2f3c 100644
@@ -681,7 +681,7 @@ index 295fc1f1143..895309b2f3c 100644
 @@ -7450,22 +7450,61 @@ builtins.
  The get/set patterns have a single output/input operand respectively,
  with @var{mode} intended to be @code{Pmode}.
- 
+
 +@cindex @code{stack_protect_combined_set} instruction pattern
 +@item @samp{stack_protect_combined_set}
 +This pattern, if defined, moves a @code{ptr_mode} value from an address
@@ -715,9 +715,9 @@ index 295fc1f1143..895309b2f3c 100644
 +Note: on targets where the addressing modes do not allow to load
 +directly from stack guard address, the address is expanded in a standard
 +way first which could cause some spills.
- 
+
  If this pattern is not defined, then a plain move pattern is generated.
- 
+
 +@cindex @code{stack_protect_combined_test} instruction pattern
 +@item @samp{stack_protect_combined_test}
 +This pattern, if defined, compares a @code{ptr_mode} value from an
@@ -745,7 +745,7 @@ index 295fc1f1143..895309b2f3c 100644
 +valid memory location in operand 1 with the memory in operand 0 without
 +leaving the value in a register afterward and branches to operand 2 if
 +the values were equal.
- 
+
  If this pattern is not defined, then a plain compare pattern and
  conditional branch pattern is used.
 diff --git a/gcc/function.c b/gcc/function.c
@@ -758,7 +758,7 @@ index 85a5d9f43f7..69523c1d723 100644
    rtx x, y;
 -  rtx_insn *seq;
 +  rtx_insn *seq = NULL;
- 
+
    x = expand_normal (crtl->stack_protect_guard);
 -  if (guard_decl)
 -    y = expand_normal (guard_decl);
@@ -786,7 +786,7 @@ index 85a5d9f43f7..69523c1d723 100644
 +      if (targetm.have_stack_protect_test ())
 +	seq = targetm.gen_stack_protect_test (x, y, label);
 +    }
- 
+
 -  /* Allow the target to compare Y with X without leaking either into
 -     a register.  */
 -  if (targetm.have_stack_protect_test ()
@@ -809,5 +809,5 @@ index 9a552c3d11c..d39889b3522 100644
  DEF_TARGET_INSN (stack_protect_test, (rtx x0, rtx x1, rtx x2))
  DEF_TARGET_INSN (store_multiple, (rtx x0, rtx x1, rtx x2))
  DEF_TARGET_INSN (tablejump, (rtx x0, rtx x1))
--- 
+--
 2.21.0

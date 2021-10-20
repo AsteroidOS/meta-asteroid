@@ -16,9 +16,8 @@ index 8e98800..fa57072 100644
  #include <string.h>
  #include <stdlib.h>
 +#include <sys/uio.h>
- 
- static GSList* connections = 0;
- 
--- 
-2.14.2
 
+ static GSList* connections = 0;
+
+--
+2.14.2

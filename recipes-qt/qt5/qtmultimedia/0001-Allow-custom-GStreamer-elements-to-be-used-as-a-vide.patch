@@ -117,13 +117,13 @@ index cfebe977..8b815c33 100644
 --- a/src/multimedia/controls/controls.pri
 +++ b/src/multimedia/controls/controls.pri
 @@ -42,7 +42,8 @@ PUBLIC_HEADERS += \
- 
+
  PRIVATE_HEADERS += \
      controls/qmediaplaylistcontrol_p.h \
 -    controls/qmediaplaylistsourcecontrol_p.h
 +    controls/qmediaplaylistsourcecontrol_p.h \
 +    controls/qgstreamerelementcontrol_p.h
- 
+
  SOURCES += \
      controls/qcameracapturebufferformatcontrol.cpp \
 @@ -82,5 +83,6 @@ SOURCES += \
@@ -189,7 +189,7 @@ index a68ecfdb..81ef4984 100644
  #include <private/qgstreamervideorenderer_p.h>
 +#include <private/qgstreamervideosinkcontrol_p.h>
  #include <private/qmediaserviceprovider_p.h>
- 
+
  #include <QtCore/qdebug.h>
 @@ -153,6 +154,8 @@ QMediaControl *CameraBinService::requestControl(const char *name)
      if (!m_videoOutput) {
@@ -209,7 +209,7 @@ index 4bf4a0a5..1a4d294a 100644
  #include <private/qgstreamervideowindow_p.h>
  #include <private/qgstreamervideorenderer_p.h>
 +#include <private/qgstreamervideosinkcontrol_p.h>
- 
+
  #include "qgstreamerstreamscontrol.h"
  #include <private/qgstreameraudioprobecontrol_p.h>
 @@ -137,6 +138,8 @@ QMediaControl *QGstreamerPlayerService::requestControl(const char *name)
@@ -221,6 +221,5 @@ index 4bf4a0a5..1a4d294a 100644
          else if (qstrcmp(name, QVideoWindowControl_iid) == 0)
              m_videoOutput = m_videoWindow;
  #if defined(HAVE_WIDGETS)
--- 
+--
 2.30.0
-

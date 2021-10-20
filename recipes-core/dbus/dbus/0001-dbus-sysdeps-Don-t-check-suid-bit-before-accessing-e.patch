@@ -21,7 +21,6 @@ index 8b986d5..348acbd 100644
 +//    return NULL;
    return getenv (varname);
  }
- 
--- 
-2.7.4
 
+--
+2.7.4

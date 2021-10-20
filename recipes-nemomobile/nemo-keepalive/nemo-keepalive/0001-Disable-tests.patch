@@ -17,9 +17,8 @@ index 2ae9efe..55fc1ac 100644
  SUBDIRS += examples/displayblanking
 -SUBDIRS += tests
 +#SUBDIRS += tests
- 
+
  examples.files = examples/qml/*.qml
  examples.path = $$[QT_INSTALL_EXAMPLES]/keepalive
--- 
+--
 2.30.0
-

@@ -17,9 +17,8 @@ index 2a74720..6d842e7 100644
  # Add an option for building tests
 -option(ENABLE_TESTS "Enable compilation of automated tests" TRUE)
 +option(ENABLE_TESTS "Enable compilation of automated tests" FALSE)
- 
+
  # The doxygen macro requires Qt to have been looked up to enable crosslinking
  include(Doxygen)
--- 
+--
 2.7.4
-

@@ -30,9 +30,9 @@ index 8c5b1e9d561..2d1fc6b94d9 100755
 --- a/configure
 +++ b/configure
 @@ -6768,6 +6768,38 @@ fi
- 
- 
- 
+
+
+
 +# During gcc bootstrap, if we use some random cc for stage1 then CFLAGS
 +# might be empty or "-g".  We don't require a C++ compiler, so CXXFLAGS
 +# might also be empty (or "-g", if a non-GCC C++ compiler is in the path).
@@ -68,6 +68,5 @@ index 8c5b1e9d561..2d1fc6b94d9 100755
  # Handle --with-headers=XXX.  If the value is not "yes", the contents of
  # the named directory are copied to $(tooldir)/sys-include.
  if test x"${with_headers}" != x && test x"${with_headers}" != xno ; then
--- 
+--
 2.21.0
-

@@ -17,16 +17,15 @@ index 85b0b11..ed88304 100644
  TEMPLATE = subdirs
 -SUBDIRS += src declarative tests
 +SUBDIRS += src declarative
- 
+
  # No need to build this, but if you want then 'qmake EXAMPLE=1 && make'
  count(EXAMPLE, 1) {
      SUBDIRS += example
  }
- 
+
 -include(doc/doc.pri)
 -
  # adds 'coverage' make target
  include(coverage.pri)
--- 
+--
 2.30.0
-

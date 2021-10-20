@@ -26,12 +26,12 @@ index 6ecb66b4365..634cce3c2a9 100644
 @@ -37,8 +37,8 @@ libiberty = $(if $(wildcard $(libiberty_noasan)),$(Wc)$(libiberty_noasan), \
  	    $(Wc)$(libiberty_normal)))
  libiberty_dep = $(patsubst $(Wc)%,%,$(libiberty))
- 
+
 -plugindir = $(libdir)/gcc/$(target_noncanonical)/$(gcc_version)/plugin
 -cc1libdir = $(libdir)/$(libsuffix)
 +cc1libdir = $(libexecdir)/gcc/$(target_noncanonical)/$(gcc_version)
 +plugindir = $(cc1libdir)
- 
+
  if ENABLE_PLUGIN
  plugin_LTLIBRARIES = libcc1plugin.la libcp1plugin.la
 diff --git a/libcc1/Makefile.in b/libcc1/Makefile.in
@@ -40,7 +40,7 @@ index 47be10025ad..8d5481d87bd 100644
 +++ b/libcc1/Makefile.in
 @@ -303,8 +303,8 @@ libiberty = $(if $(wildcard $(libiberty_noasan)),$(Wc)$(libiberty_noasan), \
  	    $(Wc)$(libiberty_normal)))
- 
+
  libiberty_dep = $(patsubst $(Wc)%,%,$(libiberty))
 -plugindir = $(libdir)/gcc/$(target_noncanonical)/$(gcc_version)/plugin
 -cc1libdir = $(libdir)/$(libsuffix)
@@ -49,6 +49,5 @@ index 47be10025ad..8d5481d87bd 100644
  @ENABLE_PLUGIN_TRUE@plugin_LTLIBRARIES = libcc1plugin.la libcp1plugin.la
  @ENABLE_PLUGIN_TRUE@cc1lib_LTLIBRARIES = libcc1.la
  shared_source = callbacks.cc callbacks.hh connection.cc connection.hh \
--- 
+--
 2.21.0
-

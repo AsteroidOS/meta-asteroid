@@ -48,6 +48,5 @@ index 38774f542a6..b426d4f9350 100644
  	CFLAGS="$(CFLAGS_FOR_BUILD)"; export CFLAGS; \
  	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
  	CXX="$(CXX_FOR_BUILD)"; export CXX; \
--- 
+--
 2.21.0
-

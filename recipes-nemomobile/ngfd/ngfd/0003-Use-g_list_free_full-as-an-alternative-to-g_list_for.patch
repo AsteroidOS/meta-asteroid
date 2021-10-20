@@ -17,19 +17,19 @@ index ba2e62c..a647589 100644
 @@ -322,10 +322,7 @@ n_core_free (NCore *core)
      if (!core->shutdown_done)
          n_core_shutdown (core);
- 
+
 -    if (core->sink_order) {
 -        g_list_foreach (core->sink_order, (GFunc) g_free, NULL);
 -        g_list_free (core->sink_order);
 -    }
 +    g_list_free_full (core->sink_order, g_free);
- 
+
      g_hash_table_destroy (core->key_types);
- 
+
 @@ -531,17 +528,11 @@ n_core_shutdown (NCore *core)
          core->plugins = NULL;
      }
- 
+
 -    if (core->required_plugins) {
 -        g_list_foreach (core->required_plugins, (GFunc) g_free, NULL);
 -        g_list_free (core->required_plugins);
@@ -37,7 +37,7 @@ index ba2e62c..a647589 100644
 -    }
 +    g_list_free_full (core->required_plugins, g_free);
 +    core->required_plugins = NULL;
- 
+
 -    if (core->optional_plugins) {
 -        g_list_foreach (core->optional_plugins, (GFunc) g_free, NULL);
 -        g_list_free (core->optional_plugins);
@@ -45,7 +45,7 @@ index ba2e62c..a647589 100644
 -    }
 +    g_list_free_full (core->optional_plugins, g_free);
 +    core->optional_plugins = NULL;
- 
+
      core->shutdown_done = TRUE;
  }
 diff --git a/src/plugins/profile/plugin.c b/src/plugins/profile/plugin.c
@@ -59,7 +59,7 @@ index 4b60dfe..b4ee4e0 100644
 -    g_list_foreach       (request_keys, (GFunc) g_free, NULL);
 -    g_list_free          (request_keys);
 +    g_list_free_full     (request_keys, g_free);
- 
+
      (void) plugin;
  }
 diff --git a/src/plugins/transform/plugin.c b/src/plugins/transform/plugin.c
@@ -69,7 +69,7 @@ index df01d71..e3df2ce 100644
 @@ -233,11 +233,8 @@ N_PLUGIN_UNLOAD (plugin)
  {
      (void) plugin;
- 
+
 -    if (transform_allowed_keys) {
 -        g_list_foreach (transform_allowed_keys, (GFunc) g_free, NULL);
 -        g_list_free (transform_allowed_keys);
@@ -77,9 +77,8 @@ index df01d71..e3df2ce 100644
 -    }
 +    g_list_free_full (transform_allowed_keys, g_free);
 +    transform_allowed_keys = NULL;
- 
+
      g_hash_table_destroy (transform_key_map);
      transform_key_map = NULL;
--- 
+--
 2.19.1
-

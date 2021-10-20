@@ -28,8 +28,7 @@ index f952a4e01..7c611b621 100644
 -DEPENDPATH += . tests versit klibport kdedate
 +DEPENDPATH += . versit klibport kdedate
  INCLUDEPATH += . versit klibport kdedate
- 
- VERSION += 4.10.2
--- 
-2.30.0
 
+ VERSION += 4.10.2
+--
+2.30.0

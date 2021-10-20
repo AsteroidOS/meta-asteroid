@@ -14,11 +14,11 @@ index 275f426..6e66f89 100755
 +++ b/init/systemd/buteo-mtp
 @@ -1,7 +1,6 @@
  #!/bin/sh
- 
+
 -DEF_UID=$(grep "^UID_MIN" /etc/login.defs |  tr -s " " | cut -d " " -f2)
 -DEVICEUSER=$(getent passwd $DEF_UID | sed 's/:.*//')
 +DEVICEUSER=ceres
- 
+
  case $1 in
      "start")
 diff --git a/mts/platform/storage/fsstorageplugin/phone-memory.xml b/mts/platform/storage/fsstorageplugin/phone-memory.xml
@@ -31,6 +31,5 @@ index 1bd73fb..32b3b39 100644
 +<storage name="media" path="/home/ceres" description="Phone Memory">
      <blacklist>homedir-blacklist.conf</blacklist>
  </storage>
--- 
+--
 2.10.1
-

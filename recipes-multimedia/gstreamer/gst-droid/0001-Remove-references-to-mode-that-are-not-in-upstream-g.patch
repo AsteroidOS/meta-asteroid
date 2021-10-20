@@ -23,7 +23,7 @@ index 8c737b3..28d5263 100644
 -  {GST_PHOTOGRAPHY_SCENE_MODE_HDR, "hdr"}
 +  {GST_PHOTOGRAPHY_SCENE_MODE_BARCODE, "barcode"}
  };
- 
+
  struct DataEntry ColourToneValues[] = {
 @@ -179,10 +175,7 @@ struct DataEntry ColourToneValues[] = {
    {GST_PHOTOGRAPHY_COLOR_TONE_MODE_POSTERIZE, "posterize"},
@@ -35,8 +35,7 @@ index 8c737b3..28d5263 100644
 -  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_NEON, "neon"}
 +  {GST_PHOTOGRAPHY_COLOR_TONE_MODE_AQUA, "aqua"}
  };
- 
- struct DataEntry FlickerValues[] = {
--- 
-2.20.1
 
+ struct DataEntry FlickerValues[] = {
+--
+2.20.1

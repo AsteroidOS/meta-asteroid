@@ -15,9 +15,8 @@ index 6c5cd94..e7bc34a 100644
  ACLOCAL_AMFLAGS = -I m4
 -SUBDIRS = $(NGF_LIBRARY_NAME) examples tests
 +SUBDIRS = $(NGF_LIBRARY_NAME) examples
- 
+
  pkgconfigdir = $(libdir)/pkgconfig
  pkgconfig_DATA = libngf0.pc
--- 
+--
 2.30.0
-

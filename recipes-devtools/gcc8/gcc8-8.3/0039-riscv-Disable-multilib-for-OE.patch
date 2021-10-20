@@ -22,6 +22,5 @@ index 216d2776a18..e4d817621fc 100644
 +MULTILIB_DIRNAMES := . .
 +#MULTILIB_OSDIRNAMES := $(patsubst lib%,../lib%,$(MULTILIB_DIRNAMES))
 +MULTILIB_OSDIRNAMES := ../$(shell basename $(base_libdir)) ../$(shell basename $(base_libdir))
--- 
+--
 2.21.0
-

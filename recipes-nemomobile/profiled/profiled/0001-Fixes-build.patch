@@ -14,10 +14,10 @@ index feac54a..dd989b1 100644
 @@ -57,17 +57,17 @@ TEMPLATE_COPY = sed\
  # Global Flags
  # ----------------------------------------------------------------------------
- 
+
 -CPPFLAGS += -D_GNU_SOURCE
 +override CPPFLAGS += -D_GNU_SOURCE
- 
+
 -CFLAGS   += -Wall
 -CFLAGS   += -Wmissing-prototypes
 -CFLAGS   += -Wunused-result
@@ -32,30 +32,30 @@ index feac54a..dd989b1 100644
 +override CFLAGS   += -std=c99
 +override CFLAGS   += -Os
 +override CFLAGS   += -g
- 
+
 -LDFLAGS  += -g
 +override LDFLAGS  += -g
- 
+
  LDLIBS   += -Wl,--as-needed
- 
+
 @@ -80,26 +80,26 @@ PKG_LDLIBS   := $(shell pkg-config --libs   $(PKG_NAMES))
  PKG_CPPFLAGS := $(filter -D%,$(PKG_CFLAGS)) $(filter -I%,$(PKG_CFLAGS))
  PKG_CFLAGS   := $(filter-out -I%, $(filter-out -D%, $(PKG_CFLAGS)))
- 
+
 -CPPFLAGS += $(PKG_CPPFLAGS)
 -CFLAGS   += $(PKG_CFLAGS)
 +override CPPFLAGS += $(PKG_CPPFLAGS)
 +override CFLAGS   += $(PKG_CFLAGS)
  LDLIBS   += $(PKG_LDLIBS) -lrt
- 
+
  ifeq ($(USE_SYSTEM_BUS),y)
 -CPPFLAGS += -DUSE_SYSTEM_BUS
 +override CPPFLAGS += -DUSE_SYSTEM_BUS
  endif
- 
+
 -CPPFLAGS += -D LOGGING_ENABLED # any logging at all?
 +override CPPFLAGS += -D LOGGING_ENABLED # any logging at all?
- 
+
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=7 # debug
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=6 # info
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=5 # notice
@@ -65,57 +65,56 @@ index feac54a..dd989b1 100644
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=2 # crit
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=1 # alert
  ## QUARANTINE CPPFLAGS += -D LOGGING_LEVEL=0 # emerg
- 
+
 -CPPFLAGS += -D LOGGING_CHECK1ST# level check before args eval
 +override CPPFLAGS += -D LOGGING_CHECK1ST# level check before args eval
  ## QUARANTINE CPPFLAGS += -D LOGGING_EXTRA   # promote debug to warnings
  ## QUARANTINE CPPFLAGS += -D LOGGING_FNCALLS # calltree via ENTER/LEAVE
- 
+
 @@ -138,7 +138,7 @@ debclean:: distclean
  mostlyclean::
  	$(RM) *.o *~
- 
+
 -install:: $(addprefix install-,profiled profileclient libprofile libprofile-dev libprofile-doc)
 +install:: $(addprefix install-,profiled profileclient libprofile libprofile-dev)
- 
+
  doxygen.executed:
  	doxygen
 @@ -198,7 +198,7 @@ install-%-rfs-scripts:
  % : %.o
  	$(CC) -o $@ $^ $(LDFLAGS) $(LDLIBS)
- 
+
 -%$(SO): LDFLAGS += -shared -Wl,-soname,$@
 +%$(SO): override LDFLAGS += -shared -Wl,-soname,$@
- 
+
  %$(SO):
  	$(CC) -o $@  $^ $(LDFLAGS) $(LDLIBS)
 @@ -206,8 +206,8 @@ install-%-rfs-scripts:
  %.a:
  	$(AR) r $@ $^
- 
+
 -%.pic.o : CFLAGS += -fPIC
 -%.pic.o : CFLAGS += -fvisibility=hidden
 +%.pic.o : override CFLAGS += -fPIC
 +%.pic.o : override CFLAGS += -fvisibility=hidden
- 
+
  %.pic.o : %.c
  	@echo "Compile Dynamic: $<"
 @@ -289,13 +289,13 @@ libprofile.a : $(libprofile_obj)
  profileclient_src = profileclient.c
  profileclient_obj = $(profileclient_src:.c=.o)
- 
+
 -#profileclient : CFLAGS += -Wno-missing-prototypes
 +#profileclient : override CFLAGS += -Wno-missing-prototypes
  profileclient : $(profileclient_obj) libprofile$(SO)
- 
+
  profileclient.cflow : $(profileclient_src) $(libprofile_src)
- 
+
  # special case: no warnings from using deprecated functions
 -profileclient.o: CFLAGS += -Wno-deprecated-declarations
 +profileclient.o: override CFLAGS += -Wno-deprecated-declarations
- 
+
  # ----------------------------------------------------------------------------
  # profile-tracker  -- debug stuff
--- 
+--
 2.6.1
-

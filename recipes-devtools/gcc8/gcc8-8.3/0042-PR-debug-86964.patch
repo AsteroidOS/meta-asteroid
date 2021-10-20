@@ -31,7 +31,7 @@ index 2075480ca2b..cdce539ac6f 100644
 +	(prune_unused_types): Call premark_used_variables.
 +
  2019-02-22  Release Manager
- 
+
  	* GCC 8.3.0 released.
 diff --git a/gcc/dwarf2out.c b/gcc/dwarf2out.c
 index ae8bdee9981..b9a624e1ac7 100644
@@ -40,7 +40,7 @@ index ae8bdee9981..b9a624e1ac7 100644
 @@ -22658,6 +22658,21 @@ premark_types_used_by_global_vars (void)
        ->traverse<void *, premark_types_used_by_global_vars_helper> (NULL);
  }
- 
+
 +/* Mark all variables used by the symtab as perennial.  */
 +
 +static void
@@ -58,11 +58,11 @@ index ae8bdee9981..b9a624e1ac7 100644
 +
  /* Generate a DW_TAG_call_site DIE in function DECL under SUBR_DIE
     for CA_LOC call arg loc node.  */
- 
+
 @@ -29264,6 +29279,19 @@ prune_unused_types_walk (dw_die_ref die)
- 
+
        return;
- 
+
 +    case DW_TAG_variable:
 +      if (flag_debug_only_used_symbols)
 +	{
@@ -82,7 +82,7 @@ index ae8bdee9981..b9a624e1ac7 100644
 @@ -29390,6 +29418,10 @@ prune_unused_types (void)
    /* Mark types that are used in global variables.  */
    premark_types_used_by_global_vars ();
- 
+
 +  /* Mark variables used in the symtab.  */
 +  if (flag_debug_only_used_symbols)
 +    premark_used_variables ();
@@ -90,5 +90,5 @@ index ae8bdee9981..b9a624e1ac7 100644
    /* Set the mark on nodes that are actually used.  */
    prune_unused_types_walk (comp_unit_die ());
    for (node = limbo_die_list; node; node = node->next)
--- 
+--
 2.21.0

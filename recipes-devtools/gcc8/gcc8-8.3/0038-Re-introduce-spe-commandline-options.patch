@@ -20,7 +20,7 @@ index ace8a477550..d6a8f825d88 100644
 @@ -365,6 +365,18 @@ mdebug=
  Target RejectNegative Joined
  -mdebug=	Enable debug output.
- 
+
 +mspe
 +Target Var(rs6000_spe) Save
 +Generate SPE SIMD instructions on E500.
@@ -36,6 +36,5 @@ index ace8a477550..d6a8f825d88 100644
  mabi=altivec
  Target RejectNegative Var(rs6000_altivec_abi) Save
  Use the AltiVec ABI extensions.
--- 
+--
 2.21.0
-

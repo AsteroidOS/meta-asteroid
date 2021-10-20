@@ -14,9 +14,9 @@ index 1177ab3..7ba2f54 100644
            libmediaoverridesqt \
 -          resourceqt-client   \
            tests
- 
+
  tests.depends = libdbus-qeventloop libresourceqt
 -resourceqt-client.depends = libdbus-qeventloop libresourceqt
- 
- 
+
+
  dist.commands   = ./makedist.sh

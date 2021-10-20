@@ -15,9 +15,9 @@ index d71d415e..06797109 100644
 @@ -28,7 +28,7 @@
  #include "lipstickqmlpath.h"
  #include "bluetoothagent.h"
- 
+
 -#define AGENT_CAPABILITY        "KeyboardDisplay"
 +#define AGENT_CAPABILITY        "DisplayYesNo"
- 
+
  BluetoothAgent::BluetoothAgent(QObject *parent) : QObject(parent), window(0)
  {

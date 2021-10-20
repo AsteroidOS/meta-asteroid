@@ -34,9 +34,9 @@ index 765dd08..c5051e5 100644
 --- a/mts/mts.pro
 +++ b/mts/mts.pro
 @@ -14,6 +14,8 @@ equals(QT_MAJOR_VERSION, 5): PKGCONFIG += Qt5SystemInfo buteosyncfw5
- 
+
  #QMAKE_CXXFLAGS += -O0 -Werror
- 
+
 +LIBS += -lcontextkit-statefs-qt5
 +
  TEMPLATE = lib
@@ -52,9 +52,9 @@ index baf8c67..29e777a 100644
  equals(QT_MAJOR_VERSION, 4): PKGCONFIG += buteosyncfw
 -equals(QT_MAJOR_VERSION, 5): PKGCONFIG += buteosyncfw5
 +equals(QT_MAJOR_VERSION, 5): PKGCONFIG += buteosyncfw5 contextsubscriber-1.0
- 
+
  SOURCES += service.cpp
- 
+
 diff --git a/service/start-mtp.sh b/service/start-mtp.sh
 index c20842c..f4b151a 100755
 --- a/service/start-mtp.sh
@@ -62,9 +62,8 @@ index c20842c..f4b151a 100755
 @@ -1,4 +1,4 @@
 -#!/bin/bash
 +#!/bin/sh
- 
+
  SERVICE=/usr/lib/mtp/mtp_service
  STORAGE_PATH=$HOME
--- 
+--
 2.10.1
-

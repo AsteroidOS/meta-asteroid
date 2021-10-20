@@ -19,7 +19,7 @@ index e52bbfd6..ef1b552d 100644
 +++ b/src/compositor/extensions/extensions.pri
 @@ -5,6 +5,7 @@ CONFIG += generated_privates
  private_headers.CONFIG += no_check_exist
- 
+
  WAYLANDSERVERSOURCES += \
 +    ../extensions/surface-extension.xml \
      ../extensions/touch-extension.xml \
@@ -27,7 +27,7 @@ index e52bbfd6..ef1b552d 100644
      ../extensions/qt-windowmanager.xml \
 @@ -20,6 +21,7 @@ WAYLANDSERVERSOURCES += \
      ../extensions/qt-texture-sharing-unstable-v1.xml \
- 
+
  HEADERS += \
 +    extensions/qwlextendedsurface_p.h \
      extensions/qwlqttouch_p.h \
@@ -35,7 +35,7 @@ index e52bbfd6..ef1b552d 100644
      extensions/qwaylandshell.h \
 @@ -55,6 +57,7 @@ HEADERS += \
      extensions/qwaylandivisurface_p.h \
- 
+
  SOURCES += \
 +    extensions/qwlextendedsurface.cpp \
      extensions/qwlqttouch.cpp \

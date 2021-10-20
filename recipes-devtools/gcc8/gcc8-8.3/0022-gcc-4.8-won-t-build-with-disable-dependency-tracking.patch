@@ -28,7 +28,7 @@ index 803b292cce5..b47842eb590 100644
 @@ -101,7 +101,8 @@ PAT_S		= $(word 3,$(PAT_SPLIT))
  IFUNC_DEF	= -DIFUNC_ALT=$(PAT_S)
  IFUNC_OPT	= $(word $(PAT_S),$(IFUNC_OPTIONS))
- 
+
 -M_DEPS		= -MT $@ -MD -MP -MF $(DEPDIR)/$(@F).Ppo
 +@AMDEP_TRUE@M_DEPS		= -MT $@ -MD -MP -MF $(DEPDIR)/$(@F).Ppo
 +@AMDEP_FALSE@M_DEPS		=
@@ -49,6 +49,5 @@ index c8f38be5835..4fab7cec3ea 100644
  M_SIZE = -DN=$(PAT_N)
  M_IFUNC = $(if $(PAT_S),$(IFUNC_DEF) $(IFUNC_OPT))
  M_FILE = $(PAT_BASE)_n.c
--- 
+--
 2.21.0
-

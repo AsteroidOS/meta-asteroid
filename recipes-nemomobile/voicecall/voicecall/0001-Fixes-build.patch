@@ -14,10 +14,9 @@ index f0fa35a..c04b5e9 100644
 @@ -45,5 +45,5 @@ OTHER_FILES += voicecall-manager.desktop voicecall-manager.service
  systemd_service_entry.files = voicecall-manager.service
  systemd_service_entry.path = /usr/lib/systemd/user
- 
+
 -INSTALLS += autostart_entry systemd_service_entry
 +INSTALLS += systemd_service_entry
- 
--- 
-2.7.4
 
+--
+2.7.4

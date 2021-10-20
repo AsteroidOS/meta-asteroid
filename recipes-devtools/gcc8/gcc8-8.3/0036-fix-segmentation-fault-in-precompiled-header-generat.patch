@@ -55,6 +55,5 @@ index 37c365a3560..63480048db6 100644
        else
  	buffer = _cpp_spell_ident_ucns (buffer, token->val.node.node);
        break;
--- 
+--
 2.21.0
-

@@ -15,9 +15,9 @@ index 1e957e1..f24c7a6 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -114,8 +114,6 @@ AC_SUBST(FARSTREAM_LIBS)
- 
+
  GOBJECT_INTROSPECTION_CHECK([1.30.0])
- 
+
 -GTK_DOC_CHECK([1.17], [--flavour no-tmpl])
 -
  LT_CURRENT=tp_farstream_lt_current
@@ -101,9 +101,8 @@ index d080afe..a3c962b 100644
 -	@echo "Hey! You need to pass --enable-gtk-doc to configure!"
 -	@exit 2;
 -endif
- 
+
  %.tar.gz.asc: %.tar.gz
  	$(AM_V_GEN)gpg --detach-sign --armor $@
--- 
+--
 2.7.4
-

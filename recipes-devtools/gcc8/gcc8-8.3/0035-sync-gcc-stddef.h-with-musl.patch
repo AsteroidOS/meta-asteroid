@@ -61,7 +61,7 @@ index 31b96a7e5e1..438a3ce7c56 100644
 +#endif /* __DEFINED_size_t */
  #undef	__need_size_t
  #endif /* _STDDEF_H or __need_size_t.  */
- 
+
 @@ -264,6 +270,7 @@ typedef long ssize_t;
  #ifndef ___int_wchar_t_h
  #ifndef __INT_WCHAR_T_H
@@ -75,7 +75,7 @@ index 31b96a7e5e1..438a3ce7c56 100644
  #define _GCC_WCHAR_T
  #define _WCHAR_T_DECLARED
 +#define __DEFINED_wchar_t /* musl */
- 
+
  /* On BSD/386 1.1, at least, machine/ansi.h defines _BSD_WCHAR_T_
     instead of _WCHAR_T_, and _BSD_RUNE_T_ (which, unlike the other
 @@ -344,6 +352,7 @@ typedef __WCHAR_TYPE__ wchar_t;
@@ -85,7 +85,6 @@ index 31b96a7e5e1..438a3ce7c56 100644
 +#endif /* __DEFINED_wchar_t musl */
  #undef	__need_wchar_t
  #endif /* _STDDEF_H or __need_wchar_t.  */
- 
--- 
-2.21.0
 
+--
+2.21.0

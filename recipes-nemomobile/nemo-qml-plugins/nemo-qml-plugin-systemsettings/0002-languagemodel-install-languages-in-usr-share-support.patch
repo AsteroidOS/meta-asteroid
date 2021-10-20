@@ -13,14 +13,13 @@ index a054d00..2ea0d72 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
 @@ -43,7 +43,7 @@
- 
- 
+
+
  namespace {
 -const char * const LanguageSupportDirectory = "/usr/share/jolla-supported-languages";
 +const char * const LanguageSupportDirectory = "/usr/share/supported-languages";
- 
+
  bool nameLessThan(const Language &lang1, const Language &lang2)
  {
--- 
+--
 2.11.0
-

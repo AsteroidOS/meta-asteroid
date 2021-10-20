@@ -953,6 +953,5 @@ index d86d61b..d4f9c31 100644
      vpnmodel.h \
      connmanvpnproxy.h \
      connmanvpnconnectionproxy.h \
--- 
+--
 2.19.1
-

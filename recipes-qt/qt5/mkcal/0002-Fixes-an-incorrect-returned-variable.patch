@@ -17,9 +17,8 @@ index 86ff41a..d951f08 100644
    if ( storage.isNull() || notebook.isNull() )
 -    return false;
 +    return QString();
- 
-   ServiceInterface* service = d->getServicePlugin(notebook, storage);
- 
--- 
-2.10.1
 
+   ServiceInterface* service = d->getServicePlugin(notebook, storage);
+
+--
+2.10.1

@@ -13,13 +13,12 @@ index f69dd99..7cdb686 100644
 +++ b/CMakeLists.txt
 @@ -33,7 +33,7 @@ set(QTAROUND_MOC_HEADERS
  )
- 
+
  add_subdirectory(src)
 -add_subdirectory(tests)
 +#add_subdirectory(tests)
- 
+
  configure_file(qtaround.pc.in qtaround.pc @ONLY)
  configure_file(qtaround-1.pc.in qtaround-1.pc @ONLY)
--- 
+--
 2.30.0
-

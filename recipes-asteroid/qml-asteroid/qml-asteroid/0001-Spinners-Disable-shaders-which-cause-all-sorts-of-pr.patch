@@ -16,7 +16,7 @@ index 2dc3c6b..db19f83 100644
 @@ -45,7 +45,7 @@ PathView {
          visible: false
      }
- 
+
 -    layer.enabled: true
 +    layer.enabled: false
      layer.effect: ShaderEffect {
@@ -29,7 +29,7 @@ index b7cd76b..62be3ec 100644
 @@ -40,7 +40,7 @@ ListView {
          visible: false
      }
- 
+
 -    layer.enabled: true
 +    layer.enabled: false
      layer.effect: ShaderEffect {

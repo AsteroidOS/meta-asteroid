@@ -52,6 +52,5 @@ index 7af8e028104..fc7c91246ed 100644
  			enable_mips_multilibs="yes"
  			;;
  	esac
--- 
+--
 2.21.0
-

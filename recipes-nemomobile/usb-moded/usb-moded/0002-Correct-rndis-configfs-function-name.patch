@@ -14,11 +14,11 @@ index 25e35db..31759ab 100755
 +++ b/scripts/set_usb_mode.sh
 @@ -18,7 +18,7 @@ UDC_DISABLE=""
  FUNCTION_MASS_STORAGE="mass_storage.usb0"
- 
+
  # "developer_mode"
 -FUNCTION_RNDIS="rndis_bam.rndis"
 +FUNCTION_RNDIS="rndis.rndis"
- 
+
  # "mtp_mode"
  FUNCTION_MTP="ffs.mtp"
 diff --git a/src/usb_moded-configfs.c b/src/usb_moded-configfs.c
@@ -27,13 +27,12 @@ index 8abb66d..5b79c00 100644
 +++ b/src/usb_moded-configfs.c
 @@ -54,7 +54,7 @@
  #define DEFAULT_GADGET_CTRL_SERIAL       "strings/0x409/serialnumber"
- 
+
  #define DEFAULT_FUNCTION_MASS_STORAGE    "mass_storage.usb0"
 -#define DEFAULT_FUNCTION_RNDIS           "rndis_bam.rndis"
 +#define DEFAULT_FUNCTION_RNDIS           "rndis.rndis"
  #define DEFAULT_FUNCTION_MTP             "ffs.mtp"
- 
- #define DEFAULT_RNDIS_CTRL_WCEIS         "wceis"
--- 
-2.20.1
 
+ #define DEFAULT_RNDIS_CTRL_WCEIS         "wceis"
+--
+2.20.1

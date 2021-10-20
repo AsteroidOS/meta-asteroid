@@ -18,8 +18,7 @@ index c59d89f..6d1ee19 100644
 -    return env.isNull() ? QString() : QString::fromLocal8Bit(env);
 +    return env.isNull() ? QString("qtvirtualkeyboard") : QString::fromLocal8Bit(env);
  }
- 
- QPlatformInputContext *QPlatformInputContextFactory::create(const QString& key)
--- 
-2.7.4
 
+ QPlatformInputContext *QPlatformInputContextFactory::create(const QString& key)
+--
+2.7.4

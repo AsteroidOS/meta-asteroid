@@ -18,8 +18,7 @@ index d92af61..fd3cac0 100644
 -	char device_file_name[24];
 +	char device_file_name[27];
  	unsigned long features[4];
- 
- 	/* fail safe stop at 256 devices */
--- 
-2.14.2
 
+ 	/* fail safe stop at 256 devices */
+--
+2.14.2

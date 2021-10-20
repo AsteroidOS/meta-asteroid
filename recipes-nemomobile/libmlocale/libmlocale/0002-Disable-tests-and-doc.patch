@@ -16,9 +16,9 @@ index ba85c995..d2ae9e12 100644
      src \
      benchmarks \
 -    tests \
- 
+
 -# Docs are always explicitly built with "make doc"
 -include(doc/doc.pri)
- 
+
  check.target = check
  check.CONFIG = recursive

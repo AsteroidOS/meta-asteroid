@@ -45,7 +45,7 @@ index b426d4f9350..a2af9905cce 100644
 +	CPP="$(CC_FOR_BUILD) -E" \
 +	CPPFLAGS="$(CPPFLAGS_FOR_BUILD)" \
  	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
- 
+
  # This is the list of directories to built for the host system.
 @@ -186,6 +190,7 @@ HOST_SUBDIR = @host_subdir@
  HOST_EXPORTS = \
@@ -83,7 +83,7 @@ index 1f23b79b4b2..6c5652e811d 100644
 +	CPP="$(CC_FOR_BUILD) -E" \
 +	CPPFLAGS="$(CPPFLAGS_FOR_BUILD)" \
  	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
- 
+
  # This is the list of directories to built for the host system.
 @@ -188,6 +192,7 @@ HOST_SUBDIR = @host_subdir@
  HOST_EXPORTS = \
@@ -103,7 +103,7 @@ index 5ae693fb06c..02ee0aa72f4 100644
  BUILD_CPPFLAGS= -I. -I$(@D) -I$(srcdir) -I$(srcdir)/$(@D) \
 -		-I$(srcdir)/../include @INCINTL@ $(CPPINC) $(CPPFLAGS)
 +		-I$(srcdir)/../include @INCINTL@ $(CPPINC) $(CPPFLAGS_FOR_BUILD)
- 
+
  # Actual name to use when installing a native compiler.
  GCC_INSTALL_NAME := $(shell echo gcc|sed '$(program_transform_name)')
 diff --git a/gcc/configure b/gcc/configure
@@ -132,6 +132,5 @@ index e09c840b605..18bf53c7e0a 100644
  	${realsrcdir}/configure \
  		--enable-languages=${enable_languages-all} \
  		--target=$target_alias --host=$build_alias --build=$build_alias
--- 
+--
 2.21.0
-

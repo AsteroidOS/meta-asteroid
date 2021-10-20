@@ -12,14 +12,13 @@ index 297b545..cf3cd79 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -693,7 +693,7 @@ AM_CFLAGS = @DBUS_CFLAGS@ @GLIB_CFLAGS@ $(builtin_cflags) \
- 
+
  AM_CPPFLAGS = -I$(builddir)/include -I$(builddir)/src -I$(srcdir)/src \
  			-I$(srcdir)/gdbus -I$(srcdir)/gisi -I$(srcdir)/gatchat \
 -			-I$(srcdir)/btio -I$(srcdir)/gril
 +			-I$(srcdir)/btio -I$(srcdir)/gril -I$(srcdir)/include -I$(srcdir)/src
- 
+
  doc_files = doc/overview.txt doc/ofono-paper.txt doc/release-faq.txt \
  		doc/manager-api.txt doc/modem-api.txt doc/network-api.txt \
--- 
+--
 2.7.4
-

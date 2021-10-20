@@ -18,7 +18,7 @@ index 8a7c0e2..a8a880a 100644
  signature: createdirs
 -	$(CC) $(SCRIPTS_DIR)/signature.c++ -Wall -Werror -xc++ -o $(BUILD_DIR)/signature
 +	${BUILD_CXX} $(SCRIPTS_DIR)/signature.c++ -Wall -Werror -xc++ -o $(BUILD_DIR)/signature
- 
+
  # Create time zones according to ISO 8601.
  iso8601zones: createdirs
 @@ -52,7 +52,7 @@ find-aliases: process-zones list-zones-without-links
@@ -27,7 +27,7 @@ index 8a7c0e2..a8a880a 100644
  	-md5sum=$(BUILD_DIR)/md5sum -links=$(BUILD_DIR)/zone.link \
 -	-zonetab=/usr/share/zoneinfo/zone.tab > $(BUILD_DIR)/zone.alias
 +	-zonetab=$(SRC_DIR)/zone.tab > $(BUILD_DIR)/zone.alias
- 
+
  prepare-timed-data: find-aliases
  	$(SCRIPTS_DIR)/prepare-timed-data.perl \
 diff --git a/scripts/find-aliases.perl b/scripts/find-aliases.perl
@@ -37,7 +37,7 @@ index 3a1ab1d..22dcb1a 100755
 @@ -234,13 +234,14 @@ my $zulu = "Iso8601/+0000" ;
  add_alias_manually($zulu, $_) for qw/UTC GMT UCT Universal Greenwich Zulu GMT+0 GMT-0 GMT0/ ;
  add_alias_manually($zulu, "Etc/$_") for qw/UTC GMT UCT Universal Greenwich Zulu GMT+0 GMT-0 GMT0/ ;
- 
+
 -foreach my $h (-14 .. 12)
 -{
 -  next unless $h ;
@@ -53,9 +53,8 @@ index 3a1ab1d..22dcb1a 100755
 +#  my $posix = sprintf "Etc/GMT%s%d", ($h < 0 ? "" : "+"), $h ;
 +#  add_alias_manually($iso, $posix) ;
 +#}
- 
- print STDERR "WARNING: unsupported zones ", join(", ", sort keys %$unsupported), "\n" ;
- 
--- 
-2.7.0.rc3
 
+ print STDERR "WARNING: unsupported zones ", join(", ", sort keys %$unsupported), "\n" ;
+
+--
+2.7.0.rc3

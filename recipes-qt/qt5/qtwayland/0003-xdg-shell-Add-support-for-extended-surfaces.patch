@@ -17,13 +17,13 @@ index b6d23ac1..febbe1e5 100644
  #include <QtWaylandClient/private/qwaylandscreen_p.h>
  #include <QtWaylandClient/private/qwaylandabstractdecoration_p.h>
 +#include <QtWaylandClient/private/qwaylandextendedsurface_p.h>
- 
+
  #include <QtGui/private/qwindow_p.h>
- 
+
 @@ -242,6 +243,9 @@ QWaylandXdgSurface::QWaylandXdgSurface(QWaylandXdgShell *shell, ::xdg_surface *s
      Qt::WindowType type = window->window()->type();
      auto *transientParent = window->transientParent();
- 
+
 +    if (window->display()->windowExtension())
 +        m_extendedWindow = new QWaylandExtendedSurface(window);
 +
@@ -37,7 +37,7 @@ index b6d23ac1..febbe1e5 100644
 +    if (m_extendedWindow)
 +        m_extendedWindow->setWindowFlags(flags);
  }
- 
+
  bool QWaylandXdgSurface::isExposed() const
 diff --git a/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h b/src/plugins/shellintegration/xdg-shell/qwaylandxdgshell_p.h
 index 0c98be35..2183cae1 100644
@@ -48,7 +48,7 @@ index 0c98be35..2183cae1 100644
  class QWaylandInputDevice;
  class QWaylandXdgShell;
 +class QWaylandExtendedSurface;
- 
+
  class Q_WAYLAND_CLIENT_EXPORT QWaylandXdgSurface : public QWaylandShellSurface, public QtWayland::xdg_surface
  {
 @@ -153,6 +154,9 @@ private:
@@ -58,6 +58,6 @@ index 0c98be35..2183cae1 100644
 +    // There's really no need to have pending and applied state on wl-shell, but we do it just to
 +    // keep the different shell implementations more similar.
 +    QWaylandExtendedSurface *m_extendedWindow = nullptr;
- 
+
      friend class QWaylandXdgShell;
  };

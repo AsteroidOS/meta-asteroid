@@ -21,7 +21,7 @@ index dc855fd5a..c034241d1 100644
 --- a/libpulse-simple.pc.in
 +++ b/libpulse-simple.pc.in
 @@ -5,7 +5,7 @@ includedir=@includedir@
- 
+
  Name: libpulse-simple
  Description: PulseAudio Simplified Synchronous Client Interface
 -Version: @PACKAGE_VERSION@
@@ -34,7 +34,7 @@ index 23d888bb9..5e7e75f14 100644
 --- a/libpulse.pc.in
 +++ b/libpulse.pc.in
 @@ -6,7 +6,7 @@ modlibexecdir=@modlibexecdir@
- 
+
  Name: libpulse
  Description: PulseAudio Client Interface
 -Version: @PACKAGE_VERSION@
@@ -52,7 +52,7 @@ index d7e468cab..e4bb1722b 100644
    'libpulse-simple.pc',
 +  'pulsecore.pc',
  ]
- 
+
  if glib_dep.found()
 diff --git a/pulsecore.pc.in b/pulsecore.pc.in
 new file mode 100644
@@ -78,7 +78,7 @@ index d7f9ef2cf..3aa5d478b 100644
 +++ b/src/pulsecore/meson.build
 @@ -58,42 +58,77 @@ libpulsecore_sources = [
  ]
- 
+
  libpulsecore_headers = [
 +  'atomic.h',
    'asyncmsgq.h',
@@ -175,9 +175,9 @@ index d7f9ef2cf..3aa5d478b 100644
    'typedefs.h',
  ]
 @@ -227,6 +269,16 @@ libpulsecore = shared_library('pulsecore-' + pa_version_major_minor,
- 
+
  libpulsecore_dep = declare_dependency(link_with: libpulsecore)
- 
+
 +install_headers(
 +  libpulsecore_headers,
 +  subdir : 'pulsecore'
@@ -190,7 +190,6 @@ index d7f9ef2cf..3aa5d478b 100644
 +
  # Internal libraries for modules
  # TODO: understand 'c_args' and 'dependencies' better, maybe we can remove some
- 
--- 
-2.33.0
 
+--
+2.33.0

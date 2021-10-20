@@ -15,7 +15,7 @@ index 2d356a4..05e9d2f 100644
 @@ -4,6 +4,39 @@
  #include <linux/usb/functionfs.h>
  #include "ptp.h"
- 
+
 +# if __BYTE_ORDER == __LITTLE_ENDIAN
 +#  define htobe16(x) __bswap_16 (x)
 +#  define htole16(x) (x)
@@ -52,6 +52,5 @@ index 2d356a4..05e9d2f 100644
  #define cpu_to_le16(x)  htole16(x)
  #define cpu_to_le32(x)  htole32(x)
  #define le32_to_cpu(x)  le32toh(x)
--- 
+--
 2.11.0
-

@@ -17,9 +17,8 @@ index 03dadb1..3656b4e 100644
  # define MCE_SETTING_BLANKING_INHIBIT_MODE               MCE_SETTING_DISPLAY_PATH "/inhibit_blank_mode"
 -# define MCE_DEFAULT_BLANKING_INHIBIT_MODE               0 // = INHIBIT_OFF
 +# define MCE_DEFAULT_BLANKING_INHIBIT_MODE               1 // = INHIBIT_ON
- 
+
  /** Kbd slide inhibit type */
  typedef enum {
--- 
+--
 2.14.3
-

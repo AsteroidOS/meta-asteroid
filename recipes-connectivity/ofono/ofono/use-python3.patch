@@ -20,8 +20,8 @@ index 5d061b95..33631f31 100755
 @@ -1,4 +1,4 @@
 -#!/usr/bin/python
 +#!/usr/bin/python3
- 
+
  import sys
  import dbus
--- 
+--
 2.11.0
