@@ -1,0 +1,56 @@
+From efd7aed9277dd82cc0b25d3a1be5afb399ae2d71 Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Wed, 27 Oct 2021 16:06:50 +0200
+Subject: [PATCH] adb_services: Use syscall for reboot.
+
+For some reason the property_set() function does not appear to work.
+It does also not return with an error.
+Instead reboot using a syscall which also allows for appending arguments such that rebooting to the bootloader is also possible.
+---
+ adb/services.c | 20 ++++----------------
+ 1 file changed, 4 insertions(+), 16 deletions(-)
+
+diff --git a/adb/services.c b/adb/services.c
+index 21b08dc201..889da9b5d1 100644
+--- a/adb/services.c
++++ b/adb/services.c
+@@ -21,6 +21,9 @@
+ #include <string.h>
+ #include <errno.h>
+ 
++#include <linux/reboot.h>
++#include <sys/syscall.h>
++
+ #include "sysdeps.h"
+ 
+ #define  TRACE_TAG  TRACE_SERVICES
+@@ -114,25 +117,10 @@ void restart_usb_service(int fd, void *cookie)
+ 
+ void reboot_service(int fd, void *arg)
+ {
+-    char buf[100];
+-    char property_val[PROPERTY_VALUE_MAX];
+-    int ret;
+-
+     sync();
+ 
+-    ret = snprintf(property_val, sizeof(property_val), "reboot,%s", (char *) arg);
+-    if (ret >= (int) sizeof(property_val)) {
+-        snprintf(buf, sizeof(buf), "reboot string too long. length=%d\n", ret);
+-        writex(fd, buf, strlen(buf));
+-        goto cleanup;
+-    }
++    syscall(SYS_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, LINUX_REBOOT_CMD_RESTART2, (char *) arg);
+ 
+-    ret = property_set(ANDROID_RB_PROPERTY, property_val);
+-    if (ret < 0) {
+-        snprintf(buf, sizeof(buf), "reboot failed: %d\n", ret);
+-        writex(fd, buf, strlen(buf));
+-        goto cleanup;
+-    }
+     // Don't return early. Give the reboot command time to take effect
+     // to avoid messing up scripts which do "adb reboot && adb wait-for-device"
+     while(1) { pause(); }
+-- 
+2.33.1
+
