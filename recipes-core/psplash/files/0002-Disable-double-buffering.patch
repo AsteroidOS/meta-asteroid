@@ -1,0 +1,44 @@
+From 681229c75cded0265aa58d95903d918e3ba29f5c Mon Sep 17 00:00:00 2001
+From: MagneFire <IDaNLContact@gmail.com>
+Date: Tue, 9 Nov 2021 16:25:03 +0100
+Subject: [PATCH] Disable double buffering. Fixes black screen on some
+ platforms.
+
+---
+ psplash-fb.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/psplash-fb.c b/psplash-fb.c
+index 22180f8..686f1fd 100644
+--- a/psplash-fb.c
++++ b/psplash-fb.c
+@@ -47,6 +47,8 @@ psplash_fb_flip(PSplashFB *fb, int sync)
+     if (sync) {
+       memcpy(fb->bdata, fb->fdata, fb->stride * fb->real_height);
+     }
++  } else {
++    ioctl(fb->fd, FBIOPAN_DISPLAY, &fb->fb_var);
+   }
+ }
+ 
+@@ -196,7 +198,8 @@ psplash_fb_new (int angle, int fbdev_id)
+     }
+ 
+   /* Setup double virtual resolution for double buffering */
+-  if (ioctl(fb->fd, FBIOPAN_DISPLAY, &fb_var) == -1) {
++  fb->double_buffering = 0;
++  /*if (ioctl(fb->fd, FBIOPAN_DISPLAY, &fb_var) == -1) {
+     fprintf(stderr, "warning: FBIOPAN_DISPLAY not supported, "
+                     "double buffering disabled\n");
+   } else {
+@@ -219,6 +222,7 @@ psplash_fb_new (int angle, int fbdev_id)
+       }
+     }
+   }
++  */
+ 
+   fb->real_width  = fb->width  = fb_var.xres;
+   fb->real_height = fb->height = fb_var.yres;
+-- 
+2.33.1
+
