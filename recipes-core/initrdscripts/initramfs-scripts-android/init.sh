@@ -64,6 +64,10 @@ if [ -e /etc/rotation ]; then
     read rotation < /etc/rotation
 fi
 
+if [ -x /usr/bin/msm-fb-refresher ] ; then
+    /usr/bin/msm-fb-refresher
+fi
+
 /usr/bin/psplash --angle $rotation --no-console-switch &
 
 # The sdcard partition may be the rootfs itself or contain a loop file
