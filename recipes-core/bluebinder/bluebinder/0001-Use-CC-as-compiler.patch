@@ -1,0 +1,53 @@
+diff --git a/Makefile b/Makefile
+index 2cafc51..a9e4fce 100644
+--- a/Makefile
++++ b/Makefile
+@@ -10,12 +10,12 @@ endif
+ build: bluebinder
+ 
+ bluebinder: bluebinder.c
+-	gcc $(CFLAGS) -Wall -flto $^ `pkg-config --cflags --libs $(DEPEND_LIBS)` -DUSE_SYSTEMD=$(USE_SYSTEMD) -o $@
++	${CC} $(CFLAGS) -Wall -flto $^ `pkg-config --cflags --libs $(DEPEND_LIBS)` -DUSE_SYSTEMD=$(USE_SYSTEMD) -o $@
+ 
+ install:
+ 	mkdir -p $(DESTDIR)/usr/sbin
+ 	cp bluebinder $(DESTDIR)/usr/sbin
+ 
+ clean:
+-	rm bluebinder
++	rm -f bluebinder
+ 
+diff --git a/bluebinder.service b/bluebinder.service
+index a9f6c56..52eae10 100644
+--- a/bluebinder.service
++++ b/bluebinder.service
+@@ -1,26 +1,15 @@
+ [Unit]
+ Description=Simple proxy for using android binder based bluetooth through vhci.
+-After=droid-hal-init.service
++After=android-system.service
+ Before=bluetooth.service
+ 
+ [Service]
+ Type=notify
+-ExecStartPre=/usr/bin/droid/bluebinder_wait.sh
++ExecStartPre=/usr/sbin/bluebinder_wait.sh
+ ExecStart=/usr/sbin/bluebinder
+-ExecStartPost=/usr/bin/droid/bluebinder_post.sh
+ Restart=always
+ TimeoutStartSec=60
+-# Sandboxing
+-CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+-DeviceAllow=/dev/hwbinder rw
+-DeviceAllow=/dev/vhci rw
+-DevicePolicy=strict
+-NoNewPrivileges=yes
+-PrivateNetwork=true
+-PrivateTmp=yes
+-ProtectHome=yes
+-ProtectSystem=full
+ 
+ [Install]
+-WantedBy=graphical.target
++WantedBy=multi-user.target
+ 
