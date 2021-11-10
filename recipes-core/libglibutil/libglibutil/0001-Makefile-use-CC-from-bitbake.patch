@@ -1,0 +1,26 @@
+From da3e6d2bdb00624f843adcd3ae4f8a1a1e3609e2 Mon Sep 17 00:00:00 2001
+From: Christophe Chapuis <chris.chapuis@gmail.com>
+Date: Sat, 13 Jul 2019 12:38:38 +0000
+Subject: [PATCH] Makefile: use CC from bitbake
+
+---
+ Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index c4e2600..702556a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -65,7 +65,9 @@ endif
+ # Tools and flags
+ #
+ 
++ifndef CC
+ CC = $(CROSS_COMPILE)gcc
++endif
+ LD = $(CC)
+ WARNINGS = -Wall
+ INCLUDES = -I$(INCLUDE_DIR)
+-- 
+2.17.0
+
