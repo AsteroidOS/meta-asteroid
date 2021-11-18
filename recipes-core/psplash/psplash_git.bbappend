@@ -14,6 +14,8 @@ SPLASH_IMAGES = "file://psplash-img-320.png;outsuffix=default"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+PACKAGECONFIG:remove = " systemd"
+
 PACKAGECONFIG:append = " animated-gif"
 PACKAGECONFIG:append = " disable-progress-bar"
 PACKAGECONFIG[animated-gif] = "--enable-animated-gif,,"
