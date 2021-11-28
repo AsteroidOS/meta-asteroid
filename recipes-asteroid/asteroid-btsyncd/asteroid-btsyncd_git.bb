@@ -9,9 +9,9 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 gsettings
+inherit cmake_qt5 gsettings
 
-DEPENDS += "qtbase glibmm qtmpris timed qttools-native nemo-qml-plugin-systemsettings"
+DEPENDS += "qml-asteroid qtbase glibmm qtmpris timed qttools-native nemo-qml-plugin-systemsettings"
 RDEPENDS:${PN} += "glibmm qtmpris"
 
 FILES:${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
@@ -23,9 +23,5 @@ do_install:append() {
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service ]; then
         ln -s /usr/lib/systemd/user/asteroid-btsyncd.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service
     fi
-
-    lrelease -idbased ${S}/i18n/asteroid-btsyncd.*.ts
-    install -d ${D}/usr/share/translations/
-    cp ${S}/i18n/asteroid-btsyncd.*.qm ${D}/usr/share/translations/
 }
 
