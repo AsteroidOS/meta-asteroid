@@ -17,7 +17,7 @@ S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt statefs-qt mce usb-moded-qt5 systemd wayland nemo-keepalive qttools-native"
+DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt mce usb-moded-qt5 systemd wayland nemo-keepalive qttools-native mce-qt5"
 RDEPENDS:${PN} += "${PN}-locale"
 
 inherit qmake5
