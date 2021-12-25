@@ -41,31 +41,33 @@ index 7e25942..7c28921 100644
  #include <QDBusAbstractAdaptor>
  #include <QDBusMessage>
 +#include <QDateTime>
-
+ 
  #include "../lib/event-io.h"
  #include "../lib/wall-info.h"
 diff --git a/src/server/config.type.cpp b/src/server/config.type.cpp
 new file mode 100644
-index 0000000..790a2c3
+index 0000000..f223c86
 --- /dev/null
 +++ b/src/server/config.type.cpp
-@@ -0,0 +1,33 @@
+@@ -0,0 +1,37 @@
 +#include <iodata-qt5/validator>
 +#include "config.type.h"
 +iodata::validator * etc_timed_rc_validator(){
 +static bool init_done = false ;
 +static iodata::validator A ;
-+static iodata::/*validator::*/record_type record_type1 = { "config_t", vector<iodata::/*validator::*/node*>(10) } ;
++static iodata::/*validator::*/record_type record_type1 = { "config_t", vector<iodata::/*validator::*/node*>(12) } ;
 +static iodata::/*validator::*/node_integer node1("queue_threshold_long", 0, 0, 5000) ;
 +static iodata::/*validator::*/node_integer node2("queue_threshold_short", 0, 0, 1000) ;
 +static iodata::/*validator::*/node_bytes node3("data_directory", 0, 0, ".timed") ;
-+static iodata::/*validator::*/node_bytes node4("settings_file", 0, 0, "settings.data") ;
-+static iodata::/*validator::*/node_bytes node5("events_file", 0, 0, "events.data") ;
-+static iodata::/*validator::*/node_bytes node6("default_timezone", 0, 0, "Europe/Helsinki") ;
-+static iodata::/*validator::*/node_integer node7("default_gmt_offset", 0, 0, 7200) ;
-+static iodata::/*validator::*/node_integer node8("voland_ping_retries", 0, 0, 5) ;
-+static iodata::/*validator::*/node_integer node9("voland_ping_sleep", 0, 0, 3000) ;
-+static iodata::/*validator::*/node_integer node10("dialog_discard_threshold", 0, 0, 1440) ;
++static iodata::/*validator::*/node_bytes node4("shared_events_directory", 0, 0, "/var/lib/timed/shared_events") ;
++static iodata::/*validator::*/node_bytes node5("shared_settings_directory", 0, 0, "/var/lib/timed/shared_settings") ;
++static iodata::/*validator::*/node_bytes node6("settings_file", 0, 0, "settings.data") ;
++static iodata::/*validator::*/node_bytes node7("events_file", 0, 0, "events.data") ;
++static iodata::/*validator::*/node_bytes node8("default_timezone", 0, 0, "Europe/Helsinki") ;
++static iodata::/*validator::*/node_integer node9("default_gmt_offset", 0, 0, 7200) ;
++static iodata::/*validator::*/node_integer node10("voland_ping_retries", 0, 0, 5) ;
++static iodata::/*validator::*/node_integer node11("voland_ping_sleep", 0, 0, 3000) ;
++static iodata::/*validator::*/node_integer node12("dialog_discard_threshold", 0, 0, 1440) ;
 +if (not init_done) { init_done = true ;
 +A.set_static() ;
 +record_type1.nodes[0] = &node1 ;
@@ -78,6 +80,8 @@ index 0000000..790a2c3
 +record_type1.nodes[7] = &node8 ;
 +record_type1.nodes[8] = &node9 ;
 +record_type1.nodes[9] = &node10 ;
++record_type1.nodes[10] = &node11 ;
++record_type1.nodes[11] = &node12 ;
 +A.types["config_t"] = &record_type1 ;
 +}
 +return &A ;
@@ -271,13 +275,13 @@ index 0d82af6..24cf620 100644
 --- a/src/server/server.pro
 +++ b/src/server/server.pro
 @@ -12,7 +12,7 @@ INCLUDEPATH += ../h
-
+ 
  QMAKE_LIBDIR_FLAGS += -L../lib -L../voland
- equals(QT_MAJOR_VERSION, 4): LIBS += -ltimed -ltimed-voland
--equals(QT_MAJOR_VERSION, 5): LIBS += -ltimed-qt5 -ltimed-voland-qt5
-+equals(QT_MAJOR_VERSION, 5): LIBS += -ltimed-qt5 -ltimed-voland-qt5 -liodata-qt5
-
+-LIBS += -ltimed-qt5 -ltimed-voland-qt5
++LIBS += -ltimed-qt5 -ltimed-voland-qt5 -liodata-qt5
+ 
  IODATA_TYPES = queue.type config.type settings.type customization.type tzdata.type
+ 
 
 @@ -72,7 +72,13 @@ SOURCES += \
      ofonomodemmanager.cpp \
@@ -291,18 +295,9 @@ index 0d82af6..24cf620 100644
 +    settings.type.cpp \
 +    timed-cust-rc.type.cpp \
 +    tzdata.type.cpp
-
+ 
  SOURCES += credentials.cpp
  HEADERS += credentials.h
-@@ -87,7 +93,7 @@ SOURCES += notification.cpp
- HEADERS += notification.h
-
- CONFIG += link_pkgconfig
--PKGCONFIG += libpcrecpp libsystemd-daemon
-+PKGCONFIG += libpcrecpp libsystemd
- equals(QT_MAJOR_VERSION, 4) {
-     CONFIG += iodata
-     PKGCONFIG += contextprovider-1.0
 diff --git a/src/server/settings.type.cpp b/src/server/settings.type.cpp
 new file mode 100644
 index 0000000..2a85916
@@ -491,5 +486,6 @@ index 0000000..4a2e83b
 +#include <iodata-qt5/validator>
 +iodata::validator * tzdata_validator() ;
 +#endif
---
+-- 
 2.1.4
+
