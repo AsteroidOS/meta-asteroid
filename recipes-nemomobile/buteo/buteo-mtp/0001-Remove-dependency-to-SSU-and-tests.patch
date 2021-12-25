@@ -11,45 +11,38 @@ Subject: [PATCH] Remove dependency to SSU and tests
  4 files changed, 3 insertions(+), 39 deletions(-)
 
 diff --git a/libmeegomtp.pro b/libmeegomtp.pro
-index db788fb..0b2310d 100644
+index d8d3559..7ded5de 100644
 --- a/libmeegomtp.pro
 +++ b/libmeegomtp.pro
-@@ -3,33 +3,14 @@ TEMPLATE = subdirs
- mts.subdir = mts
- mts.target = sub-mts
-
+@@ -23,47 +23,12 @@ service.depends = sub-mts
+ systemd.subdir = init/systemd
+ systemd.target = sub-systemd
+ 
+-# "/opt/tests/buteo-mtp/mtp_test" - unused test application
 -test.subdir = test
 -test.target = sub-test
 -test.depends = sub-mts
 -
- mtpserver.subdir = mtpserver
- mtpserver.target = sub-mtpserver
- mtpserver.depends = sub-mts
-
+-# "/opt/tests/buteo-mtp/storagefactory-test" - unit test app
 -mts_storage_tests.subdir = mts/platform/storage/unittests
+-mts_storage_tests.target = sub-mts-storage-tests
 -mts_storage_tests.depends= sub-mts
 -
- mts_fsstorage_plugin.subdir = mts/platform/storage/fsstorageplugin
- mts_fsstorage_plugin.target = sub-mts-fsstorage-plugin
- mts_fsstorage_plugin.depends = sub-mts
-
+-# "/opt/tests/buteo-mtp/storage-test" - unit test app
 -mts_fsstorage_tests.subdir = mts/platform/storage/fsstorageplugin/unittests
 -mts_fsstorage_tests.target = sub-mts-fsstorage-tests
--mts_fsstorage_tests.depends = sub-mts
+-mts_fsstorage_tests.depends = sub-mts-fsstorage-plugin
 -
+-# "/opt/tests/buteo-mtp/deviceinfo-test" - unit test app
 -mts_deviceinfo_tests.subdir = mts/platform/deviceinfo/unittests
 -mts_deviceinfo_tests.target = sub-mts-deviceinfo-tests
 -mts_deviceinfo_tests.depends = sub-mts
 -
+-# "/opt/tests/buteo-mtp/protocol-test" - unit test app for mtp command handling
 -mts_protocol_tests.subdir = mts/protocol/unittests
 -mts_protocol_tests.target = sub-mts-protocol-tests
 -mts_protocol_tests.depends = sub-mts
 -
- service.subdir = service
- service.target = sub-service
- service.depends = sub-mts
-@@ -39,17 +20,7 @@ systemd.target = sub-systemd
-
  SUBDIRS += \
      mts \
 -    test \
@@ -61,11 +54,14 @@ index db788fb..0b2310d 100644
 -    mts_protocol_tests \
      service \
      systemd
--
+ 
 -# install additional files for the CI Integration tests
 -citests.path = /opt/tests/buteo-mtp/test-definition/
 -citests.files = tests.xml
 -INSTALLS += citests
+-
+ OTHER_FILES += rpm/buteo-mtp-qt5.privileges \
+                rpm/buteo-mtp-qt5.spec
 diff --git a/mts/mts.pro b/mts/mts.pro
 index 765dd08..09268dd 100644
 --- a/mts/mts.pro
@@ -73,14 +69,14 @@ index 765dd08..09268dd 100644
 @@ -1,8 +1,6 @@
  QT += xml dbus
  QT -= gui
-
+ 
 -LIBS += -lssu
 -
  CONFIG += link_pkgconfig debug
-
+ 
  equals(QT_MAJOR_VERSION, 4): {
 diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
-index dd0d0d3..cbbfbc0 100644
+index d7a470b..1f07e4f 100644
 --- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
 +++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
 @@ -32,7 +32,6 @@
@@ -88,21 +84,21 @@ index dd0d0d3..cbbfbc0 100644
  #include <QDeviceInfo>
  #include <QTimer>
 -#include <ssudeviceinfo.h>
- #include <contextproperty.h>
+ #include <batterystatus.h>
  #include "trace.h"
-
-@@ -46,10 +45,6 @@ DeviceInfoProvider::DeviceInfoProvider():
+ 
+@@ -46,10 +45,6 @@ DeviceInfoProvider::DeviceInfoProvider()
  {
      QDeviceInfo di;
-
+ 
 -    SsuDeviceInfo ssuDeviceInfo;
 -
 -    m_serialNo = ssuDeviceInfo.deviceUid();
 -
      m_deviceVersion = QString("%1 HW: %2").arg(di.version(QDeviceInfo::Os))
                                            .arg(di.version(QDeviceInfo::Firmware));
-
-@@ -68,7 +63,7 @@ DeviceInfoProvider::DeviceInfoProvider():
+ 
+@@ -63,7 +58,7 @@ DeviceInfoProvider::DeviceInfoProvider()
      {
          /* Query DeviceModel from SSU and use it to override the value of
           * the friendly name -property defined in the XML configuration */
@@ -112,26 +108,34 @@ index dd0d0d3..cbbfbc0 100644
          setDeviceFriendlyName(deviceModel);
      }
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index 3f22edf..218a398 100644
+index 62a9175..218a398 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-@@ -8,7 +8,7 @@ CONFIG += plugin debug qtsparql
+@@ -8,9 +8,9 @@ CONFIG += plugin debug qtsparql
  QT += dbus xml
  QT -= gui
-
+ 
 -PKGCONFIG += blkid mount
 +PKGCONFIG += blkid mount Qt5Sparql
-
- system(qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
-
-@@ -44,7 +44,7 @@ SOURCES += fsstorageplugin.cpp \
+ 
+-system($$[QT_INSTALL_BINS]/qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
++system(qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
+ 
+ DEPENDPATH += . \
+               .. \
+@@ -44,10 +44,10 @@ SOURCES += fsstorageplugin.cpp \
             storageitem.cpp
-
+ 
  LIBPATH += ../../..
 -LIBS    += -lmeegomtp -lssu
 +LIBS    += -lmeegomtp
-
+ 
  #install
- target.path = /usr/lib/mtp
---
+-target.path = $$[QT_INSTALL_LIBS]/mtp
++target.path = /usr/lib/mtp
+ 
+ configuration.path = /etc/fsstorage.d
+ configuration.files = phone-memory.xml homedir-blacklist.conf sd-card.xml
+-- 
 2.10.1
+

@@ -5,12 +5,9 @@ LIC_FILES_CHKSUM = "file://mtpserver/mtpserver.cpp;beginline=1;endline=30;md5=a2
 
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https \
            file://0001-Remove-dependency-to-SSU-and-tests.patch \
-           file://0002-Start-buteo-mtp-as-ceres-by-default.patch \
-           file://0003-Fixes-some-dependencies-to-contextkit-bash-and-syste.patch \
-           file://0004-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
-           file://0005-mtp1descriptors-redine-htole16-htole32.-to-make-sure.patch \
-           file://0006-FSStoragePlugin-Make-sure-the-inotify_event-s-flexib.patch"
-SRCREV = "394df0cedd490f79b6eb2f4a22a2e2813d129432"
+           file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
+           file://buteo-mtp"
+SRCREV = "001a5aed96f751c3841447aeb8d25671f772b780"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -18,12 +15,19 @@ inherit qmake5
 
 EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 
-do_install:append() {
-    mkdir -p ${D}/lib/systemd/system/local-fs.target.wants
-    ln -s ../dev-mtp.mount ${D}/lib/systemd/system/local-fs.target.wants
+do_configure:prepend() {
+    sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' mts/common.pri
 }
 
-DEPENDS += "buteo-syncfw statefs-qt libqtsparql"
+do_install:append() {
+    mkdir -p ${D}/usr/lib/systemd/system/local-fs.target.wants
+    ln -s ../dev-mtp.mount ${D}/usr/lib/systemd/system/local-fs.target.wants
 
-FILES:${PN} += "/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
+    install -m 0755 -d ${D}${bindir}
+    install -m 0755 ../buteo-mtp ${D}${bindir}
+}
+
+DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings"
+
+FILES:${PN} += "/usr/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"
