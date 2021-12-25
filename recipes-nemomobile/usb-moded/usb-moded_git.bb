@@ -4,8 +4,7 @@ LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https \
-           file://0001-usb-moded-common-Add-errno.h.patch \
-           file://0002-Correct-rndis-configfs-function-name.patch \
+           file://0001-Correct-rndis-configfs-function-name.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
            file://udhcp-daemon.service \
@@ -13,7 +12,7 @@ SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https \
            file://usb-moded \
            file://init_ffs \
            file://init_gfs"
-SRCREV = "66317b71ebe95f81793faf694b6ea618f6459af1"
+SRCREV = "0213e798ade24de1cb66619516eddab7584dce7f"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -22,7 +21,7 @@ inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
-DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd buteo-mtp"
+DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
 RDEPENDS:${PN} += "buteo-mtp"
 
 do_configure:prepend() {
