@@ -12,7 +12,7 @@ qtgraphicaleffects-qmlplugins supported-languages ttf-asteroid-fonts asteroid-la
 EXTRA_USERS_PARAMS = "groupadd system; \
                       groupadd gps; \
                       groupadd -f -g 1024 mtp; \
-                      useradd -p '' -G 'audio,video,system,gps,sailfish-datetime,mtp' ceres"
+                      useradd -p '' -G 'audio,video,system,wheel,gps,sailfish-datetime,mtp' ceres"
 
 IMAGE_OVERHEAD_FACTOR = "1.0"
 IMAGE_ROOTFS_EXTRA_SPACE = "131072"
