@@ -8,8 +8,8 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protoc
     file://0001-Disable-SSU-dependency.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \
     file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
-    file://0005-Disable-build-of-CertificatteModel-which-is-broken-w.patch"
-SRCREV = "0c3034612fabce0cca18366f6ac04020296428cf"
+    file://0005-Remove-certificatemodel-and-developermodesettings.patch"
+SRCREV = "8ee508e5370487afef1826e2ebaff0e44e604300"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -19,7 +19,7 @@ do_install:append() {
     cp ${WORKDIR}/location.conf ${D}/etc/location/
 }
 
-DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5"
+DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-dbus nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5"
 RDEPENDS:${PN} += "profiled"
 
 FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
