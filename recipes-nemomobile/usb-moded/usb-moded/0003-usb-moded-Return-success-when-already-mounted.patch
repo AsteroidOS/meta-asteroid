@@ -1,0 +1,24 @@
+From 934f305bb995098a051ad54e1c9be093404e7a46 Mon Sep 17 00:00:00 2001
+From: MagneFire <dgriet@gmail.com>
+Date: Mon, 27 Dec 2021 21:43:42 +0100
+Subject: [PATCH] usb-moded: Return success when already mounted.
+
+---
+ src/usb_moded-worker.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/usb_moded-worker.c b/src/usb_moded-worker.c
+index 15cebc4..471f1de 100644
+--- a/src/usb_moded-worker.c
++++ b/src/usb_moded-worker.c
+@@ -234,6 +234,7 @@ worker_mount_mtp_device(void)
+     /* Fail if control endpoint is already present */
+     if( worker_get_mtp_device_state() != DEVSTATE_UNMOUNTED ) {
+         log_err("mtp device already mounted");
++        mounted = true;
+         goto EXIT;
+     }
+ 
+-- 
+2.34.1
+

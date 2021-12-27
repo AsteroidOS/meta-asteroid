@@ -5,6 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https \
            file://0001-Correct-rndis-configfs-function-name.patch \
+           file://0002-usb-modded-worker-Use-buteo-mtp-wrapper.patch \
+           file://0003-usb-moded-Return-success-when-already-mounted.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
            file://udhcp-daemon.service \
