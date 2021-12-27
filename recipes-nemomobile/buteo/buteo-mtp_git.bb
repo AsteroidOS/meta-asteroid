@@ -1,13 +1,13 @@
 SUMMARY = "NemoMobile's MTP Stack"
 HOMEPAGE = "https://github.com/sailfishos/buteo-mtp"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://mtpserver/mtpserver.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a0b1f3b62af44e24404"
+LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a0b1f3b62af44e24404"
 
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https \
            file://0001-Remove-dependency-to-SSU-and-tests.patch \
            file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
            file://buteo-mtp"
-SRCREV = "001a5aed96f751c3841447aeb8d25671f772b780"
+SRCREV = "6e0c7d9bb04926b69bb454b479a153ba84d28b9c"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -17,6 +17,7 @@ EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 
 do_configure:prepend() {
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' mts/common.pri
+    sed -i "s@\$\$\[QT_INSTALL_BINS\]@${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}@" mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 }
 
 do_install:append() {
@@ -27,7 +28,7 @@ do_install:append() {
     install -m 0755 ../buteo-mtp ${D}${bindir}
 }
 
-DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings"
+DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"
 
 FILES:${PN} += "/usr/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"

@@ -2,6 +2,9 @@
 
 DEVICEUSER=ceres
 
+# Manually ensure that the /dev/mtp entries are owned by the `mtp` group so that the `ceres` user can control mtp.
+systemctl start dev-mtp.mount
+
 case $1 in
     "start")
         [ -n "$DEVICEUSER" ] && exec su -l $DEVICEUSER -c "systemctl --user start buteo-mtp.service"

@@ -1,23 +1,24 @@
-From af0d09e1f2f5143216ad6b1a08b20cbdf0661d75 Mon Sep 17 00:00:00 2001
+From 020aa415ba62f65787b6256b74d577bd93275722 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 5 May 2017 17:34:18 +0200
 Subject: [PATCH] fsstorageplugin: Expose Watch Memory instead of Phone Memory
+
  + SD Card
 
 ---
- mts/platform/storage/fsstorageplugin/fsstorageplugin.pro               | 2 +-
- mts/platform/storage/fsstorageplugin/sd-card.xml                       | 3 ---
- .../storage/fsstorageplugin/{phone-memory.xml => watch-memory.xml}     | 2 +-
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.pro       | 2 +-
+ mts/platform/storage/fsstorageplugin/sd-card.xml               | 3 ---
+ .../fsstorageplugin/{phone-memory.xml => watch-memory.xml}     | 2 +-
  3 files changed, 2 insertions(+), 5 deletions(-)
  delete mode 100644 mts/platform/storage/fsstorageplugin/sd-card.xml
- rename mts/platform/storage/fsstorageplugin/{phone-memory.xml => watch-memory.xml} (62%)
+ rename mts/platform/storage/fsstorageplugin/{phone-memory.xml => watch-memory.xml} (59%)
 
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index 218a398..12fc919 100644
+index 3a457a4..d417057 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-@@ -50,7 +50,7 @@ LIBS    += -lmeegomtp
- target.path = /usr/lib/mtp
+@@ -49,7 +49,7 @@ LIBS    += -lmeegomtp
+ target.path = $$[QT_INSTALL_LIBS]/mtp
  
  configuration.path = /etc/fsstorage.d
 -configuration.files = phone-memory.xml homedir-blacklist.conf sd-card.xml
@@ -35,10 +36,10 @@ index a625537..0000000
 -<storage name="sdcard" blockdev="/dev/mmcblk1" description="SD Card">
 -</storage>
 diff --git a/mts/platform/storage/fsstorageplugin/phone-memory.xml b/mts/platform/storage/fsstorageplugin/watch-memory.xml
-similarity index 62%
+similarity index 59%
 rename from mts/platform/storage/fsstorageplugin/phone-memory.xml
 rename to mts/platform/storage/fsstorageplugin/watch-memory.xml
-index 32b3b39..3f3df56 100644
+index 1bd73fb..3f3df56 100644
 --- a/mts/platform/storage/fsstorageplugin/phone-memory.xml
 +++ b/mts/platform/storage/fsstorageplugin/watch-memory.xml
 @@ -1,4 +1,4 @@
@@ -47,6 +48,3 @@ index 32b3b39..3f3df56 100644
 +<storage name="media" path="/home/ceres" description="Watch Memory">
      <blacklist>homedir-blacklist.conf</blacklist>
  </storage>
--- 
-2.11.0
-
