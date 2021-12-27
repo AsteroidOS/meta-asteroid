@@ -1,20 +1,20 @@
-From e343830bf20e18133d2dceb6d660486328bfff35 Mon Sep 17 00:00:00 2001
-From: Florent Revest <revestflo@gmail.com>
-Date: Mon, 31 Oct 2016 23:28:15 +0100
-Subject: [PATCH] Remove dependency to SSU and tests
+From 62283e260d0e034402354b11094a6afff4e6b524 Mon Sep 17 00:00:00 2001
+From: MagneFire <dgriet@gmail.com>
+Date: Sat, 25 Dec 2021 22:40:19 +0100
+Subject: [PATCH] Remove dependency to SSU and tests.
 
 ---
- libmeegomtp.pro                                    | 29 ----------------------
- mts/mts.pro                                        |  2 --
- mts/platform/deviceinfo/deviceinfoprovider.cpp     |  7 +-----
- .../storage/fsstorageplugin/fsstorageplugin.pro    |  4 +--
- 4 files changed, 3 insertions(+), 39 deletions(-)
+ libmeegomtp.pro                               | 35 -------------------
+ mts/mts.pro                                   |  2 --
+ .../deviceinfo/deviceinfoprovider.cpp         |  7 +---
+ .../fsstorageplugin/fsstorageplugin.pro       |  4 +--
+ 4 files changed, 3 insertions(+), 45 deletions(-)
 
 diff --git a/libmeegomtp.pro b/libmeegomtp.pro
-index d8d3559..7ded5de 100644
+index 252b24b..9aeae41 100644
 --- a/libmeegomtp.pro
 +++ b/libmeegomtp.pro
-@@ -23,47 +23,12 @@ service.depends = sub-mts
+@@ -18,46 +18,11 @@ service.depends = sub-mts
  systemd.subdir = init/systemd
  systemd.target = sub-systemd
  
@@ -46,7 +46,6 @@ index d8d3559..7ded5de 100644
  SUBDIRS += \
      mts \
 -    test \
-     mtpserver \
 -    mts_storage_tests \
      mts_fsstorage_plugin \
 -    mts_fsstorage_tests \
@@ -63,10 +62,10 @@ index d8d3559..7ded5de 100644
  OTHER_FILES += rpm/buteo-mtp-qt5.privileges \
                 rpm/buteo-mtp-qt5.spec
 diff --git a/mts/mts.pro b/mts/mts.pro
-index 765dd08..09268dd 100644
+index 5db55b9..7e46b7b 100644
 --- a/mts/mts.pro
 +++ b/mts/mts.pro
-@@ -1,8 +1,6 @@
+@@ -3,8 +3,6 @@ include(common.pri)
  QT += xml dbus
  QT -= gui
  
@@ -74,9 +73,9 @@ index 765dd08..09268dd 100644
 -
  CONFIG += link_pkgconfig debug
  
- equals(QT_MAJOR_VERSION, 4): {
+ PKGCONFIG += Qt5SystemInfo
 diff --git a/mts/platform/deviceinfo/deviceinfoprovider.cpp b/mts/platform/deviceinfo/deviceinfoprovider.cpp
-index d7a470b..1f07e4f 100644
+index af0f949..4734573 100644
 --- a/mts/platform/deviceinfo/deviceinfoprovider.cpp
 +++ b/mts/platform/deviceinfo/deviceinfoprovider.cpp
 @@ -32,7 +32,6 @@
@@ -96,34 +95,31 @@ index d7a470b..1f07e4f 100644
 -    m_serialNo = ssuDeviceInfo.deviceUid();
 -
      m_deviceVersion = QString("%1 HW: %2").arg(di.version(QDeviceInfo::Os))
-                                           .arg(di.version(QDeviceInfo::Firmware));
+                       .arg(di.version(QDeviceInfo::Firmware));
  
-@@ -63,7 +58,7 @@ DeviceInfoProvider::DeviceInfoProvider()
-     {
+@@ -62,7 +57,7 @@ DeviceInfoProvider::DeviceInfoProvider()
+     if (m_newConfigFileWasCreated) {
          /* Query DeviceModel from SSU and use it to override the value of
           * the friendly name -property defined in the XML configuration */
 -        QString deviceModel = ssuDeviceInfo.displayName(Ssu::DeviceModel);
-+        QString deviceModel = "Asteroid";
++        QString deviceModel = "AsteroidOS";
          MTP_LOG_INFO("Setting MTP friendly name to:" << deviceModel);
          setDeviceFriendlyName(deviceModel);
      }
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index 62a9175..218a398 100644
+index 471d371..3a457a4 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-@@ -8,9 +8,9 @@ CONFIG += plugin debug qtsparql
+@@ -8,7 +8,7 @@ CONFIG += plugin debug
  QT += dbus xml
  QT -= gui
  
 -PKGCONFIG += blkid mount
 +PKGCONFIG += blkid mount Qt5Sparql
+ PKGCONFIG += nemodbus
  
--system($$[QT_INSTALL_BINS]/qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
-+system(qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
- 
- DEPENDPATH += . \
-               .. \
-@@ -44,10 +44,10 @@ SOURCES += fsstorageplugin.cpp \
+ system($$[QT_INSTALL_BINS]/qdbusxml2cpp -c ThumbnailerProxy -p thumbnailerproxy.h:thumbnailerproxy.cpp -i thumbnailpathlist.h ./org.nemomobile.Thumbnailer.xml)
+@@ -43,7 +43,7 @@ SOURCES += fsstorageplugin.cpp \
             storageitem.cpp
  
  LIBPATH += ../../..
@@ -131,11 +127,4 @@ index 62a9175..218a398 100644
 +LIBS    += -lmeegomtp
  
  #install
--target.path = $$[QT_INSTALL_LIBS]/mtp
-+target.path = /usr/lib/mtp
- 
- configuration.path = /etc/fsstorage.d
- configuration.files = phone-memory.xml homedir-blacklist.conf sd-card.xml
--- 
-2.10.1
-
+ target.path = $$[QT_INSTALL_LIBS]/mtp
