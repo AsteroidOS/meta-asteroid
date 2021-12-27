@@ -1,0 +1,59 @@
+From a87488bda55b4a1758bc832b62fef7863b6ef52e Mon Sep 17 00:00:00 2001
+From: MagneFire <dgriet@gmail.com>
+Date: Sun, 26 Dec 2021 16:42:15 +0100
+Subject: [PATCH] usb-modded-worker: Use buteo-mtp wrapper. We don't have a `systemctl-user` so use the `buteo-mtp` one instead.
+
+---
+ src/usb_moded-worker.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/src/usb_moded-worker.c b/src/usb_moded-worker.c
+index 8e56e8a..15cebc4 100644
+--- a/src/usb_moded-worker.c
++++ b/src/usb_moded-worker.c
+@@ -370,19 +371,19 @@ worker_stop_mtpd(void)
+         goto SUCCESS;
+     }
+ 
+-    int rc = common_system("systemctl-user stop buteo-mtp.service");
+-    if( rc != 0 ) {
++    int rc = common_system("buteo-mtp stop");
++    /*if( rc != 0 ) {
+         log_warning("failed to stop mtp daemon; exit code = %d", rc);
+         goto FAILURE;
+-    }
++    }*/
+ 
+     /* Have succesfully stopped mtp service */
+     worker_mtp_service_started = false;
+ 
+     if( common_wait(worker_mtp_stop_delay, worker_mtpd_stopped_p, 0) != WAIT_READY ) {
+         log_warning("failed to stop mtp daemon; giving up");
+         goto FAILURE;
+     }
+ 
+     log_debug("mtp daemon has stopped");
+ 
+@@ -408,16 +409,16 @@ worker_start_mtpd(void)
+     /* Have attempted to start mtp service */
+     worker_mtp_service_started = true;
+ 
+-    int rc = common_system("systemctl-user start buteo-mtp.service");
+-    if( rc != 0 ) {
++    int rc = common_system("buteo-mtp start");
++    /*if( rc != 0 ) {
+         log_warning("failed to start mtp daemon; exit code = %d", rc);
+         goto FAILURE;
+-    }
++    }*/
+ 
+     if( common_wait(worker_mtp_start_delay, worker_mtpd_running_p, 0) != WAIT_READY ) {
+         log_warning("failed to start mtp daemon; giving up");
+         goto FAILURE;
+     }
+ 
+     log_debug("mtp daemon has started");
+ 
+-- 
+2.34.1
+
