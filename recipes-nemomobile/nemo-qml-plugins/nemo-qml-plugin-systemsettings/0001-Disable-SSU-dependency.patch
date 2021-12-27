@@ -1,28 +1,28 @@
-From e131c0ee861e4de36558951dc6c258cc6b9295cf Mon Sep 17 00:00:00 2001
-From: Florent Revest <revestflo@gmail.com>
-Date: Tue, 20 Feb 2018 14:46:26 +0100
-Subject: [PATCH] Disable SSU dependency
+From 3ee1ce483c5abf265aab92fbc0869f9af83ba594 Mon Sep 17 00:00:00 2001
+From: MagneFire <dgriet@gmail.com>
+Date: Sat, 25 Dec 2021 23:12:44 +0100
+Subject: [PATCH] Disable SSU dependency.
 
 ---
  src/deviceinfo.cpp | 21 ---------------------
- src/src.pro        |  1 -
- 2 files changed, 22 deletions(-)
+ src/src.pro        |  2 +-
+ 2 files changed, 1 insertion(+), 22 deletions(-)
 
 diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
 index db7941e..2f75861 100644
 --- a/src/deviceinfo.cpp
 +++ b/src/deviceinfo.cpp
 @@ -33,8 +33,6 @@
-
+ 
  #include <QSet>
-
+ 
 -#include <ssusysinfo.h>
 -
  class DeviceInfoPrivate
  {
  public:
 @@ -47,25 +45,6 @@ public:
-
+ 
  DeviceInfoPrivate::DeviceInfoPrivate()
  {
 -    ssusysinfo_t *si = ssusysinfo_create();
@@ -45,19 +45,21 @@ index db7941e..2f75861 100644
 -
 -    ssusysinfo_delete(si);
  }
-
+ 
  DeviceInfoPrivate::~DeviceInfoPrivate()
 diff --git a/src/src.pro b/src/src.pro
-index d86d61b..6f46264 100644
+index 5b25879..33d76a3 100644
 --- a/src/src.pro
 +++ b/src/src.pro
-@@ -7,7 +7,6 @@ QT -= gui
-
+@@ -7,7 +7,7 @@ QT -= gui
+ 
  CONFIG += c++11 hide_symbols link_pkgconfig
  PKGCONFIG += profile mlite5 mce timed-qt5 libshadowutils blkid libcrypto nemomodels-qt5 libsailfishkeyprovider connman-qt5
--PKGCONFIG += ssu-sysinfo
-
+-PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5
++PKGCONFIG += nemodbus packagekitqt5
+ 
  system(qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
  system(qdbusxml2cpp -c ConnmanVpnProxy -p connmanvpnproxy ../dbus/net.connman.vpn.xml -i qdbusxml2cpp_dbus_types.h)
---
-2.14.3
+-- 
+2.34.1
+
