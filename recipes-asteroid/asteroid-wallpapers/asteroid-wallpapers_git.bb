@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/share/asteroid-launcher/wallpapers/
-    cp ${S}/480x480/* ${D}/usr/share/asteroid-launcher/wallpapers/
+    find ${S} -mindepth 1 -maxdepth 1 -type d -not -empty -not -name ".*" -exec cp -R {} ${D}/usr/share/asteroid-launcher/wallpapers/ \;
 }
 
 FILES:${PN} = "/usr/share/asteroid-launcher/wallpapers/"
