@@ -7,6 +7,7 @@ ConditionUser=!root
 Type=notify
 EnvironmentFile=-/var/lib/environment/compositor/*.conf
 ExecStartPre=/bin/sh -ec 'while [ ! -f /dev/.coldboot_done ]; do sleep 1; done'
+ExecStartPre=/bin/sh -ec '/bin/echo QUIT > /run/psplash_fifo'
 ExecStart=/usr/bin/asteroid-launcher $LIPSTICK_OPTIONS --systemd
 TimeoutStopSec=3
 Restart=always
