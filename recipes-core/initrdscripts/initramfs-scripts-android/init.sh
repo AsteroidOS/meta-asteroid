@@ -130,6 +130,11 @@ umount -l /proc
 umount -l /sys
 mount -t proc proc $BOOT_DIR/proc
 mount -t sysfs sys $BOOT_DIR/sys
+mount -t tmpfs run $BOOT_DIR/run
+
+echo FIFO $BOOT_DIR/run > /run/psplash_fifo
+# We need to give psplash time to create the new named pipe.
+sleep 1
 
 info "Switching to rootfs..."
 exec switch_root -c /dev/ttyprintk $BOOT_DIR /lib/systemd/systemd
