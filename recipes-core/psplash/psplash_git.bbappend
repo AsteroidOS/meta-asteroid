@@ -4,6 +4,7 @@ SRC_URI += "file://psplash-colors.h \
             file://psplash-bar-img.png \
             file://psplash-config.h \
             file://0001-Add-alive-animated-GIF-support.patch \
+            file://0002-psplash-Allow-for-moving-the-named-pipe.patch \
             file://psplash-img-280-154.gif \
             file://psplash-img-320-176.gif \
             file://psplash-img-400-220.gif \

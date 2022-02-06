@@ -1,0 +1,106 @@
+From 3a92bdb69745c1ba0385f17e82b86eb8e2e81efb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 6 Feb 2022 19:13:12 +0100
+Subject: [PATCH] psplash: Allow for moving the named pipe.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ psplash.c | 65 ++++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 40 insertions(+), 25 deletions(-)
+
+diff --git a/psplash.c b/psplash.c
+index 011e3ab..0c04cc0 100644
+--- a/psplash.c
++++ b/psplash.c
+@@ -130,6 +130,15 @@ parse_command (PSplashFB *fb, char *string)
+     {
+       return 1;
+     }
++  else if (!strcmp(command,"FIFO")) 
++    {
++      char *arg = strtok(NULL, "\0");
++
++      if (arg) {
++        setenv("PSPLASH_FIFO_DIR", arg, 1);
++      }
++      return 1;
++    }
+ #ifdef PSPLASH_ENABLE_ANIMATED_GIF
+ 	else if (!strcmp(command, "ALIVE"))
+ 	{
+@@ -332,30 +341,6 @@ main (int argc, char** argv)
+ 		exit(-1);
+ #endif
+ 
+-  rundir = getenv("PSPLASH_FIFO_DIR");
+-
+-  if (!rundir)
+-    rundir = "/run";
+-
+-  chdir(rundir);
+-
+-  if (mkfifo(PSPLASH_FIFO, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP))
+-    {
+-      if (errno!=EEXIST) 
+-	    {
+-	      perror("mkfifo");
+-	      exit(-1);
+-	    }
+-    }
+-
+-  pipe_fd = open (PSPLASH_FIFO,O_RDONLY|O_NONBLOCK);
+-  
+-  if (pipe_fd==-1) 
+-    {
+-      perror("pipe open");
+-      exit(-2);
+-    }
+-
+   if (!disable_console_switch)
+     psplash_console_switch ();
+ 
+@@ -420,7 +405,37 @@ main (int argc, char** argv)
+ 	psplash_alive_init();
+ #endif
+ 
+-  psplash_main (fb, pipe_fd, 0);
++  // Override default masking of S_IWGRP | S_IWOTH
++  // This is needed so that any user can stop psplash.
++  umask(0);
++
++  do {
++    rundir = getenv("PSPLASH_FIFO_DIR");
++
++    if (!rundir)
++      rundir = "/run";
++
++    chdir(rundir);
++
++    if (mkfifo(PSPLASH_FIFO, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH))
++      {
++        if (errno!=EEXIST) 
++        {
++          perror("mkfifo");
++          exit(-1);
++        }
++      }
++
++    pipe_fd = open (PSPLASH_FIFO,O_RDONLY|O_NONBLOCK);
++    
++    if (pipe_fd==-1) 
++      {
++        perror("pipe open");
++        exit(-2);
++      }
++
++    psplash_main (fb, pipe_fd, 0);
++  } while (strcmp(rundir, getenv("PSPLASH_FIFO_DIR")));
+ 
+ #ifdef PSPLASH_ENABLE_ANIMATED_GIF
+ 	psplash_alive_destroy();
+-- 
+2.35.1
+
