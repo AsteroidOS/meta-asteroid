@@ -80,7 +80,7 @@ while [ ! -e /sys/block/mmcblk0 ] ; do
 done
 
 /sbin/fsck.ext4 -p /dev/$sdcard_partition
-mount -t auto -o rw,noatime,nodiratime,nodelalloc /dev/$sdcard_partition /sdcard
+mount -t auto -o rw,noatime,nodiratime /dev/$sdcard_partition /sdcard
 [ $? -eq 0 ] || fail "Failed to mount the sdcard. Cannot continue."
 
 info "Checking for loop rootfs image on the sdcard..."
@@ -93,7 +93,7 @@ BOOT_DIR="/sdcard"
 if [ -e $ANDROID_MEDIA_DIR/asteroidos.ext4 ] ; then
     # Boots from a /sdcard/asteroidos.ext4 loop file
     info "Rootfs image found at $ANDROID_MEDIA_DIR/asteroidos.ext4; mounting it now ..."
-    mount -o noatime,nodiratime,nodelalloc,sync,rw,loop $ANDROID_MEDIA_DIR/asteroidos.ext4 /loop
+    mount -o noatime,nodiratime,sync,rw,loop $ANDROID_MEDIA_DIR/asteroidos.ext4 /loop
     [ $? -ne 0 ] || BOOT_DIR="/loop"
 fi
 
