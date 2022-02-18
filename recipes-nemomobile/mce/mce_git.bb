@@ -11,6 +11,7 @@ SRC_URI = "gitsm://github.com/sailfishos/mce.git;protocol=https \
     file://0005-Ambient-Mode-Wait-for-compositor-when-sending-enable.patch \
     file://0006-Ambient-Mode-Exit-ambient-mode-when-touch-is-detecte.patch \
     file://0007-powerkey-Also-suspend-on-palm-reports.patch \
+    file://builtin-gconf.values \
     file://mce.service"
 SRC_URI:append:qemux86 = " file://0001-Keep-screen-on-by-default-on-emulator.patch"
 SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"
@@ -24,7 +25,10 @@ do_install() {
     oe_runmake install DESTDIR=${D}
     install -m 0644 ${WORKDIR}/mce.service ${D}${systemd_system_unitdir}
     rm -r ${D}/var/run/
+
+    install -d ${D}${localstatedir}/lib/mce/
+    install -m 0644 ${WORKDIR}/builtin-gconf.values ${D}${localstatedir}/lib/mce/
 }
 
-FILES:${PN} += " /run/mce /lib/systemd/system "
+FILES:${PN} += " /run/mce /lib/systemd/system /var/lib/mce"
 FILES:${PN}-dbg += "/usr/lib/mce/modules/.debug"
