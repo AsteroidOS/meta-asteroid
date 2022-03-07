@@ -15,10 +15,6 @@ RDEPENDS:${PN} += "pulseaudio-module-keepalive"
 inherit autotools pkgconfig
 B = "${S}"
 
-do_configure:prepend() {
-    sed -i "/define QCOM_HARDWARE/d" src/common/droid-util-51.h
-}
-
 FILES:${PN} += "/usr/lib/pulse-15.0/modules"
 FILES:${PN}-dbg += "/usr/lib/pulse-15.0/modules/.debug/"
 FILES:${PN}-staticdev += "/usr/lib/pulse-15.0/modules/*.a"
