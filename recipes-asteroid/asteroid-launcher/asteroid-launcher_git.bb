@@ -2,6 +2,7 @@ SUMMARY = "Asteroid's launcher based on lipstick"
 HOMEPAGE = "https://github.com/AsteroidOS/asteroid-launcher"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd089f5d6221d9054029963e332"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
     file://asteroid-launcher.service \
