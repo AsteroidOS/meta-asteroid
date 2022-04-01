@@ -4,10 +4,16 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+def display_variables(d):
+    return ["MACHINE_DISPLAY_FLAT_TIRE", "MACHINE_DISPLAY_BORDER_GESTURE_WIDTH", "MACHINE_DISPLAY_ROUND", "MACHINE_NEEDS_BURN_IN_PROTECTION"]
+
+def capability_variables(d):
+    return ["MACHINE_HAS_WLAN", "MACHINE_HAS_SPEAKER"]
+
 python do_generate_config () {
     machine_vars = {
-        "Display": ["MACHINE_DISPLAY_FLAT_TIRE", "MACHINE_DISPLAY_BORDER_GESTURE_WIDTH", "MACHINE_DISPLAY_ROUND", "MACHINE_NEEDS_BURN_IN_PROTECTION"],
-        "Capabilities": ["MACHINE_HAS_WLAN", "MACHINE_HAS_SPEAKER"]
+        "Display": display_variables(d),
+        "Capabilities": capability_variables(d)
     }
 
     from configparser import ConfigParser
@@ -32,6 +38,13 @@ do_install:append() {
     install -m 644 ${WORKDIR}/machine.conf ${D}/etc/asteroid/machine.conf
 }
 
+def machine_variables(d):
+    variables = []
+    variables.extend(display_variables(d))
+    variables.extend(capability_variables(d))
+    return " ".join(variables)
+
+do_generate_config[vardeps] += "${@machine_variables(d)}"
 addtask do_generate_config before do_install
 
 FILES:${PN} += "/etc/asteroid/"
