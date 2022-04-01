@@ -11,7 +11,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit cmake_qt5
 
-DEPENDS += "extra-cmake-modules asteroid-machine-config qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"
+DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"
 RDEPENDS:${PN} += "asteroid-machine-config qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
 
 FILES:${PN} += "/usr/lib /usr/share/icons/asteroid/"
