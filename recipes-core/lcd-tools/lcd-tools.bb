@@ -1,10 +1,10 @@
 DESCRIPTION = "Daemon backend to control LCD functions"
-HOMEPAGE = "https://github.com/LecrisUT/lcd-tools.git"
+HOMEPAGE = "https://github.com/AsteroidOS/lcd-tools.git"
 LICENSE = "GPLv3"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 
-SRC_URI = "git://github.com/LecrisUT/lcd-tools.git;branch=main;protocol=https"
+SRC_URI = "git://github.com/AsteroidOS/lcd-tools.git;branch=main;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r0"
 PV = "+git${SRCPV}"
