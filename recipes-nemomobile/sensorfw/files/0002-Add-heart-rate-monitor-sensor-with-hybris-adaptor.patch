@@ -1,11 +1,15 @@
-From f585b127300383fe321b5ff1a08ba09dce403890 Mon Sep 17 00:00:00 2001
+From 8d6c6fdc251bfa6ae707eb2155cfd193ae5baa60 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 11 Jan 2022 23:44:15 +0100
-Subject: [PATCH 2/4] Add heart rate monitor sensor with hybris adaptor
+Subject: [PATCH 2/5] Add heart rate monitor sensor with hybris adaptor
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  adaptors/adaptors.pro                         |   1 +
- .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 101 +++++++++++++
+ .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 120 ++++++++++++++++
  adaptors/hybrishrmadaptor/hybrishrmadaptor.h  |  67 +++++++++
  .../hybrishrmadaptor/hybrishrmadaptor.pro     |  13 ++
  .../hybrishrmadaptorplugin.cpp                |  35 +++++
@@ -28,7 +32,7 @@ Subject: [PATCH 2/4] Add heart rate monitor sensor with hybris adaptor
  sensors/hrmsensor/hrmsensor_a.cpp             |  38 +++++
  sensors/hrmsensor/hrmsensor_a.h               |  55 ++++++++
  sensors/sensors.pro                           |   3 +-
- 24 files changed, 1161 insertions(+), 5 deletions(-)
+ 24 files changed, 1180 insertions(+), 5 deletions(-)
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.h
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
@@ -61,10 +65,10 @@ index a214c79..b83a3ab 100644
  
 diff --git a/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
 new file mode 100644
-index 0000000..0b92efa
+index 0000000..ec64e0d
 --- /dev/null
 +++ b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
-@@ -0,0 +1,101 @@
+@@ -0,0 +1,120 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -91,7 +95,6 @@ index 0000000..0b92efa
 +#include "hybrishrmadaptor.h"
 +#include "logging.h"
 +#include "datatypes/utils.h"
-+#include <hardware/sensors.h>
 +#include "config.h"
 +
 +#ifndef SENSOR_TYPE_HEART_RATE
@@ -146,6 +149,25 @@ index 0000000..0b92efa
 +{
 +    HeartRateData *d = buffer->nextSlot();
 +    d->timestamp_ = quint64(data.timestamp * .001);
++#ifdef USE_BINDER
++    d->bpm_ = data.u.heartRate.bpm;
++    switch(data.u.heartRate.status) {
++    case UNRELIABLE:
++        d->status_ = HrmUnreliable;
++        break;
++    case ACCURACY_LOW:
++        d->status_ = HrmAccuracyLow;
++        break;
++    case ACCURACY_MEDIUM:
++        d->status_ = HrmAccuracyMedium;
++        break;
++    case ACCURACY_HIGH:
++        d->status_ = HrmAccuracyHigh;
++        break;
++    default:
++        d->status_ = HrmNoContact;
++    }
++#else
 +    d->bpm_ = data.heart_rate.bpm;
 +    switch(data.heart_rate.status) {
 +    case SENSOR_STATUS_UNRELIABLE:
@@ -163,6 +185,7 @@ index 0000000..0b92efa
 +    default:
 +        d->status_ = HrmNoContact;
 +    }
++#endif
 +    buffer->commit();
 +    buffer->wakeUpReaders();
 +}
@@ -1413,5 +1436,5 @@ index 6afdb7d..286fecf 100644
  
  contextprovider:SUBDIRS += contextplugin
 -- 
-2.34.1
+2.35.3
 

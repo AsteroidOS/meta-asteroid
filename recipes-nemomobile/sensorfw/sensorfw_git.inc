@@ -7,16 +7,17 @@ SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https \
            file://0001-Do-not-hide-stepcounter-by-default.patch \
            file://0002-Add-heart-rate-monitor-sensor-with-hybris-adaptor.patch \
            file://0003-Add-Wrist-gesture-sensor-via-libhybris-adaptor.patch \
-           file://0004-Fix-compilation-when-hybris-is-used.patch \
+           file://0004-Fix-compilation-when-autohybris-is-used.patch \
+           file://0005-Fix-compilation-when-hybris-is-used.patch \
            file://sensorfwd.service"
 SRCREV = "0.12.6"
 PR = "r1"
-PV = "+git${SRCPV}"
+PV = "${PACKAGE}+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit qmake5
 
-EXTRA_QMAKEVARS_PRE = "CONFIG+=autohybris"
+PROVIDES += "sensorfw"
 
 do_configure:prepend() {
     sed "s=@LIB@=lib/=g" ../git/sensord-qt5.pc.in > ../git/sensord-qt5.pc

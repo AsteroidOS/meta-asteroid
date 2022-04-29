@@ -1,0 +1,109 @@
+From cd787198e1479d4acce40251caf56e51bde5ee7b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Mon, 18 Apr 2022 00:05:25 +0200
+Subject: [PATCH 5/5] Fix compilation when hybris is used. Make sure that the
+ datatypes are included to fix compilation issues. Install D-Bus config files
+ so that sensorfw can register itself. Install mkspecs so that the sensorfw
+ plugin is available for QtSensors.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ core/core.pro | 13 +++++--------
+ sensorfw.pro  | 44 +++++++++++++++++++++-----------------------
+ 2 files changed, 26 insertions(+), 31 deletions(-)
+
+diff --git a/core/core.pro b/core/core.pro
+index e98258a..1f8ec31 100644
+--- a/core/core.pro
++++ b/core/core.pro
+@@ -89,12 +89,9 @@ lunaservice {
+     PKGCONFIG += luna-service2 LunaSysMgrCommon LunaSysMgrIpcMessages
+ }
+ 
+-contains(CONFIG,hybris) {
+-} else {
+-    publicheaders.path  = $${publicheaders.path}/core
+-    publicheaders.files = $$HEADERS
++publicheaders.path  = $${publicheaders.path}/core
++publicheaders.files = $$HEADERS
+ 
+-    include(../common-install.pri)
+-    target.path = $$SHAREDLIBPATH
+-    INSTALLS += target
+-}
++include(../common-install.pri)
++target.path = $$SHAREDLIBPATH
++INSTALLS += target
+diff --git a/sensorfw.pro b/sensorfw.pro
+index 211c13f..355bd31 100644
+--- a/sensorfw.pro
++++ b/sensorfw.pro
+@@ -67,23 +67,23 @@ contains(CONFIG,hybris) {
+     SUBDIRS += core/hybris.pro \
+                adaptors
+     }
+-    publicheaders.files += include/*.h
++}
++publicheaders.files += include/*.h
+ 
+-    INSTALLS += PKGCONFIGFILES QTCONFIGFILES
+-    PKGCONFIGFILES.path = $$[QT_INSTALL_LIBS]/pkgconfig
+-    QTCONFIGFILES.files = sensord.prf
++INSTALLS += PKGCONFIGFILES QTCONFIGFILES
++PKGCONFIGFILES.path = $$[QT_INSTALL_LIBS]/pkgconfig
++QTCONFIGFILES.files = sensord.prf
+ 
+-    qt-api.depends = datatypes
+-    sensord.depends = datatypes adaptors sensors chains
++qt-api.depends = datatypes
++sensord.depends = datatypes adaptors sensors chains
+ 
+-    include( doc/doc.pri )
+-    include( common-install.pri )
+-    include( common-config.pri )
++include( doc/doc.pri )
++include( common-install.pri )
++include( common-config.pri )
+ 
+-    PKGCONFIGFILES.files = sensord-qt5.pc
+-    PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt5.pc'
+-    QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
+-}
++PKGCONFIGFILES.files = sensord-qt5.pc
++PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt5.pc'
++QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
+ 
+ 
+ 
+@@ -91,17 +91,15 @@ contains(CONFIG,hybris) {
+ #PKGCONFIGFILES.commands = sed -i \"s/Version:.*$$/Version: `head -n1 debian/changelog | cut -f 2 -d\' \' | tr -d \'()\'`/\" sensord-qt5.pc
+ 
+ 
+-!contains(CONFIG,hybris) {
+ # config file installation not handled here
+-    DBUSCONFIGFILES.files = sensorfw.conf
+-    DBUSCONFIGFILES.path = /etc/dbus-1/system.d
+-    INSTALLS += DBUSCONFIGFILES
+-
+-    SENSORDCONFIGFILES.files  = config/10-sensord-default.conf
+-    SENSORDCONFIGFILES.files += config/20-sensors-default.conf
+-    SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
+-    INSTALLS += SENSORDCONFIGFILES
+-}
++DBUSCONFIGFILES.files = sensorfw.conf
++DBUSCONFIGFILES.path = /etc/dbus-1/system.d
++INSTALLS += DBUSCONFIGFILES
++
++SENSORDCONFIGFILES.files  = config/10-sensord-default.conf
++SENSORDCONFIGFILES.files += config/20-sensors-default.conf
++SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
++INSTALLS += SENSORDCONFIGFILES
+ 
+ contains(CONFIG,systemdunit) {
+     # Install service files through packaging to take into account
+-- 
+2.35.3
+
