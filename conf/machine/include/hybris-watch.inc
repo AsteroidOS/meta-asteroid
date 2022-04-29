@@ -10,6 +10,8 @@ PREFERRED_PROVIDER_virtual/libgles2 = "libhybris"
 PREFERRED_PROVIDER_virtual/android-headers = "android"
 PREFERRED_PROVIDER_virtual/android-system-image = "android"
 
+PREFERRED_VERSION_sensorfw = "hybris%"
+
 KERNEL_IMAGETYPE = "zImage-dtb"
 IMAGE_FSTYPES += "ext4"
 IMAGE_ROOTFS_ALIGNMENT="4"
