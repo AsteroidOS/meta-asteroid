@@ -2,12 +2,12 @@
 
 DESCRIPTION = "Simple proxy for using Android binder based bluetooth through vhci."
 LICENSE = "GPL-2.0-or-later"
-LIC_FILES_CHKSUM = "file://bluebinder.c;beginline=1;endline=27;md5=430727b8efeca344ab89eeb635b4fa79"
+LIC_FILES_CHKSUM = "file://bluebinder.c;beginline=1;endline=29;md5=ba064fbc04c563e801926639c469e5cc"
 
 SRC_URI = "git://github.com/mer-hybris/bluebinder.git;branch=master;protocol=https \
-           file://0001-Use-CC-as-compiler.patch \
+           file://0001-service-fixes.patch \
 "
-SRCREV = "419ab4a36fd61f841e7b1070b92b5e23ea813b63"
+SRCREV = "1.0.15"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
