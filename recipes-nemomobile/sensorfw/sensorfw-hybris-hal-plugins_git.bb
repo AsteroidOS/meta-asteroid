@@ -4,7 +4,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 require sensorfw.inc
 
-EXTRA_QMAKEVARS_PRE = "CONFIG+=autohybris"
+EXTRA_QMAKEVARS_PRE = "CONFIG+=hybris"
 
 do_install:append() {
     # Remove sensorfw core elements.
