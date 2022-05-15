@@ -1,11 +1,15 @@
-From 10b1795c2eb3b524fab0e76bcc6754f1cae5336b Mon Sep 17 00:00:00 2001
+From 59772fc6b435c76c35b2c9b1ebe157503ea07555 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:48:18 +0100
-Subject: [PATCH 3/4] Add Wrist gesture sensor via libhybris adaptor.
+Subject: [PATCH 3/5] Add Wrist gesture sensor via libhybris adaptor.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  adaptors/adaptors.pro                         |   1 +
- .../hybriswristgestureadaptor.cpp             |  91 +++++++++++++
+ .../hybriswristgestureadaptor.cpp             |  94 ++++++++++++++
  .../hybriswristgestureadaptor.h               |  61 +++++++++
  .../hybriswristgestureadaptor.pro             |  14 ++
  .../hybriswristgestureadaptorplugin.cpp       |  34 +++++
@@ -20,7 +24,7 @@ Subject: [PATCH 3/4] Add Wrist gesture sensor via libhybris adaptor.
  .../wristgesturesensor/wristgesturesensor.pro |  11 ++
  .../wristgesturesensor_a.cpp                  |  49 +++++++
  .../wristgesturesensor/wristgesturesensor_a.h |  57 +++++++++
- 16 files changed, 680 insertions(+), 1 deletion(-)
+ 16 files changed, 683 insertions(+), 1 deletion(-)
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.h
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
@@ -48,10 +52,10 @@ index b83a3ab..665716d 100644
  
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
 new file mode 100644
-index 0000000..bb2c4fc
+index 0000000..8edc6ca
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,94 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -78,7 +82,6 @@ index 0000000..bb2c4fc
 +#include "hybriswristgestureadaptor.h"
 +#include "logging.h"
 +#include "datatypes/utils.h"
-+#include <hardware/sensors.h>
 +#include "config.h"
 +
 +
@@ -131,6 +134,9 @@ index 0000000..bb2c4fc
 +{
 +    TimedUnsigned *d = buffer->nextSlot();
 +    d->timestamp_ = quint64(data.timestamp * .001);
++#ifdef USE_BINDER
++    d->value_ = data.u.stepCount;
++#else
 +#ifdef NO_SENSORS_EVENT_U64
 +    uint64_t value = 0;
 +    memcpy(&value, data.data, sizeof value);
@@ -139,6 +145,7 @@ index 0000000..bb2c4fc
 +    d->value_ = data.u64.step_counter;
 +#endif
 +    sensordLogD() << "HybrisWristGestureAdaptor: processSample(): " << data.data[0];
++#endif
 +
 +    buffer->commit();
 +    buffer->wakeUpReaders();
@@ -831,5 +838,5 @@ index 0000000..a589337
 +
 +#endif
 -- 
-2.34.1
+2.35.3
 
