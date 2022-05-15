@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=24f23d12bbc59c7e5ab483c52a172555"
 SRC_URI = "git://github.com/mer-hybris/libgbinder.git;branch=master;protocol=https \
            file://gbinder.conf \
 "
-SRCREV = "88df2edb9533fc4680fe59f3113f839d0cf9c77a"
+SRCREV = "1.1.14"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
