@@ -11,7 +11,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += " qtbase libresource dbus virtual/libgles2"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 B = "${WORKDIR}/git"
 

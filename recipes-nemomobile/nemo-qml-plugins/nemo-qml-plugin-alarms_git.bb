@@ -9,7 +9,7 @@ SRCREV = "2893188822726fcaaf1d70f74f64bfecd07d3b13"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative timed"
 

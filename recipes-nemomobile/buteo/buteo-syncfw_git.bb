@@ -9,7 +9,7 @@ SRCREV = "dc1483848049ad028cfdbdf563a9a6ce31032c59"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 gsettings
+inherit qmake5 gsettings pkgconfig
 
 EXTRA_QMAKEVARS_PRE += "CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE"
 

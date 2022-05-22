@@ -11,6 +11,6 @@ SRCREV = "bccf4e2f28c65006c2cfa8a36acc584a59bcf501"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtbase kcalcore timed libical sqlite3 util-linux"

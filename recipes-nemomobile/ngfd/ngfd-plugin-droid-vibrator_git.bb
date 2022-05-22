@@ -19,7 +19,7 @@ do_install:append () {
     cp ${WORKDIR}/50-droid-vibrator.ini ${D}/usr/share/ngfd/plugins.d/
 }
 
-inherit cmake
+inherit cmake pkgconfig
 
 FILES:${PN} += "/usr/lib/ngf/ /usr/share/ngfd/plugins.d/"
 FILES:${PN}-dbg += "/usr/lib/ngf/.debug/"

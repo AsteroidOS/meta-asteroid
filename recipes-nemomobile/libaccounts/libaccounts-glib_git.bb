@@ -20,7 +20,7 @@ do_install:append() {
     rm -r ${D}/usr/lib/girepository-1.0/
 }
 
-DEPENDS += "glib-2.0 glib-2.0-native vala-native python3-pygobject-native gobject-introspection prelink-native qemu-native"
+DEPENDS += "glib-2.0 glib-2.0-native vala-native python3-pygobject-native gobject-introspection qemu-native"
 
 DEPENDS += "libcheck libxml2 sqlite3"
 

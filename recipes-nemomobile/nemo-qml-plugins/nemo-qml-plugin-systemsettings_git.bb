@@ -13,7 +13,7 @@ SRCREV = "8ee508e5370487afef1826e2ebaff0e44e604300"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 do_install:append() {
     cp ${WORKDIR}/location.conf ${D}/etc/location/

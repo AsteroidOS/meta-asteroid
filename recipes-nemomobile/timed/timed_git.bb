@@ -13,7 +13,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5 useradd
+inherit qmake5 useradd pkgconfig
 
 B = "${S}"
 
@@ -43,7 +43,7 @@ pkg_postinst:${PN}() {
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
-DEPENDS += "pcre systemd tzdata libiodata-native libiodata qtbase sailfish-access-control"
+DEPENDS += "pcre libpcre systemd tzdata libiodata-native libiodata qtbase sailfish-access-control"
 RDEPENDS:${PN} += "libcap-bin tzdata"
 FILES:${PN} += "/usr/lib/ /usr/lib/systemd/user/default.target.wants/"
 FILES:${PN}-dev += "/usr/share/mkspecs"

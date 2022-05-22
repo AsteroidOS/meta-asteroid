@@ -10,6 +10,6 @@ SRCREV = "2c6873c0478b87d54a84c3c3f0e9aead262b9d9d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtbase timed libical bison-native"

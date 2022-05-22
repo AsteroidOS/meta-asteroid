@@ -11,9 +11,9 @@ SRCREV = "1ff776d787e3c95424a9925097658ef99a6221ba"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
-DEPENDS += "qtdeclarative qtbase mapplauncherd"
+DEPENDS += "qtdeclarative qtbase mapplauncherd glib-2.0"
 RDEPENDS:${PN} += "mapplauncherd"
 
 do_configure:prepend() {
