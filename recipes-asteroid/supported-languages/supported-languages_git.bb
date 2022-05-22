@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/AsteroidOS/supported-languages"
 LICENSE = "CC0-1.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=65d3616852dbf7b1a6d4b53b00626032"
 
-SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https;branch=master \
     file://locale.conf \
     file://localeEnv.conf"
 SRCREV = "${AUTOREV}"

@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/mlite"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://src/mnotification.cpp;beginline=1;endline=18;md5=5dd5d73b0225b3099a82e6ad93283ea1"
 
-SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \
            file://0001-MDesktopEntry-Allow-dynamic-locale-switch-by-disabli.patch \
            file://0002-mlite-Disable-tests.patch "
 SRCREV = "37ded5a0ca8f0770e3347f3711c7c4603d2a5b25"

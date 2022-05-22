@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/mer-hybris/geoclue-providers-hybris"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/mer-hybris/geoclue-providers-hybris.git;protocol=https"
+SRC_URI = "git://github.com/mer-hybris/geoclue-providers-hybris.git;protocol=https;branch=master"
 SRCREV = "8775abcf9983abb4b8be28ad43f7a193edac5605"
 PR = "r1"
 PV = "+git${SRCPV}"

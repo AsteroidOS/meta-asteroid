@@ -4,7 +4,7 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd089f5d6221d9054029963e332"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=master \
     file://asteroid-launcher.service \
     file://default.conf"
 SRC_URI:append:qemux86 = " file://qemu.conf file://kms-qemu.json"

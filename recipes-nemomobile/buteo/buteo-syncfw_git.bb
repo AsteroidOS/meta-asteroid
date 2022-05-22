@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/buteo-syncfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=93ae0a8ec7ecf7709c725bd232bbafc6"
 
-SRC_URI = "git://github.com/sailfishos/buteo-syncfw.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/buteo-syncfw.git;protocol=https;branch=master \
            file://msyncd.service"
 SRCREV = "dc1483848049ad028cfdbdf563a9a6ce31032c59"
 PR = "r1"

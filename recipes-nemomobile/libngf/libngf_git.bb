@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/libngf"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/libngf.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/libngf.git;protocol=https;branch=master \
         file://0001-Disable-tests.patch"
 SRCREV = "06be88da245bf5eed6880e871f65d35115d05674"
 PR = "r1"

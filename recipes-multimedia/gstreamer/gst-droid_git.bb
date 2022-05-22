@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 inherit meson pkgconfig
 
-SRC_URI = "git://github.com/sailfishos/gst-droid.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/gst-droid.git;protocol=https;branch=master \
            file://0001-Remove-references-to-mode-that-are-not-in-upstream-g.patch"
 SRCREV = "cf2d5f9652364af471cac7d7f04388a7bab9448a"
 PR = "r1"

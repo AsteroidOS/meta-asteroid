@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-calendar"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=4f66b392565d1dd726d4c892676d96fd"
 
-SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-calendar.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-calendar.git;protocol=https;branch=master"
 SRCREV = "dcf610f82840016b254896035d4223baa559075e"
 PR = "r1"
 PV = "+git${SRCPV}"

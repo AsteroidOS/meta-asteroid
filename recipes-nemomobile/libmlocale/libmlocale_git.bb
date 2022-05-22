@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/libmlocale"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=7635eef25dff78f483059bf21a20686d"
 
-SRC_URI = "git://github.com/sailfishos/libmlocale.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/libmlocale.git;protocol=https;branch=master \
            file://0001-Allow-for-deprecated-functions.patch \
            file://0002-Disable-tests-and-doc.patch \
            file://0003-configure-Use-a-usr-prefix-by-default.patch"
