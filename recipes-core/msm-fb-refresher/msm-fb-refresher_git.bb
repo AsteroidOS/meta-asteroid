@@ -3,7 +3,7 @@ PR = "r0"
 SRC_URI = "git://github.com/AsteroidOS/msm-fb-refresher.git;protocol=https;branch=master \
     file://msm-fb-refresher.service"
 SRCREV = "b89cca860f9c37e71b3fbd5ae53c4e8d521e1de8"
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://refresher.c;beginline=1;endline=16;md5=3d0eae401b24b819f25959dcfcc3194f"
 S = "${WORKDIR}/git"
 PACKAGE_DEBUG_SPLIT_STYLE = "debug-without-src"

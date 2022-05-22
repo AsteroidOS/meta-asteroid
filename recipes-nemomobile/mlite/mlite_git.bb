@@ -1,6 +1,6 @@
 SUMMARY = "A light version of meegotouch, pulling in useful parts without requiring the full heavy library."
 HOMEPAGE = "https://github.com/sailfishos/mlite"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://src/mnotification.cpp;beginline=1;endline=18;md5=5dd5d73b0225b3099a82e6ad93283ea1"
 
 SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \

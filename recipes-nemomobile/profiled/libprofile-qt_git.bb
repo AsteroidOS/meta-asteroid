@@ -1,6 +1,6 @@
 SUMMARY = "Device profile handling library for Qt."
 HOMEPAGE = "https://github.com/sailfishos/libprofile-qt"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/profile.cpp;beginline=1;endline=34;md5=1bb00ceba8c2bf23723b34ecbfbad397"
 
 SRC_URI = "git://github.com/sailfishos/libprofile-qt.git;protocol=https;branch=master"

@@ -1,6 +1,6 @@
 SUMMARY = "Nemo keepalive plugin for PulseAudio"
 HOMEPAGE = "https://github.com/sailfishos/pulseaudio-module-keepalive"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f294906e6e4eac9d917503a0bbd139b4"
 
 SRC_URI = "git://github.com/sailfishos/pulseaudio-module-keepalive.git;protocol=https;branch=master \

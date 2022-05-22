@@ -1,6 +1,6 @@
 SUMMARY = "Nemomobile's libdsme."
 HOMEPAGE = "https://github.com/sailfishos/libdsme"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 DEPENDS += " glib-2.0 libcheck pkgconfig-native"

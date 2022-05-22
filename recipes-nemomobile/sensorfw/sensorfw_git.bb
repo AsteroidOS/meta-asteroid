@@ -1,6 +1,6 @@
 SUMMARY = "Nemomobile's sensorfw"
 HOMEPAGE = "https://github.com/sailfishos/sensorfw"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master \

@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for system settings on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-systemsettings"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/displaysettings.cpp;beginline=1;endline=31;md5=99ff23884718e3e2c85992a9294d18df"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protocol=https;branch=master \

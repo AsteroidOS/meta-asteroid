@@ -1,6 +1,6 @@
 SUMMARY = "Nemomobile's non graphical feedback daemon's pulse plugin"
 HOMEPAGE = "https://github.com/sailfishos/ngfd-plugin-pulse"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/ngfd-plugin-pulse.git;protocol=https;branch=master"

@@ -1,6 +1,6 @@
 SUMMARY = "Daemon that helps to launch applications faster by preloading dynamically linked libraries and caching stuff"
 HOMEPAGE = "https://github.com/sailfishos/mapplauncherd"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://github.com/sailfishos/mapplauncherd.git;protocol=https;branch=master \

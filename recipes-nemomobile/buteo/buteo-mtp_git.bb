@@ -1,6 +1,6 @@
 SUMMARY = "NemoMobile's MTP Stack"
 HOMEPAGE = "https://github.com/sailfishos/buteo-mtp"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a0b1f3b62af44e24404"
 
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https;branch=master \

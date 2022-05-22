@@ -1,7 +1,7 @@
 DESCRIPTION = "This QPA plugin allows rendering on top of libhybris-based hwcomposer EGL \
 platforms. The hwcomposer API is specific to a given Droid release, and \
 sometimes also SoC type (generic, qcom, exynos4, ...)."
-LICENSE = "LGPL-2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c08382077db2dbc01b1b5536ec6665"
 
 PV = "5.15.0+gitr${SRCPV}"

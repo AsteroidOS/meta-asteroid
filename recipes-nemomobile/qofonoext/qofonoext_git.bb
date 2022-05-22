@@ -1,6 +1,6 @@
 SUMMARY = "A library for accessing nemomobile specific ofono extensions, and a declarative plugin for it."
 HOMEPAGE = "https://github.com/sailfishos/libqofonoext"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://src/qofonoext.cpp;beginline=1;endline=14;md5=e78738e9230b2e0f55eb7f63e3444df5"
 
 SRC_URI = "git://github.com/sailfishos/libqofonoext.git;protocol=https;branch=master"

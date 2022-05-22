@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for thumbnails generation on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-thumbnailer"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=99bfde884fbd54d5f6958982e31a4237"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-thumbnailer.git;protocol=https;branch=master"

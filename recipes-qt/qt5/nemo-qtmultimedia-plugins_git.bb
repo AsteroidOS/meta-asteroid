@@ -1,6 +1,6 @@
 SUMMARY = "QtMultimedia QML VideoOutput backend for GStreamer NemoVideoTexture interface"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qtmultimedia-plugins"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/videotexturebackend/videotexturebackend.cpp;beginline=1;endline=31;md5=345009371abdfb1df57032e6f41dbd26"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qtmultimedia-plugins.git;protocol=https;branch=master \

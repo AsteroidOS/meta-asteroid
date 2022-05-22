@@ -1,6 +1,6 @@
 SUMMARY = "Meego Locale library"
 HOMEPAGE = "https://github.com/sailfishos/libmlocale"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=7635eef25dff78f483059bf21a20686d"
 
 SRC_URI = "git://github.com/sailfishos/libmlocale.git;protocol=https;branch=master \

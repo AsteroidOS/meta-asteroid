@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for alarms on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-alarms"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=51d0e64178c105c6066f6731ee6f40b6"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-alarms.git;protocol=https;branch=master \

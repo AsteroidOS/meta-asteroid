@@ -1,6 +1,6 @@
 SUMMARY = "usb_moded Qt bindings."
 HOMEPAGE = "https://github.com/sailfishos/libusb-moded-qt"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/qusbmoded.cpp;beginline=1;endline=32;md5=ffd9306b0b4c1289cd519527ddbc8d5a"
 
 SRC_URI = "git://github.com/sailfishos/libusb-moded-qt.git;protocol=https;branch=master \

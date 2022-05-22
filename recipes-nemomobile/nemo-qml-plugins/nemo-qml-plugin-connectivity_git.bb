@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for connectivity on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-connectivity/"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=a286bacf410e770064c78ac9470af1a2"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-connectivity.git;protocol=https;branch=master"

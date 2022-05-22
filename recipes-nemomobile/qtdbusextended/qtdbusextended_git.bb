@@ -1,6 +1,6 @@
 SUMMARY = "Extended DBus for Qt"
 HOMEPAGE = "https://github.com/nemomobile/qtdbusextended"
-LICENSE = "LGPL-2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=9851ce31b8dbc090eecd6cec46a8bf62"
 
 SRC_URI = "git://github.com/nemomobile/qtdbusextended.git;protocol=https;branch=master \

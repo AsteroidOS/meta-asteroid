@@ -1,6 +1,6 @@
 SUMMARY = "Nemomobile's MCE's development files."
 HOMEPAGE = "https://github.com/sailfishos/mce-dev"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://github.com/sailfishos/mce-dev.git;protocol=https;branch=master"

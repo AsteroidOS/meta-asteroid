@@ -1,6 +1,6 @@
 SUMMARY = "QtComponents plugin for mapplauncherd"
 HOMEPAGE = "https://github.com/sailfishos/mapplauncherd-booster-qtcomponents"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://src/qmlbooster.cpp;beginline=1;endline=18;md5=7e2bc276f949feb1d8229e665a6a2559"
 
 SRC_URI = "git://github.com/sailfishos/mapplauncherd-booster-qtcomponents.git;protocol=https;branch=master \
