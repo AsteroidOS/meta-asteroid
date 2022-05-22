@@ -1,24 +1,24 @@
-From 4d4218d62cac20771397d6d91830b9b7c5ff9ec6 Mon Sep 17 00:00:00 2001
+From 2f863e53cd717d927f340dc054e4712a8905877e Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 14 Jul 2015 12:07:59 +0200
-Subject: [PATCH 1/1] Fixes build
+Subject: [PATCH] Fixes build
 
 ---
  src/server/adaptor.h              |   1 +
- src/server/config.type.cpp        |  33 +++++++++++
+ src/server/config.type.cpp        |  37 ++++++++++
  src/server/config.type.h          |   5 ++
- src/server/customization.type.cpp |  23 ++++++++
+ src/server/customization.type.cpp |  23 ++++++
  src/server/customization.type.h   |   5 ++
- src/server/queue.type.cpp         | 115 ++++++++++++++++++++++++++++++++++++++
+ src/server/queue.type.cpp         | 115 ++++++++++++++++++++++++++++++
  src/server/queue.type.h           |   5 ++
- src/server/server.pro             |  12 +++-
- src/server/settings.type.cpp      |  59 +++++++++++++++++++
+ src/server/server.pro             |  10 ++-
+ src/server/settings.type.cpp      |  59 +++++++++++++++
  src/server/settings.type.h        |   5 ++
- src/server/timed-cust-rc.type.cpp |  25 +++++++++
+ src/server/timed-cust-rc.type.cpp |  25 +++++++
  src/server/timed-cust-rc.type.h   |   5 ++
- src/server/tzdata.type.cpp        |  53 ++++++++++++++++++
+ src/server/tzdata.type.cpp        |  53 ++++++++++++++
  src/server/tzdata.type.h          |   5 ++
- 14 files changed, 348 insertions(+), 3 deletions(-)
+ 14 files changed, 351 insertions(+), 2 deletions(-)
  create mode 100644 src/server/config.type.cpp
  create mode 100644 src/server/config.type.h
  create mode 100644 src/server/customization.type.cpp
@@ -33,10 +33,10 @@ Subject: [PATCH 1/1] Fixes build
  create mode 100644 src/server/tzdata.type.h
 
 diff --git a/src/server/adaptor.h b/src/server/adaptor.h
-index 7e25942..7c28921 100644
+index 6af39bd..253e4a6 100644
 --- a/src/server/adaptor.h
 +++ b/src/server/adaptor.h
-@@ -33,6 +33,7 @@
+@@ -35,6 +35,7 @@
  #include <QString>
  #include <QDBusAbstractAdaptor>
  #include <QDBusMessage>
@@ -271,10 +271,11 @@ index 0000000..aeb4a6a
 +iodata::validator * events_data_validator() ;
 +#endif
 diff --git a/src/server/server.pro b/src/server/server.pro
-index 0d82af6..24cf620 100644
+index dc1cc8f..e7a904a 100644
 --- a/src/server/server.pro
 +++ b/src/server/server.pro
-@@ -12,7 +12,7 @@ INCLUDEPATH += ../h
+@@ -10,7 +10,7 @@ VERSION = $$(TIMED_VERSION)
+ INCLUDEPATH += ../h
  
  QMAKE_LIBDIR_FLAGS += -L../lib -L../voland
 -LIBS += -ltimed-qt5 -ltimed-voland-qt5
@@ -282,8 +283,7 @@ index 0d82af6..24cf620 100644
  
  IODATA_TYPES = queue.type config.type settings.type customization.type tzdata.type
  
-
-@@ -72,7 +72,13 @@ SOURCES += \
+@@ -70,7 +70,13 @@ SOURCES += \
      ofonomodemmanager.cpp \
      modemwatcher.cpp \
      ofonoconstants.cpp \
@@ -486,6 +486,3 @@ index 0000000..4a2e83b
 +#include <iodata-qt5/validator>
 +iodata::validator * tzdata_validator() ;
 +#endif
--- 
-2.1.4
-
