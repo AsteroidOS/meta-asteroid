@@ -13,7 +13,7 @@ do_install:append() {
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
 }
 
-PACKAGECONFIG:append += "pam"
+PACKAGECONFIG:append = " pam"
 
 PACKAGECONFIG:remove = "rfkill"
 
