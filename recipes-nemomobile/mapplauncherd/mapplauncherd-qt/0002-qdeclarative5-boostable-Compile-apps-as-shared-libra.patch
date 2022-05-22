@@ -1,4 +1,4 @@
-From 2512e5629672781bc94a92d91e3ab4f1ce8ce6c5 Mon Sep 17 00:00:00 2001
+From 628c0ce3070b0e9f25318caf844614bea915c25c Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 9 Jan 2021 15:04:25 +0100
 Subject: [PATCH] qdeclarative5-boostable: Compile apps as shared libraries. As
@@ -20,6 +20,4 @@ index 20b97f8..0e1191e 100644
 -Libs: -pie -rdynamic -lmdeclarativecache5
 +Libs: -shared -rdynamic -lmdeclarativecache5
  Cflags: -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I/usr/include/mdeclarativecache5
-
---
-2.30.0
+ 

@@ -1,7 +1,8 @@
-From d106c0397438c14cc450c20f8a7adbe83bb13a86 Mon Sep 17 00:00:00 2001
+From 9e0172cb6382c93e3bea5aed48145ae2f85e8551 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 12 Jun 2017 02:02:45 +0200
 Subject: [PATCH] mdeclarativecache5: Share same
+
  mdeclarativecache_pre_initialized_qapplication for each qmlcache
 
 ---
@@ -9,12 +10,12 @@ Subject: [PATCH] mdeclarativecache5: Share same
  1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/mdeclarativecache5/mdeclarativecache.cpp b/mdeclarativecache5/mdeclarativecache.cpp
-index 622eac9..73ccdc8 100644
+index 4b9e4af..588f164 100644
 --- a/mdeclarativecache5/mdeclarativecache.cpp
 +++ b/mdeclarativecache5/mdeclarativecache.cpp
 @@ -61,13 +61,7 @@ void MDeclarativeCachePrivate::populate()
      cachePopulated = true;
-
+     
      static const char *const emptyString = "";
 -    static const QString appNameFormat = "mdeclarativecache_pre_initialized_qapplication-%1";
 -    static QByteArray appName;
@@ -24,8 +25,6 @@ index 622eac9..73ccdc8 100644
 -    // a dbus service with the application's name.
 -    appName = appNameFormat.arg(getpid()).toLatin1();
 +    static QByteArray appName = "mdeclarativecache_pre_initialized_qapplication";
-
+ 
      // We support at most ARGV_LIMIT arguments in QCoreApplication. These will be set when real
-     // arguments are known (in MDeclarativeCachePrivate::qApplication).
---
-2.7.4
+     // arguments are known (in MDeclarativeCachePrivate::qApplication). 
