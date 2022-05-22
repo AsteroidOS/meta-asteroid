@@ -1,5 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/ofono:"
-SRC_URI = "git://github.com/rilmodem/ofono;protocol=https \
+SRC_URI = "git://github.com/rilmodem/ofono;protocol=https;branch=master \
            file://ofono.service \
            file://ofono \
            file://use-python3.patch \

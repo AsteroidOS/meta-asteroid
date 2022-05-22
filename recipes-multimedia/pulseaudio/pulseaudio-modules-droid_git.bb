@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/mer-hybris/pulseaudio-modules-droid"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f294906e6e4eac9d917503a0bbd139b4"
 
-SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https \
+SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https;branch=master \
         file://0001-Set-version-to-support-PulseAudio-15.patch"
 SRCREV = "8283bbe5c932d34f6d427ce02abf455c23b3c3b1"
 PR = "r1"

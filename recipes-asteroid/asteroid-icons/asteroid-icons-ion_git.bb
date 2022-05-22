@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-icons-ion"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=92e02b7236a0635eaf1478f8041b0602"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-icons-ion;protocol=https"
+SRC_URI = "git://github.com/AsteroidOS/asteroid-icons-ion;protocol=https;branch=master"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"

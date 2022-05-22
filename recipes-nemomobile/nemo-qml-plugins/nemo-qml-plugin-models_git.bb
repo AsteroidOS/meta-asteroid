@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-models"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=95b47fdc8bb7e842db36790ec722350a"
 
-SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-models.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-models.git;protocol=https;branch=master"
 SRCREV = "242c95ba87fe5cecfe37de40c96a2cced124572d"
 PR = "r1"
 PV = "+git${SRCPV}"

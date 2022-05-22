@@ -26,7 +26,7 @@ LIC_FILES_CHKSUM = "\
 #RELEASE = "8.0.1-RC-20180427"
 BASEURI ?= "${GNU_MIRROR}/gcc/gcc-${PV}/gcc-${PV}.tar.xz"
 #SRCREV = "f7cf798b73fd1a07098f9a490deec1e2a36e0bed"
-#BASEURI ?= "git://github.com/gcc-mirror/gcc;branch=gcc-6-branch;protocol=git"
+#BASEURI ?= "git://github.com/gcc-mirror/gcc;branch=gcc-6-branch;protocol=https"
 #BASEURI ?= "http://mirrors.concertpass.com/gcc/snapshots/${RELEASE}/gcc-${RELEASE}.tar.xz"
 
 SRC_URI = "\

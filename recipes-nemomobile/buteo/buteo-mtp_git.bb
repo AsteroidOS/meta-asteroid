@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/buteo-mtp"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a0b1f3b62af44e24404"
 
-SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https;branch=master \
            file://0001-Remove-dependency-to-SSU-and-tests.patch \
            file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
            file://buteo-mtp"

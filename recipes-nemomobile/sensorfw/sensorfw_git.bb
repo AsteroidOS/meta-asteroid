@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/sensorfw"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
-SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master \
            file://0001-Do-not-hide-stepcounter-by-default.patch \
            file://0002-Add-heart-rate-monitor-sensor-with-hybris-adaptor.patch \
            file://0003-Add-Wrist-gesture-sensor-via-libhybris-adaptor.patch \

@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-diamonds.git"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-diamonds.git;protocol=https"
+SRC_URI = "git://github.com/AsteroidOS/asteroid-diamonds.git;protocol=https;branch=master"
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"

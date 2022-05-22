@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/lipstick"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https;branch=master \
     file://0001-Disables-tests-and-doc.patch \
     file://0002-notificationcategories-use-ion-icons.patch \
     file://0003-Disable-USB-mode-notifications-on-connect.patch \

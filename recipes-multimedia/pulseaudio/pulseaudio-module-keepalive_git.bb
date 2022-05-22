@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/pulseaudio-module-keepalive"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f294906e6e4eac9d917503a0bbd139b4"
 
-SRC_URI = "git://github.com/sailfishos/pulseaudio-module-keepalive.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/pulseaudio-module-keepalive.git;protocol=https;branch=master \
     file://0001-Set-version-to-support-PulseAudio-15.patch"
 SRCREV = "3102ee5d92e7b8fb5adb6ea01aa8a47a9c7ce886"
 PR = "r1"

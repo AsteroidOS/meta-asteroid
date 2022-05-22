@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/timed"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https \
+SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master \
     file://0001-Fixes-build.patch \
     file://0002-Add-wakeup-event-for-use-with-ambient-mode.patch \
     file://timed-qt5.conf \

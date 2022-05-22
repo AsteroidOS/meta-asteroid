@@ -9,7 +9,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 inherit allarch
 inherit fontcache
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https \
+SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https;branch=master \
     file://69-emoji.conf"
 SRCREV = "${AUTOREV}"
 PR = "r1"

@@ -2,7 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/brcm-patchram-plus:"
 SRC_URI:append= " file://patchram.service"
 LICENSE = "BSD"
 
-SRC_URI = "git://github.com/AsteroidOS/brcm-patchram-plus.git;protocol=https"
+SRC_URI = "git://github.com/AsteroidOS/brcm-patchram-plus.git;protocol=https;branch=master"
 S = "${WORKDIR}/git"
 SRCREV = "94fb127e614b19a9a95561b8c1a0716e2e1e6293"
 

@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/kf5bluezqt"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://bluez-qt/COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/kf5bluezqt.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/kf5bluezqt.git;protocol=https;branch=master"
 SRCREV = "65c7154e93bf302639e30c5a8ab6a2a4d6e36e40"
 PR = "r1"
 PV = "+git${SRCPV}"

@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/sailfishos/libqofonoext"
 LICENSE = "LGPL-2.1+"
 LIC_FILES_CHKSUM = "file://src/qofonoext.cpp;beginline=1;endline=14;md5=e78738e9230b2e0f55eb7f63e3444df5"
 
-SRC_URI = "git://github.com/sailfishos/libqofonoext.git;protocol=https"
+SRC_URI = "git://github.com/sailfishos/libqofonoext.git;protocol=https;branch=master"
 SRCREV = "f19e882d4f7084acfa8681e57fa284218525a3d3"
 PR = "r1"
 PV = "+git${SRCPV}"
