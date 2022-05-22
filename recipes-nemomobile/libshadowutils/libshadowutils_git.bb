@@ -1,6 +1,6 @@
 SUMMARY = "Nemomobile's libshadowutils"
 HOMEPAGE = "https://github.com/sailfishos/libshadowutils"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=08c553a87d4e51bbed50b20e0adcaede"
 
 SRC_URI = "git://github.com/sailfishos/libshadowutils.git;protocol=https;branch=master"

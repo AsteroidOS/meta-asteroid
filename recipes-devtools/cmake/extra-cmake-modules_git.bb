@@ -1,5 +1,5 @@
 SUMMARY = "Extra modules and scripts for CMake"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING-CMAKE-SCRIPTS;md5=54c7042be62e169199200bc6477f04d1"
 
 SRC_URI = "git://invent.kde.org/frameworks/extra-cmake-modules.git;protocol=https;branch=master"

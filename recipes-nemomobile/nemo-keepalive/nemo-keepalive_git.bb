@@ -1,6 +1,6 @@
 SUMMARY = "Keeps the system from automatically blanking the display"
 HOMEPAGE = "https://github.com/sailfishos/nemo-keepalive"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://license.lgpl;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/nemo-keepalive.git;protocol=https;branch=master \

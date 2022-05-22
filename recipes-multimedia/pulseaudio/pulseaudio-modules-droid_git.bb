@@ -1,6 +1,6 @@
 SUMMARY = "Android/hybris plugin for PulseAudio"
 HOMEPAGE = "https://github.com/mer-hybris/pulseaudio-modules-droid"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=f294906e6e4eac9d917503a0bbd139b4"
 
 SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https;branch=master \

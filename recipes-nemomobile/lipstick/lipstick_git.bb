@@ -1,6 +1,6 @@
 SUMMARY = "Lipstick is a project aimed at offering easy to modify user experiences for varying mobile device form factors, e.g. handsets, netbooks, tablets."
 HOMEPAGE = "https://github.com/sailfishos/lipstick"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https;branch=master \

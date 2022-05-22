@@ -1,6 +1,6 @@
 SUMMARY = "This is a daemon which can hanlde setting different usb profiles with gadget drivers"
 HOMEPAGE = "https://github.com/philippedeswert/usb-moded"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https;branch=master \

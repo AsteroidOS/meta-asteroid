@@ -1,6 +1,6 @@
 SUMMARY = "Mer's libqtsparql"
 HOMEPAGE = "https://github.com/sailfishos/libqtsparql"
-LICENSE = "LGPL-2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL;md5=f922d7c79b72c75fe134d22f3c868337"
 
 SRC_URI = "git://github.com/sailfishos/libqtsparql.git;protocol=https;branch=master"

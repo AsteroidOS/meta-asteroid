@@ -1,7 +1,7 @@
 # Copyright (c) 2019 Christophe Chapuis <chris.chapuis@gmail.com>
 
 DESCRIPTION = "Simple proxy for using Android binder based bluetooth through vhci."
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://bluebinder.c;beginline=1;endline=27;md5=430727b8efeca344ab89eeb635b4fa79"
 
 SRC_URI = "git://github.com/mer-hybris/bluebinder.git;branch=master;protocol=https \

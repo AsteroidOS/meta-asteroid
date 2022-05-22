@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for models on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-models"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=95b47fdc8bb7e842db36790ec722350a"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-models.git;protocol=https;branch=master"

@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 DESCRIPTION = "System specific changes for the Qt Quick Scene Graph."
-LICENSE = "LGPL-2.1 & GPL-3.0"
+LICENSE = "LGPL-2.1-only & GPL-3.0-only"
 LIC_FILES_CHKSUM = " \
     file://LICENSE.GPL;md5=d32239bcb673463ab874e80d47fae504 \
     file://LICENSE.LGPL;md5=4193e7f1d47a858f6b7c0f1ee66161de \

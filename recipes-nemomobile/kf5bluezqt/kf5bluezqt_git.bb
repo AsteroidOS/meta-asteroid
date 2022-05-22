@@ -1,6 +1,6 @@
 SUMMARY = "Qt wrapper for BlueZ 5 DBus API, with partial support for BlueZ 4 backends"
 HOMEPAGE = "https://github.com/sailfishos/kf5bluezqt"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://bluez-qt/COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/kf5bluezqt.git;protocol=https;branch=master"

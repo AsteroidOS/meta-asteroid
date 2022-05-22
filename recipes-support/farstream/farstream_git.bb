@@ -1,6 +1,6 @@
 SUMMARY = "The Farstream (formerly Farsight) project is an effort to create a framework to deal with all known audio/video conferencing protocols"
 HOMEPAGE = "https://freedesktop.org/wiki/Software/Farstream/"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 
 SRC_URI = "https://freedesktop.org/software/farstream/releases/farstream/farstream-0.2.8.tar.gz"

@@ -1,6 +1,6 @@
 inherit core-image
 inherit extrausers
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 
 IMAGE_FEATURES += "package-management debug-tweaks"
 

@@ -1,6 +1,6 @@
 SUMMARY = "QML Plugin for media policy on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-policy"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=bcbb827372d72ea4e42de457e3575a9d"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-policy.git;protocol=https;branch=master"

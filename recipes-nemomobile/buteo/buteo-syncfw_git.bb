@@ -1,6 +1,6 @@
 SUMMARY = "NemoMobile's Buteo Synchronization daemon"
 HOMEPAGE = "https://github.com/sailfishos/buteo-syncfw"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=93ae0a8ec7ecf7709c725bd232bbafc6"
 
 SRC_URI = "git://github.com/sailfishos/buteo-syncfw.git;protocol=https;branch=master \

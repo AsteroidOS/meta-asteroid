@@ -1,6 +1,6 @@
 SUMMARY = "Daemon for device profile handling."
 HOMEPAGE = "https://github.com/sailfishos/profiled"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://mainloop.c;beginline=1;endline=35;md5=5c3ca83e642104421900fdd3ecb1176e"
 
 SRC_URI = "git://github.com/sailfishos/profiled.git;protocol=https;branch=master \

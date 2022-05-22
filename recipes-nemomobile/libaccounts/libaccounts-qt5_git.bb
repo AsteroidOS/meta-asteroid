@@ -1,6 +1,6 @@
 SUMMARY = "Accounts management library for Qt applications"
 HOMEPAGE = "https://gitlab.com/accounts-sso/libaccounts-qt"
-LICENSE = "LGPL-2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-qt.git;protocol=https;branch=master"
