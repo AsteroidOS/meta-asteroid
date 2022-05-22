@@ -11,7 +11,7 @@ SRCREV = "6e0c7d9bb04926b69bb454b479a153ba84d28b9c"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 

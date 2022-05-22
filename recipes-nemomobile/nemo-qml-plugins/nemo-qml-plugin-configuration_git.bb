@@ -8,7 +8,7 @@ SRCREV = "d5aa1acefa102879bd4dfd2a7eee461a3f85df28"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative mlite"
 

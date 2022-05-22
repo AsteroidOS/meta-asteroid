@@ -14,7 +14,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5
+inherit qmake5 pkgconfig
 
 EXTRA_QMAKEVARS_PRE = "CONFIG+=autohybris"
 
@@ -32,7 +32,7 @@ do_install:append() {
     ln -s ../sensorfwd.service ${D}/lib/systemd/system/multi-user.target.wants/
 }
 
-DEPENDS += "qtbase"
+DEPENDS += "qtbase libhybris"
 
 FILES:${PN} += "/usr/lib/sensord-qt5/*.so /usr/lib/sensord-qt5/testing/*.so /lib/systemd/system"
 FILES:${PN}-dbg += "/usr/share/sensorfw-tests/ /usr/lib/sensord-qt5/.debug/ /usr/lib/sensord-qt5/testing/.debug/"

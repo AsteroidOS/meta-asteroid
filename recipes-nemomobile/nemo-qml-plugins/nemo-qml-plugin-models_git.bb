@@ -8,7 +8,7 @@ SRCREV = "242c95ba87fe5cecfe37de40c96a2cced124572d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative timed libmlocale"
 

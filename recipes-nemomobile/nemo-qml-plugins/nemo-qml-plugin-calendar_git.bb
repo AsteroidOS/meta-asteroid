@@ -8,7 +8,7 @@ SRCREV = "dcf610f82840016b254896035d4223baa559075e"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative kcalcore mkcal libaccounts-qt5"
 

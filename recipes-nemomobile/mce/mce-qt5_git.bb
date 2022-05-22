@@ -10,6 +10,6 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative mce"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 FILES:${PN} += "/usr/lib/qml/Nemo/Mce/"

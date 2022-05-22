@@ -13,9 +13,9 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "dbus systemd"
+DEPENDS += "dbus systemd glib-2.0"
 
-inherit cmake
+inherit cmake pkgconfig
 B = "${S}"
 
 do_configure:prepend() {

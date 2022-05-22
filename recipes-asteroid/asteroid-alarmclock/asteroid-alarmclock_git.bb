@@ -8,7 +8,7 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit cmake_qt5
+inherit cmake_qt5 pkgconfig
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-alarms qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "nemo-qml-plugin-alarms"

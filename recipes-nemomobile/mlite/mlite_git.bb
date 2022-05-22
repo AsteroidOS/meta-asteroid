@@ -12,7 +12,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS:append = "qtbase glib-2.0 dconf"
-inherit qmake5
+inherit qmake5 pkgconfig
 B = "${WORKDIR}/git" 
 # Out of dir build breaks mlite5.pc installation
 
