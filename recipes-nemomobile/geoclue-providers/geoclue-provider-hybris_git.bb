@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "geoclue libhybris libconnman-qt5 libqofono qofonoext nemo-qml-plugin-systemsettings"
-inherit qmake5
+inherit qmake5 pkgconfig
 
 do_install:append() {
     chmod 04755 ${D}/usr/libexec/geoclue-hybris
