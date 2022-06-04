@@ -12,7 +12,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 B = "${S}"
 
-DEPENDS += "ngfd libhybris"
+DEPENDS += "ngfd libhybris virtual/android-headers"
 
 do_install:append () {
     install -d ${D}/usr/share/ngfd/plugins.d/
