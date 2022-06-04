@@ -2,6 +2,7 @@ SUMMARY = "Nemomobile's non graphical feedback daemon's hybris plugin"
 HOMEPAGE = "https://github.com/mer-hybris/ngfd-plugin-droid-vibrator"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 FILESEXTRAPATHS:append := "${THISDIR}/${PN}:"
 SRC_URI = "git://github.com/mer-hybris/ngfd-plugin-droid-vibrator.git;protocol=https;branch=master \
