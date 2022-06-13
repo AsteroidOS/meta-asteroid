@@ -3,7 +3,7 @@ Description=Linux Firmware Loader Daemon
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/firmwared -d /vendor/firmware:/system/etc/firmware:/etc/firmware:/lib/firmware/updates/:/lib/firmware
+ExecStart=/usr/bin/firmwared -d /vendor/firmware:/system/etc/firmware:/etc/firmware:/lib/firmware/updates/:/lib/firmware:/firmware/image
 
 [Install]
 WantedBy=basic.target
