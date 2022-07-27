@@ -3,9 +3,8 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://COPYING-CMAKE-SCRIPTS;md5=54c7042be62e169199200bc6477f04d1"
 
 SRC_URI = "git://invent.kde.org/frameworks/extra-cmake-modules.git;protocol=https;branch=master"
-SRCREV = "d88db6a1469bdcb48e64f265d35a6f7867767b54"
-PR = "r1"
-PV = "+git${SRCPV}"
+SRCREV = "0064cf77e96acda8a99c0eba4cc89f83768b65d3"
+PV = "5.96.0"
 S = "${WORKDIR}/git"
 
 ALLOW_EMPTY:${PN} = "1"
