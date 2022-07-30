@@ -9,13 +9,15 @@ SRCREV = "${AUTOREV}"
 PR = "r0"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-DEPENDS = "libhybris cli11"
-inherit cmake pkgconfig
+DEPENDS = "libhybris cli11 mlite qtbase"
+inherit cmake_qt5 pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "catfish"
 
 do_install:append() {
-    install -d ${D}/etc/systemd/system/timers.target.wants/
-    ln -s ../lcd-sync-time.timer ${D}/etc/systemd/system/timers.target.wants/lcd-sync-time.timer
+    install -d ${D}/usr/lib/systemd/user/
+    install -d ${D}/usr/lib/systemd/user/default.target.wants/
+    ln -s /usr/lib/systemd/user/lcd-sync-time.timer ${D}/usr/lib/systemd/user/default.target.wants/lcd-sync-time.timer
 }
 
+FILES:${PN} += "/usr/lib/systemd/user/"
