@@ -10,10 +10,14 @@ def display_variables(d):
 def capability_variables(d):
     return ["MACHINE_HAS_WLAN", "MACHINE_HAS_SPEAKER"]
 
+def identity_variables(d):
+    return ["MACHINE"]
+
 python do_generate_config () {
     machine_vars = {
         "Display": display_variables(d),
-        "Capabilities": capability_variables(d)
+        "Capabilities": capability_variables(d),
+        "Identity": identity_variables(d)
     }
 
     from configparser import ConfigParser
@@ -26,6 +30,8 @@ python do_generate_config () {
             v = var[len("MACHINE_"):]
             if v.startswith(key.upper() + "_"):
                 v = v[len(key.upper() + "_"):]
+            if not v:
+                v = var
             if d.getVar(var) is not None:
                 config.set(key, v, str(d.getVar(var)))
 
