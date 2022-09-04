@@ -8,7 +8,9 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protoc
     file://0001-Disable-SSU-dependency.patch \
     file://0002-languagemodel-install-languages-in-usr-share-support.patch \
     file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
-    file://0005-Remove-certificatemodel-and-developermodesettings.patch"
+    file://0005-Remove-certificatemodel-and-developermodesettings.patch \
+    file://0006-Add-file-to-the-places-searched-for-a-serial-number.patch \
+    "
 SRCREV = "8ee508e5370487afef1826e2ebaff0e44e604300"
 PR = "r1"
 PV = "+git${SRCPV}"
