@@ -12,8 +12,4 @@ inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "qtsensors qtsensors-qmlplugins qtsensors-plugins"
-
-do_install:append() {
-    # This app only uses translations for the desktop shortcut.
-    rm -rvf ${D}/usr/share/translations/
-}
+FILES:${PN} += "/usr/share/translations/"
