@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 
 RDEPENDS:${PN} += "source-han-sans-cn-fonts source-han-sans-kr-fonts ttf-lohit ttf-dejavu-sans"
 
-FILES:${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/"
+FILES:${PN} += "/etc/systemd/system/user@.service.d/ /usr/lib/systemd/user/ /usr/share/supported-languages/ /home/.system/var/lib/environment/1000"
 
 INSANE_SKIP:${PN} += "host-user-contaminated"
 
@@ -21,12 +21,12 @@ do_install:append() {
     install -d ${D}/etc/systemd/system/user@.service.d/
     cp ../localeEnv.conf ${D}/etc/systemd/system/user@.service.d/locale.conf
 
-    install -d ${D}/var/lib/environment/ceres/
-    cp ../locale.conf ${D}/var/lib/environment/ceres/locale.conf
+    install -d ${D}/home/.system/var/lib/environment/1000/
+    cp ../locale.conf ${D}/home/.system/var/lib/environment/1000/locale.conf
 
     # TODO: Ensure this only allows asteroid-settings to write to this file, so
     # that others apps cannot set environment variables
-    chown 1000:1000 ${D}/var/lib/environment/ceres/locale.conf # ceres:ceres
+    chown 1000:1000 ${D}/home/.system/var/lib/environment/1000/locale.conf # ceres:ceres
 
     install -d ${D}/usr/share/supported-languages/
     cp ${S}/*.conf ${D}/usr/share/supported-languages/
