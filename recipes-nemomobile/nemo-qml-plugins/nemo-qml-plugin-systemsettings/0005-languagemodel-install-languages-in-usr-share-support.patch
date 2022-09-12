@@ -1,7 +1,7 @@
-From a2196099a90fadcd1ace547fe20ea27a0bea0de6 Mon Sep 17 00:00:00 2001
+From 5c2f8d75fbb2a2f4157a931ad28e4baa7df66c49 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 16 Jan 2017 13:01:23 +0100
-Subject: [PATCH 1/2] languagemodel: install languages in
+Subject: [PATCH] languagemodel: install languages in
  /usr/share/supported-languages
 
 ---
@@ -9,17 +9,15 @@ Subject: [PATCH 1/2] languagemodel: install languages in
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
-index a054d00..2ea0d72 100644
+index 997becb..c85b158 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
-@@ -43,7 +43,7 @@
-
-
+@@ -42,7 +42,7 @@
+ #include <nemo-dbus/interface.h>
+ 
  namespace {
 -const char * const LanguageSupportDirectory = "/usr/share/jolla-supported-languages";
 +const char * const LanguageSupportDirectory = "/usr/share/supported-languages";
-
+ 
  bool nameLessThan(const Language &lang1, const Language &lang2)
  {
---
-2.11.0

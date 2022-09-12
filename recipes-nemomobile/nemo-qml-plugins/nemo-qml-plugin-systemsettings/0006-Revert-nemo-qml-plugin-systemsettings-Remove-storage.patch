@@ -1,0 +1,198 @@
+From 2fe7fdace9e14c2fa25aa147497642f16b9116e8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Mon, 12 Sep 2022 21:58:38 +0200
+Subject: [PATCH] Revert "[nemo-qml-plugin-systemsettings] Remove storage info
+ api from AboutSettings. JB#56808"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This reverts commit a6d090989ea1f03ca1709f4489c195ea7e696723.
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/aboutsettings.cpp       | 76 +++++++++++++++++++++++++++++++++++++
+ src/aboutsettings.h         | 21 ++++++++++
+ src/aboutsettings_p.h       |  5 +++
+ src/plugin/plugins.qmltypes |  5 +++
+ 4 files changed, 107 insertions(+)
+
+diff --git a/src/aboutsettings.cpp b/src/aboutsettings.cpp
+index d3c60f0..414e6ed 100644
+--- a/src/aboutsettings.cpp
++++ b/src/aboutsettings.cpp
+@@ -173,12 +173,37 @@ AboutSettings::AboutSettings(QObject *parent)
+     QSettings settings(QStringLiteral("/mnt/vendor_data/vendor-data.ini"), QSettings::IniFormat);
+     d->vendorName = settings.value(QStringLiteral("Name")).toString();
+     d->vendorVersion = settings.value(QStringLiteral("Version")).toString();
++
++    refreshStorageModels();
++
++    connect(&d->partitionManager, &PartitionManager::partitionAdded,
++            this, &AboutSettings::partitionCountChanged);
++    connect(&d->partitionManager, &PartitionManager::partitionRemoved,
++            this, &AboutSettings::partitionCountChanged);
+ }
+ 
+ AboutSettings::~AboutSettings()
+ {
+ }
+ 
++qlonglong AboutSettings::totalDiskSpace() const
++{
++    Q_D(const AboutSettings);
++    return d->partitionManager.root().bytesTotal();
++}
++
++qlonglong AboutSettings::availableDiskSpace() const
++{
++    Q_D(const AboutSettings);
++    return d->partitionManager.root().bytesAvailable();
++}
++
++QVariant AboutSettings::diskUsageModel() const
++{
++    Q_D(const AboutSettings);
++    return d->internalStorage;
++}
++
+ QString AboutSettings::wlanMacAddress() const
+ {
+     Q_D(const AboutSettings);
+@@ -279,3 +304,54 @@ QString AboutSettings::vendorVersion() const
+     Q_D(const AboutSettings);
+     return d->vendorVersion;
+ }
++
++void AboutSettings::refreshStorageModels()
++{
++    Q_D(AboutSettings);
++    d->partitionManager.refresh();
++
++    partitionCountChanged();
++}
++
++void AboutSettings::partitionCountChanged()
++{
++    // Queue the method invocation in case several list changes are made consecutively, so that
++    // the list is only reloaded once.
++    QTimer::singleShot(0, this, &AboutSettings::reloadStorageLists);
++}
++
++void AboutSettings::reloadStorageLists()
++{
++    Q_D(AboutSettings);
++    d->internalStorage.clear();
++
++    for (auto partition : d->partitionManager.partitions()) {
++        QVariantMap row;
++        row[QStringLiteral("mounted")] = partition.status() == Partition::Mounted;
++        row[QStringLiteral("path")] = partition.mountPath();
++        row[QStringLiteral("available")] = partition.bytesAvailable();
++        row[QStringLiteral("total")] = partition.bytesTotal();
++        row[QStringLiteral("filesystem")] = partition.filesystemType();
++        row[QStringLiteral("devicePath")] = partition.devicePath();
++        row[QStringLiteral("storageType")] = [&partition]() {
++            switch (partition.storageType()) {
++            case Partition::System:
++                return QStringLiteral("system");
++            case Partition::User:
++                return QStringLiteral("user");
++            case Partition::Mass:
++                return QStringLiteral("mass");
++            case Partition::External:
++                return QStringLiteral("card");
++            default:
++                return QString();
++            }
++        }();
++
++        if (partition.storageType() != Partition::External) {
++            d->internalStorage << QVariant(row);
++        }
++    }
++
++    emit storageChanged();
++}
+diff --git a/src/aboutsettings.h b/src/aboutsettings.h
+index a25b093..d54633d 100644
+--- a/src/aboutsettings.h
++++ b/src/aboutsettings.h
+@@ -60,6 +60,21 @@ public:
+     explicit AboutSettings(QObject *parent = 0);
+     virtual ~AboutSettings();
+ 
++    // Deprecated -- use diskUsageModel() instead
++    Q_INVOKABLE qlonglong totalDiskSpace() const;
++    // Deprecated -- use diskUsageModel() instead
++    Q_INVOKABLE qlonglong availableDiskSpace() const;
++
++    /**
++     * Returns a list of JS objects with the following keys:
++     *  - storageType: one of "mass" (mass storage), "system" (system storage) or "user" (user storage)
++     *  - path: filesystem path (e.g. "/" or "/home/")
++     *  - available: available bytes on the storage
++     *  - total: total bytes on the storage
++     **/
++    Q_INVOKABLE QVariant diskUsageModel() const;
++    Q_INVOKABLE void refreshStorageModels();
++
+     QString wlanMacAddress() const;
+     QString serial() const;
+     QString localizedOperatingSystemName() const;
+@@ -73,7 +88,13 @@ public:
+     QString vendorName() const;
+     QString vendorVersion() const;
+ 
++signals:
++    void storageChanged();
++
+ private:
++    void partitionCountChanged();
++    void reloadStorageLists();
++
+     Q_DECLARE_PRIVATE(AboutSettings)
+     Q_DISABLE_COPY(AboutSettings)
+ 
+diff --git a/src/aboutsettings_p.h b/src/aboutsettings_p.h
+index b825398..cd172db 100644
+--- a/src/aboutsettings_p.h
++++ b/src/aboutsettings_p.h
+@@ -36,6 +36,7 @@
+ #include <QVariantList>
+ 
+ #include "deviceinfo.h"
++#include "partitionmanager.h"
+ 
+ class AboutSettingsPrivate : public QObject
+ {
+@@ -47,6 +48,10 @@ public:
+ 
+     DeviceInfo *deviceInfo;
+ 
++    QVariantList internalStorage;
++
++    PartitionManager partitionManager;
++
+     mutable QMap<QString, QString> osRelease;
+     mutable QMap<QString, QString> osReleaseLocalization;
+     mutable QMap<QString, QString> hardwareRelease;
+diff --git a/src/plugin/plugins.qmltypes b/src/plugin/plugins.qmltypes
+index 4000f83..b663bf9 100644
+--- a/src/plugin/plugins.qmltypes
++++ b/src/plugin/plugins.qmltypes
+@@ -24,6 +24,11 @@ Module {
+         Property { name: "adaptationVersion"; type: "string"; isReadonly: true }
+         Property { name: "vendorName"; type: "string"; isReadonly: true }
+         Property { name: "vendorVersion"; type: "string"; isReadonly: true }
++        Signal { name: "storageChanged" }
++        Method { name: "totalDiskSpace"; type: "qlonglong" }
++        Method { name: "availableDiskSpace"; type: "qlonglong" }
++        Method { name: "diskUsageModel"; type: "QVariant" }
++        Method { name: "refreshStorageModels" }
+     }
+     Component {
+         name: "AlarmToneModel"
+-- 
+2.37.3
+
