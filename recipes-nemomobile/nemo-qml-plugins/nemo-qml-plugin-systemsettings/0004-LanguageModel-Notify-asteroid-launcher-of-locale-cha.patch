@@ -1,4 +1,4 @@
-From 1bfd19e8f2aad753ef7b1a475d0ebdbe3fb67197 Mon Sep 17 00:00:00 2001
+From 867e989a8456edf277cf6869ef41f96836dcbc4c Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 20 Dec 2017 21:19:45 +0100
 Subject: [PATCH] LanguageModel: Notify asteroid-launcher of locale changes so
@@ -9,18 +9,16 @@ Subject: [PATCH] LanguageModel: Notify asteroid-launcher of locale changes so
  1 file changed, 3 insertions(+)
 
 diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
-index a054d00..f8f304c 100644
+index c85b158..0691ee1 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
-@@ -200,6 +200,9 @@ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode
+@@ -193,6 +193,9 @@ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode
          emit currentIndexChanged();
      }
-
-+    QDBusInterface systemdInterface("org.nemomobile.lipstick", "/org/nemomobile/lipstick/localemanager", "org.nemomobile.lipstick", QDBusConnection::systemBus());
-+    systemdInterface.call("selectLocale", localeCode);
+ 
++    NemoDBus::Interface systemdInterface(this, QDBusConnection::systemBus(), "org.nemomobile.lipstick", "/org/nemomobile/lipstick/localemanager", "org.nemomobile.lipstick");
++    systemdInterface.blockingCall("selectLocale", localeCode);
 +
      if (updateMode == UpdateAndReboot) {
-         QDBusInterface dsmeInterface("com.nokia.dsme", "/com/nokia/dsme/request", "com.nokia.dsme.request",
-                                      QDBusConnection::systemBus());
---
-2.14.3
+         NemoDBus::Interface dsmeInterface(
+                 this, QDBusConnection::systemBus(),

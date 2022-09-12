@@ -6,23 +6,30 @@ LIC_FILES_CHKSUM = "file://src/displaysettings.cpp;beginline=1;endline=31;md5=99
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protocol=https;branch=master \
     file://location.conf \
     file://0001-Disable-SSU-dependency.patch \
-    file://0002-languagemodel-install-languages-in-usr-share-support.patch \
+    file://0002-Remove-developermodesettings.patch \
+    file://0003-Remove-UserModel.patch \
     file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
-    file://0005-Remove-certificatemodel-and-developermodesettings.patch \
-    file://0006-Add-file-to-the-places-searched-for-a-serial-number.patch \
+    file://0005-languagemodel-install-languages-in-usr-share-support.patch \
+    file://0006-Revert-nemo-qml-plugin-systemsettings-Remove-storage.patch \
     "
-SRCREV = "8ee508e5370487afef1826e2ebaff0e44e604300"
+SRCREV = "0.8.1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
 
-do_install:append() {
-    cp ${WORKDIR}/location.conf ${D}/etc/location/
+do_configure:prepend() {
+    sed -i "s@\$\$\[QT_INSTALL_BINS\]@${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}@" ${S}/src/src.pro
+    sed -i "s@\$\$\[QT_INSTALL_BINS\]@${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}@" ${S}/translations/translations.pro
 }
 
-DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-dbus nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5"
+do_install:append() {
+    install -d ${D}/var/lib/location/
+    install -m 0644 ${WORKDIR}/location.conf ${D}/var/lib/location/location.conf
+}
+
+DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-dbus nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5 qttools-native libqofono"
 RDEPENDS:${PN} += "profiled"
 
 FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
-FILES:${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/ /usr/lib/systemd"
+FILES:${PN} += "/usr/lib/qml/org/nemomobile/systemsettings/ /usr/lib/systemd /usr/share/translations/"

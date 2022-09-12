@@ -1,29 +1,33 @@
-From 3ee1ce483c5abf265aab92fbc0869f9af83ba594 Mon Sep 17 00:00:00 2001
-From: MagneFire <dgriet@gmail.com>
-Date: Sat, 25 Dec 2021 23:12:44 +0100
+From 8884326d594a3d288712fa35179c02667993197f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 11 Sep 2022 22:14:19 +0200
 Subject: [PATCH] Disable SSU dependency.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 
 ---
- src/deviceinfo.cpp | 21 ---------------------
+ src/deviceinfo.cpp | 30 ------------------------------
  src/src.pro        |  2 +-
- 2 files changed, 1 insertion(+), 22 deletions(-)
+ 2 files changed, 1 insertion(+), 31 deletions(-)
 
 diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
-index db7941e..2f75861 100644
+index 4ffdba9..543dddd 100644
 --- a/src/deviceinfo.cpp
 +++ b/src/deviceinfo.cpp
-@@ -33,8 +33,6 @@
+@@ -33,7 +33,6 @@
  
  #include <QSet>
  
 -#include <ssusysinfo.h>
--
- class DeviceInfoPrivate
- {
- public:
-@@ -47,25 +45,6 @@ public:
+ #include <qofonomanager.h>
+ #include <qofonomodem.h>
  
- DeviceInfoPrivate::DeviceInfoPrivate()
+@@ -93,35 +92,6 @@ DeviceInfoPrivate::DeviceInfoPrivate(DeviceInfo *deviceInfo, bool synchronousIni
+     , m_synchronousInit(synchronousInit)
+     , m_updateModemPropertiesTimer(nullptr)
  {
 -    ssusysinfo_t *si = ssusysinfo_create();
 -
@@ -43,23 +47,30 @@ index db7941e..2f75861 100644
 -        free(keys);
 -    }
 -
+-    /* Note: These queries always return non-null C string */
+-    m_model = ssusysinfo_device_model(si);
+-    m_baseModel = ssusysinfo_device_base_model(si);
+-    m_designation = ssusysinfo_device_designation(si);
+-    m_manufacturer = ssusysinfo_device_manufacturer(si);
+-    m_prettyName = ssusysinfo_device_pretty_name(si);
+-    m_osName = ssusysinfo_os_name(si);
+-    m_osVersion = ssusysinfo_os_version(si);
+-    m_adaptationVersion = ssusysinfo_hw_version(si);
+-
 -    ssusysinfo_delete(si);
  }
  
  DeviceInfoPrivate::~DeviceInfoPrivate()
 diff --git a/src/src.pro b/src/src.pro
-index 5b25879..33d76a3 100644
+index 512207d..00bac50 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -7,7 +7,7 @@ QT -= gui
  
  CONFIG += c++11 hide_symbols link_pkgconfig
- PKGCONFIG += profile mlite5 mce timed-qt5 libshadowutils blkid libcrypto nemomodels-qt5 libsailfishkeyprovider connman-qt5
--PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5
-+PKGCONFIG += nemodbus packagekitqt5
+ PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto libsailfishkeyprovider connman-qt5 glib-2.0
+-PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
++PKGCONFIG += nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
+ PKGCONFIG += qofono-qt5
  
- system(qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
- system(qdbusxml2cpp -c ConnmanVpnProxy -p connmanvpnproxy ../dbus/net.connman.vpn.xml -i qdbusxml2cpp_dbus_types.h)
--- 
-2.34.1
-
+ system($$[QT_INSTALL_BINS]/qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
