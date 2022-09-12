@@ -1,0 +1,29 @@
+From ca484f3aeb8511e4bb68ef32b2c677d557ed7a3b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sat, 10 Sep 2022 23:20:38 +0200
+Subject: [PATCH] pri: Fix host contamination path issue.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ geoclue-providers-hybris.pri | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/geoclue-providers-hybris.pri b/geoclue-providers-hybris.pri
+index 78d9d7d..16ad290 100644
+--- a/geoclue-providers-hybris.pri
++++ b/geoclue-providers-hybris.pri
+@@ -36,7 +36,7 @@ system_dbus_conf.path = /etc/dbus-1/system.d
+ systemd_dbus_service.files = geoclue-providers-hybris.service
+ systemd_dbus_service.path = /usr/lib/systemd/user
+ 
+-systemd_dbus_service_symlink.path = .
++systemd_dbus_service_symlink.path = /usr/lib/systemd/user/
+ systemd_dbus_service_symlink.commands = ln -s geoclue-providers-hybris.service ${INSTALL_ROOT}/usr/lib/systemd/user/dbus-org.freedesktop.Geoclue.Providers.Hybris.service
+ 
+ geoclue_provider.files = geoclue-hybris.provider
+-- 
+2.37.3
+
