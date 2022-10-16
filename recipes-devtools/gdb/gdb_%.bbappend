@@ -1,0 +1,1 @@
+PACKAGECONFIG:append = " xz python readline babeltrace "
