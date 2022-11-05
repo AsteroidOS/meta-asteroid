@@ -91,6 +91,7 @@ fi
 
 BOOT_DIR="/sdcard"
 if [ -e $ANDROID_MEDIA_DIR/asteroidos.ext4 ] ; then
+    /sbin/fsck.ext4 -p $ANDROID_MEDIA_DIR/asteroidos.ext4
     # Boots from a /sdcard/asteroidos.ext4 loop file
     info "Rootfs image found at $ANDROID_MEDIA_DIR/asteroidos.ext4; mounting it now ..."
     mount -o noatime,nodiratime,sync,rw,loop $ANDROID_MEDIA_DIR/asteroidos.ext4 /loop
