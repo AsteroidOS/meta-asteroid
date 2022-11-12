@@ -1,4 +1,4 @@
-From eaba7ff8ba7efbfae455d937d0bb2f2d41d17991 Mon Sep 17 00:00:00 2001
+From 1c10e4ffe399269de7e7eceb646df2efbab964a5 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Sun, 21 May 2017 15:26:08 +0200
 Subject: [PATCH] defaultStyle: Use a white handwriting trace for better
@@ -9,10 +9,10 @@ Subject: [PATCH] defaultStyle: Use a white handwriting trace for better
  1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/src/virtualkeyboard/content/styles/default/style.qml b/src/virtualkeyboard/content/styles/default/style.qml
-index fa9c699..90db8e7 100644
+index 095d5fc4..e38c481c 100644
 --- a/src/virtualkeyboard/content/styles/default/style.qml
 +++ b/src/virtualkeyboard/content/styles/default/style.qml
-@@ -812,13 +812,8 @@ KeyboardStyle {
+@@ -871,13 +871,8 @@ KeyboardStyle {
              if (!available)
                  return
              var ctx = getContext("2d")
@@ -28,5 +28,3 @@ index fa9c699..90db8e7 100644
              ctx.lineCap = "round"
              ctx.fillStyle = ctx.strokeStyle
          }
---
-2.11.0

@@ -1,0 +1,80 @@
+From a949ed200cb585fae5fe38993404cc693cd5338b Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 12 Nov 2022 14:53:37 -0500
+Subject: [PATCH] Modify default virtual keyboard for watch
+
+This modifies the default keyboard so that it is actually usable with
+a typical watchface.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ .../content/layouts/fallback/main.qml            |  6 +-----
+ .../content/styles/default/style.qml             | 16 ++++++++--------
+ 2 files changed, 9 insertions(+), 13 deletions(-)
+
+diff --git a/src/virtualkeyboard/content/layouts/fallback/main.qml b/src/virtualkeyboard/content/layouts/fallback/main.qml
+index c9a736f2..83415b82 100644
+--- a/src/virtualkeyboard/content/layouts/fallback/main.qml
++++ b/src/virtualkeyboard/content/layouts/fallback/main.qml
+@@ -195,11 +195,7 @@ KeyboardLayout {
+         Key {
+             key: Qt.Key_Apostrophe
+             text: "'"
+-        }
+-        Key {
+-            key: 0xE000
+-            text: ":-)"
+-            alternativeKeys: [ ";-)", ":-)", ":-D", ":-(", "<3" ]
++            alternativeKeys: "\"`"
+         }
+         HideKeyboardKey {
+             weight: 204
+diff --git a/src/virtualkeyboard/content/styles/default/style.qml b/src/virtualkeyboard/content/styles/default/style.qml
+index e38c481c..d5e5d2c8 100644
+--- a/src/virtualkeyboard/content/styles/default/style.qml
++++ b/src/virtualkeyboard/content/styles/default/style.qml
+@@ -37,7 +37,7 @@ KeyboardStyle {
+     readonly property string fontFamily: "Sans"
+     readonly property real keyBackgroundMargin: Math.round(13 * scaleHint)
+     readonly property real keyContentMargin: Math.round(45 * scaleHint)
+-    readonly property real keyIconScale: scaleHint * 0.6
++    readonly property real keyIconScale: scaleHint * 0.3
+     readonly property string resourcePrefix: "qrc:/QtQuick/VirtualKeyboard/content/styles/default/"
+ 
+     readonly property string inputLocale: InputContext.locale
+@@ -51,12 +51,12 @@ KeyboardStyle {
+         inputLocaleIndicatorHighlightTimer.restart()
+     }
+ 
+-    keyboardDesignWidth: 2560
+-    keyboardDesignHeight: 800
+-    keyboardRelativeLeftMargin: 114 / keyboardDesignWidth
+-    keyboardRelativeRightMargin: 114 / keyboardDesignWidth
++    keyboardDesignWidth: 800
++    keyboardDesignHeight: 400
++    keyboardRelativeLeftMargin: 27 / keyboardDesignWidth
++    keyboardRelativeRightMargin: 27 / keyboardDesignWidth
+     keyboardRelativeTopMargin: 13 / keyboardDesignHeight
+-    keyboardRelativeBottomMargin: 86 / keyboardDesignHeight
++    keyboardRelativeBottomMargin: 23 / keyboardDesignHeight
+ 
+     keyboardBackground: Rectangle {
+         color: "black"
+@@ -81,7 +81,7 @@ KeyboardStyle {
+                 font {
+                     family: fontFamily
+                     weight: Font.Normal
+-                    pixelSize: 38 * scaleHint
++                    pixelSize: 8 * scaleHint
+                     capitalization: control.uppercased ? Font.AllUppercase : Font.MixedCase
+                 }
+             }
+@@ -448,7 +448,7 @@ KeyboardStyle {
+                 font {
+                     family: fontFamily
+                     weight: Font.Normal
+-                    pixelSize: 48 * scaleHint
++                    pixelSize: 25 * scaleHint
+                 }
+             }
+         }
