@@ -1,0 +1,40 @@
+From 2401dbb5b81cf64d39d6ae630aec61ed595fdbac Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 20 Nov 2022 18:23:10 +0100
+Subject: [PATCH] Makefile: Allow for CC to be overridden.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ Makefile             | 2 +-
+ unit/common/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 6632fab..6c858c9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -84,7 +84,7 @@ COVERAGE_BUILD_DIR = $(BUILD_DIR)/coverage
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ WARNINGS = -Wall -Wstrict-aliasing -Wunused-result
+ INCLUDES = -I$(INCLUDE_DIR)
+diff --git a/unit/common/Makefile b/unit/common/Makefile
+index 8e55c63..99d8784 100644
+--- a/unit/common/Makefile
++++ b/unit/common/Makefile
+@@ -41,7 +41,7 @@ COVERAGE_BUILD_DIR = $(BUILD_DIR)/coverage
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ WARNINGS += -Wall
+ INCLUDES += -I$(COMMON_DIR) -I$(LIB_DIR)/src -I$(LIB_DIR)/include
