@@ -1,0 +1,26 @@
+From 42c61e04e8c12e18ef12bf0e2c380bf7c332a71d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 20 Nov 2022 18:29:17 +0100
+Subject: [PATCH] Makefile: Allow for CC to be overridden.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 4277a11..76a8e87 100644
+--- a/Makefile
++++ b/Makefile
+@@ -62,7 +62,7 @@ COVERAGE_BUILD_DIR = $(BUILD_DIR)/coverage
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ WARNINGS = -Wall -Wstrict-aliasing -Wunused-result
+ INCLUDES = -I$(INCLUDE_DIR)
