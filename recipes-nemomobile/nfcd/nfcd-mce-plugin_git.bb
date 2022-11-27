@@ -3,7 +3,8 @@ HOMEPAGE = "https://github.com/mer-hybris/nfcd-mce-plugin.git"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=bfbedcf6cc318e76a7b5ecb7d72ecaa0"
 
-SRC_URI = "git://github.com/mer-hybris/nfcd-mce-plugin.git;protocol=https;branch=master"
+SRC_URI = "git://github.com/mer-hybris/nfcd-mce-plugin.git;protocol=https;branch=master \
+           file://0001-Makefile-Allow-for-CC-to-be-overridden.patch"
 SRCREV = "87e762e063f9c645762ee7e4bb6f9d1df80a052b"
 PR = "r1"
 PV = "+git${SRCPV}"
