@@ -2,6 +2,9 @@ inherit core-image
 inherit extrausers
 LICENSE = "GPL-2.0-only"
 
+# Inherit this to be able to produce OE SDKs that are fully capable of building Qt5 code
+inherit populate_sdk_qt5
+
 IMAGE_FEATURES += "package-management debug-tweaks"
 
 IMAGE_INSTALL += " \
