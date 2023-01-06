@@ -11,6 +11,7 @@ RDEPENDS:${PN}:remove = "qtcharts-mkspecs"
 
 RDEPENDS:${PN} += "extra-cmake-modules-dev"
 RDEPENDS:${PN} += "mcedevel-dev"
+RDEPENDS:${PN} += "cli11-dev"
 
 RDEPENDS:${PN} += "qtvirtualkeyboard-dev"
 RDEPENDS:${PN} += "qtvirtualkeyboard-plugins"
