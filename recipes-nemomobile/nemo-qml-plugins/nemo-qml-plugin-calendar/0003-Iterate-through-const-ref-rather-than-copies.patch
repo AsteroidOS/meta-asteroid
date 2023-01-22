@@ -1,0 +1,27 @@
+From 063e367123c1a6910e4698e1e9dcedea58f64405 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 21 Jan 2023 13:28:24 -0500
+Subject: [PATCH] Iterate through const ref rather than copies
+
+The code in CalendarWorker::loadData() was iterating over copies of
+pointers, rather than the pointers in the container.  This fixes that
+bug.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ src/calendarworker.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/calendarworker.cpp b/src/calendarworker.cpp
+index 8170881..afa57c8 100644
+--- a/src/calendarworker.cpp
++++ b/src/calendarworker.cpp
+@@ -652,7 +652,7 @@ void CalendarWorker::loadData(const QList<CalendarData::Range> &ranges,
+     bool orphansDeleted = false;
+ 
+     const KCalendarCore::Event::List list = mCalendar->rawEvents();
+-    for (const KCalendarCore::Event::Ptr e : list) {
++    for (const KCalendarCore::Event::Ptr &e : list) {
+         if (!mCalendar->isVisible(e)) {
+             continue;
+         }

@@ -1,0 +1,37 @@
+From 4e8d5d264ecb59251d4ea6bbff9c93573dd99b68 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 21 Jan 2023 10:23:00 -0500
+Subject: [PATCH] Replace obsolete qSort with std::sort
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ src/calendaragendamodel.cpp | 2 +-
+ src/calendarmanager.cpp     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/calendaragendamodel.cpp b/src/calendaragendamodel.cpp
+index a4368fb..b0d32c4 100644
+--- a/src/calendaragendamodel.cpp
++++ b/src/calendaragendamodel.cpp
+@@ -168,7 +168,7 @@ void CalendarAgendaModel::doRefresh(QList<CalendarEventOccurrence *> newEvents)
+         }
+     }
+ 
+-    qSort(newEvents.begin(), newEvents.end(), eventsLessThan);
++    std::sort(newEvents.begin(), newEvents.end(), eventsLessThan);
+ 
+     int oldEventCount = mEvents.count();
+     int newEventsCounter = 0;
+diff --git a/src/calendarmanager.cpp b/src/calendarmanager.cpp
+index f7f15a7..a926a29 100644
+--- a/src/calendarmanager.cpp
++++ b/src/calendarmanager.cpp
+@@ -356,7 +356,7 @@ QList<CalendarData::Range> CalendarManager::addRanges(const QList<CalendarData::
+     QList<CalendarData::Range> sortedRanges;
+     sortedRanges.append(oldRanges);
+     sortedRanges.append(newRanges);
+-    qSort(sortedRanges.begin(), sortedRanges.end(), range_lessThan);
++    std::sort(sortedRanges.begin(), sortedRanges.end(), range_lessThan);
+ 
+     // combine
+     QList<CalendarData::Range> combinedRanges;

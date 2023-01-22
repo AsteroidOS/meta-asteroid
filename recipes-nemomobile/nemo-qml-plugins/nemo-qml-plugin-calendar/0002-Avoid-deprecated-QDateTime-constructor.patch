@@ -1,0 +1,119 @@
+From 6021268b51f7e0554a8a3c87550f09ff05209cc5 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 21 Jan 2023 13:12:16 -0500
+Subject: [PATCH] Avoid deprecated QDateTime constructor
+
+The QDateTime(const QDate&) constructor is deprecated, so this uses
+QDateTime(QDate.startOfDay()) or QDateTime(QDate.endOfDay()) as appropriate.
+This also simplified one place in calendarworker.cpp in
+CalendarWorker::eventOccurrences().  In that, an elaborate dance to get the
+last second of the second date was replaced by simply using QDate.endOfDay().
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ src/calendarevent.cpp                                     | 2 +-
+ src/calendarmanager.cpp                                   | 4 ++--
+ src/calendarworker.cpp                                    | 4 ++--
+ tests/tst_calendarevent/tst_calendarevent.cpp             | 6 +++---
+ tests/tst_calendarimportmodel/tst_calendarimportmodel.cpp | 6 +++---
+ 5 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/calendarevent.cpp b/src/calendarevent.cpp
+index d6ede52..1c069be 100644
+--- a/src/calendarevent.cpp
++++ b/src/calendarevent.cpp
+@@ -130,7 +130,7 @@ CalendarEvent::Recur CalendarEvent::recur() const
+ 
+ QDateTime CalendarEvent::recurEndDate() const
+ {
+-    return QDateTime(mData->recurEndDate);
++    return QDateTime(mData->recurEndDate.endOfDay());
+ }
+ 
+ bool CalendarEvent::hasRecurEndDate() const
+diff --git a/src/calendarmanager.cpp b/src/calendarmanager.cpp
+index a926a29..8e2ec64 100644
+--- a/src/calendarmanager.cpp
++++ b/src/calendarmanager.cpp
+@@ -394,8 +394,8 @@ void CalendarManager::updateAgendaModel(CalendarAgendaModel *model)
+                 continue;
+             }
+ 
+-            const QDateTime startDt(model->startDate()); // To be replaced later by start.startOfDay()
+-            const QDateTime endDt(model->endDate()); // To be replaced later by start.startOfDay()
++            const QDateTime startDt(model->startDate().startOfDay());
++            const QDateTime endDt(model->endDate().endOfDay());
+             // on all day events the end time is inclusive, otherwise not
+             if ((eo.eventAllDay && eo.startTime.date() <= model->endDate()
+                  && eo.endTime.date() >= model->startDate())
+diff --git a/src/calendarworker.cpp b/src/calendarworker.cpp
+index f7c68ea..8170881 100644
+--- a/src/calendarworker.cpp
++++ b/src/calendarworker.cpp
+@@ -584,8 +584,8 @@ CalendarWorker::eventOccurrences(const QList<CalendarData::Range> &ranges) const
+     const QStringList excluded = excludedNotebooks();
+     QHash<QString, CalendarData::EventOccurrence> filtered;
+     for (const CalendarData::Range range : ranges) {
+-        KCalendarCore::OccurrenceIterator it(*mCalendar, QDateTime(range.first.addDays(-1)),
+-                                             QDateTime(range.second.addDays(1)).addSecs(-1));
++        KCalendarCore::OccurrenceIterator it(*mCalendar, QDateTime(range.first.addDays(-1).startOfDay()),
++                                             QDateTime(range.second.endOfDay()));
+         while (it.hasNext()) {
+             it.next();
+             if (mCalendar->isVisible(it.incidence())
+diff --git a/tests/tst_calendarevent/tst_calendarevent.cpp b/tests/tst_calendarevent/tst_calendarevent.cpp
+index 3686949..66741b7 100644
+--- a/tests/tst_calendarevent/tst_calendarevent.cpp
++++ b/tests/tst_calendarevent/tst_calendarevent.cpp
+@@ -154,7 +154,7 @@ void tst_CalendarEvent::modSetters()
+     QDateTime recurEnd = QDateTime::currentDateTime().addDays(100);
+     eventMod->setRecurEndDate(recurEnd);
+     QCOMPARE(recurEndSpy.count(), 1);
+-    QCOMPARE(eventMod->recurEndDate(), QDateTime(recurEnd.date())); // day precision
++    QCOMPARE(eventMod->recurEndDate(), QDateTime(recurEnd.date().startOfDay())); // day precision
+ 
+     QSignalSpy reminderSpy(eventMod, SIGNAL(reminderChanged()));
+     QVERIFY(eventMod->reminder() < 0); // default is ReminderNone == negative reminder.
+@@ -209,7 +209,7 @@ void tst_CalendarEvent::testSave()
+ 
+     QDateTime recurEnd = endTime.addDays(100);
+     eventMod->setRecurEndDate(recurEnd);
+-    QCOMPARE(eventMod->recurEndDate(), QDateTime(recurEnd.date()));
++    QCOMPARE(eventMod->recurEndDate(), QDateTime(recurEnd.date().startOfDay()));
+ 
+     int reminder = 0; // at the time of the event
+     eventMod->setReminder(reminder);
+@@ -248,7 +248,7 @@ void tst_CalendarEvent::testSave()
+     QCOMPARE(eventB->displayLabel(), displayLabel);
+     QCOMPARE(eventB->location(), location);
+     QCOMPARE(eventB->recur(), recur);
+-    QCOMPARE(eventB->recurEndDate(), QDateTime(recurEnd.date()));
++    QCOMPARE(eventB->recurEndDate(), QDateTime(recurEnd.date().startOfDay()));
+     QCOMPARE(eventB->reminder(), reminder);
+ 
+     eventB->deleteEvent();
+diff --git a/tests/tst_calendarimportmodel/tst_calendarimportmodel.cpp b/tests/tst_calendarimportmodel/tst_calendarimportmodel.cpp
+index 1c3086e..0f3e6c0 100644
+--- a/tests/tst_calendarimportmodel/tst_calendarimportmodel.cpp
++++ b/tests/tst_calendarimportmodel/tst_calendarimportmodel.cpp
+@@ -109,9 +109,9 @@ void tst_CalendarImportModel::testByString()
+              QString::fromLatin1("Test 1"));
+     QVERIFY(model->data(at, int(CalendarImportModel::DescriptionRole)).toString().isEmpty());
+     QCOMPARE(model->data(at, int(CalendarImportModel::StartTimeRole)).toDateTime(),
+-             QDateTime(QDate(2019, 6, 7)));
++             QDateTime(QDate(2019, 6, 7).startOfDay()));
+     QCOMPARE(model->data(at, int(CalendarImportModel::EndTimeRole)).toDateTime(),
+-             QDateTime(QDate(2019, 6, 7)));
++             QDateTime(QDate(2019, 6, 7).startOfDay()));
+     QVERIFY(model->data(at, int(CalendarImportModel::AllDayRole)).toBool());
+     QVERIFY(model->data(at, int(CalendarImportModel::LocationRole)).toString().isEmpty());
+     QCOMPARE(model->data(at, int(CalendarImportModel::UidRole)).toString(),
+@@ -146,7 +146,7 @@ void tst_CalendarImportModel::testByString()
+     QVERIFY(storage->load());
+     const KCalendarCore::Incidence::Ptr ev1 = calendar->incidence(QString::fromLatin1("14B902BC-8D24-4A97-8541-63DF7FD41A73"));
+     QVERIFY(ev1);
+-    QCOMPARE(ev1->dtStart(), QDateTime(QDate(2019, 6, 7)));
++    QCOMPARE(ev1->dtStart(), QDateTime(QDate(2019, 6, 7).startOfDay()));
+     const KCalendarCore::Incidence::Ptr ev2 = calendar->incidence(QString::fromLatin1("14B902BC-8D24-4A97-8541-63DF7FD41A74"));
+     QVERIFY(ev2);
+     QVERIFY(!ev2->organizer().isEmpty());
