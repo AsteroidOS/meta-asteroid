@@ -18,6 +18,6 @@ DEPENDS += "qtbase libical extra-cmake-modules"
 EXTRA_OECMAKE = " -DBUILD_TESTS=OFF"
 FILES:${PN}-dev += "/usr/mkspecs/* \
     /usr/share/* \
-    /usr/lib/cmake/ * \
+    /usr/lib/cmake/* \
     /usr/include/* \
 "
