@@ -1,0 +1,53 @@
+From fec91792d46e86900975f79b94f23c7ef9d1ffc1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Fri, 3 Feb 2023 23:10:55 +0100
+Subject: [PATCH] Remove sysconfig file.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This file should be provided by the different platforms, hence remove it here as it's not needed.
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ bluetooth-rfkill-event/Makefile                         | 2 --
+ bluetooth-rfkill-event/bluetooth-rfkill-event.service   | 2 +-
+ bluetooth-rfkill-event/bluetooth-rfkill-event.sysconfig | 4 ----
+ 3 files changed, 1 insertion(+), 7 deletions(-)
+ delete mode 100644 bluetooth-rfkill-event/bluetooth-rfkill-event.sysconfig
+
+diff --git a/bluetooth-rfkill-event/Makefile b/bluetooth-rfkill-event/Makefile
+index f1a580f..fd8c545 100644
+--- a/bluetooth-rfkill-event/Makefile
++++ b/bluetooth-rfkill-event/Makefile
+@@ -32,7 +32,5 @@ install:
+ 	mkdir -p $(INSTALL_ROOT)/usr/lib/systemd/system/network.target.wants
+ 	ln -s ../bluetooth-rfkill-event.service $(INSTALL_ROOT)/usr/lib/systemd/system/network.target.wants/bluetooth-rfkill-event.service
+ 	mkdir -p $(INSTALL_ROOT)/etc/bluetooth-rfkill-event
+-	mkdir -p $(INSTALL_ROOT)/etc/sysconfig
+-	install bluetooth-rfkill-event.sysconfig $(INSTALL_ROOT)/etc/sysconfig/bluetooth-rfkill-event
+ 	mkdir -p $(INSTALL_ROOT)$(RFKILL_HELPER_PATH)
+ 	install -m 775 killall-wait.sh $(INSTALL_ROOT)$(RFKILL_HELPER_PATH)/killall-wait.sh
+diff --git a/bluetooth-rfkill-event/bluetooth-rfkill-event.service b/bluetooth-rfkill-event/bluetooth-rfkill-event.service
+index 7f7c377..e628db2 100644
+--- a/bluetooth-rfkill-event/bluetooth-rfkill-event.service
++++ b/bluetooth-rfkill-event/bluetooth-rfkill-event.service
+@@ -6,7 +6,7 @@ Before=bluetooth.service
+ Type=simple
+ EnvironmentFile=-/etc/sysconfig/bluetooth-rfkill-event
+ EnvironmentFile=-/etc/sysconfig/bluetooth-rfkill-event-hciattach
+-ExecStart=/usr/sbin/bluetooth_rfkill_event $DEBUG $BTMODULE $CONFIGFILE
++ExecStart=/usr/sbin/bluetooth_rfkill_event $DEBUG $BTMODULE $CONFIGFILE $OPTIONS
+ Restart=on-failure
+ 
+ [Install]
+diff --git a/bluetooth-rfkill-event/bluetooth-rfkill-event.sysconfig b/bluetooth-rfkill-event/bluetooth-rfkill-event.sysconfig
+deleted file mode 100644
+index 64f296c..0000000
+--- a/bluetooth-rfkill-event/bluetooth-rfkill-event.sysconfig
++++ /dev/null
+@@ -1,4 +0,0 @@
+-# Can be used to configure the following:
+-# DEBUG -- debug options
+-# BTMODULE -- name of bluetooth kernel module to load/unload, if any
+-# CONFIGFILE -- name of configuration file to use

@@ -1,0 +1,82 @@
+From 6ea36f7d1308ce1368a5bbacf288653c42b2a9f8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Fri, 3 Feb 2023 23:04:49 +0100
+Subject: [PATCH] Store custom Bluetooth address.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When no valid Bluetooth address is available a random one is used.
+But this new random Bluetooth MAC address is not stored resulting in a new Bluetooth address after every reboot.
+By storing the Bluetooth address we can ensure that the same Bluetooth address is used across reboots.
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ .../bluetooth_rfkill_event.c                  | 21 +++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+index d8de7aa..f0ec621 100644
+--- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
++++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+@@ -44,6 +44,7 @@
+ #include <syslog.h>
+ #include <stdarg.h>
+ #include <glib.h>
++#include <sys/stat.h>
+ #include <bluetooth/bluetooth.h>
+ #include <bluetooth/hci.h>
+ #include <bluetooth/hci_lib.h>
+@@ -77,7 +78,8 @@ enum rfkill_switch_type {
+    name is defined in the kernel driver implementing rfkill interface for power */
+ #define BCM_RFKILL_NAME "bcm43xx Bluetooth\n"
+ #define BCM_43341_UART_DEV "/dev/ttyMFD0"
+-#define BD_ADD_FACTORY_FILE "/factory/bluetooth_address"
++#define STORAGE_DIR "/var/lib/bluetooth-rfkill-event/"
++#define BD_ADD_FACTORY_FILE STORAGE_DIR"bluetooth_address"
+ char factory_bd_add[18];
+ char default_bd_addr[18];
+ 
+@@ -771,6 +773,16 @@ gboolean check_bd_format(const char* bd_add)
+     return TRUE;
+ }
+ 
++void save_bd_add(void)
++{
++    FILE *fp;
++    fp = fopen(main_opts.bdaddr_file
++        ? main_opts.bdaddr_file
++        : BD_ADD_FACTORY_FILE, "w");
++    fputs(factory_bd_add, fp);
++    fclose(fp);
++}
++
+ void load_bd_add(void)
+ {
+     FILE *fp;
+@@ -791,21 +803,22 @@ void load_bd_add(void)
+         memcpy(factory_bd_add, default_bd_addr, sizeof(factory_bd_add));
+         main_opts.bd_add = factory_bd_add;
+         main_opts.set_bd = TRUE;
++        save_bd_add();
+         return;
+     }
+ 
+     ret = fscanf(fp, "%17c", factory_bd_add);
++    fclose(fp);
+ 
+     /* if factory BD address is not well formatted or not present use default one*/
+     if (!(ret == 1 && check_bd_format(factory_bd_add)))
+     {
++        WARN("Invalid Bluetooth address format %s", factory_bd_add);
+         memcpy(factory_bd_add, default_bd_addr, sizeof(factory_bd_add));
++        save_bd_add();
+     }
+     main_opts.bd_add = factory_bd_add;
+     main_opts.set_bd = TRUE;
+-
+-    fclose(fp);
+-
+ }
+ 
+ static void brcm_patchram_plus_cmdline()
