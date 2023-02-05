@@ -1,0 +1,25 @@
+From 88a23b15b3e6d502510a22693ddc8904b80848e7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Fri, 3 Feb 2023 23:09:49 +0100
+Subject: [PATCH] Fix loading the service file.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+For some unknown reason, the service isn't started even though a bluetooth target does start upon boot.
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ bluetooth-rfkill-event/bluetooth-rfkill-event.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bluetooth-rfkill-event/bluetooth-rfkill-event.service b/bluetooth-rfkill-event/bluetooth-rfkill-event.service
+index 453fd36..7f7c377 100644
+--- a/bluetooth-rfkill-event/bluetooth-rfkill-event.service
++++ b/bluetooth-rfkill-event/bluetooth-rfkill-event.service
+@@ -10,4 +10,4 @@ ExecStart=/usr/sbin/bluetooth_rfkill_event $DEBUG $BTMODULE $CONFIGFILE
+ Restart=on-failure
+ 
+ [Install]
+-WantedBy=bluetooth.target
++WantedBy=multi-user.target

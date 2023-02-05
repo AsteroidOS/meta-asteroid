@@ -1,0 +1,76 @@
+From ed0212ced4d3cbf4c6fa220db223cda6b5634829 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Fri, 3 Feb 2023 23:01:19 +0100
+Subject: [PATCH] Add support for using a custom rfkill device.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ .../bluetooth_rfkill_event.c                  | 21 +++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+index bff3075..d8de7aa 100644
+--- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
++++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+@@ -130,6 +130,7 @@ char hciattach_options[PATH_MAX];
+ char hci_uart_default_dev[PATH_MAX] = BCM_43341_UART_DEV;
+ 
+ gboolean hci_dev_registered;
++char *rfkill_name = BCM_RFKILL_NAME;
+ char *bt_module = NULL;
+ char *config_file = DEFAULT_CONFIG_FILE;
+ GHashTable *switch_hash = NULL; /* hash index to metadata about the switch */
+@@ -1066,7 +1067,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
+     }
+ 
+     /* based on chip read its config file, if any, and define the hciattach utility used to dowload the patch */
+-    if (!strncmp(BCM_RFKILL_NAME, sysname, sizeof(BCM_RFKILL_NAME))) {
++    if (!strncmp(rfkill_name, sysname, strlen(rfkill_name))) {
+ 	read_config(config_file);
+ 	snprintf(hciattach, sizeof(hciattach), patcher_impl[main_opts.patcher].name);
+ 	type = BT_PWR;
+@@ -1117,7 +1118,7 @@ int main(int argc, char **argv)
+         };
+         int c;
+ 
+-        c = getopt_long(argc, argv, ":b:c:ds", opts, NULL);
++        c = getopt_long(argc, argv, ":b:r:c:ds", opts, NULL);
+         if (c == -1)
+             break;
+ 
+@@ -1127,6 +1128,9 @@ int main(int argc, char **argv)
+                until BT rfkill switch is identified */
+             bt_module = optarg;
+             break;
++        case 'r':
++            rfkill_name = optarg;
++            break;
+         case 'c':
+             config_file = optarg;
+             break;
+@@ -1145,9 +1149,22 @@ int main(int argc, char **argv)
+ 
+     INFO("Starting bluetooth_rfkill_event");
+ 
++    if (!g_file_test(STORAGE_DIR, G_FILE_TEST_IS_DIR)) {
++        if (mkdir(STORAGE_DIR, (S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) < 0) {
++            if (errno != EEXIST) {
++                FATAL("Error while creating the storage dir: "STORAGE_DIR);
++                return -errno;
++            }
++        }
++    }
++
+     random_default_bdaddr();
+     DEBUG("Default bdaddr: %s", default_bd_addr);
+ 
++    if (rfkill_name) {
++        INFO("Using rfkill device %s", rfkill_name);
++    }
++
+     /* If Bluetooth kernel module is specified, try to unload and
+        reload it before starting up. */
+     if (bt_module) {
