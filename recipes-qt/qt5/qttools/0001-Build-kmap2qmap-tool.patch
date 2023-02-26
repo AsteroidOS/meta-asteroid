@@ -1,4 +1,4 @@
-From 6e3fd15a5e1f264b414510503ba5c5f9e82aac28 Mon Sep 17 00:00:00 2001
+From 07d54ae63d9bd5d8d753e3cd59bf2677a369f4e8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Wed, 1 Feb 2023 22:26:23 +0100
 Subject: [PATCH] Build kmap2qmap tool.
@@ -12,18 +12,18 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/src/src.pro b/src/src.pro
-index f2675c751..9cd087e65 100644
+index 7bac13603..1b090ae9c 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -34,6 +34,8 @@ macos {
      SUBDIRS += macdeployqt
  }
  
-+SUBDIRS += kmap2qmap
++qtHaveModule(input_support-private): SUBDIRS += kmap2qmap
 +
  qtHaveModule(dbus): SUBDIRS += qdbus
  
  win32|winrt:SUBDIRS += windeployqt
 -- 
-2.39.1
+2.39.2
 
