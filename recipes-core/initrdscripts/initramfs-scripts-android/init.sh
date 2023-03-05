@@ -74,8 +74,8 @@ fi
 info "Mounting sdcard..."
 mkdir -m 0777 /sdcard /loop
 
-while [ ! -e /sys/block/mmcblk0 ] ; do
-    info "Waiting for mmcblk0..."
+while [ ! -e /dev/$sdcard_partition ] ; do
+    info "Waiting for $sdcard_partition..."
     sleep 1
 done
 
