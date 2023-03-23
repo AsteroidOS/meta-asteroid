@@ -1,0 +1,26 @@
+From a9858b5bb44a014c2633dfc93df9c93b6d334f67 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Thu, 23 Mar 2023 10:39:12 -0400
+Subject: [PATCH] Wait for dbus call to finish in NetworkTechnology
+
+This waits for the dbus call to finish in
+NetworkTechnology::initialize() to make sure that the object is ready
+before leaving the constructor.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ libconnman-qt/networktechnology.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libconnman-qt/networktechnology.cpp b/libconnman-qt/networktechnology.cpp
+index 48ed8b3..130b681 100644
+--- a/libconnman-qt/networktechnology.cpp
++++ b/libconnman-qt/networktechnology.cpp
+@@ -113,6 +113,7 @@ void NetworkTechnology::initialize()
+                 createInterface();
+             }
+         });
++        pendingCall.waitForFinished();
+     } else {
+         destroyInterface();
+         createInterface();
