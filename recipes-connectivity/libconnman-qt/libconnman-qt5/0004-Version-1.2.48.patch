@@ -1,0 +1,29 @@
+From 60e394001ac16266d7a582e56efcc4bbf20a503a Mon Sep 17 00:00:00 2001
+From: Jussi Laakkonen <jussi.laakkonen@jolla.com>
+Date: Wed, 14 Dec 2022 18:02:47 +0200
+Subject: [PATCH] Version 1.2.48
+
+Update ConnMan requirement to git190 that has the association state
+change for VPNs.
+---
+ rpm/connman-qt5.spec | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rpm/connman-qt5.spec b/rpm/connman-qt5.spec
+index fc557a1..e76f872 100644
+--- a/rpm/connman-qt5.spec
++++ b/rpm/connman-qt5.spec
+@@ -1,11 +1,11 @@
+ Name:       connman-qt5
+ Summary:    Qt bindings for connman
+-Version:    1.2.35
++Version:    1.2.48
+ Release:    1
+ License:    ASL 2.0
+ URL:        https://git.sailfishos.org/mer-core/libconnman-qt
+ Source0:    %{name}-%{version}.tar.bz2
+-Requires:   connman >= 1.32+git138
++Requires:   connman >= 1.32+git191
+ Requires:   libdbusaccess >= 1.0.4
+ Requires(post): /sbin/ldconfig
+ Requires(postun): /sbin/ldconfig
