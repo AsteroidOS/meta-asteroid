@@ -12,7 +12,7 @@ S = "${WORKDIR}/git"
 DEPENDS = "libhybris cli11 mlite qtbase"
 inherit cmake_qt5 pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "catfish"
+COMPATIBLE_MACHINE = "catfish|koi"
 
 do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
