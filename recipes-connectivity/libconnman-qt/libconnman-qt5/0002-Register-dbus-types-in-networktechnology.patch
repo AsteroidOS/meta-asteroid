@@ -1,0 +1,35 @@
+From 024c8839ef3912d0ce9326fa482888a56d1d48b3 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Wed, 29 Mar 2023 11:32:50 -0400
+Subject: [PATCH] Register dbus types in networktechnology
+
+In some uses of connman, including in analog-weather-glow watchface, the
+NetworkTechnology object was before the DBus types were registered. This
+fixes that problem by making sure registerCommonDataTypes() is called
+from within each version of constructor.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ libconnman-qt/networktechnology.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libconnman-qt/networktechnology.cpp b/libconnman-qt/networktechnology.cpp
+index 130b681..838001d 100644
+--- a/libconnman-qt/networktechnology.cpp
++++ b/libconnman-qt/networktechnology.cpp
+@@ -37,6 +37,7 @@ NetworkTechnology::NetworkTechnology(const QString &path, const QVariantMap &pro
+     Q_ASSERT(!path.isEmpty());
+     m_propertiesCache = properties;
+ 
++    registerCommonDataTypes();
+     startDBusWatching();
+     initialize();
+     setPath(path);
+@@ -49,6 +50,7 @@ NetworkTechnology::NetworkTechnology(QObject* parent)
+                                             QDBusServiceWatcher::WatchForRegistration
+                                             | QDBusServiceWatcher::WatchForUnregistration, this))
+ {
++    registerCommonDataTypes();
+     startDBusWatching();
+     initialize();
+ }
