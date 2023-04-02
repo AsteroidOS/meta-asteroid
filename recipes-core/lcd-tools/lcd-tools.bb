@@ -3,7 +3,6 @@ HOMEPAGE = "https://github.com/AsteroidOS/lcd-tools.git"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
-
 SRC_URI = "git://github.com/AsteroidOS/lcd-tools.git;branch=main;protocol=https"
 SRCREV = "${AUTOREV}"
 PR = "r0"
@@ -12,7 +11,6 @@ S = "${WORKDIR}/git"
 DEPENDS = "libhybris cli11 mlite qtbase"
 inherit cmake_qt5 pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "catfish|koi"
 
 do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
