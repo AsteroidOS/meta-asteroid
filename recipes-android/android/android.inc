@@ -23,9 +23,12 @@ do_install() {
     rm ${D}${includedir}/android/android-headers.pc
 }
 
-# FIXME: QA Issue: Architecture did not match (40 to 164) on /work/dory-oe-linux-gnueabi/android/lollipop-r0/packages-split/android-system/system/vendor/firmware/adsp.b00 [arch]
+# Precompiled libraries, INSANE_SKIP all.
 do_package_qa() {
 }
+
+# Allow empty main package since the -dev package depends on it
+ALLOW_EMPTY:${PN} = "1"
 
 PACKAGES =+ "android-system android-headers"
 FILES:android-system = "/usr"
