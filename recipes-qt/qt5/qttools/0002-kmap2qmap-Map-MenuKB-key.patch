@@ -1,0 +1,28 @@
+From 0fe847a5b96f41a46a32a9795ab43c16d5e564cb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Wed, 5 Apr 2023 20:53:38 +0200
+Subject: [PATCH] kmap2qmap: Map MenuKB key.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/kmap2qmap/main.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/kmap2qmap/main.cpp b/src/kmap2qmap/main.cpp
+index 0f18166bd..6aea7b89a 100644
+--- a/src/kmap2qmap/main.cpp
++++ b/src/kmap2qmap/main.cpp
+@@ -280,6 +280,7 @@ static const struct symbol_map_t symbol_map[] = {
+     { "AudioRewind",   Qt::Key_AudioRewind },
+     { "Camera",        Qt::Key_Camera },
+     { "CameraFocus",   Qt::Key_CameraFocus },
++    { "MenuKB",        Qt::Key_MenuKB },
+ 
+     { "Call",             Qt::Key_Call },
+     { "Hangup",           Qt::Key_Hangup },
+-- 
+2.40.0
+
