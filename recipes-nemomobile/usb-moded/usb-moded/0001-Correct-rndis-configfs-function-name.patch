@@ -15,7 +15,7 @@ index 25e35db..31759ab 100755
 @@ -18,7 +18,7 @@ UDC_DISABLE=""
  FUNCTION_MASS_STORAGE="mass_storage.usb0"
 
- # "developer_mode"
+ # "ssh_mode"
 -FUNCTION_RNDIS="rndis_bam.rndis"
 +FUNCTION_RNDIS="rndis.rndis"
 
