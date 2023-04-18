@@ -1,0 +1,12 @@
+[Unit]
+Description=Tells the Android init system that the boot has been completed.
+ConditionUser=!root
+After=asteroid-launcher.service
+
+[Service]
+Type=simple
+ExecStartPre=-/bin/sleep 10
+ExecStart=/bin/sh -ec 'if [ `getprop sys.boot_completed` != '1' ]; then setprop sys.boot_completed 1; fi'
+
+[Install]
+WantedBy=default.target
