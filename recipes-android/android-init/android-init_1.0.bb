@@ -12,9 +12,9 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 do_install() {
     install -m 0644 ${WORKDIR}/init.rc ${D}/init.rc
 
-    install -d ${D}${systemd_unitdir}/multi-user.target.wants/
-    install -m 0644 ${WORKDIR}/android-init.service  ${D}${systemd_unitdir}/
-    ln -s ../android-init.service ${D}${systemd_unitdir}/multi-user.target.wants/android-init.service
+    install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
+    install -m 0644 ${WORKDIR}/android-init.service  ${D}${systemd_system_unitdir}/
+    ln -s ../android-init.service ${D}${systemd_system_unitdir}/multi-user.target.wants/android-init.service
 
     install -d ${D}${systemd_user_unitdir}/default.target.wants/
     install -m 0644 ${WORKDIR}/android-boot-completed.service  ${D}${systemd_user_unitdir}/
@@ -23,4 +23,4 @@ do_install() {
     fi
 }
 
-FILES:${PN} += "/init.rc ${systemd_unitdir} ${systemd_user_unitdir}"
+FILES:${PN} += "/init.rc ${systemd_system_unitdir} ${systemd_user_unitdir}"
