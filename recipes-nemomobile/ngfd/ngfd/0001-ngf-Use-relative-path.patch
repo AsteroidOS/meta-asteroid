@@ -1,0 +1,26 @@
+From 6ad2e750b002aa526d9ba2102e2516df424dd0fc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Wed, 12 Apr 2023 22:58:36 +0200
+Subject: [PATCH] ngf: Use relative path.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/ngf/core-dbus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/ngf/core-dbus.c b/src/ngf/core-dbus.c
+index e652138..2996e0c 100644
+--- a/src/ngf/core-dbus.c
++++ b/src/ngf/core-dbus.c
+@@ -23,7 +23,7 @@
+ #include <ngf/log.h>
+ #include <glib.h>
+ #include <dbus/dbus.h>
+-#include <dbus-gmain/dbus-gmain.h>
++#include "../../dbus-gmain/dbus-gmain.h"
+ 
+ #include <ngf/core-dbus.h>
+ #include "core-internal.h"
