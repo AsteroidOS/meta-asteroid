@@ -3,17 +3,21 @@ HOMEPAGE = "https://github.com/sailfishos/ngfd"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
+SRC_URI = "gitsm://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
            file://ngfd.ini \
            file://ngfd.service \
            file://events.d/ \
            file://50-ffmemless.ini \
+           file://0001-ngf-Use-relative-path.patch \
            file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch \
-           file://0003-Use-g_list_free_full-as-an-alternative-to-g_list_for.patch"
-SRCREV = "f400b0ade5ca13af7d7cca8d360117ca0b60f112"
+           "
+SRCREV = "57ad06b6df7052a668bdba876ea3dedb8f27d4ef"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
+
+inherit autotools pkgconfig
+
 B = "${S}"
 
 DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib profiled mce"
@@ -39,8 +43,6 @@ do_install:append() {
 
     install -d ${D}/usr/share/sounds/
 }
-
-inherit autotools pkgconfig
 
 FILES:${PN}-dbg += "/usr/lib/ngf/.debug/"
 FILES:${PN} += "/usr/lib/ngf /usr/share/dbus-1 /usr/lib/systemd/ /usr/share/sounds/ /usr/lib/systemd/user/default.target.wants/"
