@@ -11,6 +11,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS = "libnciplugin libmce-glib"
+RDEPENDS:${PN} = "libmce-glib"
 
 do_install() {
     oe_runmake install DESTDIR=${D}
