@@ -46,14 +46,14 @@ diff --git a/meson.build b/meson.build
 index d7e468cab..e4bb1722b 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -828,6 +828,7 @@ pc_cdata.set('PTHREAD_LIBS', '-pthread')
- pc_files = [
-   'libpulse.pc',
-   'libpulse-simple.pc',
-+  'pulsecore.pc',
- ]
-
- if glib_dep.found()
+@@ -868,6 +868,7 @@
+   pc_files = [
+     'libpulse.pc',
+     'libpulse-simple.pc',
++    'pulsecore.pc',
+   ]
+ 
+   if glib_dep.found()
 diff --git a/pulsecore.pc.in b/pulsecore.pc.in
 new file mode 100644
 index 000000000..b5b4a9bdf
@@ -76,9 +76,9 @@ diff --git a/src/pulsecore/meson.build b/src/pulsecore/meson.build
 index d7f9ef2cf..3aa5d478b 100644
 --- a/src/pulsecore/meson.build
 +++ b/src/pulsecore/meson.build
-@@ -58,42 +58,77 @@ libpulsecore_sources = [
+@@ -59,42 +59,77 @@
  ]
-
+ 
  libpulsecore_headers = [
 +  'atomic.h',
    'asyncmsgq.h',
@@ -154,11 +154,12 @@ index d7f9ef2cf..3aa5d478b 100644
    'sconv.h',
    'sconv-s16be.h',
    'sconv-s16le.h',
-@@ -101,12 +136,19 @@ libpulsecore_headers = [
+@@ -102,13 +137,20 @@
    'sink-input.h',
    'sink.h',
    'sioman.h',
 +  'socket.h',
+   'socket-server.h',
    'sound-file-stream.h',
    'sound-file.h',
    'source-output.h',
@@ -174,10 +175,10 @@ index d7f9ef2cf..3aa5d478b 100644
    'thread-mq.h',
    'typedefs.h',
  ]
-@@ -227,6 +269,16 @@ libpulsecore = shared_library('pulsecore-' + pa_version_major_minor,
-
+@@ -229,6 +271,16 @@
+ 
  libpulsecore_dep = declare_dependency(link_with: libpulsecore)
-
+ 
 +install_headers(
 +  libpulsecore_headers,
 +  subdir : 'pulsecore'
@@ -190,6 +191,6 @@ index d7f9ef2cf..3aa5d478b 100644
 +
  # Internal libraries for modules
  # TODO: understand 'c_args' and 'dependencies' better, maybe we can remove some
-
+ 
 --
 2.33.0
