@@ -2,8 +2,8 @@ SUMMARY = "AsteroidOS fonts set"
 SECTION = "fonts"
 HOMEPAGE = "https://github.com/AsteroidOS/asteroid-fonts"
 LICENSE = "OFL-1.1 & Apache-2.0 & CC-BY-3.0 & CC-BY-4.0 & MIT"
-LIC_FILES_CHKSUM = "file://README.md;beginline=9;endline=25;md5=57521b48e8a4e517fea19e4c36b11e18"
-PR = "r0"
+LIC_FILES_CHKSUM = "file://README.md;beginline=6;endline=18;md5=80dd4fbc8c53407e7f153a9428de67a4"
+PR = "r1"
 INHIBIT_DEFAULT_DEPS = "1"
 
 inherit allarch
