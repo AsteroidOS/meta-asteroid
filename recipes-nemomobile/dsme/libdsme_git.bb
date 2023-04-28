@@ -7,7 +7,7 @@ DEPENDS += " glib-2.0 libcheck pkgconfig-native"
 
 SRC_URI = "git://github.com/sailfishos/libdsme.git;protocol=https;branch=master \
     file://001-Allows-custom-cflags.patch"
-SRCREV = "3633f59d801e576007a936ba88251a47d1b877f2"
+SRCREV = "63e67a8ae1df7ba86e74e94d0e5486d6dd2a87d5"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
