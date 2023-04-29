@@ -89,6 +89,10 @@ if [ -d /sdcard/media/0 ] ; then
     ANDROID_MEDIA_DIR="/sdcard/media/0"
 fi
 
+if [ -e /sdcard/asteroidos.ext4 ] ; then
+    ANDROID_MEDIA_DIR="/sdcard/"
+fi
+
 BOOT_DIR="/sdcard"
 if [ -e $ANDROID_MEDIA_DIR/asteroidos.ext4 ] ; then
     /sbin/fsck.ext4 -p $ANDROID_MEDIA_DIR/asteroidos.ext4
