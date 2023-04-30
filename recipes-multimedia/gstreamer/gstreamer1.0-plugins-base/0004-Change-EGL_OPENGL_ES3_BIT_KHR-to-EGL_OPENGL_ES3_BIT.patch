@@ -1,0 +1,62 @@
+From 30f8eb87f29a77770faeec7c85280bc9668eda44 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 29 Apr 2023 12:29:30 -0400
+Subject: [PATCH] Change EGL_OPENGL_ES3_BIT_KHR to EGL_OPENGL_ES3_BIT
+
+The code does not compile with the KHR version.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ gst-libs/gst/gl/egl/gstglcontext_egl.c | 8 ++++----
+ gst-libs/gst/tag/gsttagdemux.c         | 0
+ gst/subparse/gstssaparse.c             | 0
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+ mode change 100755 => 100644 gst-libs/gst/tag/gsttagdemux.c
+ mode change 100755 => 100644 gst/subparse/gstssaparse.c
+
+diff --git a/gst-libs/gst/gl/egl/gstglcontext_egl.c b/gst-libs/gst/gl/egl/gstglcontext_egl.c
+index d51c263..f3c31ee 100644
+--- a/gst-libs/gst/gl/egl/gstglcontext_egl.c
++++ b/gst-libs/gst/gl/egl/gstglcontext_egl.c
+@@ -172,7 +172,7 @@ egl_conformant_to_gst (int conformant)
+   if (conformant & EGL_OPENGL_ES2_BIT)
+     ret |= GST_GL_API_GLES2;
+ #if defined(EGL_KHR_create_context)
+-  if (conformant & EGL_OPENGL_ES3_BIT_KHR)
++  if (conformant & EGL_OPENGL_ES3_BIT)
+     /* FIXME: need another gles3 value? */
+     ret |= GST_GL_API_GLES2;
+ #endif
+@@ -421,7 +421,7 @@ gst_gl_context_egl_dump_config (GstGLContextEGL * egl, EGLConfig config)
+     if (conformant & EGL_OPENGL_ES2_BIT)
+       conformant_values[i++] = "OpenGL ES 2.x";
+ #if defined(EGL_KHR_create_context)
+-    if (conformant & EGL_OPENGL_ES3_BIT_KHR)
++    if (conformant & EGL_OPENGL_ES3_BIT)
+       conformant_values[i++] = "OpenGL ES 3.x";
+ #endif
+     if (conformant & EGL_OPENVG_BIT)
+@@ -454,7 +454,7 @@ gst_gl_context_egl_dump_config (GstGLContextEGL * egl, EGLConfig config)
+     if (renderable & EGL_OPENGL_ES2_BIT)
+       renderable_values[i++] = "OpenGL ES 2.x";
+ #if defined(EGL_KHR_create_context)
+-    if (renderable & EGL_OPENGL_ES3_BIT_KHR)
++    if (renderable & EGL_OPENGL_ES3_BIT)
+       renderable_values[i++] = "OpenGL ES 3.x";
+ #endif
+     if (renderable & EGL_OPENVG_BIT)
+@@ -661,7 +661,7 @@ gst_gl_context_egl_choose_config (GstGLContextEGL * egl, GstGLAPI gl_api,
+     if (major == 3) {
+ #if defined(EGL_KHR_create_context)
+       if (create_context) {
+-        egl_api = EGL_OPENGL_ES3_BIT_KHR;
++        egl_api = EGL_OPENGL_ES3_BIT;
+       } else
+ #endif
+       {
+diff --git a/gst-libs/gst/tag/gsttagdemux.c b/gst-libs/gst/tag/gsttagdemux.c
+old mode 100755
+new mode 100644
+diff --git a/gst/subparse/gstssaparse.c b/gst/subparse/gstssaparse.c
+old mode 100755
+new mode 100644
