@@ -1,0 +1,51 @@
+From c7557ac0ae5328f9c86667ad51688b6a8364b1e6 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sun, 30 Apr 2023 10:59:48 -0400
+Subject: [PATCH] Do not check for icu
+
+The native-icu package is required for this build so it exists, but the
+original configure attempted to verify that.  However, the way the test
+was written, it only looked at the host machine rather than the relevant
+libraries for the target machine.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ configure | 18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
+
+diff --git a/configure b/configure
+index 81bded4b..a3e9ea88 100755
+--- a/configure
++++ b/configure
+@@ -64,7 +64,7 @@ CFG_BUILD_PARTS=""
+ CFG_ICU=auto
+ 
+ HAVE_LINUX=no
+-HAVE_ICU=no
++HAVE_ICU=yes
+ 
+ OPT_SHADOW=maybe
+ 
+@@ -289,22 +289,6 @@ if [ ! -z "`uname -s | grep Linux`" ]; then
+     HAVE_LINUX=yes
+ fi
+ 
+-# Test for ICU
+-if [ "$CFG_ICU" != "no" ]; then
+-    which icu-config > /dev/null
+-    if [ $? -eq 0 ]; then
+-        icu-config --exists
+-        if [ $? -eq 0 ]; then
+-            HAVE_ICU=yes
+-        fi
+-    fi
+-    if [ "$CFG_ICU" = "yes" -a "$HAVE_ICU" = "no" ]; then
+-        echo "You specified  -icu  but icu was not found."
+-        echo "Please install the libicu-dev package."
+-        exit 1
+-    fi
+-fi
+-
+ #-------------------------------------------------------------------------------
+ # help - interactive parts of the script _after_ this section please
+ #-------------------------------------------------------------------------------
