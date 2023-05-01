@@ -1,4 +1,4 @@
-From 22d79a9cf447566c04c50b4bf338668d214e6731 Mon Sep 17 00:00:00 2001
+From 1eee7912e763b88a705a6486c3f53792cf57416f Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 9 Jan 2021 16:34:06 +0100
 Subject: [PATCH] Set version to support PulseAudio 14.
@@ -10,10 +10,8 @@ Subject: [PATCH] Set version to support PulseAudio 14.
 
 diff --git a/.tarball-version b/.tarball-version
 new file mode 100644
-index 0000000..02161ca
+index 0000000..94188a7
 --- /dev/null
 +++ b/.tarball-version
 @@ -0,0 +1 @@
-+15.0
---
-2.30.0
++15.0.0
