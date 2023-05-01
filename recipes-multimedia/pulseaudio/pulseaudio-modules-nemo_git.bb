@@ -4,21 +4,20 @@ LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "git://github.com/sailfishos/pulseaudio-modules-nemo.git;protocol=https;branch=master \
-           file://0001-configure.ac-Check-hardfp-from-cross-compilation-too.patch \
-           file://0002-Set-version-to-support-PulseAudio-15.patch"
-SRCREV = "d0dfdc3f895680f0c8839809f13f950090a77369"
+           file://0001-Set-version-to-support-PulseAudio-15.patch \
+           file://0002-Add-meson-option-to-pass-sysroot.patch \
+           "
+SRCREV = "b901d679f246500f3cfab6654eb3043c4cdc43c1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libcheck"
 
-inherit autotools pkgconfig
-B = "${S}"
+inherit meson pkgconfig
 
-do_configure:prepend() {
-    sed -i "s@pa_config_parse(conf, NULL, items, NULL, NULL);@pa_config_parse(conf, NULL, items, NULL, false, NULL);@" src/mainvolume/module-meego-mainvolume.c
-    sed -i "s@pa_tagstruct_new(NULL, 0);@pa_tagstruct_new();@" src/stream-restore-nemo/module-stream-restore-nemo.c
-}
+EXTRA_OEMESON = " \
+    -Doe_sysroot=${STAGING_DIR_HOST} \
+"
 
 FILES:${PN} += "/usr/lib/pulse-15.0/modules"
 FILES:${PN}-dbg += "/usr/lib/pulse-15.0/modules/.debug/"

@@ -1,0 +1,44 @@
+From 95d587c7d6655413caf4612ea8c92b5093ab1611 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Mon, 1 May 2023 14:39:47 -0400
+Subject: [PATCH] Add meson option to pass sysroot
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+To make sure that the linker links libraries that are in the the
+populated sysroot instead of on the host machine, this adds an
+"oe_sysroot" option which is then used to find an external library.
+This is essentially the same patch as was authored by Andreas Müller for
+the meta-opembedded/meta-gnome/recipes-gnome/gnome-control-center.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ meson_options.txt                   | 3 +++
+ src/stream-restore-nemo/meson.build | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/meson_options.txt b/meson_options.txt
+index 04334c2..b196290 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -1,3 +1,6 @@
++option('oe_sysroot', 
++       type: 'string', value: '', 
++       description: 'Directory for OE-sysroot')
+ option('atomic-arm-linux-helpers',
+        type : 'boolean', value : true,
+        description : 'Use inline asm or libatomic_ops instead')
+diff --git a/src/stream-restore-nemo/meson.build b/src/stream-restore-nemo/meson.build
+index 759eb38..205efc1 100644
+--- a/src/stream-restore-nemo/meson.build
++++ b/src/stream-restore-nemo/meson.build
+@@ -1,7 +1,7 @@
+ module_stream_restore_nemo = library('module-stream-restore-nemo',
+   'module-stream-restore-nemo.c',
+   c_args : [pa_c_args, '-DPA_MODULE_NAME=module_stream_restore_nemo'],
+-  link_args : ['-L'+libdir+'/pulse-'+pa_version_major_minor+'/modules', '-lprotocol-native'],
++  link_args : ['-L'+get_option('oe_sysroot')+libdir+'/pulseaudio/modules', '-lprotocol-native'],
+   install : true,
+   install_dir : modlibexecdir,
+   install_rpath : rpath_dirs,
