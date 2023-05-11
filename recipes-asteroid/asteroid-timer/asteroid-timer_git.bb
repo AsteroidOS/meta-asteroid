@@ -12,6 +12,7 @@ inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-dbus nemo-keepalive qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "nemo-keepalive"
+FILES:${PN} += "${libdir}/asteroid-timer.so"
 
 do_install:append() {
     # This app only uses translations for the desktop shortcut.
