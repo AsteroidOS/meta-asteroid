@@ -11,4 +11,4 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"
-FILES:${PN} += "/usr/share/translations/"
+FILES:${PN} += "/usr/share/translations/ ${libdir}/asteroid-flashlight.so"

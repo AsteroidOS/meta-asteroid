@@ -12,5 +12,6 @@ inherit cmake_qt5
 
 FILES:${PN} += "/usr/share/icons/asteroid/"
 FILES:${PN} += "/usr/share/translations/"
+FILES:${PN} += "${libdir}/asteroid-diamonds.so"
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"

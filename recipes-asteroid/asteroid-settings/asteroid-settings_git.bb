@@ -12,4 +12,4 @@ inherit cmake_qt5 pkgconfig
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qtmultimedia-qmlplugins libconnman-qt5-qmlplugins"
-FILES:${PN} += "/usr/share/translations/"
+FILES:${PN} += "/usr/share/translations/ ${libdir}/asteroid-settings.so"

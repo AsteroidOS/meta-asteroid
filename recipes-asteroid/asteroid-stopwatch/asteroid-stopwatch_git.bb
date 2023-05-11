@@ -11,6 +11,7 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"
+FILES:${PN} += "${libdir}/asteroid-stopwatch.so"
 
 do_install:append() {
     # This app only uses translations for the desktop shortcut.

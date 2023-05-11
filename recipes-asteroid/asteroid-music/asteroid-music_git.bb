@@ -12,4 +12,4 @@ inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtmpris qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "qtmpris"
-FILES:${PN} += "/usr/share/translations/"
+FILES:${PN} += "/usr/share/translations/ ${libdir}/asteroid-music.so"

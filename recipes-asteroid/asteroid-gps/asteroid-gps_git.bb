@@ -12,6 +12,7 @@ inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtlocation qttools-native qtdeclarative-native"
 RDEPENDS:${PN} += "qtlocation"
+FILES:${PN} += "${libdir}/asteroid-gps-test.so"
 
 do_install:append() {
     # This app only uses translations for the desktop shortcut.

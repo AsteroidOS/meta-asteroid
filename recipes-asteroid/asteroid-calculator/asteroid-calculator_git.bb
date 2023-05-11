@@ -11,6 +11,7 @@ S = "${WORKDIR}/git"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qtdeclarative-native qttools-native"
+FILES:${PN} += "${libdir}/asteroid-calculator.so"
 
 do_install:append() {
     # This app only uses translations for the desktop shortcut.
