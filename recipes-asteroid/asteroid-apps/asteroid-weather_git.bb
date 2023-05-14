@@ -5,11 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-weather.git;protocol=https;branch=master"
 SRCREV = "${AUTOREV}"
-PR = "r1"
-PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
-inherit cmake_qt5
 
-DEPENDS += "qml-asteroid asteroid-generate-desktop-native nemo-qml-plugin-configuration qttools-native qtdeclarative-native"
+require asteroid-app.inc
+
+DEPENDS += "nemo-qml-plugin-configuration"
 RDEPENDS:${PN} += "nemo-qml-plugin-configuration"
-FILES:${PN} += "/usr/share/translations/ ${libdir}/asteroid-weather.so"
