@@ -5,13 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-diamonds.git;protocol=https;branch=master"
 SRCREV = "${AUTOREV}"
-PR = "r1"
-PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
-inherit cmake_qt5
+
+require asteroid-app.inc
 
 FILES:${PN} += "/usr/share/icons/asteroid/"
-FILES:${PN} += "/usr/share/translations/"
-FILES:${PN} += "${libdir}/asteroid-diamonds.so"
-
-DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"
