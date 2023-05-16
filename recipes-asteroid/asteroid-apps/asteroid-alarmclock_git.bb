@@ -12,4 +12,4 @@ inherit pkgconfig
 
 DEPENDS += "nemo-qml-plugin-alarms"
 RDEPENDS:${PN} += "nemo-qml-plugin-alarms"
-FILES:${PN} += "/usr/lib/systemd/user/alarmpresenter.service /usr/share/dbus-1/services/com.nokia.voland.service"
+FILES:${PN} += "${libdir}/asteroid-alarmpresenter.so ${libdir}/systemd/user/alarmpresenter.service /usr/share/dbus-1/services/com.nokia.voland.service"
