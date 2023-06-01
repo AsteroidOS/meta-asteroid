@@ -1,0 +1,10 @@
+/* give user 'ceres' rights to reboot */
+
+polkit.addRule(function(action, subject) {
+  if ((action.id == "org.freedesktop.login1.set-reboot-parameter" ||
+       action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+       action.id == "org.freedesktop.login1.reboot-multiple-sessions") &&
+        subject.user == "ceres") { 
+    return polkit.Result.YES;
+  }
+});
