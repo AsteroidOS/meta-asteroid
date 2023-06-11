@@ -17,7 +17,7 @@ do_install() {
     if [ -f ${WORKDIR}/qemu.conf ] ; then
         # Overwrite the default config.
         install -m 0644 ${WORKDIR}/qemu.conf ${D}/var/lib/environment/compositor/default.conf
-        install -m 0644 ${WORKDIR}/kms-qemu.conf ${D}/var/lib/environment/compositor/
+        install -m 0644 ${WORKDIR}/kms-qemu.json ${D}/var/lib/environment/compositor/
     fi
 
     install -d ${D}/usr/share/qt5/keymaps/
