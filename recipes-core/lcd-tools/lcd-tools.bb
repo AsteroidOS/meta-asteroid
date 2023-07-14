@@ -16,6 +16,7 @@ do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     ln -s /usr/lib/systemd/user/lcd-sync-time.timer ${D}/usr/lib/systemd/user/default.target.wants/lcd-sync-time.timer
+    ln -s /usr/lib/systemd/user/lcd-session-restart.service ${D}/usr/lib/systemd/user/default.target.wants/lcd-session-restart.service
 }
 
 FILES:${PN} += "/usr/lib/systemd/user/"
