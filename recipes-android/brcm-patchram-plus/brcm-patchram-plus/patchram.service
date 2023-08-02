@@ -1,9 +1,0 @@
-[Unit]
-Description=Load firmware into broadcom bluetooth chip
-
-[Service]
-Type=simple
-ExecStart=/bin/echo This script should be device specific
-
-[Install]
-WantedBy=basic.target
