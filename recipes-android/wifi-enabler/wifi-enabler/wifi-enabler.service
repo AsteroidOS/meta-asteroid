@@ -1,0 +1,11 @@
+[Unit]
+Description=Load the WiFi firmware and enable driver
+
+[Service]
+Type=simple
+ExecStartPre=-/bin/sh -c "/bin/echo > /dev/wcnss_wlan"
+ExecStart=-/bin/sh -c "/bin/echo 1 > /sys/module/wlan/parameters/fwpath"
+
+[Install]
+WantedBy=basic.target
+
