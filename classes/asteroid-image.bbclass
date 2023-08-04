@@ -21,3 +21,5 @@ EXTRA_USERS_PARAMS = "groupadd system; \
 
 IMAGE_OVERHEAD_FACTOR = "1.0"
 IMAGE_ROOTFS_EXTRA_SPACE = "131072"
+
+EXTRA_IMAGECMD:ext4 += " -O^metadata_csum"
