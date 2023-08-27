@@ -20,6 +20,7 @@ RDEPENDS:${PN} += "nfcd-mce-plugin"
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE:${PN} = "nfcd.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "disable"
 
 do_compile:append() {
     oe_runmake release
