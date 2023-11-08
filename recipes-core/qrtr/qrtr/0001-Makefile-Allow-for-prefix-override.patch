@@ -1,0 +1,29 @@
+From 98d9ee0dc9b93f84fb4739d9a7bc3c7e57cc3a58 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Wed, 8 Nov 2023 21:43:24 +0100
+Subject: [PATCH] Makefile: Allow for prefix override
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index bd6c1cd..7273a23 100644
+--- a/Makefile
++++ b/Makefile
+@@ -4,7 +4,7 @@ proj-minor := 0
+ proj-version := $(proj-major).$(proj-minor)
+ 
+ CFLAGS += -Wall -g
+-prefix = /usr/local
++prefix ?= /usr/local
+ 
+ bindir := $(prefix)/bin
+ libdir := $(prefix)/lib
+-- 
+2.42.1
+
