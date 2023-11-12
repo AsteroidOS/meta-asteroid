@@ -6,6 +6,7 @@ PREFERRED_PROVIDER_virtual/mesa = "libhybris"
 PREFERRED_PROVIDER_virtual/egl = "libhybris"
 PREFERRED_PROVIDER_virtual/libgles1 = "libhybris"
 PREFERRED_PROVIDER_virtual/libgles2 = "libhybris"
+PREFERRED_PROVIDER_virtual/libgles3 = "libhybris"
 
 PREFERRED_PROVIDER_virtual/android-headers = "android"
 PREFERRED_PROVIDER_virtual/android-system-image = "android"
