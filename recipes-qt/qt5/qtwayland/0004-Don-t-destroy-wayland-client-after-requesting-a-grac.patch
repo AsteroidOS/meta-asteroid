@@ -1,0 +1,28 @@
+From 1a3fafbe7c9c384e7dd7f84e3bcf3de649c576f0 Mon Sep 17 00:00:00 2001
+From: Arseniy Movshev <dodoradio@outlook.com>
+Date: Sat, 25 Nov 2023 15:33:21 +0000
+Subject: [PATCH] Don't destroy wayland client after requesting a graceful
+ close from the same client.
+
+---
+ src/compositor/compositor_api/qwaylandcompositor.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/compositor/compositor_api/qwaylandcompositor.cpp b/src/compositor/compositor_api/qwaylandcompositor.cpp
+index 98a0bb7f..e75e4b65 100644
+--- a/src/compositor/compositor_api/qwaylandcompositor.cpp
++++ b/src/compositor/compositor_api/qwaylandcompositor.cpp
+@@ -749,8 +749,8 @@ void QWaylandCompositor::destroyClient(QWaylandClient *client)
+     QWaylandQtWindowManager *wmExtension = QWaylandQtWindowManager::findIn(this);
+     if (wmExtension)
+         wmExtension->sendQuitMessage(client);
+-
+-    wl_client_destroy(client->client());
++    else
++        wl_client_destroy(client->client());
+ }
+ 
+ /*!
+-- 
+2.40.1
+
