@@ -9,10 +9,10 @@ Subject: [PATCH] Report support for only 2.0 instead of 3.0. It looks like we
  1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/hybris/glesv2/glesv2.c b/hybris/glesv2/glesv2.c
-index 716bbde..ed7f366 100644
+index 470e34b..ad47d43 100644
 --- a/hybris/glesv2/glesv2.c
 +++ b/hybris/glesv2/glesv2.c
-@@ -105,7 +105,19 @@ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetShaderiv, GLuint, GLenum, GLint *);
+@@ -104,7 +104,19 @@ HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetShaderiv, GLuint, GLenum, GLint *);
  HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderInfoLog, GLuint, GLsizei, GLsizei *, GLchar *);
  HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderPrecisionFormat, GLenum, GLenum, GLint *, GLint *);
  HYBRIS_IMPLEMENT_VOID_FUNCTION4(glesv2, glGetShaderSource, GLuint, GLsizei, GLsizei *, GLchar *);
@@ -34,4 +34,5 @@ index 716bbde..ed7f366 100644
  HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetTexParameteriv, GLenum, GLenum, GLint *);
  HYBRIS_IMPLEMENT_VOID_FUNCTION3(glesv2, glGetUniformfv, GLuint, GLint, GLfloat *);
 --
-2.31.1
+2.42.1
+
