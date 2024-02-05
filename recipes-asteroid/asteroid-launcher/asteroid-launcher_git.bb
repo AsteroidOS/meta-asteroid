@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://src/qml/MainScreen.qml;beginline=1;endline=29;md5=3d2
 SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=master \
     file://asteroid-launcher.service \
     file://asteroid-launcher-precondition"
+SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -29,4 +30,9 @@ do_install:append() {
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service ]; then
         ln -s /usr/lib/systemd/user/asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
     fi
+}
+
+do_install:apppend:hybris-machine() {
+    # On hybris machines, the launcher must run only after Android has started
+    install -m 0755 ${WORKDIR}/asteroid-launcher-precondition-hybris ${D}/usr/bin/asteroid-launcher-precondition
 }

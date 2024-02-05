@@ -1,0 +1,4 @@
+#! /bin/sh
+if [ -f /usr/lib/systemd/user/android-boot-completed.service ]; then
+    while [ ! -f /dev/.coldboot_done ] ; do sleep 1; done
+fi
