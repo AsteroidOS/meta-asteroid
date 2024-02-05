@@ -1,16 +1,18 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-SRC_URI:append = " file://50-video.rules \
+SRC_URI:append:hybris-machine = " file://50-video.rules \
                   file://65-android.rules"
 
 do_install:append() {
-    # Setup udev rules for the rights of Android and graphic cards specific devices
-    install -m 0644 ${WORKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
-    install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
-
     # Enables auto-login for ceres
     install -d ${D}/var/lib/systemd/linger
     touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
+}
+
+do_install:append:hybris-machine() {
+    # Setup udev rules for the rights of Android and graphic cards specific devices
+    install -m 0644 ${WORKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
+    install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
 }
 
 PACKAGECONFIG:append = " pam"
