@@ -1,4 +1,5 @@
 MACHINE_FEATURES = "alsa bluetooth usbgadget usbhost ext2"
+MACHINEOVERRIDES =. "hybris-machine:"
 
 SERIAL_CONSOLE = "115200 ttyHSL0"
 
