@@ -27,14 +27,20 @@ do_configure:prepend() {
     sed "s=@LIB@=lib/=g" ../git/sensord-qt5.pc.in > ../git/sensord-qt5.pc
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' ../git/core/core.pro
     sed -i '/include( doc\/doc.pri )/d' ../git/sensorfw.pro
+}
+
+do_configure:prepend:hybris-machine() {
     sed -i 's:-L/usr/lib ::' ../git/core/hybris.pro
 }
 
 do_install:append() {
     install -d ${D}/etc/sensorfw/ ${D}/lib/systemd/system/multi-user.target.wants/
-    cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/primaryuse.conf
     cp ../sensorfwd.service ${D}/lib/systemd/system/sensorfwd.service
     ln -s ../sensorfwd.service ${D}/lib/systemd/system/multi-user.target.wants/
+}
+
+do_install:append:hybris-machine() {
+    cp ${S}/config/sensord-hybris.conf ${D}/etc/sensorfw/primaryuse.conf
 }
 
 DEPENDS += "qtbase"
