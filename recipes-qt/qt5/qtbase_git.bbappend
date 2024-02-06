@@ -1,12 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/qtbase:"
 SRC_URI += " file://0002-qplatforminputcontextfactory-Use-qtvirtualkeyboard-b.patch"
 
-# Remove dependencies to mesa
-PACKAGECONFIG:remove = "tests"
-PACKAGECONFIG:remove = "widgets"
-PACKAGECONFIG:remove = "gl"
-PACKAGECONFIG:append = "gles2 mtdev sql-sqlite glib fontconfig gif"
-PACKAGECONFIG_GL:append:qemux86 = " eglfs gbm kms"
+PACKAGECONFIG:append = " gles2 mtdev sql-sqlite glib fontconfig gif "
+PACKAGECONFIG_GL:append = " eglfs gbm kms "
+
+# Remove dependencies to mesa on hybris-based machines
+PACKAGECONFIG:remove:hybris-machine = " tests widgets gl "
+PACKAGECONFIG_GL:remove:hybris-machine = " eglfs gbm kms "
 
 QT_CONFIG_FLAGS += "--no-feature-getentropy"
 
