@@ -9,7 +9,8 @@ LIC_FILES_CHKSUM = " \
 PV = "5.8.0+git${SRCPV}"
 SRCREV = "13394b94c6c406fafdd7a95edc12938efeb4d66a"
 
-DEPENDS = "qtbase libhybris qtwayland virtual/android-headers qtdeclarative"
+DEPENDS = "qtbase qtwayland qtdeclarative "
+DEPENDS:append:hybris-machine = "libhybris virtual/android-headers"
 
 SRC_URI = "git://github.com/sailfishos/qtscenegraph-adaptation.git;protocol=https;branch=master \
         file://0001-customcontext-Adapt-for-Qt-5.8.patch \
@@ -20,7 +21,8 @@ S = "${WORKDIR}/git"
 
 inherit qmake5
 
-EXTRA_QMAKEVARS_PRE += "CONFIG+=surfaceformat CONFIG+=programbinary CONFIG+=hybristexture"
+EXTRA_QMAKEVARS_PRE += "CONFIG+=surfaceformat CONFIG+=programbinary"
+EXTRA_QMAKEVARS_PRE:hybris-machine += "CONFIG+=hybristexture"
 
 FILES:${PN} += "${OE_QMAKE_PATH_PLUGINS}"
 
