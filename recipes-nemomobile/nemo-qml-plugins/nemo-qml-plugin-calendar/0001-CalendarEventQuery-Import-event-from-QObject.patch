@@ -1,0 +1,41 @@
+From cfdd3d2e11a6d268d064c336b80fd0a2ebc05f43 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 11 Feb 2024 18:18:54 +0100
+Subject: [PATCH] CalendarEventQuery: Import event from QObject.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This fixes an overloading issue:
+In file included from ../../recipe-sysroot/usr/include/QtCore/QObject:1,
+                 from ../../git/src/calendarevent.h:36,
+                 from ../../git/src/calendarutils.h:38,
+                 from ../../git/src/calendarutils.cpp:33:
+../../recipe-sysroot/usr/include/QtCore/qobject.h:138:18: error: 'virtual bool QObject::event(QEvent*)' was hidden [-Werror=overloaded-virtual=]
+  138 |     virtual bool event(QEvent *event);
+      |                  ^~~~~
+In file included from ../../git/src/calendarutils.cpp:34:
+../../git/src/calendareventquery.h:125:14: note:   by 'QObject* CalendarEventQuery::event() const'
+  125 |     QObject *event() const;
+      |              ^~~~~
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/calendareventquery.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/calendareventquery.h b/src/calendareventquery.h
+index 1091b86..bf53bd5 100644
+--- a/src/calendareventquery.h
++++ b/src/calendareventquery.h
+@@ -117,6 +117,7 @@ public:
+     void setStartTime(const QDateTime &);
+     void resetStartTime();
+ 
++    using QObject::event;
+     QObject *event() const;
+     QObject *occurrence() const;
+ 
+-- 
+2.43.0
+
