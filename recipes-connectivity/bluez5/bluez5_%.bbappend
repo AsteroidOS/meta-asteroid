@@ -10,8 +10,8 @@ do_install:append() {
     cp ${WORKDIR}/main.conf ${D}/etc/bluetooth/main.conf
     cp ${WORKDIR}/input.conf ${D}/etc/bluetooth/input.conf
 
-    install -d ${D}/lib/systemd/system/
-    cp ${WORKDIR}/bluetooth.service ${D}/lib/systemd/system/bluetooth.service
+    install -d ${D}${systemd_system_unitdir}
+    cp ${WORKDIR}/bluetooth.service ${D}${systemd_system_unitdir}/bluetooth.service
 
     install -d ${D}/etc/dbus-1/system.d/
     cp ${WORKDIR}/bluetooth.conf ${D}/etc/dbus-1/system.d/
