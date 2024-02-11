@@ -1,8 +1,12 @@
-From f37925316e80f8b9765e51909bce21eba1843c0d Mon Sep 17 00:00:00 2001
+From 0678c80ed808e5968f549202edf566e6b0c13024 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 21:44:09 +0100
-Subject: [PATCH] tilt-to-wake: Wake screen when wrist gesture arrives.
+Subject: [PATCH 2/7] tilt-to-wake: Wake screen when wrist gesture arrives.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  builtin-gconf.c           |  10 ++
  datapipe.c                |   4 +
@@ -590,3 +594,6 @@ index e067c43..f5d519d 100644
          {
                  .name        = "get-color-profile-ids",
                  .flag        = 'a',
+-- 
+2.43.0
+
