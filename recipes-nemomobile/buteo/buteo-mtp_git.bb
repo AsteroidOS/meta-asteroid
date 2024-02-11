@@ -21,8 +21,8 @@ do_configure:prepend() {
 }
 
 do_install:append() {
-    mkdir -p ${D}/usr/lib/systemd/system/local-fs.target.wants
-    ln -s ../dev-mtp.mount ${D}/usr/lib/systemd/system/local-fs.target.wants
+    mkdir -p ${D}${systemd_system_unitdir}/local-fs.target.wants
+    ln -s ../dev-mtp.mount ${D}${systemd_system_unitdir}/local-fs.target.wants
 
     install -m 0755 -d ${D}${bindir}
     install -m 0755 ../buteo-mtp ${D}${bindir}
@@ -30,5 +30,5 @@ do_install:append() {
 
 DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"
 
-FILES:${PN} += "/usr/lib/systemd/system /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
+FILES:${PN} += "${systemd_system_unitdir} /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"
