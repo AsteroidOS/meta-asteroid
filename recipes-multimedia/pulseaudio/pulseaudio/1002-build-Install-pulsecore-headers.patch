@@ -4,6 +4,8 @@ From: =?UTF-8?q?Juho=20H=C3=A4m=C3=A4l=C3=A4inen?=
 Date: Thu, 5 Feb 2015 11:00:52 +0200
 Subject: [PATCH] build: Install pulsecore headers.
 
+Upstream-Status: Inappropriate [hybris specific]
+
 This is for building out-of-tree modules. Upstream doesn't want to
 support out-of-tree modules, so this patch is not upstreamable.
 Mer/Nemo should try to not depend on any out-of-tree modules.
