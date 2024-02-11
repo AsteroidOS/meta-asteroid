@@ -38,5 +38,5 @@ do_install:append() {
     fi
 }
 
-FILES:${PN} += "/lib/systemd/system/"
+FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'animated-gif', '/usr/share/psplash.gif', '', d)}"
