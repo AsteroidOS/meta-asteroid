@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 8 Sep 2017 19:54:47 +0200
 Subject: [PATCH] Makefile.am: Fixes include paths
 
+Upstream-Status: Inappropriate [hybris specific]
+
 ---
  Makefile.am | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
