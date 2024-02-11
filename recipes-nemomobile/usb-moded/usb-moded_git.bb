@@ -53,11 +53,11 @@ do_install:append() {
     touch ${D}/etc/modprobe.d/g_ether.conf
     touch ${D}/etc/udhcpd.conf
 
-    install -d ${D}/lib/systemd/system/multi-user.target.wants/
-    install -m 644 -D ../usb-moded.service ${D}/lib/systemd/system/usb-moded.service
-    ln -s ../usb-moded.service ${D}/lib/systemd/system/multi-user.target.wants/usb-moded.service
-    install -m 644 -D ../udhcp-daemon.service ${D}/lib/systemd/system/udhcp-daemon.service
-    install -m 644 -D ../buteo-session.service ${D}/lib/systemd/system/buteo-session.service
+    install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
+    install -m 644 -D ../usb-moded.service ${D}${systemd_system_unitdir}/usb-moded.service
+    ln -s ../usb-moded.service ${D}${systemd_system_unitdir}/multi-user.target.wants/usb-moded.service
+    install -m 644 -D ../udhcp-daemon.service ${D}${systemd_system_unitdir}/udhcp-daemon.service
+    install -m 644 -D ../buteo-session.service ${D}${systemd_system_unitdir}/buteo-session.service
 
     install -d ${D}/usr/share/dbus-1/services/
     install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
@@ -65,7 +65,7 @@ do_install:append() {
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 
     install -m 755 -D systemd/adbd-functionfs.sh ${D}/usr/sbin/adbd-functionfs.sh
-    install -m 644 -D systemd/adbd-prepare.service ${D}/lib/systemd/system/adbd-prepare.service
+    install -m 644 -D systemd/adbd-prepare.service ${D}${systemd_system_unitdir}/adbd-prepare.service
 
     install -d ${D}/usr/bin/
     cp ../init_ffs ${D}/usr/bin/init_ffs
@@ -77,6 +77,6 @@ do_install:append() {
     touch ${D}/var/usb-debugging-enabled
 }
 
-FILES:${PN} += " /lib/systemd/system /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
+FILES:${PN} += " ${systemd_system_unitdir} /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
 
 INSANE_SKIP:${PN} = "ldflags"
