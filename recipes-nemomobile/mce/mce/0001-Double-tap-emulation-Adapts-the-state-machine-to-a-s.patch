@@ -1,14 +1,18 @@
-From 0d9b783200489136804e8b9cea6a1f48d67f939b Mon Sep 17 00:00:00 2001
+From f0b89eb98d0c1594cfece1d9bca654b4ea7a2a73 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 21 Feb 2018 18:01:02 +0100
-Subject: [PATCH] Double-tap emulation: Adapts the state machine to a single
- tap to unlock behavior (after 200ms the screen is unlocked)
+Subject: [PATCH 1/7] Double-tap emulation: Adapts the state machine to a
+ single tap to unlock behavior (after 200ms the screen is unlocked)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  event-input.c |  17 +---
- multitouch.c  | 236 +++++++++++++++++++-------------------------------
+ multitouch.c  | 241 +++++++++++++++++++-------------------------------
  multitouch.h  |   2 +-
- 3 files changed, 94 insertions(+), 161 deletions(-)
+ 3 files changed, 94 insertions(+), 166 deletions(-)
 
 diff --git a/event-input.c b/event-input.c
 index 49726f3..de0d19c 100644
@@ -62,7 +66,7 @@ index 49726f3..de0d19c 100644
      if( ev->type == EV_KEY && ev->code == KEY_POWER && ev->value == 0 ) {
          mce_log(LL_DEVEL, "[doubletap] as power key event; "
 diff --git a/multitouch.c b/multitouch.c
-index 6bab567..95dfe22 100644
+index 6bab567..1cc3915 100644
 --- a/multitouch.c
 +++ b/multitouch.c
 @@ -29,6 +29,14 @@
@@ -124,7 +128,7 @@ index 6bab567..95dfe22 100644
  /* ------------------------------------------------------------------------- *
   * TOUCH_STATE
   * ------------------------------------------------------------------------- */
-@@ -135,8 +106,10 @@ struct mt_state_t
+@@ -135,18 +106,17 @@ struct mt_state_t
      /** Currently tracked primary touch point */
      mt_point_t mts_point_tracked;
  
@@ -137,7 +141,9 @@ index 6bab567..95dfe22 100644
  
      /** Device type / protocol specific input event handler function */
      void     (*mts_event_handler_cb)(mt_state_t *, const struct input_event *);
-@@ -146,7 +119,7 @@ struct mt_state_t
+-
+-    /** Timestamp from latest evdev input event */
+-    struct timeval mts_event_time;
  };
  
  static void        mt_state_reset          (mt_state_t *self);
@@ -146,7 +152,7 @@ index 6bab567..95dfe22 100644
  
  static void        mt_state_handle_event_a (mt_state_t *self, const struct input_event *ev);
  static void        mt_state_handle_event_b (mt_state_t *self, const struct input_event *ev);
-@@ -154,10 +127,65 @@ static void        mt_state_handle_event_b (mt_state_t *self, const struct input
+@@ -154,10 +124,65 @@ static void        mt_state_handle_event_b (mt_state_t *self, const struct input
  mt_state_t        *mt_state_create         (bool protocol_b);
  void               mt_state_delete         (mt_state_t *self);
  
@@ -213,7 +219,7 @@ index 6bab567..95dfe22 100644
  /* ========================================================================= *
   * TOUCH_POINT
   * ========================================================================= */
-@@ -188,74 +216,6 @@ static int mt_point_distance2(const mt_point_t *a, const mt_point_t *b)
+@@ -188,74 +213,6 @@ static int mt_point_distance2(const mt_point_t *a, const mt_point_t *b)
      return x*x + y*y;
  }
  
@@ -288,7 +294,7 @@ index 6bab567..95dfe22 100644
  /* ========================================================================= *
   * TOUCH_STATE
   * ========================================================================= */
-@@ -273,6 +233,11 @@ mt_state_reset(mt_state_t *self)
+@@ -273,6 +230,11 @@ mt_state_reset(mt_state_t *self)
          mt_point_invalidate(self->mts_point_array + i);
  
      self->mts_point_slot = 0;
@@ -300,7 +306,7 @@ index 6bab567..95dfe22 100644
  }
  
  /** Update touch position tracking state
-@@ -281,10 +246,9 @@ mt_state_reset(mt_state_t *self)
+@@ -281,10 +243,9 @@ mt_state_reset(mt_state_t *self)
   *
   * @return true if a double tap was just detected, false otherwise
   */
@@ -312,7 +318,7 @@ index 6bab567..95dfe22 100644
      size_t finger_count = 0;
  
      /* Count fingers on screen and update position of one finger touch */
-@@ -304,43 +268,25 @@ mt_state_update(mt_state_t *self)
+@@ -304,43 +265,25 @@ mt_state_update(mt_state_t *self)
  
      /* Skip the rest if the number of fingers on screen does not change */
      if( self->mts_point_count == finger_count )
@@ -367,7 +373,7 @@ index 6bab567..95dfe22 100644
  }
  
  /** Handle multitouch protocol A event stream
-@@ -479,19 +425,15 @@ mt_state_handle_event_b(mt_state_t *self, const struct input_event *ev)
+@@ -479,19 +422,13 @@ mt_state_handle_event_b(mt_state_t *self, const struct input_event *ev)
   * @param self  Multitouch state object
   * @param ev    Input event
   */
@@ -377,8 +383,8 @@ index 6bab567..95dfe22 100644
  {
 -    bool   dbltap = false;
 -
-     self->mts_event_time = ev->time;
- 
+-    self->mts_event_time = ev->time;
+-
      self->mts_event_handler_cb(self, ev);
  
      if( ev->type == EV_SYN && ev->code == SYN_REPORT )
@@ -389,7 +395,7 @@ index 6bab567..95dfe22 100644
  }
  
  /** Check if there is at least one finger on screen at the momement
-@@ -538,6 +480,8 @@ mt_state_create(bool protocol_b)
+@@ -538,6 +475,8 @@ mt_state_create(bool protocol_b)
  
      self->mts_point_count = 0;
  
@@ -411,3 +417,6 @@ index b65a554..7f0b18c 100644
  bool               mt_state_touching     (const mt_state_t *self);
  
  #endif /* MCE_MULTITOUCH_H_ */
+-- 
+2.43.0
+

@@ -1,8 +1,12 @@
-From 1ee2bd9009608370d02ab35510109e88efcf003d Mon Sep 17 00:00:00 2001
+From 24a3b3c3bb96daaa63fc381047f2265defe2deb4 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 23:07:09 +0100
-Subject: [PATCH] Ambient Mode: Exit ambient mode when touch is detected.
+Subject: [PATCH 6/7] Ambient Mode: Exit ambient mode when touch is detected.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  modules/display.c | 27 +++++++++++++++++++++++++++
  1 file changed, 27 insertions(+)
@@ -59,3 +63,6 @@ index 85d0df3..3c50973 100644
      {
          .datapipe  = &packagekit_locked_pipe,
          .output_cb = mdy_datapipe_packagekit_locked_cb,
+-- 
+2.43.0
+

@@ -1,11 +1,14 @@
-From d1ddfc4611ebbd9ac7beebb1add42d66e68b7094 Mon Sep 17 00:00:00 2001
+From 5809f92e623baed97e0b5f5ac8d72517483f3c30 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 22:49:48 +0100
-Subject: [PATCH] Ambient mode: Adapt low-power-mode to allow for actual
+Subject: [PATCH 4/7] Ambient mode: Adapt low-power-mode to allow for actual
  ambient mode. Refactor the low power mode to actually work in low power
  mode(deep sleep). There are some challenges when it comes to transitions
  (i.e. screen on -> screen lpm). There are multiple parts responsible for
  setting the next screen state.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Depending on what state the screen is the following may happen:
 - Default, screen on (currently watchface is shown) -> screen lpm.
@@ -22,6 +25,7 @@ An important side note is that, the als mode is enabled even if no such sensor e
 This value also signifies the maximum brightness in LPM mode.
 Because the minimum brightness can vary between devices it is suggested to create alternative profiles for such devices.
 
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  inifiles/als-defaults.ini       |  13 +-
  inifiles/mce.ini                |   2 +-
@@ -628,3 +632,6 @@ index 867deaa..1188cb6 100644
          break;
  
      case MCE_DISPLAY_ON:
+-- 
+2.43.0
+
