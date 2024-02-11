@@ -15,9 +15,9 @@ do_configure:prepend() {
 }
 
 do_install:append() {
-    install -d ${D}/lib/systemd/system/basic.target.wants/
-    cp ${WORKDIR}/firmwared.service ${D}/lib/systemd/system/
-    ln -s ../firmwared.service ${D}/lib/systemd/system/basic.target.wants/firmwared.service
+    install -d ${D}${systemd_system_unitdir}/basic.target.wants/
+    cp ${WORKDIR}/firmwared.service ${D}${systemd_system_unitdir}/
+    ln -s ../firmwared.service ${D}${systemd_system_unitdir}/basic.target.wants/firmwared.service
 }
 
-FILES:${PN} += "/lib/systemd/system/"
+FILES:${PN} += "${systemd_system_unitdir}"
