@@ -13,6 +13,6 @@ DEPENDS += "c-ares"
 EXTRA_OECONF:remove = "--enable-external-ell"
 
 do_install:append() {
-    install -d ${D}/lib/systemd/system/
-    cp ${WORKDIR}/ofono.service ${D}/lib/systemd/system/ofono.service
+    install -d ${D}${systemd_system_unitdir}
+    cp ${WORKDIR}/ofono.service ${D}${systemd_system_unitdir}/ofono.service
 }
