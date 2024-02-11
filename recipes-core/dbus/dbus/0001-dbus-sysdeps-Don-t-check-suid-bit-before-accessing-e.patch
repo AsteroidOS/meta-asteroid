@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 21 Sep 2017 23:23:59 +0200
 Subject: [PATCH] dbus-sysdeps: Don't check suid bit before accessing env vars
 
+Upstream-Status: Inappropriate [hybris specific]
+
 ---
  dbus/dbus-sysdeps.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
