@@ -9,11 +9,11 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_install:append() {
     if [ -f ${WORKDIR}/patchram.service ] ; then
-        install -d ${D}/lib/systemd/system/multi-user.target.wants/
-        cp ${WORKDIR}/patchram.service ${D}/lib/systemd/system/
-        ln -s ../patchram.service ${D}/lib/systemd/system/multi-user.target.wants/patchram.service
+        install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
+        cp ${WORKDIR}/patchram.service ${D}${systemd_system_unitdir}/
+        ln -s ../patchram.service ${D}${systemd_system_unitdir}/multi-user.target.wants/patchram.service
     fi
 }
 
-FILES:${PN} += "/lib/systemd/system/"
+FILES:${PN} += "${systemd_system_unitdir}"
 RDEPENDS:${PN} += "rfkill"
