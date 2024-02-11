@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate [hybris specific]
+
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  psplash.c | 65 ++++++++++++++++++++++++++++++++++---------------------

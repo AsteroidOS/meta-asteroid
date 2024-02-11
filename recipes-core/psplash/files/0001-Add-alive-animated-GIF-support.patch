@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Tue, 9 Nov 2021 15:00:13 +0100
 Subject: [PATCH] Add alive animated GIF support.
 
+Upstream-Status: Inappropriate [hybris specific]
+
 ---
  Makefile.am     |   2 +
  configure.ac    |   8 +
