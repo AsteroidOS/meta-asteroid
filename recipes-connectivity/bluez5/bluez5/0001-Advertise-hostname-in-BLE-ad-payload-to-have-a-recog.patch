@@ -1,22 +1,24 @@
-From 7b7f01c648326fdced1fa58b01058a9644b47a2a Mon Sep 17 00:00:00 2001
+From 6b9392cbf3bd618e78f0a5dd7e3598e00d117bc5 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Wed, 18 Oct 2017 22:10:56 +0200
+Date: Sun, 11 Feb 2024 15:45:01 +0100
 Subject: [PATCH] Advertise hostname in BLE ad payload to have a recognizable
 
  name in AsteroidOSSync
 
+Upstream-Status: Inappropriate [AsteroidOS specific]
+
 ---
- src/shared/ad.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ src/shared/ad.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/src/shared/ad.c b/src/shared/ad.c
-index 3ceb876..1a053f4 100644
+index 951c56c60..4dbdd8e98 100644
 --- a/src/shared/ad.c
 +++ b/src/shared/ad.c
-@@ -169,6 +169,18 @@ static bool ad_replace_data(struct bt_ad *ad, uint8_t type, void *data,
+@@ -414,6 +414,18 @@ static bool ad_replace_data(struct bt_ad *ad, uint8_t type, const void *data,
  	return false;
  }
-
+ 
 +static size_t local_name_length()
 +{
 +	size_t length = 0;
@@ -32,20 +34,20 @@ index 3ceb876..1a053f4 100644
  static size_t uuid_list_length(struct queue *uuid_queue)
  {
  	bool uuid16_included = false;
-@@ -279,6 +291,8 @@ static size_t calculate_length(struct bt_ad *ad)
+@@ -524,6 +536,8 @@ static size_t calculate_length(struct bt_ad *ad)
  {
  	size_t length = 0;
-
+ 
 +	length += local_name_length();
 +
  	length += uuid_list_length(ad->service_uuids);
-
+ 
  	length += uuid_list_length(ad->solicit_uuids);
-@@ -296,6 +310,21 @@ static size_t calculate_length(struct bt_ad *ad)
+@@ -541,6 +555,20 @@ static size_t calculate_length(struct bt_ad *ad)
  	return length;
  }
-
-+static void serialize_local_name(uint8_t *buf, uint8_t *pos)
+ 
++static void serialize_local_name(struct iovec *iov)
 +{
 +	char hostname[8];
 +	uint8_t hostname_len;
@@ -53,22 +55,24 @@ index 3ceb876..1a053f4 100644
 +	gethostname(hostname, 8);
 +	hostname_len = strnlen(&hostname, 8);
 +
-+	buf[(*pos)++] = hostname_len + 1;
-+	buf[(*pos)++] = EIR_NAME_COMPLETE;
++	util_iov_push_u8(iov, hostname_len + 1);
++	util_iov_push_u8(iov, EIR_NAME_COMPLETE);
 +
-+	memcpy(buf + *pos, &hostname, hostname_len);
-+	*pos += hostname_len;
++	util_iov_push_mem(iov, hostname_len, &hostname);
 +}
 +
  static void serialize_uuids(struct queue *uuids, uint8_t uuid_type,
- 						uint8_t ad_type, uint8_t *buf,
- 						uint8_t *pos)
-@@ -479,6 +508,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
- 	if (!adv_data)
- 		return NULL;
-
-+	serialize_local_name(adv_data, &pos);
+ 				uint8_t ad_type, struct iovec *iov)
+ {
+@@ -709,6 +737,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ 
+ 	iov.iov_len = 0;
+ 
++	serialize_local_name(&iov);
 +
- 	serialize_service_uuids(ad->service_uuids, adv_data, &pos);
+ 	serialize_service_uuids(ad->service_uuids, &iov);
+ 
+ 	serialize_solicit_uuids(ad->solicit_uuids, &iov);
+-- 
+2.43.0
 
- 	serialize_solicit_uuids(ad->solicit_uuids, adv_data, &pos);
