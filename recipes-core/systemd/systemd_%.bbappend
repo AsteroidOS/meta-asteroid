@@ -6,7 +6,7 @@ do_install:append() {
     # Enables auto-login for ceres
     install -d ${D}/var/lib/systemd/linger
     touch ${D}/var/lib/systemd/linger/ceres
-    sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}/lib/systemd/system/getty@.service
+    sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}${systemd_system_unitdir}/getty@.service
 }
 
 do_install:append:hybris-machine() {
