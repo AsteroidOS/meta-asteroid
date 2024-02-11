@@ -22,7 +22,8 @@ S = "${WORKDIR}/git"
 DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-native usb-moded"
 
 do_install() {
-    oe_runmake install DESTDIR=${D}
+    oe_runmake install _UNITDIR=${systemd_system_unitdir} DESTDIR=${D}
+    install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/mce.service ${D}${systemd_system_unitdir}
     rm -r ${D}/var/run/
 
@@ -30,5 +31,5 @@ do_install() {
     install -m 0644 ${WORKDIR}/builtin-gconf.values ${D}${localstatedir}/lib/mce/
 }
 
-FILES:${PN} += " /run/mce /lib/systemd/system /var/lib/mce"
+FILES:${PN} += " /run/mce ${systemd_system_unitdir} /var/lib/mce"
 FILES:${PN}-dbg += "/usr/lib/mce/modules/.debug"
