@@ -3,6 +3,8 @@ From: Ed Beroset <beroset@ieee.org>
 Date: Sat, 29 Apr 2023 12:29:30 -0400
 Subject: [PATCH] Change EGL_OPENGL_ES3_BIT_KHR to EGL_OPENGL_ES3_BIT
 
+Upstream-Status: Inappropriate [version mismatch]
+
 The code does not compile with the KHR version.
 
 Signed-off-by: Ed Beroset <beroset@ieee.org>
