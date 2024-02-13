@@ -13,7 +13,6 @@ SRC_URI = "gitsm://github.com/sailfishos/mce.git;protocol=https;branch=master \
     file://0007-powerkey-Also-suspend-on-palm-reports.patch \
     file://builtin-gconf.values \
     file://mce.service"
-SRC_URI:append:qemux86 = " file://0001-Keep-screen-on-by-default-on-emulator.patch"
 SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"
 PR = "r1"
 PV = "+git${SRCPV}"
