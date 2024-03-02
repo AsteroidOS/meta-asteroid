@@ -1,4 +1,4 @@
-From 95d587c7d6655413caf4612ea8c92b5093ab1611 Mon Sep 17 00:00:00 2001
+From 131a4f76d637e47402006403c2cef246c69bbcb3 Mon Sep 17 00:00:00 2001
 From: Ed Beroset <beroset@ieee.org>
 Date: Mon, 1 May 2023 14:39:47 -0400
 Subject: [PATCH] Add meson option to pass sysroot
@@ -13,6 +13,7 @@ This is essentially the same patch as was authored by Andreas Müller for
 the meta-opembedded/meta-gnome/recipes-gnome/gnome-control-center.
 
 Signed-off-by: Ed Beroset <beroset@ieee.org>
+
 ---
  meson_options.txt                   | 3 +++
  src/stream-restore-nemo/meson.build | 2 +-

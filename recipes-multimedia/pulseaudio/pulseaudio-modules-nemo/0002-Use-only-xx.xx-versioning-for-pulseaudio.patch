@@ -1,0 +1,45 @@
+From 5c89ed0dc649a91d7d41253084af6732d42bc3ae Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 2 Mar 2024 07:38:50 -0500
+Subject: [PATCH] Use only xx.xx versioning for pulseaudio
+
+Since pulseaudio version 16.0, modules no longer the version number as
+part of the installation path.  That is, files that were once in
+/usr/lib/pulse-15.0/modules are now simply in /usr/lib/pulseaudio/modules.
+
+Additionally, the module version is only tracked as xx.xx rather than
+xx.xx.xx so this removes the last part from the meson.build files.
+
+See
+https://www.freedesktop.org/wiki/Software/PulseAudio/Notes/16.0/#moduleinstallationlocationchangedremembertoupgradepaprefstothelatestversion
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ meson.build            | 1 -
+ src/common/meson.build | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 3211fc4..1e91890 100644
+--- a/meson.build
++++ b/meson.build
+@@ -23,7 +23,6 @@ pa_version_str = meson.project_version()
+ version_split = pa_version_str.split('-')[0].split('.')
+ pa_version_major = version_split[0].split('v')[0]
+ pa_version_minor = version_split[1]
+-pa_version_module = version_split[2].split('+')[0]
+ pa_version_major_minor = pa_version_major + '.' + pa_version_minor
+ 
+ pa_c_args = ['-DHAVE_CONFIG_H', '-DPULSEAUDIO_VERSION=' + pa_version_major]
+diff --git a/src/common/meson.build b/src/common/meson.build
+index 7d2ed6c..627e311 100644
+--- a/src/common/meson.build
++++ b/src/common/meson.build
+@@ -79,7 +79,6 @@ pc_cdata.set('prefix', get_option('prefix'))
+ pc_cdata.set('libdir', libdir)
+ pc_cdata.set('libexecdir', get_option('libexecdir'))
+ pc_cdata.set('PA_MAJORMINOR', pa_version_major_minor)
+-pc_cdata.set('PA_MODULE_VERSION', pa_version_module)
+ 
+ configure_file(
+   input : 'libmeego-common.pc.in',
