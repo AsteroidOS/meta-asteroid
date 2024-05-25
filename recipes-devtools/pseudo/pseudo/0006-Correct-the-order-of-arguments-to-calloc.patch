@@ -1,0 +1,54 @@
+From 50801e2451ec0020fdac4eb0f6e2643ed9b7ff97 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 25 May 2024 12:08:41 -0400
+Subject: [PATCH] Correct the order of arguments to calloc
+
+The prototype for calloc is this:
+void *calloc(size_t nmemb, size_t size);
+
+This change corrects several calls that incorrectly used the sizeof()
+operator for the first argument and 1 as the second argument.  Reversing
+those arguments clarifies meaning and also avoids a
+-Wcalloc-transposed-args warning that is emitted with gcc 14.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ pseudo_db.c | 4 ++--
+ pseudolog.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/pseudo_db.c b/pseudo_db.c
+index 14bafcb..a269f69 100644
+--- a/pseudo_db.c
++++ b/pseudo_db.c
+@@ -783,7 +783,7 @@ pdb_log_traits(pseudo_query_t *traits) {
+ 		pseudo_diag("%s: database error.\n", __func__);
+ 		return 1;
+ 	}
+-	e = calloc(sizeof(*e), 1);
++	e = calloc(1, sizeof(*e));
+ 	if (!e) {
+ 		pseudo_diag("can't allocate space for log entry.");
+ 		return 1;
+@@ -1376,7 +1376,7 @@ pdb_history_entry(log_history h) {
+ 		dberr(log_db, "statement failed");
+ 		return 0;
+ 	}
+-	l = calloc(sizeof(log_entry), 1);
++	l = calloc(1, sizeof(log_entry));
+ 	if (!l) {
+ 		pseudo_diag("couldn't allocate log entry.\n");
+ 		return 0;
+diff --git a/pseudolog.c b/pseudolog.c
+index 3ec4b77..74fcf99 100644
+--- a/pseudolog.c
++++ b/pseudolog.c
+@@ -374,7 +374,7 @@ plog_trait(int opt, char *string) {
+ 		pseudo_diag("invalid empty string for -%c\n", opt);
+ 		return 0;
+ 	}
+-	new_trait = calloc(sizeof(*new_trait), 1);
++	new_trait = calloc(1, sizeof(*new_trait));
+ 	if (!new_trait) {
+ 		pseudo_diag("Couldn't allocate requested trait (for -%c %s)\n",
+ 			opt, string ? string : "<nil>");

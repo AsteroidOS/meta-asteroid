@@ -1,0 +1,37 @@
+From ec5f69e0c936299798795d67303d3e753ea664d8 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 25 May 2024 12:13:35 -0400
+Subject: [PATCH] Add correct preprocessor arg to fix error
+
+In gcc 14, several things that had only been warning are now reported as
+errors.  This includes -Werror=implicit-function-declaration as
+documented here: https://gcc.gnu.org/gcc-14/porting_to.html#warnings-as-errors
+
+In this code, the problem was that strptime() was not being declared due
+to a missing preprocessor macro.  This addresses that problem by
+defining two different macro definitions instead of the one that had been
+there, with the code comment amended to note this change.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ pseudolog.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/pseudolog.c b/pseudolog.c
+index 74fcf99..88920e8 100644
+--- a/pseudolog.c
++++ b/pseudolog.c
+@@ -6,9 +6,10 @@
+  * SPDX-License-Identifier: LGPL-2.1-only
+  *
+  */
+-/* We need _XOPEN_SOURCE for strptime(), but if we define that,
+- * we then don't get S_IFSOCK... _GNU_SOURCE turns on everything. */
+-#define _DEFAULT_SOURCE
++/* We need _XOPEN_SOURCE for strptime(), 
++ * and _BSD_SOURCE for S_IFSOCK... */
++#define _XOPEN_SOURCE
++#define _BSD_SOURCE 
+ 
+ #include <ctype.h>
+ #include <limits.h>
