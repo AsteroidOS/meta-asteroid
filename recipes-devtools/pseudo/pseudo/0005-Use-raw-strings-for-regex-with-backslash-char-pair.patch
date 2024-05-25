@@ -1,0 +1,54 @@
+From 1874d626620dec3c595b21b1f319a6f2d0a5d9c4 Mon Sep 17 00:00:00 2001
+From: Ed Beroset <beroset@ieee.org>
+Date: Sat, 25 May 2024 12:03:32 -0400
+Subject: [PATCH] Use raw strings for regex with backslash-char pair
+
+As per
+https://docs.python.org/dev/whatsnew/3.12.html#other-language-changes
+this removes some SyntaxWarnings that occurred because of using
+backslash-char pairs in regex strings.  This simply changes those
+strings to be raw strings instead.
+
+Signed-off-by: Ed Beroset <beroset@ieee.org>
+---
+ makewrappers | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/makewrappers b/makewrappers
+index cf5ad60..1e80e30 100755
+--- a/makewrappers
++++ b/makewrappers
+@@ -127,7 +127,7 @@ class Argument:
+             self.vararg = False
+ 
+         # try for a function pointer
+-        match = re.match('(.*)\(\*([a-zA-Z0-9$_]*)\)\((.*)\)', text)
++        match = re.match(r'(.*)\(\*([a-zA-Z0-9$_]*)\)\((.*)\)', text)
+         if match:
+             self.function_pointer = True
+             self.args = match.group(3)
+@@ -135,7 +135,7 @@ class Argument:
+             self.name = match.group(2).rstrip()
+         else:
+             # plain declaration
+-            match = re.match('(.*[ *])\(?\*?([a-zA-Z0-9$_]*)\)?', text)
++            match = re.match(r'(.*[ *])\(?\*?([a-zA-Z0-9$_]*)\)?', text)
+             # there may not be a match, say in the special case
+             # where an arg is '...'
+             if match:
+@@ -237,13 +237,13 @@ class Function:
+         self.date = datetime.date.today().year
+     
+         function, comments = line.split(';')
+-        comment = re.search('/\* *(.*) *\*/', comments)
++        comment = re.search(r'/\* *(.*) *\*/', comments)
+         if comment:
+             self.comments = comment.group(1)
+         else:
+             self.comments = None
+     
+-        bits = re.match('([^(]*)\((.*)\)', function)
++        bits = re.match(r'([^(]*)\((.*)\)', function)
+         type_and_name = Argument(bits.group(1))
+         self.type, self.name = type_and_name.type, type_and_name.name
+         # convenient to have this declared here so we can use its .decl later
