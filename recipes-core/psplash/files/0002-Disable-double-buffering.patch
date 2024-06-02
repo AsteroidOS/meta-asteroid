@@ -4,6 +4,8 @@ Date: Tue, 9 Nov 2021 16:25:03 +0100
 Subject: [PATCH] Disable double buffering. Fixes black screen on some
  platforms.
 
+Upstream-Status: Inappropriate [AsteroidOS specific]
+
 ---
  psplash-fb.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
