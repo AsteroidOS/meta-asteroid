@@ -17,7 +17,7 @@ do_compile[noexec] = "1"
 do_install() {
     oe_runmake install DESTDIR=${D} PREFIX=${prefix}
 
-    oe_runmake install_systemd DESTDIR=${D}
+    oe_runmake install_systemd DESTDIR=${D}/${prefix}
 }
 
 inherit systemd
