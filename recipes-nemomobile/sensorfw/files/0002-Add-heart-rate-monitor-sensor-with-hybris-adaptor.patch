@@ -1,15 +1,16 @@
-From 8d6c6fdc251bfa6ae707eb2155cfd193ae5baa60 Mon Sep 17 00:00:00 2001
+From a045e8637509feab0b6cba84169adcd78aca137c Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 11 Jan 2022 23:44:15 +0100
-Subject: [PATCH 2/5] Add heart rate monitor sensor with hybris adaptor
+Subject: [PATCH] Add heart rate monitor sensor with hybris adaptor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
+
 ---
- adaptors/adaptors.pro                         |   1 +
- .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 120 ++++++++++++++++
+ adaptors/adaptors.pro                         |  78 +++++-----
+ .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 121 ++++++++++++++++
  adaptors/hybrishrmadaptor/hybrishrmadaptor.h  |  67 +++++++++
  .../hybrishrmadaptor/hybrishrmadaptor.pro     |  13 ++
  .../hybrishrmadaptorplugin.cpp                |  35 +++++
@@ -32,7 +33,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  sensors/hrmsensor/hrmsensor_a.cpp             |  38 +++++
  sensors/hrmsensor/hrmsensor_a.h               |  55 ++++++++
  sensors/sensors.pro                           |   3 +-
- 24 files changed, 1180 insertions(+), 5 deletions(-)
+ 24 files changed, 1215 insertions(+), 48 deletions(-)
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.h
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
@@ -52,23 +53,107 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  create mode 100644 sensors/hrmsensor/hrmsensor_a.h
 
 diff --git a/adaptors/adaptors.pro b/adaptors/adaptors.pro
-index a214c79..b83a3ab 100644
+index 70ffb6f..284d7b9 100644
 --- a/adaptors/adaptors.pro
 +++ b/adaptors/adaptors.pro
-@@ -13,6 +13,7 @@ contains(CONFIG,hybris) {
-     SUBDIRS += hybrisrotationadaptor
-     SUBDIRS += hybrisgeorotationadaptor
-     SUBDIRS += hybrisstepcounteradaptor
-+    SUBDIRS += hybrishrmadaptor
+@@ -11,56 +11,48 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
+                  hybrisorientationadaptor \
+                  hybrisrotationadaptor \
+                  hybrisgeorotationadaptor \
+-                 hybrisstepcounteradaptor
++                 hybrisstepcounteradaptor \
++                 hybrishrmadaptor
  
+ # split like this as Sailfish only installs hybris plugins
+ contains(CONFIG,hybris) {
+-    SUBDIRS += $$HYBRIS_SUBDIRS
+-
++    SUBDIRS = $$HYBRIS_SUBDIRS
  } else {
+-
+-SUBDIRS = alsadaptor \
+-          alsadaptor-evdev \
+-          alsadaptor-sysfs \
+-          alsadaptor-ascii \
+-          tapadaptor \
+-          accelerometeradaptor \
+-          magnetometeradaptor \
+-          magnetometeradaptor-ascii \
+-          magnetometeradaptor-evdev \
+-          touchadaptor \
+-          kbslideradaptor \
+-          proximityadaptor \
+-          proximityadaptor-evdev \
+-          proximityadaptor-ascii \
+-          gyroscopeadaptor \
+-          gyroscopeadaptor-evdev
+-
+-SUBDIRS += lidsensoradaptor-evdev
+-SUBDIRS += iioadaptor
+-SUBDIRS += humidityadaptor
+-SUBDIRS += pressureadaptor
+-SUBDIRS += temperatureadaptor
+-
+-config_hybris {
+-    SUBDIRS += $$HYBRIS_SUBDIRS
++    SUBDIRS = alsadaptor \
++            alsadaptor-evdev \
++            alsadaptor-sysfs \
++            alsadaptor-ascii \
++            tapadaptor \
++            accelerometeradaptor \
++            magnetometeradaptor \
++            magnetometeradaptor-ascii \
++            magnetometeradaptor-evdev \
++            touchadaptor \
++            kbslideradaptor \
++            proximityadaptor \
++            proximityadaptor-evdev \
++            proximityadaptor-ascii \
++            gyroscopeadaptor \
++            gyroscopeadaptor-evdev
++
++    SUBDIRS += lidsensoradaptor-evdev
++    SUBDIRS += iioadaptor
++    SUBDIRS += humidityadaptor
++    SUBDIRS += pressureadaptor
++    SUBDIRS += temperatureadaptor
+ }
  
+ contains(CONFIG,legacy) {
+ 
+-SUBDIRS += mrstaccelerometer
+-SUBDIRS += magnetometeradaptor-ncdk
+-SUDBIRS += oemtabletmagnetometeradaptor
+-SUBDIRS += pegatronaccelerometeradaptor
+-SUBDIRS += oemtabletalsadaptor-ascii
+-SUBDIRS += oaktrailaccelerometer
+-SUBDIRS += oemtabletaccelerometer
+-SUDBIRS += oemtabletgyroscopeadaptor
+-SUBDIRS += steaccelerometeradaptor
+-SUBDIRS += mpu6050accelerometer
++    SUBDIRS += mrstaccelerometer
++    SUBDIRS += magnetometeradaptor-ncdk
++    SUDBIRS += oemtabletmagnetometeradaptor
++    SUBDIRS += pegatronaccelerometeradaptor
++    SUBDIRS += oemtabletalsadaptor-ascii
++    SUBDIRS += oaktrailaccelerometer
++    SUBDIRS += oemtabletaccelerometer
++    SUDBIRS += oemtabletgyroscopeadaptor
++    SUBDIRS += steaccelerometeradaptor
++    SUBDIRS += mpu6050accelerometer
+ 
+ }
+-
+-}
+-
+-
 diff --git a/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
 new file mode 100644
 index 0000000..ec64e0d
 --- /dev/null
 +++ b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,121 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -114,7 +199,8 @@ index 0000000..ec64e0d
 +    	powerStatePath.clear();
 +    }
 +    // Set default delay.
-+    setInterval(200, 0);
++    unsigned int interval_us = 200 * 1000;
++    setInterval(0, interval_us);
 +}
 +
 +HybrisHrmAdaptor::~HybrisHrmAdaptor()
@@ -929,7 +1015,7 @@ index 0000000..e7fd3a0
 +
 +#endif
 diff --git a/qt-api/qt-api.pro b/qt-api/qt-api.pro
-index 1fa3d7d..be248ae 100644
+index c3ee297..2e331d6 100644
 --- a/qt-api/qt-api.pro
 +++ b/qt-api/qt-api.pro
 @@ -22,7 +22,8 @@ SOURCES += sensormanagerinterface.cpp \
@@ -1435,6 +1521,3 @@ index 6afdb7d..286fecf 100644
 +           hrmsensor
  
  contextprovider:SUBDIRS += contextplugin
--- 
-2.35.3
-
