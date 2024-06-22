@@ -1,4 +1,4 @@
-From 78d65290f31aea9b3fceb922befcabbc8af6d4e5 Mon Sep 17 00:00:00 2001
+From bd0a8a5229b36b4ac37f5a7fd16dd9406f13df9e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Mon, 5 Sep 2022 22:35:07 +0200
 Subject: [PATCH] Add ambient mode display support.
@@ -10,6 +10,8 @@ Add ability to keep the screen on while in deep sleep mode.
 This is achieved by setting the power mode to HWC_POWER_MODE_DOZE_SUSPEND.
 We need PowerHAL to setInteractive based on display state, this is required for some platforms to make ambient mode work.
 
+If the display fails to be validated the `QPA_HWC2_FORCE_DOZE_UPDATE` environment variable can be used to temporarily switch the display to on mode.
+
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  hwcomposer/hwcomposer_backend.cpp     | 39 ++++++++++++++++++++++-----
@@ -18,12 +20,12 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  hwcomposer/hwcomposer_backend_v10.h   |  3 ++-
  hwcomposer/hwcomposer_backend_v11.cpp | 26 +++++++++++++++---
  hwcomposer/hwcomposer_backend_v11.h   |  7 ++++-
- hwcomposer/hwcomposer_backend_v20.cpp | 17 ++++++++++--
- hwcomposer/hwcomposer_backend_v20.h   |  7 ++++-
+ hwcomposer/hwcomposer_backend_v20.cpp | 38 +++++++++++++++++++++-----
+ hwcomposer/hwcomposer_backend_v20.h   | 12 ++++++++-
  hwcomposer/hwcomposer_context.cpp     | 16 ++++++++++-
  hwcomposer/hwcomposer_context.h       |  3 +++
  hwcomposer/qeglfsintegration.cpp      |  6 +++++
- 11 files changed, 123 insertions(+), 17 deletions(-)
+ 11 files changed, 145 insertions(+), 21 deletions(-)
 
 diff --git a/hwcomposer/hwcomposer_backend.cpp b/hwcomposer/hwcomposer_backend.cpp
 index f57a576..a997553 100644
@@ -293,10 +295,67 @@ index 838557f..edee684 100644
      hwc_display_contents_1_t **hwc_mList;
      uint32_t hwc_version;
 diff --git a/hwcomposer/hwcomposer_backend_v20.cpp b/hwcomposer/hwcomposer_backend_v20.cpp
-index dc1d4ff..5e4d06e 100644
+index dc1d4ff..5b2a489 100644
 --- a/hwcomposer/hwcomposer_backend_v20.cpp
 +++ b/hwcomposer/hwcomposer_backend_v20.cpp
-@@ -211,9 +211,10 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+@@ -112,22 +112,24 @@ class HWC2Window : public HWComposerNativeWindow
+         hwc2_compat_display_t *hwcDisplay;
+         int lastPresentFence = -1;
+         bool m_syncBeforeSet;
++        HwComposerBackend_v20 *m_backend;
++        bool m_dozeWorkaround;
+     protected:
+         void present(HWComposerNativeWindowBuffer *buffer);
+ 
+     public:
+ 
+         HWC2Window(unsigned int width, unsigned int height, unsigned int format,
+-                hwc2_compat_display_t *display, hwc2_compat_layer_t *layer);
++                hwc2_compat_display_t *display, hwc2_compat_layer_t *layer, HwComposerBackend_v20 *backend);
+         ~HWC2Window();
+         void set();
+ };
+ 
+ HWC2Window::HWC2Window(unsigned int width, unsigned int height,
+                     unsigned int format, hwc2_compat_display_t* display,
+-                    hwc2_compat_layer_t *layer) :
++                    hwc2_compat_layer_t *layer, HwComposerBackend_v20 *backend) :
+                     HWComposerNativeWindow(width, height, format),
+-                    layer(layer), hwcDisplay(display)
++                    layer(layer), hwcDisplay(display), m_backend(backend)
+ {
+     int bufferCount = qgetenv("QPA_HWC_BUFFER_COUNT").toInt();
+     if (bufferCount)
+@@ -137,6 +139,7 @@ HWC2Window::HWC2Window(unsigned int width, unsigned int height,
+         bufferCount = 3;
+     setBufferCount(bufferCount);
+     m_syncBeforeSet = qEnvironmentVariableIsSet("QPA_HWC_SYNC_BEFORE_SET");
++    m_dozeWorkaround = qEnvironmentVariableIsSet("QPA_HWC2_FORCE_DOZE_UPDATE");
+ }
+ 
+ HWC2Window::~HWC2Window()
+@@ -165,6 +168,12 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+         acquireFenceFd = -1;
+     }
+ 
++    // Some devices don't support updating the display while it's in doze mode,
++    // transition the display temporarily on to update it.
++    if (m_dozeWorkaround && m_backend->isDozing()) {
++        hwc2_compat_display_set_power_mode(hwcDisplay, HWC2_POWER_MODE_ON);
++    }
++
+     error = hwc2_compat_display_validate(hwcDisplay, &numTypes,
+                                                     &numRequests);
+     if (error != HWC2_ERROR_NONE && error != HWC2_ERROR_HAS_CHANGES) {
+@@ -207,13 +216,18 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+     lastPresentFence = presentFence != -1 ? dup(presentFence) : -1;
+ 
+     setFenceBufferFd(buffer, presentFence);
++
++    if (m_dozeWorkaround && m_backend->isDozing()) {
++        hwc2_compat_display_set_power_mode(hwcDisplay, HWC2_POWER_MODE_DOZE_SUSPEND);
++    }
+ }
  
  int HwComposerBackend_v20::composerSequenceId = 0;
  
@@ -308,21 +367,30 @@ index dc1d4ff..5e4d06e 100644
      , hwc2_primary_display(NULL)
      , hwc2_primary_layer(NULL)
      , m_displayOff(true)
-@@ -324,8 +325,20 @@ HwComposerBackend_v20::sleepDisplay(bool sleep)
+@@ -283,7 +297,7 @@ HwComposerBackend_v20::createWindow(int width, int height)
+ 
+     HWC2Window *hwc_win = new HWC2Window(width, height,
+                                          HAL_PIXEL_FORMAT_RGBA_8888,
+-                                         hwc2_primary_display, layer);
++                                         hwc2_primary_display, layer, this);
+ 
+     return (EGLNativeWindowType) static_cast<ANativeWindow *>(hwc_win);
+ }
+@@ -324,8 +338,20 @@ HwComposerBackend_v20::sleepDisplay(bool sleep)
          m_vsyncTimeout.stop();
          hwc2_compat_display_set_vsync_enabled(hwc2_primary_display, HWC2_VSYNC_DISABLE);
  
 -        hwc2_compat_display_set_power_mode(hwc2_primary_display, HWC2_POWER_MODE_OFF);
-+        if (m_ambientMode) {
-+            hwc2_compat_display_set_power_mode(hwc2_primary_display, HWC2_POWER_MODE_DOZE_SUSPEND);
-+        } else {
-+            hwc2_compat_display_set_power_mode(hwc2_primary_display, HWC2_POWER_MODE_OFF);
-+        }
++        m_dozing = m_ambientMode;
++
++        int powerMode = m_ambientMode ? HWC2_POWER_MODE_DOZE_SUSPEND : HWC2_POWER_MODE_OFF;
++        hwc2_compat_display_set_power_mode(hwc2_primary_display, powerMode);
 +        // Enter non-interactive state after turning off the screen.
 +        if (pwr_device) {
 +            pwr_device->setInteractive(pwr_device, false);
 +        }
      } else {
++        m_dozing = false;
 +        // Enter interactive state prior to turning on the screen.
 +        if (pwr_device) {
 +            pwr_device->setInteractive(pwr_device, true);
@@ -331,10 +399,10 @@ index dc1d4ff..5e4d06e 100644
  
          // If we have pending updates, make sure those start happening now..
 diff --git a/hwcomposer/hwcomposer_backend_v20.h b/hwcomposer/hwcomposer_backend_v20.h
-index 0c79cb0..e2170bd 100644
+index 0c79cb0..221d6ae 100644
 --- a/hwcomposer/hwcomposer_backend_v20.h
 +++ b/hwcomposer/hwcomposer_backend_v20.h
-@@ -57,13 +57,17 @@ class QWindow;
+@@ -57,16 +57,24 @@ class QWindow;
  
  class HwComposerBackend_v20 : public QObject, public HwComposerBackend {
  public:
@@ -353,7 +421,14 @@ index 0c79cb0..e2170bd 100644
      virtual void sleepDisplay(bool sleep);
      virtual float refreshRate();
      virtual bool getScreenSizes(int *width, int *height, float *physical_width, float *physical_height);
-@@ -81,6 +85,7 @@ public:
++    bool isDozing()
++    {
++        return m_dozing;
++    }
+ 
+     virtual bool requestUpdate(QEglFSWindow *window) Q_DECL_OVERRIDE;
+ 
+@@ -81,10 +89,12 @@ public:
  
  private:
      hwc2_compat_device_t* hwc2_device;
@@ -361,6 +436,11 @@ index 0c79cb0..e2170bd 100644
      hwc2_compat_display_t* hwc2_primary_display;
      hwc2_compat_layer_t* hwc2_primary_layer;
  
+     bool m_displayOff;
++    bool m_dozing;
+     QBasicTimer m_deliverUpdateTimeout;
+     QBasicTimer m_vsyncTimeout;
+     QSet<QWindow *> m_pendingUpdate;
 diff --git a/hwcomposer/hwcomposer_context.cpp b/hwcomposer/hwcomposer_context.cpp
 index ca433da..7eea4b8 100644
 --- a/hwcomposer/hwcomposer_context.cpp
@@ -440,6 +520,3 @@ index 81cc83d..e14bdfd 100644
      } else if (lowerCaseResource == "displayoff") {
          // Called from lipstick to turn off the display (src/homeapplication.cpp)
          mHwc->sleepDisplay(true);
--- 
-2.37.3
-
