@@ -1,4 +1,4 @@
-PULSEAUDIO_VERSION = "16.1"
+PULSEAUDIO_VERSION = "17.0"
 EXTRA_OECONF += "--with-module-dir=/usr/lib/pulseaudio/modules"
 
 do_configure:prepend() {
