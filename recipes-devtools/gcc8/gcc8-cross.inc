@@ -183,6 +183,12 @@ do_install () {
 		ln -sf ${BINRELPATH}/${TARGET_PREFIX}$t ${dest}${TARGET_PREFIX}$t
 	done
 
+	# Add a version suffix to ensure compatibility with other gcc compiler versions
+	dest=${D}${bindir}/
+	for t in c++ cpp g++ gcc gcc-8.3.0 gcc-ar gcc-nm gcc-ranlib gcov gcov-dump gcov-tool ; do
+		mv ${dest}${TARGET_PREFIX}$t ${dest}${TARGET_PREFIX}$t-8
+	done
+
 	# Remove things we don't need but keep share/java
 	for d in info man share/doc share/locale share/man share/info; do
 		rm -rf ${D}${STAGING_DIR_NATIVE}${prefix_native}/$d
