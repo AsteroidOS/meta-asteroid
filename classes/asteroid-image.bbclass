@@ -28,8 +28,8 @@ DEPENDS:append = " ${@oe.utils.conditional('GENERATE_SPARSE_IMAGE', 'true', 'and
 
 generate_sparse_image() {
     if [ -n "${GENERATE_SPARSE_IMAGE}" ]; then
-        img2simg "${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.ext4" "${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.simg"
-        ln -s "${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.simg" "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.simg"
+        img2simg "${IMGDEPLOYDIR}/${IMAGE_NAME}.ext4" "${IMGDEPLOYDIR}/${IMAGE_NAME}.simg"
+        ln -s "${IMAGE_NAME}.simg" "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.simg"
     fi
 }
 
