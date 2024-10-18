@@ -74,7 +74,7 @@ do_install:append() {
     install -d ${D}/var/lib/misc/
     touch ${D}/var/lib/misc/udhcpd.leases
 
-    touch ${D}/var/usb-debugging-enabled
+    touch ${D}/etc/usb-debugging-enabled
 }
 
 FILES:${PN} += " ${systemd_system_unitdir} /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
