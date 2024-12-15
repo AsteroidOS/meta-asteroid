@@ -18,8 +18,8 @@ RDEPENDS:${PN} += "mapplauncherd"
 do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd/@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd ${STAGING_INCDIR}/mdeclarativecache5/@" ${S}/booster-qtcomponents.pro
     sed -i "s@LIBS += -lapplauncherd@LIBS += -lapplauncherd -lmdeclarativecache5@" ${S}/booster-qtcomponents.pro
-    cp ${WORKDIR}/booster-qtcomponents-qt5.service ${S}/data/booster-qtcomponents-qt5.service
-    cp ${WORKDIR}/preload.qml ${S}/qml-qt5/preload.qml
+    cp ${UNPACKDIR}/booster-qtcomponents-qt5.service ${S}/data/booster-qtcomponents-qt5.service
+    cp ${UNPACKDIR}/preload.qml ${S}/qml-qt5/preload.qml
 }
 
 do_install:append() {

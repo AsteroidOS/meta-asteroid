@@ -18,7 +18,7 @@ do_configure:prepend() {
 }
 
 do_install:append() {
-    cp ${WORKDIR}/msyncd.service ${D}/usr/lib/systemd/user/msyncd.service
+    cp ${UNPACKDIR}/msyncd.service ${D}/usr/lib/systemd/user/msyncd.service
 
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/msyncd.service ]; then

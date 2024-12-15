@@ -8,9 +8,9 @@ SRCREV = "94fb127e614b19a9a95561b8c1a0716e2e1e6293"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_install:append() {
-    if [ -f ${WORKDIR}/patchram.service ] ; then
+    if [ -f ${UNPACKDIR}/patchram.service ] ; then
         install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
-        cp ${WORKDIR}/patchram.service ${D}${systemd_system_unitdir}/
+        cp ${UNPACKDIR}/patchram.service ${D}${systemd_system_unitdir}/
         ln -s ../patchram.service ${D}${systemd_system_unitdir}/multi-user.target.wants/patchram.service
     fi
 }

@@ -7,13 +7,13 @@ SRC_URI += "file://main.conf \
 
 do_install:append() {
     install -d ${D}/etc/bluetooth/
-    cp ${WORKDIR}/main.conf ${D}/etc/bluetooth/main.conf
-    cp ${WORKDIR}/input.conf ${D}/etc/bluetooth/input.conf
+    cp ${UNPACKDIR}/main.conf ${D}/etc/bluetooth/main.conf
+    cp ${UNPACKDIR}/input.conf ${D}/etc/bluetooth/input.conf
 
     install -d ${D}${systemd_system_unitdir}
-    cp ${WORKDIR}/bluetooth.service ${D}${systemd_system_unitdir}/bluetooth.service
+    cp ${UNPACKDIR}/bluetooth.service ${D}${systemd_system_unitdir}/bluetooth.service
 
     install -d ${D}/etc/dbus-1/system.d/
-    cp ${WORKDIR}/bluetooth.conf ${D}/etc/dbus-1/system.d/
+    cp ${UNPACKDIR}/bluetooth.conf ${D}/etc/dbus-1/system.d/
 }
 

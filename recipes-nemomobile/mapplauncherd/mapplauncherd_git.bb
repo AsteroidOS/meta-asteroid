@@ -21,7 +21,7 @@ B = "${S}"
 do_configure:prepend() {
     sed -i '/Target for documentation/,$d' ${S}/CMakeLists.txt
     sed -i 's@-L/lib -lsystemd-daemon@-lsystemd@' ${S}/src/launcherlib/CMakeLists.txt
-    cp ${WORKDIR}/booster-generic.service ${S}/src/booster-generic/booster-generic.service
+    cp ${UNPACKDIR}/booster-generic.service ${S}/src/booster-generic/booster-generic.service
 }
 
 do_install:append() {

@@ -46,21 +46,21 @@ do_install:append() {
     install -d ${D}/etc/usb-moded
     install -d ${D}/etc/usb-moded/run
     install -d ${D}/etc/usb-moded/dyn-modes
-    install -m 644 -D ../usb-moded/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
-    install -m 644 -D ../usb-moded/run/* ${D}/etc/usb-moded/run/
-    install -m 644 -D ../usb-moded/dyn-modes/* ${D}/etc/usb-moded/dyn-modes/
+    install -m 644 -D ${UNPACKDIR}/usb-moded/usb-moded.ini ${D}/etc/usb-moded/usb-moded.ini
+    install -m 644 -D ${UNPACKDIR}/usb-moded/run/* ${D}/etc/usb-moded/run/
+    install -m 644 -D ${UNPACKDIR}/usb-moded/dyn-modes/* ${D}/etc/usb-moded/dyn-modes/
 
     touch ${D}/etc/modprobe.d/g_ether.conf
     touch ${D}/etc/udhcpd.conf
 
     install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
-    install -m 644 -D ../usb-moded.service ${D}${systemd_system_unitdir}/usb-moded.service
+    install -m 644 -D ${UNPACKDIR}/usb-moded.service ${D}${systemd_system_unitdir}/usb-moded.service
     ln -s ../usb-moded.service ${D}${systemd_system_unitdir}/multi-user.target.wants/usb-moded.service
-    install -m 644 -D ../udhcp-daemon.service ${D}${systemd_system_unitdir}/udhcp-daemon.service
-    install -m 644 -D ../buteo-session.service ${D}${systemd_system_unitdir}/buteo-session.service
+    install -m 644 -D ${UNPACKDIR}/udhcp-daemon.service ${D}${systemd_system_unitdir}/udhcp-daemon.service
+    install -m 644 -D ${UNPACKDIR}/buteo-session.service ${D}${systemd_system_unitdir}/buteo-session.service
 
     install -d ${D}/usr/share/dbus-1/services/
-    install -m 644 -D ../com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
+    install -m 644 -D ${UNPACKDIR}/com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
 
     install -m 644 -D systemd/usb-moded.conf ${D}/etc/tmpfiles.d/usb-moded.conf
 
@@ -68,8 +68,8 @@ do_install:append() {
     install -m 644 -D systemd/adbd-prepare.service ${D}${systemd_system_unitdir}/adbd-prepare.service
 
     install -d ${D}/usr/bin/
-    cp ../init_ffs ${D}/usr/bin/init_ffs
-    cp ../init_gfs ${D}/usr/bin/init_gfs
+    install -m 755 ${UNPACKDIR}/init_ffs ${D}/usr/bin/init_ffs
+    install -m 755 ${UNPACKDIR}/init_gfs ${D}/usr/bin/init_gfs
 
     install -d ${D}/var/lib/misc/
     touch ${D}/var/lib/misc/udhcpd.leases

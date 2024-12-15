@@ -24,9 +24,9 @@ PACKAGECONFIG[disable-progress-bar] = ",--disable-progress-bar,"
 
 do_configure:append () {
     cd ${S}
-    cp ../psplash-config.h ./psplash-config.h
-    cp ../psplash-colors.h ./psplash-colors.h
-    cp ../psplash-bar-img.png ./psplash-bar.png
+    install -m 0644 ${UNPACKDIR}/psplash-config.h ${S}/psplash-config.h
+    install -m 0644 ${UNPACKDIR}/psplash-colors.h ${S}/psplash-colors.h
+    install -m 0644 ${UNPACKDIR}/psplash-bar-img.png ${S}/psplash-bar.png
     ./make-image-header.sh ./psplash-bar.png BAR
 }
 
@@ -34,7 +34,7 @@ do_install:append() {
     # By default provide the animated boot logo for a 280x280 screen.
     if ${@bb.utils.contains('PACKAGECONFIG', 'animated-gif', 'true', 'false', d)}; then
         install -d ${D}/usr/share/
-        install -m 0755 ${WORKDIR}/psplash-img-280-154.gif ${D}/usr/share/psplash.gif
+        install -m 0755 ${UNPACKDIR}/psplash-img-280-154.gif ${D}/usr/share/psplash.gif
     fi
 }
 

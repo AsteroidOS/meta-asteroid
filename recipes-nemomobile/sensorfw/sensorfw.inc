@@ -35,7 +35,7 @@ do_configure:prepend:hybris-machine() {
 
 do_install:append() {
     install -d ${D}/etc/sensorfw/ ${D}${systemd_system_unitdir}/multi-user.target.wants/
-    cp ../sensorfwd.service ${D}${systemd_system_unitdir}/sensorfwd.service
+    install -m 644 ${UNPACKDIR}/sensorfwd.service ${D}${systemd_system_unitdir}/sensorfwd.service
     ln -s ../sensorfwd.service ${D}${systemd_system_unitdir}/multi-user.target.wants/
 }
 

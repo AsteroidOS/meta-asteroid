@@ -18,7 +18,7 @@ RDEPENDS:${PN} += "mapplauncherd"
 
 do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd@" ${S}/qtbooster/qtbooster.pro
-    cp ${WORKDIR}/booster-qt5.service ${S}/data/booster-qt5.service
+    cp ${UNPACKDIR}/booster-qt5.service ${S}/data/booster-qt5.service
 }
 
 do_install:append() {
