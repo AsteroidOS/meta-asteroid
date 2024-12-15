@@ -1,10 +1,11 @@
 SUMMARY = "Nemomobile's libshadowutils"
 HOMEPAGE = "https://github.com/sailfishos/libshadowutils"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://COPYING;md5=08c553a87d4e51bbed50b20e0adcaede"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c9a450b7be84eac23e6353efecb60b5b"
 
-SRC_URI = "git://github.com/sailfishos/libshadowutils.git;protocol=https;branch=master"
-SRCREV = "c26249a780a81281a0ecdf44ffa8b37a13185966"
+SRC_URI = "git://github.com/sailfishos-mirror/shadow.git;protocol=https;branch=master \
+    file://0001-libshadowutils-Functions-from-Shadow-Tool-Suite-as-s.patch"
+SRCREV = "cde08e422d8c179d4ba622da2290c31ec645c611"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
