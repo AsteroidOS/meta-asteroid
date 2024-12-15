@@ -19,10 +19,10 @@ inherit asteroid-users
 
 do_install:append() {
     install -d ${D}/etc/systemd/system/user@.service.d/
-    cp ../localeEnv.conf ${D}/etc/systemd/system/user@.service.d/locale.conf
+    install -m 644 ${UNPACKDIR}/localeEnv.conf ${D}/etc/systemd/system/user@.service.d/locale.conf
 
     install -d ${D}/home/.system/var/lib/environment/${CERES_UID}/
-    cp ../locale.conf ${D}/home/.system/var/lib/environment/${CERES_UID}/locale.conf
+    install -m 644 ${UNPACKDIR}/locale.conf ${D}/home/.system/var/lib/environment/${CERES_UID}/locale.conf
 
     # TODO: Ensure this only allows asteroid-settings to write to this file, so
     # that others apps cannot set environment variables

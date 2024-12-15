@@ -24,7 +24,7 @@ do_install() {
     find ./ -name '*.[to]tf' -exec install -m 0644 {} ${D}/usr/share/fonts \;
 
     install -d ${D}/home/ceres/.config/fontconfig/conf.d/
-    install -m 644 ${WORKDIR}/69-emoji.conf ${D}/home/ceres/.config/fontconfig/conf.d/
+    install -m 644 ${UNPACKDIR}/69-emoji.conf ${D}/home/ceres/.config/fontconfig/conf.d/
 }
 
 FILES:${PN} += "/usr/share/fonts /home/ceres/.config/fontconfig/conf.d"

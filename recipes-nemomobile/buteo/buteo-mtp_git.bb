@@ -25,7 +25,7 @@ do_install:append() {
     ln -s ../dev-mtp.mount ${D}${systemd_system_unitdir}/local-fs.target.wants
 
     install -m 0755 -d ${D}${bindir}
-    install -m 0755 ../buteo-mtp ${D}${bindir}
+    install -m 0755 ${UNPACKDIR}/buteo-mtp ${D}${bindir}
 }
 
 DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"

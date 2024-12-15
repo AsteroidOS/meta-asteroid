@@ -9,5 +9,5 @@ SRC_URI = "file://30-org.freedesktop.login1.rules"
 do_install() {
         install -m 700 -d ${D}${sysconfdir}/polkit-1/rules.d
         chown polkitd:root ${D}/${sysconfdir}/polkit-1/rules.d
-        install -m 0755 ${WORKDIR}/30-org.freedesktop.login1.rules ${D}${sysconfdir}/polkit-1/rules.d
+        install -m 0755 ${UNPACKDIR}/30-org.freedesktop.login1.rules ${D}${sysconfdir}/polkit-1/rules.d
 }

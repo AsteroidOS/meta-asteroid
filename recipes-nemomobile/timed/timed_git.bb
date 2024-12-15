@@ -21,7 +21,7 @@ do_configure:prepend() {
     mkdir -p src/h/timed-qt5/
     cp src/lib/qmacro.h src/h/timed-qt5/qmacro.h
     sed -i "s@<policy user=\"nemo\">@<policy user=\"ceres\">@" src/server/timed-qt5.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
-    cp ${WORKDIR}/timed-qt5.service ${S}/src/server/timed-qt5.service
+    cp ${UNPACKDIR}/timed-qt5.service ${S}/src/server/timed-qt5.service
 }
 
 do_install:append() {
@@ -32,7 +32,7 @@ do_install:append() {
     install -d ${D}/var/lib/timed/
     install -g sailfish-datetime -m 2775 -d ${D}/var/lib/timed/shared_settings/
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime
-    cp ${WORKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
+    cp ${UNPACKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
 pkg_postinst:${PN}() {

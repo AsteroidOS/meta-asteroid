@@ -30,7 +30,7 @@ do_compile() {
 
 do_install:append() {
     install -D -m 644 reboot-via-dsme.sh ${D}/etc/profile.d/reboot-via-dsme.sh
-    install -D -m 644 ../dsme.service ${D}${systemd_system_unitdir}/dsme.service
+    install -D -m 644 ${UNPACKDIR}/dsme.service ${D}${systemd_system_unitdir}/dsme.service
     install -d ${D}${systemd_system_unitdir}/multi-user.target.wants/
     ln -s ../dsme.service ${D}${systemd_system_unitdir}/multi-user.target.wants/dsme.service
     install -d ${D}/var/lib/dsme

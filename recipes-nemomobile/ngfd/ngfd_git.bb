@@ -27,19 +27,19 @@ do_configure:prepend() {
 }
 
 do_install:append() {
-    cp ../ngfd.ini ${D}/usr/share/ngfd/ngfd.ini
+    install -m 0644 ${UNPACKDIR}/ngfd.ini ${D}/usr/share/ngfd/ngfd.ini
 
     install -d ${D}/usr/lib/systemd/user/
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    cp ../ngfd.service ${D}/usr/lib/systemd/user/
+    install -m 0644 ${UNPACKDIR}/ngfd.service ${D}/usr/lib/systemd/user/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/ngfd.service ]; then
         ln -s /usr/lib/systemd/user/ngfd.service ${D}/usr/lib/systemd/user/default.target.wants/ngfd.service
     fi
 
     rm -r ${D}/usr/share/ngfd/events.d/
-    cp -r ../events.d/ ${D}/usr/share/ngfd/events.d/
+    cp -r ${UNPACKDIR}/events.d/ ${D}/usr/share/ngfd/events.d/
 
-    cp ../50-ffmemless.ini ${D}/usr/share/ngfd/plugins.d/
+    install -m 0644 ${UNPACKDIR}/50-ffmemless.ini ${D}/usr/share/ngfd/plugins.d/
 
     install -d ${D}/usr/share/sounds/
 }

@@ -24,11 +24,11 @@ DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-nat
 do_install() {
     oe_runmake install _UNITDIR=${systemd_system_unitdir} DESTDIR=${D}
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/mce.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/mce.service ${D}${systemd_system_unitdir}
     rm -r ${D}/var/run/
 
     install -d ${D}${localstatedir}/lib/mce/
-    install -m 0644 ${WORKDIR}/builtin-gconf.values ${D}${localstatedir}/lib/mce/
+    install -m 0644 ${UNPACKDIR}/builtin-gconf.values ${D}${localstatedir}/lib/mce/
 }
 
 FILES:${PN} += " /run/mce ${systemd_system_unitdir} /var/lib/mce"
