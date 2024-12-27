@@ -7,7 +7,9 @@ SRC_URI = "git://github.com/sailfishos/mapplauncherd.git;protocol=https;branch=m
            file://0001-booster-generic-Fix-path-to-tibapplauncherd.patch \
            file://0002-Fix-reference-to-host-lib.patch \
            file://0003-Fix-dynamic-opening-issues.patch \
-           file://booster-generic.service"
+           file://booster-generic.service \
+           file://0004-invoker-Do-not-return-a-value-for-a-void-function.patch \
+           "
 SRCREV = "7091378e7d1de0c26cdfcf74951ee1688f029b9d"
 PR = "r1"
 PV = "+git${SRCPV}"

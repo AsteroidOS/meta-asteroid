@@ -1,29 +1,26 @@
-From 994534261c1ce1fb200cf3778814b044b7c0242a Mon Sep 17 00:00:00 2001
+From 304762c3373d88274d888efbbfa7ad04d5eb0d07 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Fri, 8 Jan 2021 22:15:30 +0100
 Subject: [PATCH] Make single-instance a shared library.
 Newer versions of glibc(>= 2.30) don't allow dlopen() on position independent executables. Normal (position dependent) executables weren't supported either.
-
 ---
  src/single-instance/CMakeLists.txt | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/single-instance/CMakeLists.txt b/src/single-instance/CMakeLists.txt
-index cc04ba2..f30004e 100644
+index cc04ba2..1d3d13d 100644
 --- a/src/single-instance/CMakeLists.txt
 +++ b/src/single-instance/CMakeLists.txt
 @@ -11,10 +11,10 @@ pkg_check_modules(DBUS dbus-1 REQUIRED)
  include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DBUS_INCLUDE_DIRS} ${COMMON})
-
+ 
  # Hide all symbols except the ones explicitly exported in the code (like main())
 -set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fPIC")
 +set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIE -fvisibility=hidden -fPIC")
-
+ 
  # Link as position independent executable
 -set(CMAKE_EXE_LINKER_FLAGS "-pie -rdynamic")
 +set(CMAKE_EXE_LINKER_FLAGS "-rdynamic -shared")
-
+ 
  # Set C flags because of report.c
  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fPIC")
---
-2.30.0
