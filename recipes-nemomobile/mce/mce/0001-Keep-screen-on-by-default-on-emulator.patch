@@ -1,4 +1,4 @@
-From fb115fc533b8e1072d1b9c5b06e5f926ec99dac1 Mon Sep 17 00:00:00 2001
+From 355f60cca6b7ea024824fc3b3d203bb7542dc437 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 21 Feb 2018 15:54:02 +0100
 Subject: [PATCH] Keep screen on by default on emulator

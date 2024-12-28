@@ -1,7 +1,7 @@
-From 16009f9f51cf6c90423ed6ef96025d742f0f7659 Mon Sep 17 00:00:00 2001
+From 8ebc2b7059796bbb1b5aa1fff06e5549eb621002 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 22:36:05 +0100
-Subject: [PATCH 3/7] inactivity: Allow activities in lockscreen mode.
+Subject: [PATCH] inactivity: Allow activities in lockscreen mode.
  asteroid-launcher marks the watchface as the lockscreen. When the watchface
  is visible taping the screen would not keep the screen awake.
 MIME-Version: 1.0
@@ -60,6 +60,3 @@ index 5ac9d19..74bde99 100644
  
  ALLOW:
      allowed = true;
--- 
-2.43.0
-

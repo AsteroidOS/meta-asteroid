@@ -1,7 +1,7 @@
-From 0678c80ed808e5968f549202edf566e6b0c13024 Mon Sep 17 00:00:00 2001
+From 9706e2e44acbf719aaf454707dc21b9809704943 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 21:44:09 +0100
-Subject: [PATCH 2/7] tilt-to-wake: Wake screen when wrist gesture arrives.
+Subject: [PATCH] tilt-to-wake: Wake screen when wrist gesture arrives.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -15,10 +15,10 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  mce-sensorfw.c            | 206 ++++++++++++++++++++++++++++++++++++++
  mce-sensorfw.h            |   4 +
  modules/display.h         |   8 ++
- modules/sensor-gestures.c |  25 +++++
+ modules/sensor-gestures.c |  26 +++++
  tests/ut/ut_display.c     |   5 +
  tools/mcetool.c           |  32 ++++++
- 10 files changed, 296 insertions(+)
+ 10 files changed, 297 insertions(+)
 
 diff --git a/builtin-gconf.c b/builtin-gconf.c
 index 5517292..b04689c 100644
@@ -458,10 +458,18 @@ index bfb9d4d..8075401 100644
   * Color profile related settings
   * ------------------------------------------------------------------------- */
 diff --git a/modules/sensor-gestures.c b/modules/sensor-gestures.c
-index f648009..5d606eb 100644
+index f648009..9487818 100644
 --- a/modules/sensor-gestures.c
 +++ b/modules/sensor-gestures.c
-@@ -57,6 +57,9 @@ static gint orientation_sensor_effective_id = 0;
+@@ -24,6 +24,7 @@
+ #include "../mce-log.h"
+ #include "../mce-setting.h"
+ #include "../mce-dbus.h"
++#include "../mce-sensorfw.h"
+ #include "display.h"
+ 
+ #include <mce/dbus-names.h>
+@@ -57,6 +58,9 @@ static gint orientation_sensor_effective_id = 0;
  static gboolean sg_flipover_gesture_enabled = MCE_DEFAULT_FLIPOVER_GESTURE_ENABLED;
  static guint    sg_flipover_gesture_enabled_setting_id = 0;
  
@@ -471,7 +479,7 @@ index f648009..5d606eb 100644
  /* ========================================================================= *
   * FUNCTIONS
   * ========================================================================= */
-@@ -465,6 +468,15 @@ static void sg_setting_cb(GConfClient *const gcc, const guint id,
+@@ -465,6 +469,15 @@ static void sg_setting_cb(GConfClient *const gcc, const guint id,
      if( id == sg_flipover_gesture_enabled_setting_id ) {
          sg_flipover_gesture_enabled = gconf_value_get_bool(gcv);
      }
@@ -487,7 +495,7 @@ index f648009..5d606eb 100644
      else {
          mce_log(LL_WARN, "Spurious GConf value received; confused!");
      }
-@@ -482,6 +494,11 @@ static void sg_setting_init(void)
+@@ -482,6 +495,11 @@ static void sg_setting_init(void)
                             MCE_DEFAULT_FLIPOVER_GESTURE_ENABLED,
                             sg_setting_cb,
                             &sg_flipover_gesture_enabled_setting_id);
@@ -499,7 +507,7 @@ index f648009..5d606eb 100644
  }
  
  /** Stop tracking setting changes */
-@@ -489,6 +506,8 @@ static void sg_setting_quit(void)
+@@ -489,6 +507,8 @@ static void sg_setting_quit(void)
  {
      mce_setting_notifier_remove(sg_flipover_gesture_enabled_setting_id),
          sg_flipover_gesture_enabled_setting_id = 0;
@@ -508,7 +516,7 @@ index f648009..5d606eb 100644
  }
  
  /* ========================================================================= *
-@@ -508,6 +527,12 @@ const gchar *g_module_check_init(GModule *module)
+@@ -508,6 +528,12 @@ const gchar *g_module_check_init(GModule *module)
      sg_setting_init();
      sg_datapipe_init();
  
@@ -594,6 +602,3 @@ index e067c43..f5d519d 100644
          {
                  .name        = "get-color-profile-ids",
                  .flag        = 'a',
--- 
-2.43.0
-

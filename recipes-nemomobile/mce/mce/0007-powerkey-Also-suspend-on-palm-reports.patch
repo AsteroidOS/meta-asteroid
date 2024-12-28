@@ -1,7 +1,7 @@
-From cb68dd470a36573f5539a389d5dc405d8099c89d Mon Sep 17 00:00:00 2001
+From ca2c3e4d0192cf5612bb0d5f7684a9cd3df272b4 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Sun, 26 Dec 2021 19:40:13 +0100
-Subject: [PATCH 7/7] powerkey: Also suspend on palm reports.
+Subject: [PATCH] powerkey: Also suspend on palm reports.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -157,6 +157,3 @@ index e06e231..9c73be7 100644
      {
          .datapipe = &ngfd_event_request_pipe,
          .input_cb = pwrkey_datapipe_ngfd_event_request_cb,
--- 
-2.43.0
-
