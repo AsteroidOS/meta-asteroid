@@ -1,0 +1,51 @@
+From 8fb59772b23999c775a2170f2b7027ac2a2164f6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sat, 28 Dec 2024 23:31:32 +0100
+Subject: [PATCH] Remove references to host path in package config files
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ hybris/egl/platforms/common/hybris-egl-platform.pc.in | 2 +-
+ hybris/gralloc/libgralloc.pc.in                       | 2 +-
+ hybris/hardware/libhardware.pc.in                     | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/hybris/egl/platforms/common/hybris-egl-platform.pc.in b/hybris/egl/platforms/common/hybris-egl-platform.pc.in
+index 32eeacb..d49c749 100644
+--- a/hybris/egl/platforms/common/hybris-egl-platform.pc.in
++++ b/hybris/egl/platforms/common/hybris-egl-platform.pc.in
+@@ -8,5 +8,5 @@ Description: libhybris EGL platform library
+ Version: @VERSION@
+ Requires: @ANDROID_HEADERS_PKGCONFIG@
+ Libs: -L${libdir} -lhybris-common -lhybris-eglplatformcommon -lhybris-platformcommon
+-Cflags: -I${includedir} -I${includedir}/hybris/eglplatformcommon -I${includedir}/hybris/platformcommon @ANDROID_HEADERS_CFLAGS@
++Cflags: -I${includedir} -I${includedir}/hybris/eglplatformcommon -I${includedir}/hybris/platformcommon -I${includedir}/android
+ 
+diff --git a/hybris/gralloc/libgralloc.pc.in b/hybris/gralloc/libgralloc.pc.in
+index aa883be..afd87a4 100644
+--- a/hybris/gralloc/libgralloc.pc.in
++++ b/hybris/gralloc/libgralloc.pc.in
+@@ -8,4 +8,4 @@ Description: libhybris gralloc library
+ Version: @VERSION@
+ Requires: @ANDROID_HEADERS_PKGCONFIG@
+ Libs: -L${libdir} -lgralloc
+-Cflags: -I${includedir} @ANDROID_HEADERS_CFLAGS@
++Cflags: -I${includedir} -I${includedir}/android
+diff --git a/hybris/hardware/libhardware.pc.in b/hybris/hardware/libhardware.pc.in
+index 6cc6192..1415927 100644
+--- a/hybris/hardware/libhardware.pc.in
++++ b/hybris/hardware/libhardware.pc.in
+@@ -8,4 +8,4 @@ Description: libhybris hardware library
+ Version: @VERSION@
+ Requires: @ANDROID_HEADERS_PKGCONFIG@
+ Libs: -L${libdir} -lhardware
+-Cflags: -I${includedir} @ANDROID_HEADERS_CFLAGS@
++Cflags: -I${includedir} -I${includedir}/android
+-- 
+2.47.1
+
