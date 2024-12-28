@@ -1,7 +1,7 @@
-From 5809f92e623baed97e0b5f5ac8d72517483f3c30 Mon Sep 17 00:00:00 2001
+From d126e60e67e77e2841adb7c225df0fa363cd1595 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 22:49:48 +0100
-Subject: [PATCH 4/7] Ambient mode: Adapt low-power-mode to allow for actual
+Subject: [PATCH] Ambient mode: Adapt low-power-mode to allow for actual
  ambient mode. Refactor the low power mode to actually work in low power
  mode(deep sleep). There are some challenges when it comes to transitions
  (i.e. screen on -> screen lpm). There are multiple parts responsible for
@@ -632,6 +632,3 @@ index 867deaa..1188cb6 100644
          break;
  
      case MCE_DISPLAY_ON:
--- 
-2.43.0
-

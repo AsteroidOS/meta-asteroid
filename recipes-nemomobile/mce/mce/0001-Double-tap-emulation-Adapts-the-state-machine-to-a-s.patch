@@ -1,8 +1,8 @@
-From f0b89eb98d0c1594cfece1d9bca654b4ea7a2a73 Mon Sep 17 00:00:00 2001
+From bc63ea546b15fb422dbbc2b8b1635f89e9ddb5bc Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 21 Feb 2018 18:01:02 +0100
-Subject: [PATCH 1/7] Double-tap emulation: Adapts the state machine to a
- single tap to unlock behavior (after 200ms the screen is unlocked)
+Subject: [PATCH] Double-tap emulation: Adapts the state machine to a single
+ tap to unlock behavior (after 200ms the screen is unlocked)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -417,6 +417,3 @@ index b65a554..7f0b18c 100644
  bool               mt_state_touching     (const mt_state_t *self);
  
  #endif /* MCE_MULTITOUCH_H_ */
--- 
-2.43.0
-

@@ -1,11 +1,11 @@
-From ee7efc2a8c73df442aab9bdce575b8ed85142d62 Mon Sep 17 00:00:00 2001
+From 2b64065b5f8510258c93709ed2bf606d52a1cc71 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 23:03:41 +0100
-Subject: [PATCH 5/7] Ambient Mode: Wait for compositor when sending
- enable/disable request. Low power mode wouldn't activate properly after boot
- sometimes, this is likely due to the compositor not being available at the
- time. So wait until we know that the compositor is available (ready to
- receive DBus messages).
+Subject: [PATCH] Ambient Mode: Wait for compositor when sending enable/disable
+ request. Low power mode wouldn't activate properly after boot sometimes, this
+ is likely due to the compositor not being available at the time. So wait
+ until we know that the compositor is available (ready to receive DBus
+ messages).
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,6 +57,3 @@ index 42ca0e5..85d0df3 100644
      /* Blanking inhibit modes */
      mce_setting_track_int(MCE_SETTING_BLANKING_INHIBIT_MODE,
                            &mdy_blanking_inhibit_mode,
--- 
-2.43.0
-

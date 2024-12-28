@@ -1,7 +1,7 @@
-From 24a3b3c3bb96daaa63fc381047f2265defe2deb4 Mon Sep 17 00:00:00 2001
+From 73ce23a858581541379275743cb528d079a1a045 Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 23:07:09 +0100
-Subject: [PATCH 6/7] Ambient Mode: Exit ambient mode when touch is detected.
+Subject: [PATCH] Ambient Mode: Exit ambient mode when touch is detected.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -63,6 +63,3 @@ index 85d0df3..3c50973 100644
      {
          .datapipe  = &packagekit_locked_pipe,
          .output_cb = mdy_datapipe_packagekit_locked_cb,
--- 
-2.43.0
-
