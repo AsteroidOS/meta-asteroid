@@ -3,8 +3,8 @@ HOMEPAGE = "https://github.com/sailfishos/libresource"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/libresource.git;protocol=https;branch=master"
-SRCREV = "0af1cea2bf457a911baa7cd65ee1e32747df3011"
+SRC_URI = "gitsm://github.com/sailfishos/libresource.git;protocol=https;branch=master"
+SRCREV = "52746ef8216a1c1b4eed21763ba3fca824fab864"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -14,4 +14,7 @@ do_compile:prepend() {
 }
 
 DEPENDS += " glib-2.0 dbus-glib dbus libcheck"
+
 inherit autotools pkgconfig
+
+B = "${S}"
