@@ -5,8 +5,9 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
 SRC_URI = "gitsm://github.com/sailfishos/dsme.git;protocol=https;branch=master \
            file://0002-Fix-and-improve-alarm-time-serialization.patch \
-           file://dsme.service"
-SRCREV = "d1518176a68ce416fd19515c0b88da2b48ce606a"
+           file://dsme.service \
+           "
+SRCREV = "4dc34c954a297c59f9c81c72bb7fc9deaeea5fca"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

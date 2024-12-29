@@ -16,7 +16,7 @@ Subject: [PATCH] Fix and improve alarm time serialization
  1 file changed, 36 insertions(+), 8 deletions(-)
 
 diff --git a/modules/alarmtracker.c b/modules/alarmtracker.c
-index ca110ae..281ed40 100644
+index 0163227..f2b0e93 100644
 --- a/modules/alarmtracker.c
 +++ b/modules/alarmtracker.c
 @@ -57,6 +57,8 @@
@@ -61,7 +61,7 @@ index ca110ae..281ed40 100644
  
 -    long data = 0;
 -    if( errno = 0, fscanf(fh, "%ld", &data) != 1 ) {
--        dsme_log(LOG_DEBUG, PFIX"%s: read error: %m", ALARM_STATE_FILE);
+-        dsme_log(LOG_DEBUG, PFIX "%s: read error: %m", ALARM_STATE_FILE);
 +    if (!fgets(buffer, sizeof(buffer), fh)) {
 +        dsme_log(LOG_WARNING, PFIX"%s: read error or empty file: %m", ALARM_STATE_FILE);
 +        goto EXIT;
@@ -70,7 +70,7 @@ index ca110ae..281ed40 100644
 +    errno = 0;
 +    data = strtoll(buffer, NULL, 10);
 +    if (errno != 0) {
-+        dsme_log(LOG_WARNING, PFIX"%s: conversion error: %m", ALARM_STATE_FILE);
++        dsme_log(LOG_WARNING, PFIX "%s: conversion error: %m", ALARM_STATE_FILE);
 +        goto EXIT;
 +    }
 +
@@ -81,9 +81,9 @@ index ca110ae..281ed40 100644
      }
  
      alarmtracker_alarmtime_cached  = (time_t)data;
--    dsme_log(LOG_DEBUG, PFIX"Alarm queue head restored: %ld",
+-    dsme_log(LOG_DEBUG, PFIX "Alarm queue head restored: %ld",
 -             alarmtracker_alarmtime_current);
-+    dsme_log(LOG_DEBUG, PFIX"Alarm queue head restored: %" PRIdMAX,
++    dsme_log(LOG_DEBUG, PFIX "Alarm queue head restored: %" PRIdMAX,
 +             (intmax_t)alarmtracker_alarmtime_current);
  
  EXIT:
@@ -95,18 +95,18 @@ index ca110ae..281ed40 100644
 -    if( fprintf(fh, "%ld\n", alarmtracker_alarmtime_current) < 0) {
 +    if( fprintf(fh, "%" PRIdMAX "\n",
 +                (intmax_t)alarmtracker_alarmtime_current) < 0) {
-         dsme_log(LOG_WARNING, PFIX"%s: can't write: %m",
+         dsme_log(LOG_WARNING, PFIX "%s: can't write: %m",
                   ALARM_STATE_FILE_TMP);
          goto EXIT;
      }
  
 -    if( fflush(fh) == EOF ) {
--        dsme_log(LOG_WARNING, PFIX"%s: can't flush: %m",
+-        dsme_log(LOG_WARNING, PFIX "%s: can't flush: %m",
 +    if( fflush(fh) == EOF || fsync(fileno(fh)) == -1 ) {
-+        dsme_log(LOG_WARNING, PFIX"%s: can't flush/fsync: %m",
++        dsme_log(LOG_WARNING, PFIX "%s: can't flush/fsync: %m",
                   ALARM_STATE_FILE_TMP);
          goto EXIT;
      }
 -- 
-2.43.0
+2.49.0
 
