@@ -1,17 +1,23 @@
+From ac2cfb00af9d4c5a03ba201e2e89f779053b8032 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Fri, 5 Jun 2015 13:28:45 +0200
+Subject: [PATCH] Initial commit
+
 commit d474b630a62265e2090489a9048f510d3d8d2746
-Author: Florent Revest <revestflo@gmail.com>
-Date:   Fri Jun 5 13:28:45 2015 +0200
 
     Allows use of custom CFLAGS
+---
+ Makefile | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 7aa145a..0738aa9 100644
+index e0e00a1..be7b649 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -103,17 +103,17 @@ install_tests::
+@@ -95,17 +95,17 @@ install_tests::
  # Common options
  # ----------------------------------------------------------------------------
-
+ 
 -CFLAGS   += -std=c99
 -CFLAGS   += -O2
 -CFLAGS   += -Wall
@@ -24,36 +30,32 @@ index 7aa145a..0738aa9 100644
 +override CFLAGS   += -Wwrite-strings
 +override CFLAGS   += -Wmissing-prototypes
 +override CFLAGS   += -Werror
-
+ 
 -CFLAGS   += -g
 -LDFLAGS  += -g
 +override CFLAGS   += -g
 +override LDFLAGS  += -g
-
+ 
 -LDFLAGS  += -Wl,--as-needed
 +override LDFLAGS  += -Wl,--as-needed
-
+ 
  # ----------------------------------------------------------------------------
- # libdsme$(SOVERS) and libdsme.a
-@@ -122,11 +122,11 @@ LDFLAGS  += -Wl,--as-needed
+ # libdsme$(SOVERS)
+@@ -114,8 +114,8 @@ LDFLAGS  += -Wl,--as-needed
  libdsme_OBJ += protocol.pic.o message.pic.o alarm_limit.pic.o
  libdsme_PC  += glib-2.0
-
+ 
 -libdsme$(SOVERS) : CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
 -libdsme$(SOVERS) : LDLIBS += $$(pkg-config --libs $(libdsme_PC))
 +libdsme$(SOVERS) : override CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
 +libdsme$(SOVERS) : override LDLIBS += $$(pkg-config --libs $(libdsme_PC))
  libdsme$(SOVERS) : $(libdsme_OBJ)
-
--libdsme.a : CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
-+libdsme.a : override CFLAGS += $$(pkg-config --cflags $(libdsme_PC))
- libdsme.a : $(patsubst %.pic.o, %.o, $(libdsme_OBJ))
-
+ 
  # ----------------------------------------------------------------------------
-@@ -152,6 +152,6 @@ libthermalmanager_dbus_if$(SOVERS) : $(libthermalmanager_dbus_if_OBJ)
+@@ -141,6 +141,6 @@ libthermalmanager_dbus_if$(SOVERS) : $(libthermalmanager_dbus_if_OBJ)
  ut_libdsme_OBJ += tests/ut_libdsme.o
  ut_libdsme_PC  += glib-2.0 check
-
+ 
 -tests/ut_libdsme : CFLAGS += $$(pkg-config --cflags $(ut_libdsme_PC))
 -tests/ut_libdsme : LDLIBS += $$(pkg-config --libs $(ut_libdsme_PC))
 +tests/ut_libdsme : override CFLAGS += $$(pkg-config --cflags $(ut_libdsme_PC))
