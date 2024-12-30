@@ -7,7 +7,9 @@ RDEPENDS:${PN} += "polkit"
 SRC_URI = "file://30-org.freedesktop.login1.rules"
 
 do_install() {
-        install -m 700 -d ${D}${sysconfdir}/polkit-1/rules.d
-        chown polkitd:root ${D}/${sysconfdir}/polkit-1/rules.d
-        install -m 0755 ${UNPACKDIR}/30-org.freedesktop.login1.rules ${D}${sysconfdir}/polkit-1/rules.d
+        install -m 700 -d ${D}${datadir}/polkit-1/rules.d
+        chown polkitd:root ${D}/${datadir}/polkit-1/rules.d
+        install -m 0755 ${UNPACKDIR}/30-org.freedesktop.login1.rules ${D}${datadir}/polkit-1/rules.d
 }
+
+FILES:${PN} += "${datadir}/polkit-1/rules.d"
