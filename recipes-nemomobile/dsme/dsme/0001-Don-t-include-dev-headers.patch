@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 21 Mar 2021 23:03:07 +0100
 Subject: [PATCH] Don't include dev headers.
 
+Upstream-Status: Inappropriate
+
 ---
  Makefile.custom     | 10 +---------
  dsme/Makefile.am    | 12 ++++++------

@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 https://github.com/mer-hybris/geoclue-providers-hybris/commit/e982cf94047993e5868d44307f4a38f1b89500ea added support for overriding/setting the SUPL server.
 This could however lead to a crash when AGPS isn't actually available. Handle this by returning an error instead of crashing.
 

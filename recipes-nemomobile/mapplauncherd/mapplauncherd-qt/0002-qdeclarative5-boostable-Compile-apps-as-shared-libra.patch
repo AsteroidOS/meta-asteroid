@@ -5,6 +5,8 @@ Subject: [PATCH] qdeclarative5-boostable: Compile apps as shared libraries. As
  of glibc >= 2.30 it is no longer possible to load position independant code.
  Compiling as a shared library solves this.
 
+Upstream-Status: Inappropriate
+
 ---
  data/pkgconfig/qdeclarative5-boostable.pc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

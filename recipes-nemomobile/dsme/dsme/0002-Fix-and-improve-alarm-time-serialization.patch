@@ -11,6 +11,9 @@ Subject: [PATCH] Fix and improve alarm time serialization
   check that the parsed integer fits in time_t.
 * Add fsync(fileno(fh)) to the serialization to ensure that the alarm
   time is written to disk.
+
+Upstream-Status: Inappropriate
+
 ---
  modules/alarmtracker.c | 44 ++++++++++++++++++++++++++++++++++--------
  1 file changed, 36 insertions(+), 8 deletions(-)

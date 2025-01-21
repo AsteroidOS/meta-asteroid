@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Wed, 27 Oct 2021 16:06:50 +0200
 Subject: [PATCH] adb_services: Use syscall for reboot.
 
+Upstream-Status: Inappropriate
+
 For some reason the property_set() function does not appear to work.
 It does also not return with an error.
 Instead reboot using a syscall which also allows for appending arguments such that rebooting to the bootloader is also possible.

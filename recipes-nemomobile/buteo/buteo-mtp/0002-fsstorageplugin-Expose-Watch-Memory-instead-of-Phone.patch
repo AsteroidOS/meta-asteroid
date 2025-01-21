@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 5 May 2017 17:34:18 +0200
 Subject: [PATCH] fsstorageplugin: Expose Watch Memory instead of Phone Memory
 
+Upstream-Status: Inappropriate
+
  + SD Card
 
 ---

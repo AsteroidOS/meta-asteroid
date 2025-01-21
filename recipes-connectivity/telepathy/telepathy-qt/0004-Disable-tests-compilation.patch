@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 17:55:46 +0200
 Subject: [PATCH] Disable tests compilation
 
+Upstream-Status: Inappropriate
+
 ---
  CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

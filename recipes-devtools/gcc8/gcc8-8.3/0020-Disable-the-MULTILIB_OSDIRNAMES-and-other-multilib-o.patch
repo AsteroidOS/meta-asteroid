@@ -12,7 +12,7 @@ long as the dynamic loader is present in /lib.
 We simply want to use the default rules in gcc to find and configure the
 normal libdir.
 
-Upstream-Status: Inappropriate[OE-Specific]
+Upstream-Status: Inappropriate [OE-Specific]
 
 Signed-off-by: Mark Hatle <mark.hatle@windriver.com>
 Signed-off-by: Khem Raj <raj.khem@gmail.com>

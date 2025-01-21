@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 Add ability to keep the screen on while in deep sleep mode.
 This is achieved by setting the power mode to HWC_POWER_MODE_DOZE_SUSPEND.
 We need PowerHAL to setInteractive based on display state, this is required for some platforms to make ambient mode work.

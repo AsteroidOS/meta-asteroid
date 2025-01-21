@@ -3,6 +3,8 @@ From: MagneFire <dgriet@gmail.com>
 Date: Sun, 26 Dec 2021 16:42:15 +0100
 Subject: [PATCH] usb-modded-worker: Use buteo-mtp wrapper. We don't have a `systemctl-user` so use the `buteo-mtp` one instead.
 
+Upstream-Status: Inappropriate
+
 ---
  src/usb_moded-worker.c | 23 ++++++++++++-----------
  1 file changed, 12 insertions(+), 11 deletions(-)

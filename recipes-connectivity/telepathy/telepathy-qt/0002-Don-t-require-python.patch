@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 15:06:27 +0200
 Subject: [PATCH] Don't require python
 
+Upstream-Status: Inappropriate
+
 ---
  CMakeLists.txt | 9 ---------
  1 file changed, 9 deletions(-)

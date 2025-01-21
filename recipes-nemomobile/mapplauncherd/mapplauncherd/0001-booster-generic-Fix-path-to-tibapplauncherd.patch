@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Sun, 26 Aug 2018 23:17:13 +0200
 Subject: [PATCH] booster-generic: Fix path to tibapplauncherd
 
+Upstream-Status: Inappropriate
+
 ---
  src/booster-generic/CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

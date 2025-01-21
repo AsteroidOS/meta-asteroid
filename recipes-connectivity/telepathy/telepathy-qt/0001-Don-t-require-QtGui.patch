@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 15:04:02 +0200
 Subject: [PATCH] Don't require QtGui
 
+Upstream-Status: Inappropriate
+
 ---
  cmake/modules/FindQt5.cmake | 1 -
  1 file changed, 1 deletion(-)

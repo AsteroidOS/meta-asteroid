@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 14 Jul 2015 12:07:59 +0200
 Subject: [PATCH] Fixes build
 
+Upstream-Status: Inappropriate
+
 ---
  src/server/adaptor.h              |   1 +
  src/server/config.type.cpp        |  37 ++++++++++

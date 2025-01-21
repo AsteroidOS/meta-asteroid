@@ -3,6 +3,8 @@ From: Ed Beroset <beroset@ieee.org>
 Date: Sun, 30 Apr 2023 10:59:48 -0400
 Subject: [PATCH] Do not check for icu
 
+Upstream-Status: Inappropriate
+
 The native-icu package is required for this build so it exists, but the
 original configure attempted to verify that.  However, the way the test
 was written, it only looked at the host machine rather than the relevant

@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 6 Aug 2015 14:32:10 +0200
 Subject: [PATCH] Includes sync.h which provides sync_wait
 
+Upstream-Status: Inappropriate
+
 ---
  hwcomposer/hwcomposer_backend_v10.h | 1 +
  hwcomposer/hwcomposer_backend_v11.h | 1 +

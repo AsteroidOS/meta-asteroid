@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Sat, 4 May 2019 00:51:22 +0200
 Subject: [PATCH] Correct rndis configfs function name
 
+Upstream-Status: Inappropriate
+
 ---
  scripts/set_usb_mode.sh  | 2 +-
  src/usb_moded-configfs.c | 2 +-

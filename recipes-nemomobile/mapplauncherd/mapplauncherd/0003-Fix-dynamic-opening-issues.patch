@@ -7,6 +7,8 @@ Newer versions of glibc(>= 2.30) don't allow dlopen() on position independent ex
  src/single-instance/CMakeLists.txt | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
+Upstream-Status: Inappropriate
+
 diff --git a/src/single-instance/CMakeLists.txt b/src/single-instance/CMakeLists.txt
 index cc04ba2..1d3d13d 100644
 --- a/src/single-instance/CMakeLists.txt

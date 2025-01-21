@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 12 Jun 2017 02:02:45 +0200
 Subject: [PATCH] mdeclarativecache5: Share same
 
+Upstream-Status: Inappropriate
+
  mdeclarativecache_pre_initialized_qapplication for each qmlcache
 
 ---

@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 31 Jul 2019 13:48:48 +0200
 Subject: [PATCH] Allow custom GStreamer elements to be used as a video sinks
 
+Upstream-Status: Inappropriate
+
 ---
  src/gsttools/gsttools.pro                     |  2 ++
  src/gsttools/qgstreamervideosinkcontrol.cpp   | 32 +++++++++++++++++++

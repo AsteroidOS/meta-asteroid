@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 3 Oct 2016 19:43:09 +0200
 Subject: [PATCH] notificationcategories: use ion icons
 
+Upstream-Status: Inappropriate
+
 ---
  src/notificationcategories/device.added.conf                | 2 +-
  src/notificationcategories/device.conf                      | 2 +-

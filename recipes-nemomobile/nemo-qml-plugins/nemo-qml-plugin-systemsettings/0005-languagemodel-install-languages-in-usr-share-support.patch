@@ -4,6 +4,8 @@ Date: Mon, 16 Jan 2017 13:01:23 +0100
 Subject: [PATCH] languagemodel: install languages in
  /usr/share/supported-languages
 
+Upstream-Status: Inappropriate
+
 ---
  src/languagemodel.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
