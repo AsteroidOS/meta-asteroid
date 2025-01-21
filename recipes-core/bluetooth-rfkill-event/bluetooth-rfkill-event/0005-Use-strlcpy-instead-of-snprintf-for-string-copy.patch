@@ -10,6 +10,9 @@ and since -Werror is on, causes the build to fail with:
     error: format not a string literal and no format arguments [-Werror=format-security]
 
 Fix this by using strlcpy() instead of snprintf().
+
+Upstream-Status: Inappropriate
+
 ---
  bluetooth-rfkill-event/bluetooth_rfkill_event.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

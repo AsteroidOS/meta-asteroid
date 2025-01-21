@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 5 Jun 2015 13:28:45 +0200
 Subject: [PATCH] Initial commit
 
+Upstream-Status: Inappropriate
+
 commit d474b630a62265e2090489a9048f510d3d8d2746
 
     Allows use of custom CFLAGS

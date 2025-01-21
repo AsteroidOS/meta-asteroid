@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Fri, 8 Jan 2021 14:31:23 +0100
 Subject: [PATCH] Disable tests.
 
+Upstream-Status: Inappropriate
+
 ---
  alarms.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 21 Feb 2018 15:54:02 +0100
 Subject: [PATCH] Keep screen on by default on emulator
 
+Upstream-Status: Inappropriate
+
 ---
  modules/display.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

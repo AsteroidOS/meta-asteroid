@@ -3,6 +3,8 @@ From: Ed Beroset <beroset@ieee.org>
 Date: Sat, 2 Mar 2024 07:38:50 -0500
 Subject: [PATCH] Use only xx.xx versioning for pulseaudio
 
+Upstream-Status: Inappropriate
+
 Since pulseaudio version 16.0, modules no longer the version number as
 part of the installation path.  That is, files that were once in
 /usr/lib/pulse-15.0/modules are now simply in /usr/lib/pulseaudio/modules.

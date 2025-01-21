@@ -4,6 +4,8 @@ Date: Sun, 6 Aug 2017 10:51:50 +0100
 Subject: [PATCH] BluetoothAgent: Advertise less hardware capabilities to make
  sure the Keyboard will not be asked on a watch
 
+Upstream-Status: Inappropriate
+
 ---
  src/bluetoothagent.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

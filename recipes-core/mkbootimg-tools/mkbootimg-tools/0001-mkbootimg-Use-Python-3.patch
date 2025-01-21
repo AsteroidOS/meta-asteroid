@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Fri, 8 Jan 2021 18:46:15 +0100
 Subject: [PATCH] mkbootimg: Use Python 3.
 
+Upstream-Status: Inappropriate
+
 ---
  mkbootimg | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

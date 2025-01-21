@@ -4,6 +4,8 @@ Date: Sun, 18 Mar 2018 01:22:54 +0100
 Subject: [PATCH] MDesktopEntry: Allow dynamic locale switch by disabling some
  of the asumptions made when using glib's conf files functions
 
+Upstream-Status: Inappropriate
+
 ---
  src/mdesktopentry.cpp | 9 +++------
  1 file changed, 3 insertions(+), 6 deletions(-)

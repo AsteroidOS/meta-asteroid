@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Thu, 16 Jul 2020 22:51:52 +0200
 Subject: [PATCH] Add wakeup event for use with ambient mode. It seems like
 
+Upstream-Status: Inappropriate
+
  there is no easy way to get a callback from when an event occurs. The only
  way is using voland. Which, on AsteroidOS, is used by the alarmclock app. So
  scheduling an event for use with ambient mode would actually show the

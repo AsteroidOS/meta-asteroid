@@ -4,6 +4,8 @@ Date: Thu, 25 Jul 2019 14:53:48 +0000
 Subject: [PATCH] Remove references to mode that are not in upstream
  gstreamer1.0-plugins-bad
 
+Upstream-Status: Inappropriate
+
 ---
  gst/droidcamsrc/gstdroidcamsrcphotography.c |  11 +-
  2 files changed, 2 insertions(+), 16 deletions(-)
