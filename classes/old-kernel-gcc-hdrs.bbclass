@@ -12,5 +12,6 @@ do_configure:prepend() {
     echo "#include <linux/compiler-gcc10.h>" > ${S}/include/linux/compiler-gcc11.h
     echo "#include <linux/compiler-gcc11.h>" > ${S}/include/linux/compiler-gcc12.h
     echo "#include <linux/compiler-gcc12.h>" > ${S}/include/linux/compiler-gcc13.h
+    echo "#include <linux/compiler-gcc13.h>" > ${S}/include/linux/compiler-gcc14.h
 }
 
