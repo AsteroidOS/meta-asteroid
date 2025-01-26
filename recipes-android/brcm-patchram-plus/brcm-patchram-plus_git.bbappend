@@ -1,9 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/brcm-patchram-plus:"
 LICENSE = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://COPYING;md5=afced5e0f9e7326a4866806c80685307"
 
 SRC_URI = "git://github.com/AsteroidOS/brcm-patchram-plus.git;protocol=https;branch=master"
 S = "${WORKDIR}/git"
-SRCREV = "94fb127e614b19a9a95561b8c1a0716e2e1e6293"
+SRCREV = "15bd6638dd6d3a37d22dbc18059f6d9eb885f057"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
