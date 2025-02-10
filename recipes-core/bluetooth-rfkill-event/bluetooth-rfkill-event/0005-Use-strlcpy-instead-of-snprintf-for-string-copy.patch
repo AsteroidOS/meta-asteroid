@@ -1,0 +1,32 @@
+From 95a06fe413a36f16b86f0afe826a4f6b0cd24044 Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <crg7475@mailbox.org>
+Date: Mon, 10 Feb 2025 21:12:36 +0100
+Subject: [PATCH] Use strlcpy() instead of snprintf() for string copy
+
+Using snprintf() that way is risky, because it leads to bugs if the
+name string contains format specifiers. The compiler reports this,
+and since -Werror is on, causes the build to fail with:
+
+    error: format not a string literal and no format arguments [-Werror=format-security]
+
+Fix this by using strlcpy() instead of snprintf().
+---
+ bluetooth-rfkill-event/bluetooth_rfkill_event.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+index bff3075..a26032c 100644
+--- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
++++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+@@ -1082,7 +1082,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
+     /* based on chip read its config file, if any, and define the hciattach utility used to dowload the patch */
+     if (!strncmp(rfkill_name, sysname, strlen(rfkill_name))) {
+ 	read_config(config_file);
+-	snprintf(hciattach, sizeof(hciattach), patcher_impl[main_opts.patcher].name);
++	strlcpy(hciattach, patcher_impl[main_opts.patcher].name, sizeof(hciattach));
+ 	type = BT_PWR;
+     } else if (g_str_has_prefix(sysname, "hci")) {
+ 	type = BT_HCI;
+-- 
+2.43.0
+
