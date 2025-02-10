@@ -1,0 +1,112 @@
+From 17ebc6b0085fea1e4f7fdeb9b3787eba6b2bdc5a Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <crg7475@mailbox.org>
+Date: Mon, 10 Feb 2025 22:21:48 +0100
+Subject: [PATCH] Fix and improve alarm time serialization
+
+* Previously, the code assumed that time_t fits in the long type.
+  This is not necessarily the case, and in fact breaks in Yocto builds
+  when -Werror=format-security is used. Instead, use intmax_t for
+  serializing (because then, the PRIdMAX format specifier can be used).
+  For deserializing, use strtoll() (which is safer than fscanf), and
+  check that the parsed integer fits in time_t.
+* Add fsync(fileno(fh)) to the serialization to ensure that the alarm
+  time is written to disk.
+---
+ modules/alarmtracker.c | 44 ++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 36 insertions(+), 8 deletions(-)
+
+diff --git a/modules/alarmtracker.c b/modules/alarmtracker.c
+index ca110ae..281ed40 100644
+--- a/modules/alarmtracker.c
++++ b/modules/alarmtracker.c
+@@ -57,6 +57,8 @@
+ #include <time.h>
+ #include <errno.h>
+ #include <string.h>
++#include <stdlib.h>
++#include <inttypes.h>
+ 
+ /* ========================================================================= *
+  * Constants
+@@ -64,6 +66,17 @@
+ /** Prefix to use for all logging from this module */
+ #define PFIX "alarmtracker: "
+ 
++/* These TIME_T_MIN and TIME_T_MAX definitions are from:
++ * https://github.com/cybertk/android-bash/blob/7b68d0da37039c5dcdc950011e7c02e02384bfa3/lib/sh/mktime.c */
++
++#ifndef TIME_T_MIN
++#define TIME_T_MIN (0 < (time_t) -1 ? (time_t) 0 \
++		    : ~ (time_t) 0 << (sizeof (time_t) * CHAR_BIT - 1))
++#endif
++#ifndef TIME_T_MAX
++#define TIME_T_MAX (~ (time_t) 0 - TIME_T_MIN)
++#endif
++
+ /*
+  * Store the alarm queue state in a file; it is used to restore the alarm queue state
+  * when the module is loaded.
+@@ -212,6 +225,8 @@ static void
+ alarmtracker_alarmtime_load(void)
+ {
+     FILE *fh = 0;
++    char buffer[32];
++    intmax_t data = 0;
+ 
+     /* Reset value */
+     alarmtracker_alarmtime_cached = 0;
+@@ -224,15 +239,27 @@ alarmtracker_alarmtime_load(void)
+         goto EXIT;
+     }
+ 
+-    long data = 0;
+-    if( errno = 0, fscanf(fh, "%ld", &data) != 1 ) {
+-        dsme_log(LOG_DEBUG, PFIX"%s: read error: %m", ALARM_STATE_FILE);
++    if (!fgets(buffer, sizeof(buffer), fh)) {
++        dsme_log(LOG_WARNING, PFIX"%s: read error or empty file: %m", ALARM_STATE_FILE);
++        goto EXIT;
++    }
++
++    errno = 0;
++    data = strtoll(buffer, NULL, 10);
++    if (errno != 0) {
++        dsme_log(LOG_WARNING, PFIX"%s: conversion error: %m", ALARM_STATE_FILE);
++        goto EXIT;
++    }
++
++    if (data < (intmax_t)TIME_T_MIN || data > (intmax_t)TIME_T_MAX) {
++        dsme_log(LOG_WARNING, PFIX"%s: alarm time out of range: %" PRIdMAX,
++                 ALARM_STATE_FILE, data);
+         goto EXIT;
+     }
+ 
+     alarmtracker_alarmtime_cached  = (time_t)data;
+-    dsme_log(LOG_DEBUG, PFIX"Alarm queue head restored: %ld",
+-             alarmtracker_alarmtime_current);
++    dsme_log(LOG_DEBUG, PFIX"Alarm queue head restored: %" PRIdMAX,
++             (intmax_t)alarmtracker_alarmtime_current);
+ 
+ EXIT:
+     alarmtracker_alarmtime_update(alarmtracker_alarmtime_cached);
+@@ -262,14 +289,15 @@ alarmtracker_alarmtime_save(void)
+         goto EXIT;
+     }
+ 
+-    if( fprintf(fh, "%ld\n", alarmtracker_alarmtime_current) < 0) {
++    if( fprintf(fh, "%" PRIdMAX "\n",
++                (intmax_t)alarmtracker_alarmtime_current) < 0) {
+         dsme_log(LOG_WARNING, PFIX"%s: can't write: %m",
+                  ALARM_STATE_FILE_TMP);
+         goto EXIT;
+     }
+ 
+-    if( fflush(fh) == EOF ) {
+-        dsme_log(LOG_WARNING, PFIX"%s: can't flush: %m",
++    if( fflush(fh) == EOF || fsync(fileno(fh)) == -1 ) {
++        dsme_log(LOG_WARNING, PFIX"%s: can't flush/fsync: %m",
+                  ALARM_STATE_FILE_TMP);
+         goto EXIT;
+     }
+-- 
+2.43.0
+
