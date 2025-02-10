@@ -13,12 +13,9 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5 useradd pkgconfig
+inherit qmake5 asteroid-users pkgconfig
 
 B = "${S}"
-
-USERADD_PACKAGES = "${PN}"
-GROUPADD_PARAM:${PN} = "sailfish-datetime"
 
 do_configure:prepend() {
     mkdir -p src/h/timed-qt5/

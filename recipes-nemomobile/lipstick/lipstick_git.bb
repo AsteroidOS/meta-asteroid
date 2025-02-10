@@ -20,7 +20,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt qtsystems libngf-qt mce usb-moded-qt5 systemd wayland nemo-keepalive qttools-native mce-qt5"
 RDEPENDS:${PN} += "${PN}-locale"
 
-inherit qmake5 pkgconfig
+inherit qmake5 pkgconfig asteroid-users
 
 do_install:append() {
     install -d ${D}/usr/share/icons/hicolor/86x86/apps/
@@ -38,5 +38,3 @@ FILES:${PN} += "/usr/lib/qml/org/nemomobile/lipstick/liblipstickplugin.so /usr/l
 FILES:${PN}-dev += "/usr/lib/liblipstick-qt5.prl"
 FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/lipstick/.debug"
 FILES:${PN}-locale += "/usr/share/translations"
-
-INSANE_SKIP:${PN} += "dev-deps host-user-contaminated"

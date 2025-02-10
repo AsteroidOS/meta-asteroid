@@ -8,6 +8,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit allarch
 inherit fontcache
+inherit asteroid-users
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https;branch=master \
     file://69-emoji.conf"
@@ -27,6 +28,3 @@ do_install() {
 }
 
 FILES:${PN} += "/usr/share/fonts /home/ceres/.config/fontconfig/conf.d"
-
-# Installing files in `/home/ceres/`, owned by uid 1000, causes a host-contamination warning.
-INSANE_SKIP:${PN} += "host-user-contaminated"
