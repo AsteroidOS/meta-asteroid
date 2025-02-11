@@ -1,0 +1,32 @@
+From 829733b2fe098cf542621b8291f10390f3c609a3 Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <crg7475@mailbox.org>
+Date: Tue, 11 Feb 2025 14:32:22 +0100
+Subject: [PATCH] Remove hardcoded CFLAGS that collide with Yocto/OE CFLAGS
+
+Yocto sets the -Wformat -Wformat-security CFLAGS. The hardcoded -Wno-format
+undoes -Wformat, leaving -Wformat-security . This causes this error:
+
+    error: '-Wformat-security' ignored without '-Wformat' [-Werror=format-security]
+
+Since there are no CFLAGS in that line that are somehow distinct or
+strictly necessary for the build, just remove the entire line.
+---
+ configure.ac | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index b8421f1..fac8ad4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -64,8 +64,6 @@ DBUS_SERVICES_DIR="${datadir}/dbus-1/services"
+ AC_SUBST(DBUS_SERVICES_DIR)
+ AC_DEFINE_UNQUOTED(DBUS_SERVICES_DIR, "$DBUS_SERVICES_DIR", [Where services dir for D-Bus is])
+ 
+-CFLAGS="$CFLAGS -g -Wall -Wno-format"
+-
+ # -----------------------------------------------------------
+ # gtk+
+ # -----------------------------------------------------------
+-- 
+2.43.0
+
