@@ -1,14 +1,15 @@
-From 59772fc6b435c76c35b2c9b1ebe157503ea07555 Mon Sep 17 00:00:00 2001
+From c24b8d1c0a59959af4985c0edd2eac0583915aee Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:48:18 +0100
-Subject: [PATCH 3/5] Add Wrist gesture sensor via libhybris adaptor.
+Subject: [PATCH] Add Wrist gesture sensor via libhybris adaptor.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
+
 ---
- adaptors/adaptors.pro                         |   1 +
+ adaptors/adaptors.pro                         |   3 +-
  .../hybriswristgestureadaptor.cpp             |  94 ++++++++++++++
  .../hybriswristgestureadaptor.h               |  61 +++++++++
  .../hybriswristgestureadaptor.pro             |  14 ++
@@ -24,7 +25,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  .../wristgesturesensor/wristgesturesensor.pro |  11 ++
  .../wristgesturesensor_a.cpp                  |  49 +++++++
  .../wristgesturesensor/wristgesturesensor_a.h |  57 +++++++++
- 16 files changed, 683 insertions(+), 1 deletion(-)
+ 16 files changed, 684 insertions(+), 2 deletions(-)
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.h
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
@@ -39,17 +40,19 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  create mode 100644 sensors/wristgesturesensor/wristgesturesensor_a.h
 
 diff --git a/adaptors/adaptors.pro b/adaptors/adaptors.pro
-index b83a3ab..665716d 100644
+index 284d7b9..d8d5fbe 100644
 --- a/adaptors/adaptors.pro
 +++ b/adaptors/adaptors.pro
-@@ -14,6 +14,7 @@ contains(CONFIG,hybris) {
-     SUBDIRS += hybrisgeorotationadaptor
-     SUBDIRS += hybrisstepcounteradaptor
-     SUBDIRS += hybrishrmadaptor
-+    SUBDIRS += hybriswristgestureadaptor
+@@ -12,7 +12,8 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
+                  hybrisrotationadaptor \
+                  hybrisgeorotationadaptor \
+                  hybrisstepcounteradaptor \
+-                 hybrishrmadaptor
++                 hybrishrmadaptor \
++                 hybriswristgestureadaptor
  
- } else {
- 
+ # split like this as Sailfish only installs hybris plugins
+ contains(CONFIG,hybris) {
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
 new file mode 100644
 index 0000000..8edc6ca
@@ -837,6 +840,3 @@ index 0000000..a589337
 +};
 +
 +#endif
--- 
-2.35.3
-

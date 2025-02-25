@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master
            file://0004-Fix-compilation-when-autohybris-is-used.patch \
            file://0005-Fix-compilation-when-hybris-is-used.patch \
            file://sensorfwd.service"
-SRCREV = "0.12.6"
+SRCREV = "0.14.10"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -24,13 +24,13 @@ DEBIANNAME:${PN}-dev = "${PN}-dev"
 inherit qmake5 pkgconfig
 
 do_configure:prepend() {
-    sed "s=@LIB@=lib/=g" ../git/sensord-qt5.pc.in > ../git/sensord-qt5.pc
-    sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' ../git/core/core.pro
-    sed -i '/include( doc\/doc.pri )/d' ../git/sensorfw.pro
+    sed "s=@LIB@=lib/=g" "${S}/sensord-qt5.pc.in" > "${S}/sensord-qt5.pc"
+    sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' "${S}/core/core.pro"
+    sed -i '/include( doc\/doc.pri )/d' "${S}/sensorfw.pro"
 }
 
 do_configure:prepend:hybris-machine() {
-    sed -i 's:-L/usr/lib ::' ../git/core/hybris.pro
+    sed -i 's:-L/usr/lib ::' "${S}/core/hybris.pro"
 }
 
 do_install:append() {

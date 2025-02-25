@@ -1,20 +1,20 @@
-From 42aab792d2f0f2cd772d75bc1bd75ae4cfc31f2e Mon Sep 17 00:00:00 2001
+From 73f83fa73794cf52593b9d867e91c762fbd856f4 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:39:11 +0100
-Subject: [PATCH 4/5] Fix compilation when autohybris is used. Fixes
- compilation by adding android-headers via pkgconfig and re-adding the hybris
- subdirs when autohybris is used.
+Subject: [PATCH] Fix compilation when autohybris is used. Fixes compilation by
+ adding android-headers via pkgconfig and re-adding the hybris subdirs when
+ autohybris is used.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
+
 ---
- adaptors/adaptor-config.pri |  4 ++++
- adaptors/adaptors.pro       | 14 ++++++++++++++
- core/hybris.pro             |  3 +++
- sensorfw.pro                |  2 +-
- 4 files changed, 22 insertions(+), 1 deletion(-)
+ adaptors/adaptor-config.pri | 4 ++++
+ core/hybris.pro             | 3 +++
+ sensorfw.pro                | 2 +-
+ 3 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/adaptors/adaptor-config.pri b/adaptors/adaptor-config.pri
 index e8e1d79..cfcf90f 100644
@@ -28,33 +28,8 @@ index e8e1d79..cfcf90f 100644
 +config_hybris {
 +    CONFIG += link_pkgconfig
 +}
-diff --git a/adaptors/adaptors.pro b/adaptors/adaptors.pro
-index 665716d..b6deb57 100644
---- a/adaptors/adaptors.pro
-+++ b/adaptors/adaptors.pro
-@@ -56,6 +56,20 @@ SUBDIRS += mpu6050accelerometer
- 
- }
- 
-+config_hybris {
-+    SUBDIRS = hybrisaccelerometer
-+    SUBDIRS += hybrisalsadaptor
-+    SUBDIRS += hybrisgyroscopeadaptor
-+    SUBDIRS += hybrismagnetometeradaptor
-+    SUBDIRS += hybrispressureadaptor
-+    SUBDIRS += hybrisproximityadaptor
-+    SUBDIRS += hybrisorientationadaptor
-+    SUBDIRS += hybrisrotationadaptor
-+    SUBDIRS += hybrisgeorotationadaptor
-+    SUBDIRS += hybrisstepcounteradaptor
-+    SUBDIRS += hybrishrmadaptor
-+    SUBDIRS += hybriswristgestureadaptor
-+}
- }
- 
- 
 diff --git a/core/hybris.pro b/core/hybris.pro
-index ebf9ed3..6d7049d 100644
+index a9c87dc..0f92da2 100644
 --- a/core/hybris.pro
 +++ b/core/hybris.pro
 @@ -5,6 +5,9 @@ TARGET = hybrissensorfw
@@ -68,7 +43,7 @@ index ebf9ed3..6d7049d 100644
                          ../include \
                          ../filters \
 diff --git a/sensorfw.pro b/sensorfw.pro
-index c8ce491..211c13f 100644
+index d476fa3..43fbe81 100644
 --- a/sensorfw.pro
 +++ b/sensorfw.pro
 @@ -60,7 +60,7 @@ contains(CONFIG,configs) {
@@ -80,6 +55,3 @@ index c8ce491..211c13f 100644
                 adaptors
  } else {
      config_hybris {
--- 
-2.35.3
-
