@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=149a9c1e8e40b7453ce8c62ed489f481"
 
 DEPENDS = "glib-2.0 dbus dbus-glib libxml2 libxslt-native dbus-glib-native python3-six-native"
 
-inherit autotools pkgconfig gtk-doc
+inherit autotools gsettings pkgconfig gtk-doc
 
 SRC_URI = "http://freedesktop.org/~hadess/geoclue-0.12.99.tar.gz \
            file://0001-Remove-hardcoded-CFLAGS-that-collide-with-Yocto-OE-C.patch"
@@ -26,6 +26,5 @@ AUTO_LIBNAME_PKGS = ""
 FILES:${PN} += " \
     ${datadir}/dbus-1/services \
     ${datadir}/geoclue-providers \
-    ${datadir}/glib-2.0/schemas \
     ${datadir}/GConf/gsettings/geoclue \
 "
