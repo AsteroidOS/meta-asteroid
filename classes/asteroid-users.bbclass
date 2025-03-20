@@ -18,4 +18,4 @@ CERES_GID = "1000"
 # require a specific ID, unlike the ceres user group.)
 GROUPADD_PARAM:${PN} = "-r system ; -r gps ; -r datetime ; -g 1024 mtp; -g 1050 sailfish-datetime; -g ${CERES_GID} ceres"
 
-USERADD_PARAM:${PN} = "-m -p '' -u ${CERES_UID} -g ${CERES_GID} -G audio,video,system,wheel,gps,sailfish-datetime,datetime,mtp,users,input ceres"
+USERADD_PARAM:${PN} = "-m -p '' -u ${CERES_UID} -g ${CERES_GID} -G audio,video,system,wheel,gps,sailfish-datetime,datetime,mtp,users,input,tty ceres"
