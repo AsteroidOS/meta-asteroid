@@ -10,7 +10,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
 
 ---
  adaptors/adaptors.pro                         |  78 +++++-----
- .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 120 ++++++++++++++++
+ .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 121 ++++++++++++++++
  adaptors/hybrishrmadaptor/hybrishrmadaptor.h  |  67 +++++++++
  .../hybrishrmadaptor/hybrishrmadaptor.pro     |  13 ++
  .../hybrishrmadaptorplugin.cpp                |  35 +++++
@@ -33,7 +33,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  sensors/hrmsensor/hrmsensor_a.cpp             |  38 +++++
  sensors/hrmsensor/hrmsensor_a.h               |  55 ++++++++
  sensors/sensors.pro                           |   3 +-
- 24 files changed, 1214 insertions(+), 48 deletions(-)
+ 24 files changed, 1215 insertions(+), 48 deletions(-)
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.h
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
@@ -153,7 +153,7 @@ new file mode 100644
 index 0000000..ec64e0d
 --- /dev/null
 +++ b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,121 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -199,7 +199,8 @@ index 0000000..ec64e0d
 +    	powerStatePath.clear();
 +    }
 +    // Set default delay.
-+    setInterval(200, 0);
++    unsigned int interval_us = 200 * 1000;
++    setInterval(0, interval_us);
 +}
 +
 +HybrisHrmAdaptor::~HybrisHrmAdaptor()
