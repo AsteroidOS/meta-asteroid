@@ -6,7 +6,7 @@ LICENSE = "GPL-2.0-only"
 inherit populate_sdk_qt5
 inherit asteroid-users
 
-IMAGE_FEATURES += "package-management debug-tweaks"
+IMAGE_FEATURES += "package-management empty-root-password allow-empty-password allow-root-login"
 
 IMAGE_INSTALL += " \
 kernel-modules base-files base-passwd systemd busybox iproute2 connman pam-plugin-loginuid bluez5 polkit polkit-group-rule-datetime \
