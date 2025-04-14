@@ -7,6 +7,7 @@ SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https;branch=mas
            file://0001-Correct-rndis-configfs-function-name.patch \
            file://0002-usb-modded-worker-Use-buteo-mtp-wrapper.patch \
            file://0003-usb-moded-Return-success-when-already-mounted.patch \
+           file://0004-usb-moded-Move-ifconfig-to-ip.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
            file://udhcp-daemon.service \
