@@ -1,0 +1,66 @@
+From b004638bfaa93124b0dc08a755c6669f85c305ec Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Mon, 14 Apr 2025 22:14:21 +0200
+Subject: [PATCH] [usb-moded] Move ifconfig to ip
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/usb_moded-network.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
+
+diff --git a/src/usb_moded-network.c b/src/usb_moded-network.c
+index ba39948..e0be954 100644
+--- a/src/usb_moded-network.c
++++ b/src/usb_moded-network.c
+@@ -1156,7 +1156,33 @@ network_up(const modedata_t *data)
+     }
+     else
+     {
+-        snprintf(command, sizeof command,"ifconfig %s %s netmask %s", interface, address, netmask);
++        unsigned int o1, o2, o3, o4;
++        if (sscanf(netmask, "%u.%u.%u.%u", &o1, &o2, &o3, &o4) != 4) {
++            log_err("Invalid netmask format");
++            goto EXIT;
++        }
++
++        if (o1 > 0xFF || o2 > 0xFF || o3 > 0xFF || o4 > 0xFF) {
++            log_err("Invalid octet values");
++            goto EXIT;
++        }
++
++        unsigned int value = (o1 << 24) | (o2 << 16) | (o3 << 8) | o4;
++        int cidr = 0;
++
++        for (int i = 31; i >= 0; i--) {
++            if (value & (1 << i)) {
++                cidr++;
++            } else {
++                break;
++            }
++        }
++
++        snprintf(command, sizeof command,"ip addr add %s/%d dev %s", address, cidr, interface);
++        if( common_system(command) != 0 )
++            goto EXIT;
++
++            snprintf(command, sizeof command,"ip link set dev %s up", interface);
+         if( common_system(command) != 0 )
+             goto EXIT;
+     }
+@@ -1202,7 +1228,7 @@ network_down(const modedata_t *data)
+     log_debug("iface=%s nat=%d", interface ?: "n/a", data->nat);
+ 
+     if( interface ) {
+-        snprintf(command, sizeof command,"ifconfig %s down", interface);
++        snprintf(command, sizeof command,"ip link set dev %s down", interface);
+         common_system(command);
+     }
+ 
+-- 
+2.49.0
+
