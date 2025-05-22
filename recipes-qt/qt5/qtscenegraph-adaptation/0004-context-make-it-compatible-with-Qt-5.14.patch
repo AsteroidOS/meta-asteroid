@@ -3,6 +3,8 @@ From: Herman van Hazendonk <github.com@herrie.org>
 Date: Thu, 18 Jun 2020 16:23:33 +0200
 Subject: [PATCH 4/4] context: make it compatible with Qt 5.14
 
+Upstream-Status: Inappropriate
+
 * adapt to changes from:
   https://github.com/qt/qtdeclarative/commit/341ab7708049b1a3f559b76f16393e688951a938
 

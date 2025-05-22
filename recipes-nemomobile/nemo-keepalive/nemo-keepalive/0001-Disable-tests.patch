@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Tue, 5 Jan 2021 21:48:06 +0100
 Subject: [PATCH] Disable tests.
 
+Upstream-Status: Inappropriate
+
 ---
  keepalive.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

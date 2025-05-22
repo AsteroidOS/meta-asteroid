@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 17 Sep 2015 13:32:00 +0200
 Subject: [PATCH] Forces GLES2 the dirty way
 
+Upstream-Status: Inappropriate
+
 ---
  .../client/wayland-egl/qwaylandglcontext.cpp             | 9 +++------
  1 file changed, 3 insertions(+), 6 deletions(-)

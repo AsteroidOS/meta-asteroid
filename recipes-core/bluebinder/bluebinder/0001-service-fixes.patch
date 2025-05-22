@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate
+
 diff --git a/bluebinder.service b/bluebinder.service
 index 8b63181..52eae10 100644
 --- a/bluebinder.service

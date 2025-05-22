@@ -20,17 +20,17 @@ do_install:append() {
     fi
 
     mkdir ${D}/etc/pulse/client.conf.d/
-    cp ${WORKDIR}/default.pa ${D}/etc/pulse/default.pa
-    cp ${WORKDIR}/client.conf ${D}/etc/pulse/client.conf
-    cp ${WORKDIR}/stream-restore.table ${D}/etc/pulse/stream-restore.table
-    cp ${WORKDIR}/x-maemo-match.table ${D}/etc/pulse/x-maemo-match.table
-    cp ${WORKDIR}/x-maemo-route.table ${D}/etc/pulse/x-maemo-route.table
-    cp ${WORKDIR}/x-maemo-restore.table ${D}/etc/pulse/x-maemo-restore.table
-    cp ${WORKDIR}/x-maemo-stream-restore.table ${D}/etc/pulse/x-maemo-stream-restore.table
-    cp ${WORKDIR}/mainvolume-listening-time-notifier.conf ${D}/etc/pulse/mainvolume-listening-time-notifier.conf
+    install -m 0644 ${UNPACKDIR}/default.pa ${D}/etc/pulse/default.pa
+    install -m 0644 ${UNPACKDIR}/client.conf ${D}/etc/pulse/client.conf
+    install -m 0644 ${UNPACKDIR}/stream-restore.table ${D}/etc/pulse/stream-restore.table
+    install -m 0644 ${UNPACKDIR}/x-maemo-match.table ${D}/etc/pulse/x-maemo-match.table
+    install -m 0644 ${UNPACKDIR}/x-maemo-route.table ${D}/etc/pulse/x-maemo-route.table
+    install -m 0644 ${UNPACKDIR}/x-maemo-restore.table ${D}/etc/pulse/x-maemo-restore.table
+    install -m 0644 ${UNPACKDIR}/x-maemo-stream-restore.table ${D}/etc/pulse/x-maemo-stream-restore.table
+    install -m 0644 ${UNPACKDIR}/mainvolume-listening-time-notifier.conf ${D}/etc/pulse/mainvolume-listening-time-notifier.conf
 
     install -d ${D}/var/lib/
-    cp -r ${WORKDIR}/nemo-pulseaudio-parameters ${D}/var/lib/nemo-pulseaudio-parameters
+    cp -r ${UNPACKDIR}/nemo-pulseaudio-parameters ${D}/var/lib/nemo-pulseaudio-parameters
 }
 
 FILES:${PN}-server += "/usr/lib/systemd/user/default.target.wants/ /var/lib/nemo-pulseaudio-parameters"

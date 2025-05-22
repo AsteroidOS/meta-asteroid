@@ -3,6 +3,8 @@ From: Ed Beroset <beroset@ieee.org>
 Date: Thu, 23 Mar 2023 10:39:12 -0400
 Subject: [PATCH] Wait for dbus call to finish in NetworkTechnology
 
+Upstream-Status: Inappropriate
+
 This waits for the dbus call to finish in
 NetworkTechnology::initialize() to make sure that the object is ready
 before leaving the constructor.

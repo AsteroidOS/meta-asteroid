@@ -4,5 +4,5 @@ SRC_URI += "file://0001-dbus-sysdeps-Don-t-check-suid-bit-before-accessing-e.pat
 
 do_install:append() {
     install -d ${D}/usr/share/dbus-1/session.d/
-    cp ${WORKDIR}/session-local.conf ${D}/usr/share/dbus-1/session.d/session-local.conf
+    cp ${UNPACKDIR}/session-local.conf ${D}/usr/share/dbus-1/session.d/session-local.conf
 }

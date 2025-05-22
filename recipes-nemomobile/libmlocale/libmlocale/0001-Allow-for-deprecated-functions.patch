@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Wed, 6 Jan 2021 13:48:35 +0100
 Subject: [PATCH] Allow for deprecated functions.
 
+Upstream-Status: Inappropriate
+
 ---
  mkspecs/common.pri | 12 ------------
  1 file changed, 12 deletions(-)

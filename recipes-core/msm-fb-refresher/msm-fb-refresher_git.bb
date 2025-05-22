@@ -17,7 +17,7 @@ do_install() {
     install -m 0755 ${S}/msm-fb-refresher ${D}${bindir}
 
     install -d ${D}/etc/systemd/system/multi-user.target.wants/
-    cp ../msm-fb-refresher.service ${D}/etc/systemd/system/
+    install -m 0644 ${UNPACKDIR}/msm-fb-refresher.service ${D}/etc/systemd/system/
     ln -s ../msm-fb-refresher.service ${D}/etc/systemd/system/multi-user.target.wants/msm-fb-refresher.service
 }
 

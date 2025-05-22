@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 28 Feb 2017 12:40:30 +0100
 Subject: [PATCH] Disables tests and doc
 
+Upstream-Status: Inappropriate
+
 ---
  lipstick.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

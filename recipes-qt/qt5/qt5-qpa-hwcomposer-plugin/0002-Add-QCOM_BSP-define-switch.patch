@@ -3,6 +3,8 @@ From: Simon Busch <morphis@gravedo.de>
 Date: Wed, 12 Nov 2014 12:21:07 +0100
 Subject: [PATCH 2/2] Add QCOM_BSP define switch
 
+Upstream-Status: Inappropriate
+
 Needed as otherwise the structures defined on the android side doesn't match the ones
 we're using here.
 

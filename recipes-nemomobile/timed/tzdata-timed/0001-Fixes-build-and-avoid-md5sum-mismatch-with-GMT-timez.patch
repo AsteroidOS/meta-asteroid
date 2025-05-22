@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 20 Jan 2016 19:27:19 +0100
 Subject: [PATCH] Fixes build and avoid md5sum mismatch with GMT timezones
 
+Upstream-Status: Inappropriate
+
 ---
  Makefile                  |  4 ++--
  scripts/find-aliases.perl | 15 ++++++++-------

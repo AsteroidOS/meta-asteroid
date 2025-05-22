@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 This fixes an overloading issue:
 In file included from ../../recipe-sysroot/usr/include/QtCore/QObject:1,
                  from ../../git/src/calendarevent.h:36,

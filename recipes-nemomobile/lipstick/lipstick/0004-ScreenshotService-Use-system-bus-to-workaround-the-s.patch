@@ -4,6 +4,8 @@ Date: Sun, 30 Jul 2017 20:22:22 +0100
 Subject: [PATCH] ScreenshotService: Use system bus to workaround the
  sessionBus not being registered correctly
 
+Upstream-Status: Inappropriate
+
 ---
  src/homeapplication.cpp             | 3 +--
  tools/screenshottool/screenshottool | 2 +-

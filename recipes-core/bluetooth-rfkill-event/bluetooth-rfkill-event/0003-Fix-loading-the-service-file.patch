@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 For some unknown reason, the service isn't started even though a bluetooth target does start upon boot.
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>

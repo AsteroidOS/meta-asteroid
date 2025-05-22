@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 This file should be provided by the different platforms, hence remove it here as it's not needed.
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>

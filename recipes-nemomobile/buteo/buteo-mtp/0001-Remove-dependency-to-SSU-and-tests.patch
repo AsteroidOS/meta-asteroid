@@ -3,6 +3,8 @@ From: MagneFire <dgriet@gmail.com>
 Date: Sat, 25 Dec 2021 22:40:19 +0100
 Subject: [PATCH] Remove dependency to SSU and tests.
 
+Upstream-Status: Inappropriate
+
 ---
  libmeegomtp.pro                               | 35 -------------------
  mts/mts.pro                                   |  2 --

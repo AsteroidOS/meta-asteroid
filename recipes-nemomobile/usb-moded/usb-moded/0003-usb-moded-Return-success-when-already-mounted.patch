@@ -3,6 +3,8 @@ From: MagneFire <dgriet@gmail.com>
 Date: Mon, 27 Dec 2021 21:43:42 +0100
 Subject: [PATCH] usb-moded: Return success when already mounted.
 
+Upstream-Status: Inappropriate
+
 ---
  src/usb_moded-worker.c | 1 +
  1 file changed, 1 insertion(+)

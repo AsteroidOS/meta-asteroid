@@ -16,7 +16,7 @@ do_configure:prepend() {
 
 do_install:append() {
     install -d ${D}${systemd_system_unitdir}/basic.target.wants/
-    cp ${WORKDIR}/firmwared.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${UNPACKDIR}/firmwared.service ${D}${systemd_system_unitdir}/
     ln -s ../firmwared.service ${D}${systemd_system_unitdir}/basic.target.wants/firmwared.service
 }
 

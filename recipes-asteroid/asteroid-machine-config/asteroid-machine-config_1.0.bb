@@ -35,13 +35,13 @@ python do_generate_config () {
             if d.getVar(var) is not None:
                 config.set(key, v, str(d.getVar(var)))
 
-    with open(d.getVar('WORKDIR') + "/machine.conf", "w") as machine_conf:
+    with open(d.getVar('UNPACKDIR') + "/machine.conf", "w") as machine_conf:
         config.write(machine_conf)
 }
 
 do_install:append() {
     install -d ${D}/etc/asteroid/
-    install -m 644 ${WORKDIR}/machine.conf ${D}/etc/asteroid/machine.conf
+    install -m 644 ${UNPACKDIR}/machine.conf ${D}/etc/asteroid/machine.conf
 }
 
 def machine_variables(d):

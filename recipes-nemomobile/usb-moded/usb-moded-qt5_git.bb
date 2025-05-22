@@ -16,5 +16,5 @@ inherit qmake5 pkgconfig
 
 do_install:append() {
     mv ${D}/include ${D}/usr/
-    cp ../usb-moded-qt5.pc ${D}/usr/lib/pkgconfig/
+    install -m 644 -D ${UNPACKDIR}/usb-moded-qt5.pc ${D}/usr/lib/pkgconfig/
 }

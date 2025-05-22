@@ -19,7 +19,7 @@ FILES:${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /us
 do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    cp ../asteroid-btsyncd.service ${D}/usr/lib/systemd/user/
+    install -D -m 644 ${UNPACKDIR}/asteroid-btsyncd.service ${D}/usr/lib/systemd/user/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service ]; then
         ln -s /usr/lib/systemd/user/asteroid-btsyncd.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-btsyncd.service
     fi

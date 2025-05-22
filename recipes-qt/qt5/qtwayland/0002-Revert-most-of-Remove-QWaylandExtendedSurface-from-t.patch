@@ -4,6 +4,8 @@ Date: Mon, 1 Oct 2018 23:18:42 +0200
 Subject: [PATCH] Revert most of "Remove QWaylandExtendedSurface* from the
  private compositor API"
 
+Upstream-Status: Inappropriate
+
 ---
  src/compositor/extensions/extensions.pri      |   3 +
  .../extensions/qwlextendedsurface.cpp         | 188 ++++++++++++++++++

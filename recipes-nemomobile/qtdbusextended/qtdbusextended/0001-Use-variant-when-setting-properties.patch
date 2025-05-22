@@ -8,6 +8,8 @@ Subject: [PATCH] Use variant when setting properties.
  method 'Set' in interface 'org.freedesktop.DBus.Properties' at object path
  '/org/mpris/MediaPlayer2' (signature 'ssd')"
 
+Upstream-Status: Inappropriate
+
 ---
  src/dbusextendedabstractinterface.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

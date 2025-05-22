@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Tue, 5 Jan 2021 21:26:03 +0100
 Subject: [PATCH] meson: Disable docs and tests.
 
+Upstream-Status: Inappropriate
+
 ---
  meson.build | 2 --
  1 file changed, 2 deletions(-)

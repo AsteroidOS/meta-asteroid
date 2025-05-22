@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 13 Apr 2017 11:48:18 +0200
 Subject: [PATCH] Disable USB mode notifications on connect
 
+Upstream-Status: Inappropriate
+
 ---
  src/notificationcategories/device.added.conf | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

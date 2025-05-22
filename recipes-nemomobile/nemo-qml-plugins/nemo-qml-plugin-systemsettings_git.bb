@@ -25,7 +25,7 @@ do_configure:prepend() {
 
 do_install:append() {
     install -d ${D}/var/lib/location/
-    install -m 0644 ${WORKDIR}/location.conf ${D}/var/lib/location/location.conf
+    install -m 0644 ${UNPACKDIR}/location.conf ${D}/var/lib/location/location.conf
 }
 
 DEPENDS += "qtdeclarative profiled usb-moded-qt5 mlite mce timed qtsystems libshadowutils nemo-qml-plugin-dbus nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt5 qttools-native libqofono"

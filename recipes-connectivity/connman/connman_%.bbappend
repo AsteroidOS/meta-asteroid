@@ -4,7 +4,7 @@ SRC_URI += "file://settings \
 
 do_install:append() {
     install -d ${D}/var/lib/connman/
-    cp ${WORKDIR}/settings ${D}/var/lib/connman/settings
+    install -m 644 ${UNPACKDIR}/settings ${D}/var/lib/connman/settings
     install -d ${D}/etc/dbus-1/system.d/
-    cp ${WORKDIR}/connman-dbus.conf ${D}/etc/dbus-1/system.d/connman.conf
+    install -m 644 ${UNPACKDIR}/connman-dbus.conf ${D}/etc/dbus-1/system.d/connman.conf
 }

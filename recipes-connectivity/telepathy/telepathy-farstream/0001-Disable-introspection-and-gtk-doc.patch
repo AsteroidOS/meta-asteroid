@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 17:53:09 +0200
 Subject: [PATCH] Disable introspection and gtk-doc
 
+Upstream-Status: Inappropriate
+
 ---
  configure.ac                    |  2 --
  doc/lib/Makefile.am             | 20 --------------------

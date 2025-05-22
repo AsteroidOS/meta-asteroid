@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 24 May 2017 22:10:43 +0200
 Subject: [PATCH] src.pro: Make sure com.meego.usb_moded.xml is correctly found
 
+Upstream-Status: Inappropriate
+
 ---
  src/src.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

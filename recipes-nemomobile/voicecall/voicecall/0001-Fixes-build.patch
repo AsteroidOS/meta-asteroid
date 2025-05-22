@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 14:38:13 +0200
 Subject: [PATCH] Fixes build
 
+Upstream-Status: Inappropriate
+
 ---
  src/src.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

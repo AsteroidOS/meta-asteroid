@@ -5,7 +5,8 @@ inherit gettext
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 INHIBIT_PACKAGE_STRIP = "1"
 INSANE_SKIP:${PN} = "already-stripped"
-S = "${WORKDIR}"
+S = "${WORKDIR}/sources"
+UNPACKDIR = "${S}"
 B = "${S}"
 
 PROVIDES += "virtual/android-system-image"

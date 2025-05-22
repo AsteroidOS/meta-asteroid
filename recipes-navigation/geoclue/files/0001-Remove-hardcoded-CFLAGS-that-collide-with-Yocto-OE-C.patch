@@ -10,6 +10,8 @@ undoes -Wformat, leaving -Wformat-security . This causes this error:
 
 Since there are no CFLAGS in that line that are somehow distinct or
 strictly necessary for the build, just remove the entire line.
+Upstream-Status: Inappropriate
+
 ---
  configure.ac | 2 --
  1 file changed, 2 deletions(-)

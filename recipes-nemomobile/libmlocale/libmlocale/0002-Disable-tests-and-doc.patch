@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 20 Feb 2018 14:17:51 +0100
 Subject: [PATCH] Disable tests and doc
 
+Upstream-Status: Inappropriate
+
 ---
  projects.pro | 3 ---
  1 file changed, 3 deletions(-)

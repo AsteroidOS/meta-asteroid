@@ -25,7 +25,7 @@ do_install() {
     
     # Install libgbinder's config for Halium 9.0
     install -d ${D}${sysconfdir}
-    install -m 0644 ${WORKDIR}/gbinder.conf ${D}${sysconfdir}/gbinder.conf
+    install -m 0644 ${UNPACKDIR}/gbinder.conf ${D}${sysconfdir}/gbinder.conf
 }
 
 FILES:${PN} += " ${sysconfdir}"

@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 To make sure that the linker links libraries that are in the the
 populated sysroot instead of on the host machine, this adds an
 "oe_sysroot" option which is then used to find an external library.

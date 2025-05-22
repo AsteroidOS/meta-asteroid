@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 26 Oct 2015 20:17:23 +0100
 Subject: [PATCH] Fixes build
 
+Upstream-Status: Inappropriate
+
 ---
  Makefile | 42 +++++++++++++++++++++---------------------
  1 file changed, 21 insertions(+), 21 deletions(-)

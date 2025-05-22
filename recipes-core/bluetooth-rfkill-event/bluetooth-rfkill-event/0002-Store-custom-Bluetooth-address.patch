@@ -6,6 +6,8 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+Upstream-Status: Inappropriate
+
 When no valid Bluetooth address is available a random one is used.
 But this new random Bluetooth MAC address is not stored resulting in a new Bluetooth address after every reboot.
 By storing the Bluetooth address we can ensure that the same Bluetooth address is used across reboots.

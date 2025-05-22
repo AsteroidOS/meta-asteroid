@@ -3,6 +3,8 @@ From: Christophe Chapuis <chris.chapuis@gmail.com>
 Date: Fri, 15 Sep 2017 16:46:52 +0000
 Subject: [PATCH 2/4] Fix build for Qt<5.8
 
+Upstream-Status: Inappropriate
+
 Signed-off-by: Christophe Chapuis <chris.chapuis@gmail.com>
 ---
  customcontext/pluginmain.cpp | 2 ++

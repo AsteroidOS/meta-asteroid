@@ -17,7 +17,7 @@ DEPENDS += "ngfd libhybris virtual/android-headers"
 
 do_install:append () {
     install -d ${D}/usr/share/ngfd/plugins.d/
-    cp ${WORKDIR}/50-droid-vibrator.ini ${D}/usr/share/ngfd/plugins.d/
+    cp ${UNPACKDIR}/50-droid-vibrator.ini ${D}/usr/share/ngfd/plugins.d/
 }
 
 inherit cmake pkgconfig

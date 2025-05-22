@@ -3,6 +3,8 @@ From: Ed Beroset <beroset@ieee.org>
 Date: Wed, 29 Mar 2023 11:32:50 -0400
 Subject: [PATCH] Register dbus types in networktechnology
 
+Upstream-Status: Inappropriate
+
 In some uses of connman, including in analog-weather-glow watchface, the
 NetworkTechnology object was before the DBus types were registered. This
 fixes that problem by making sure registerCommonDataTypes() is called

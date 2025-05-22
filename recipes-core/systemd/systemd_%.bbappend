@@ -11,8 +11,8 @@ do_install:append() {
 
 do_install:append:hybris-machine() {
     # Setup udev rules for the rights of Android and graphic cards specific devices
-    install -m 0644 ${WORKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
-    install -m 0644 ${WORKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
+    install -m 0644 ${UNPACKDIR}/50-video.rules ${D}${sysconfdir}/udev/rules.d/50-video.rules
+    install -m 0644 ${UNPACKDIR}/65-android.rules ${D}${sysconfdir}/udev/rules.d/65-android.rules
 }
 
 PACKAGECONFIG:append = " pam"

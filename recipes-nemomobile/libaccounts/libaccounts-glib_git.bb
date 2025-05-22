@@ -8,7 +8,7 @@ inherit meson pkgconfig vala
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-glib.git;protocol=https;branch=master \
         file://0001-meson-Disable-docs-and-tests.patch"
 
-SRCREV = "886a80b3ba975d8a59a6500ade2b1debb552660c"
+SRCREV = "26c54322304e9df598b2ba67427433a2e68b823e"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

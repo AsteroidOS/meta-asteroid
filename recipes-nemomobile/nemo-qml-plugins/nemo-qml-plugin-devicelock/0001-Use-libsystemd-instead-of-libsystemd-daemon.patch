@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Thu, 28 Sep 2017 23:42:23 +0200
 Subject: [PATCH] Use libsystemd instead of libsystemd-daemon
 
+Upstream-Status: Inappropriate
+
 ---
  src/hostlib/hostlib.pro | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

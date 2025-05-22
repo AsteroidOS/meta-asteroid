@@ -3,6 +3,8 @@ From: MagneFire <IDaNLContact@gmail.com>
 Date: Sat, 16 Oct 2021 19:33:26 +0200
 Subject: [PATCH 1/2] mlite: Disable tests.
 
+Upstream-Status: Inappropriate
+
 ---
  mlite.pro | 1 -
  1 file changed, 1 deletion(-)

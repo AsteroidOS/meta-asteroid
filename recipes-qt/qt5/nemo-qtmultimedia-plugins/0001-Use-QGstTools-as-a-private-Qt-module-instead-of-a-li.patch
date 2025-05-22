@@ -3,6 +3,8 @@ From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 31 Jul 2019 11:47:08 +0000
 Subject: [PATCH] Use QGstTools as a private Qt module instead of a lib
 
+Upstream-Status: Inappropriate
+
 ---
  src/videotexturebackend/videotexturebackend.pro | 5 ++---
  1 file changed, 2 insertions(+), 3 deletions(-)

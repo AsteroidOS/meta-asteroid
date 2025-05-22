@@ -4,6 +4,8 @@ Date: Sun, 21 May 2017 15:26:08 +0200
 Subject: [PATCH] defaultStyle: Use a white handwriting trace for better
  readability
 
+Upstream-Status: Inappropriate
+
 ---
  src/virtualkeyboard/content/styles/default/style.qml | 9 ++-------
  1 file changed, 2 insertions(+), 7 deletions(-)

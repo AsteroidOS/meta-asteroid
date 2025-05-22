@@ -25,8 +25,8 @@ do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     install -d ${D}/usr/bin/
-    install -m 0755 ${WORKDIR}/asteroid-launcher-precondition ${D}/usr/bin
-    cp ../asteroid-launcher.service ${D}/usr/lib/systemd/user/
+    install -m 0755 ${UNPACKDIR}/asteroid-launcher-precondition ${D}/usr/bin
+    install -D -m 644 ${UNPACKDIR}/asteroid-launcher.service ${D}/usr/lib/systemd/user/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service ]; then
         ln -s /usr/lib/systemd/user/asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
     fi
@@ -34,5 +34,5 @@ do_install:append() {
 
 do_install:apppend:hybris-machine() {
     # On hybris machines, the launcher must run only after Android has started
-    install -m 0755 ${WORKDIR}/asteroid-launcher-precondition-hybris ${D}/usr/bin/asteroid-launcher-precondition
+    install -m 0755 ${UNPACKDIR}/asteroid-launcher-precondition-hybris ${D}/usr/bin/asteroid-launcher-precondition
 }
