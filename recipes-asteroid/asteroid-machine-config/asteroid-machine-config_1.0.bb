@@ -34,8 +34,9 @@ python do_generate_config () {
                 v = var
             if d.getVar(var) is not None:
                 config.set(key, v, str(d.getVar(var)))
-
-    with open(d.getVar('UNPACKDIR') + "/machine.conf", "w") as machine_conf:
+    unpackdir = d.getVar('UNPACKDIR')
+    os.makedirs(unpackdir, exist_ok=True)
+    with open(f"{unpackdir}/machine.conf", "w") as machine_conf:
         config.write(machine_conf)
 }
 
