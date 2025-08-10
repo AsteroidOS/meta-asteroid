@@ -16,3 +16,6 @@ do_configure:prepend() {
     echo "#include <linux/compiler-gcc14.h>" > ${S}/include/linux/compiler-gcc15.h
 }
 
+do_install:prepend() {
+    export HOST_EXTRACFLAGS="--std=gnu17"
+}
