@@ -9,7 +9,7 @@ SRC_URI = "git://github.com/sailfishos/libmlocale.git;protocol=https;branch=mast
            file://0003-configure-Use-a-usr-prefix-by-default.patch \
            file://0004-Do-not-check-for-icu.patch \
            "
-SRCREV = "5de5b558d05ce8fa1486dcf3ee76a13f4754cf03"
+SRCREV = "335e27ec57ef6e17ae10d3b0918ff662a3653d05"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
