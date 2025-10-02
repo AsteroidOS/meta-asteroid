@@ -1,10 +1,10 @@
 SUMMARY = "SailfishOS D-Bus access control library"
 HOMEPAGE = "https://github.com/sailfishos/libdbusaccess"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=3c402472f78e29b699385e25fd89b4a9"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=80264d9978170503c3f7b5e5eac1ccf1"
 
 SRC_URI = "git://github.com/sailfishos/libdbusaccess.git;protocol=https;branch=master"
-SRCREV = "a311a847c4b6c5bd154858dec63bd5103d11cf63"
+SRCREV = "7ff3b963fe549187179298191a8ba9f7a4261fd5"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
