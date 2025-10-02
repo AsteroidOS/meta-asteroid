@@ -3,9 +3,9 @@ HOMEPAGE = "https://github.com/sailfishos/libiphb"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/libiphb.git;protocol=https;branch=master"
+SRC_URI = "gitsm://github.com/sailfishos/libiphb.git;protocol=https;branch=master"
 
-SRCREV = "5db3ab70268933369fbfc90e8ca3fd00b774c66b"
+SRCREV = "69f059da35fdd7aa72e38a5f7c596631a2f839cc"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
