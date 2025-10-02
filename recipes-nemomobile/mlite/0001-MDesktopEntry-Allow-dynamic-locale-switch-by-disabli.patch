@@ -1,49 +1,55 @@
-From fb289c677c0a1d44b0750371dcbbbc676875a19e Mon Sep 17 00:00:00 2001
+From 5cf25750cd18c33634ef123c6375cf9c348fb685 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
-Date: Thu, 2 Oct 2025 18:17:14 +0200
+Date: Sun, 18 Mar 2018 01:22:54 +0100
 Subject: [PATCH] MDesktopEntry: Allow dynamic locale switch by disabling some
  of the asumptions made when using glib's conf files functions
 
-Upstream-Status: Inappropriate
-
 ---
- src/mdesktopentry.cpp | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ src/mdesktopentry.cpp | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
 diff --git a/src/mdesktopentry.cpp b/src/mdesktopentry.cpp
-index a17389d..7d9dcb3 100644
+index 3c976d5..2f25685 100644
 --- a/src/mdesktopentry.cpp
 +++ b/src/mdesktopentry.cpp
-@@ -73,7 +73,7 @@ bool GKeyFileWrapper::load(QIODevice &device)
+@@ -66,7 +66,7 @@ bool GKeyFileWrapper::load(QIODevice &device)
      QByteArray contents = device.readAll();
- 
+
      GError *err = NULL;
 -    if (!g_key_file_load_from_data(m_key_file, contents.constData(), contents.size(), G_KEY_FILE_NONE, &err)) {
 +    if (!g_key_file_load_from_data(m_key_file, contents.constData(), contents.size(), G_KEY_FILE_KEEP_TRANSLATIONS, &err)) {
          qWarning() << "Could not load .desktop file:" << QString::fromUtf8(err->message);
          g_clear_error(&err);
          return false;
-@@ -136,9 +136,10 @@ QString GKeyFileWrapper::localizedValue(const QString &section, const QString &k
- 
+@@ -129,9 +129,10 @@ QString GKeyFileWrapper::localizedValue(const QString &section, const QString &k
+
      QByteArray section_utf8 = section.toUtf8();
      QByteArray key_utf8 = key.toUtf8();
 +    QByteArray locale_utf8 = qgetenv("LANG");
- 
+
      GError *err = NULL;
 -    gchar *value = g_key_file_get_locale_string(m_key_file, section_utf8.constData(), key_utf8.constData(), NULL, &err);
 +    gchar *value = g_key_file_get_locale_string(m_key_file, section_utf8.constData(), key_utf8.constData(), locale_utf8.constData(), &err);
      if (!value) {
          qWarning() << "Could not read value:" << QString::fromUtf8(err->message);
          g_clear_error(&err);
-@@ -483,11 +484,8 @@ QString MDesktopEntry::name() const
+@@ -411,9 +412,6 @@ QString MDesktopEntry::name() const
  {
      Q_D(const MDesktopEntry);
- 
--    if (!d->translatedName.isEmpty())
+
+-    if (!d->translatedName.isNull())
 -        return d->translatedName;
- 
-     QString name = localizedValue(DesktopEntrySection, NameKey);
+-
+     QString name;
+
+     if (contains(DesktopEntrySection, LogicalIdKey)) {
+@@ -435,7 +433,6 @@ QString MDesktopEntry::name() const
+         name = d->keyFile.localizedValue(DesktopEntrySection, NameKey);
+     }
+
 -    d->translatedName = name;
      return name;
  }
- 
+
+--
+2.14.3
