@@ -1,0 +1,33 @@
+From 15e44d57774a5f82837c5e019bfca8946eeacbd4 Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Fri, 3 Oct 2025 18:35:16 +0200
+Subject: [PATCH] Disable building of broken examples
+
+Upstream-Status: Pending [not sure whether we or upstream are doing something wrong]
+
+Linker error: undefined reference to `vtable for ComNokiaMceSignalInterface'
+---
+ keepalive.pro | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/keepalive.pro b/keepalive.pro
+index a8b20f2..8411a8b 100644
+--- a/keepalive.pro
++++ b/keepalive.pro
+@@ -3,16 +3,8 @@ TEMPLATE = subdirs
+ CONFIG += no_keywords
+ SUBDIRS += lib
+ SUBDIRS += plugin
+-SUBDIRS += examples/backgroundactivity_periodic
+-SUBDIRS += examples/backgroundactivity_linger
+-SUBDIRS += examples/displayblanking
+ SUBDIRS += doc
+ 
+-examples.files = examples/qml/*.qml
+-examples.path = $$[QT_INSTALL_EXAMPLES]/keepalive
+-
+ QT -= gui
+ 
+ CONFIG  += ordered
+-
+-INSTALLS += examples

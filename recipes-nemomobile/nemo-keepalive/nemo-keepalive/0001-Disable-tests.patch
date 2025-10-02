@@ -1,26 +1,23 @@
-From 3c752a0a80599ede9121f2ddec7e3796a4c1ab49 Mon Sep 17 00:00:00 2001
-From: MagneFire <IDaNLContact@gmail.com>
-Date: Tue, 5 Jan 2021 21:48:06 +0100
-Subject: [PATCH] Disable tests.
+From 74f0bdde15478783aedc37f3d2130aa9441cac34 Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Thu, 2 Oct 2025 20:05:48 +0200
+Subject: [PATCH] Disable tests
 
 Upstream-Status: Inappropriate
 
 ---
- keepalive.pro | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ keepalive.pro | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/keepalive.pro b/keepalive.pro
-index 2ae9efe..55fc1ac 100644
+index 8f564cc..a8b20f2 100644
 --- a/keepalive.pro
 +++ b/keepalive.pro
-@@ -6,7 +6,7 @@ SUBDIRS += plugin
+@@ -6,7 +6,6 @@ SUBDIRS += plugin
  SUBDIRS += examples/backgroundactivity_periodic
  SUBDIRS += examples/backgroundactivity_linger
  SUBDIRS += examples/displayblanking
 -SUBDIRS += tests
-+#SUBDIRS += tests
-
+ SUBDIRS += doc
+ 
  examples.files = examples/qml/*.qml
- examples.path = $$[QT_INSTALL_EXAMPLES]/keepalive
---
-2.30.0
