@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://gitlab.com/accounts-sso/signond.git;protocol=https;branch=master"
-SRCREV = "4212b454da1cab2ef36f8def1b3d75cab0506a71"
+SRCREV = "4c182d24f552acb69e62988624b408cb83f5158d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
