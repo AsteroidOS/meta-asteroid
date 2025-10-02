@@ -4,7 +4,7 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=21;md5=04fd4aa47861531d12b7453bc0ea24ee"
 
 SRC_URI = "gitsm://github.com/sailfishos/nemo-qml-plugin-dbus.git;protocol=https;branch=master"
-SRCREV = "d5a0ea1a3a5a221c9fe5b2eedaba79f984970738"
+SRCREV = "df6e2415fe70e1844067f93b3216ca0442f17c8e"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
