@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/mnotification.cpp;beginline=1;endline=18;md5=5dd5
 SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \
            file://0001-MDesktopEntry-Allow-dynamic-locale-switch-by-disabli.patch \
            file://0002-mlite-Disable-tests.patch "
-SRCREV = "37ded5a0ca8f0770e3347f3711c7c4603d2a5b25"
+SRCREV = "387404e357d1d4bdfc445d3dafda2dc8f5f64a81"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
