@@ -1,17 +1,21 @@
 SUMMARY = "Qt plugin for mapplauncherd"
 HOMEPAGE = "https://github.com/sailfishos/mapplauncherd-qt"
 LICENSE = "LGPL-2.1-only"
-LIC_FILES_CHKSUM = "file://qtbooster/qtbooster.cpp;beginline=1;endline=18;md5=fb70bd5bb640878875111d8161fa303c"
+LIC_FILES_CHKSUM = "file://LICENSE.LGPL21;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/mapplauncherd-qt.git;protocol=https;branch=master \
            file://0001-mdeclarativecache5-Share-same-mdeclarativecache_pre_.patch \
            file://0002-qdeclarative5-boostable-Compile-apps-as-shared-libra.patch \
            file://booster-qt5.service"
-SRCREV = "1ff776d787e3c95424a9925097658ef99a6221ba"
+SRCREV = "715a7fc5df4f48e3321106ade7ed872cdbb14904"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
+
+# Out-of-source build is broken:
+# sed: can't read pkgconfig/*.pc: No such file or directory
+B = "${S}"
 
 DEPENDS += "qtdeclarative qtbase mapplauncherd glib-2.0"
 RDEPENDS:${PN} += "mapplauncherd"
