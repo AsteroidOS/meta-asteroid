@@ -1,4 +1,4 @@
-From 73f83fa73794cf52593b9d867e91c762fbd856f4 Mon Sep 17 00:00:00 2001
+From b07ec05706435d44a0243bf4dcff96d71dc02219 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:39:11 +0100
 Subject: [PATCH] Fix compilation when autohybris is used. Fixes compilation by
@@ -11,12 +11,11 @@ Content-Transfer-Encoding: 8bit
 Upstream-Status: Inappropriate
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
-
 ---
  adaptors/adaptor-config.pri | 4 ++++
  core/hybris.pro             | 3 +++
- sensorfw.pro                | 2 +-
- 3 files changed, 8 insertions(+), 1 deletion(-)
+ sensorfw.pro                | 4 ++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/adaptors/adaptor-config.pri b/adaptors/adaptor-config.pri
 index e8e1d79..cfcf90f 100644
@@ -45,15 +44,17 @@ index a9c87dc..0f92da2 100644
                          ../include \
                          ../filters \
 diff --git a/sensorfw.pro b/sensorfw.pro
-index d476fa3..43fbe81 100644
+index 3c1084c..e3ca9db 100644
 --- a/sensorfw.pro
 +++ b/sensorfw.pro
-@@ -60,7 +60,7 @@ contains(CONFIG,configs) {
+@@ -59,8 +59,8 @@ contains(CONFIG,configs) {
  
  contains(CONFIG,hybris) {
  
 -    SUBDIRS = core/hybris.pro \
+-              adaptors
 +    SUBDIRS += core/hybris.pro \
-                adaptors
++               adaptors
  } else {
      config_hybris {
+     # Reorder so that adaptors are built after hybris.

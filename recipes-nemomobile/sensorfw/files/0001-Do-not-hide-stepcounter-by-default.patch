@@ -1,7 +1,7 @@
-From bc3eb1eebb2418ebfa184983b970fb3c8f24195c Mon Sep 17 00:00:00 2001
+From 9070da0fa4595c7215e4ffaf76752dff63b79977 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:34:01 +0100
-Subject: [PATCH 1/5] Do not hide stepcounter by default.
+Subject: [PATCH] Do not hide stepcounter by default.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -14,7 +14,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/config/20-sensors-default.conf b/config/20-sensors-default.conf
-index 8a51b5b..079bcde 100644
+index 6317a7c..95b9285 100644
 --- a/config/20-sensors-default.conf
 +++ b/config/20-sensors-default.conf
 @@ -32,7 +32,6 @@ temperaturesensor=False
@@ -33,6 +33,3 @@ index 8a51b5b..079bcde 100644
  
  ; To avoid revisiting config files for all old ports in the future, the
  ; defaults for added sensors should be set "False" by default here, and
--- 
-2.35.3
-
