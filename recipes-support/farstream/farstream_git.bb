@@ -3,19 +3,23 @@ HOMEPAGE = "https://freedesktop.org/wiki/Software/Farstream/"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=fbc093901857fcd118f065f900982c24"
 
-SRC_URI = "https://freedesktop.org/software/farstream/releases/farstream/farstream-0.2.8.tar.gz"
+# Latest release does not build
+SRC_URI = "gitsm://gitlab.freedesktop.org/farstream/farstream.git;protocol=https;branch=master"
+SRCREV = "7aef14654b44e08a7969c024725678d0d09d8d6c"
+PR = "r1"
+PV = "+git${SRCPV}"
+S = "${WORKDIR}/git"
 
-SRC_URI[md5sum] = "a40d4c4bd0812c270069b9f97d74009b"
-SRC_URI[sha256sum] = "2b3b9c6b4f64ace8c83e03d1da5c5a2884c1cae10b35471072b574201ab38908"
-
-S = "${WORKDIR}/farstream-0.2.8"
-
-DEPENDS += "libnice glib-2.0-native"
+# TODO: Massage build system to remove gtk-doc dependency
+DEPENDS += "libnice glib-2.0-native gstreamer1.0 gstreamer1.0-plugins-base gtk-doc-native"
 
 inherit autotools pkgconfig
 
 EXTRA_OECONF = " \
     --disable-debug \
     --disable-gtk-doc \
+    --disable-gtk-doc-html \
     --enable-introspection=no \
 "
+
+FILES:${PN} += "/usr/lib/farstream-0.2/ /usr/lib/gstreamer-1.0/"
