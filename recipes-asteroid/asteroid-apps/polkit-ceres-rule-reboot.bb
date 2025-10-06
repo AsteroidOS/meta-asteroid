@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-3.0-only;md5=c79ff39f19dfec
 DEPENDS += "polkit"
 RDEPENDS:${PN} += "polkit"
 SRC_URI = "file://30-org.freedesktop.login1.rules"
+S = "${UNPACKDIR}"
 
 do_install() {
         install -m 700 -d ${D}${datadir}/polkit-1/rules.d
