@@ -1,6 +1,6 @@
 inherit asteroid-image
 DESCRIPTION = "Asteroid image for developers, contains development and debugging tools"
-EXTRA_IMAGE_FEATURES += "tools-debug tools-testapps debug-tweaks"
+EXTRA_IMAGE_FEATURES += "tools-debug tools-testapps allow-empty-password allow-root-login empty-root-password"
 
 # Add:
 #
