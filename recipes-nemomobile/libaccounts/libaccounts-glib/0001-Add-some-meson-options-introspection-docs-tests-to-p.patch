@@ -1,0 +1,94 @@
+From 69cebb86b88b7c6b979f9ad3bed3f8fae5e755c9 Mon Sep 17 00:00:00 2001
+From: Audrey Dutcher <audrey@rhelmot.io>
+Date: Mon, 2 Jun 2025 22:50:02 -0700
+Subject: [PATCH] Add some meson options (introspection, docs, tests) to pare
+ down the build
+
+Upstream-Status: Backport [69cebb86b88b7c6b979f9ad3bed3f8fae5e755c9]
+---
+ libaccounts-glib/meson.build | 40 +++++++++++++++++++-----------------
+ meson.build                  |  8 ++++++--
+ meson_options.txt            |  3 +++
+ 3 files changed, 30 insertions(+), 21 deletions(-)
+
+diff --git a/libaccounts-glib/meson.build b/libaccounts-glib/meson.build
+index 0774ceb..f36d4b1 100644
+--- a/libaccounts-glib/meson.build
++++ b/libaccounts-glib/meson.build
+@@ -83,26 +83,28 @@ accounts_glib_dep = declare_dependency(
+     include_directories: [ include_directories('.'), root_dir ]
+ )
+ 
+-# GObject introspection
+-gir_targets = gnome.generate_gir(ag_library,
+-    sources: public_headers + c_files,
+-    nsversion: api_version,
+-    namespace: 'Accounts',
+-    identifier_prefix: 'Ag',
+-    symbol_prefix: 'ag',
+-    includes: ['GObject-2.0', 'Gio-2.0'],
+-    dependencies: accounts_glib_library_deps,
+-    header: 'libaccounts-glib.h',
+-    extra_args: ['-DACCOUNTS_GLIB_COMPILATION=1'],
+-    install: true
+-)
++if get_option('introspection')
++    # GObject introspection
++    gir_targets = gnome.generate_gir(ag_library,
++        sources: public_headers + c_files,
++        nsversion: api_version,
++        namespace: 'Accounts',
++        identifier_prefix: 'Ag',
++        symbol_prefix: 'ag',
++        includes: ['GObject-2.0', 'Gio-2.0'],
++        dependencies: accounts_glib_library_deps,
++        header: 'libaccounts-glib.h',
++        extra_args: ['-DACCOUNTS_GLIB_COMPILATION=1'],
++        install: true
++    )
+ 
+-# Vala .vapi generation
+-gnome.generate_vapi('libaccounts-glib',
+-    sources: gir_targets[0],
+-    packages: ['glib-2.0', 'gio-unix-2.0'],
+-    install: true
+-)
++    # Vala .vapi generation
++    gnome.generate_vapi('libaccounts-glib',
++        sources: gir_targets[0],
++        packages: ['glib-2.0', 'gio-unix-2.0'],
++        install: true
++    )
++endif
+ 
+ install_data('libaccounts-glib.deps',
+     install_dir: join_paths(get_option('datadir'), 'vala', 'vapi')
+diff --git a/meson.build b/meson.build
+index 3b06508..705d525 100644
+--- a/meson.build
++++ b/meson.build
+@@ -44,5 +44,9 @@ root_dir = include_directories('.')
+ subdir('libaccounts-glib')
+ subdir('tools')
+ subdir('data')
+-subdir('docs')
+-subdir('tests')
++if get_option('docs')
++  subdir('docs')
++endif
++if get_option('tests')
++  subdir('tests')
++endif
+diff --git a/meson_options.txt b/meson_options.txt
+index 44161de..2afb065 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -1,2 +1,5 @@
+ option('install-py-overrides', type: 'boolean', value: false, description: 'Install Python gi overrides file')
+ option('py-overrides-dir', type : 'string', value : '', description: 'Path to pygobject overrides directory')
++option('introspection', type : 'boolean', value : true, description: 'Install gobject and vapi introspection data')
++option('docs', type : 'boolean', value : true, description: 'Install documentation')
++option('tests', type : 'boolean', value : true, description: 'Build and run tests')
+-- 
+2.48.1
+
