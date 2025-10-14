@@ -1,4 +1,4 @@
-From 020aa415ba62f65787b6256b74d577bd93275722 Mon Sep 17 00:00:00 2001
+From f36f94c279c04e0d39b4e307d4864fb6f8c4b980 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 5 May 2017 17:34:18 +0200
 Subject: [PATCH] fsstorageplugin: Expose Watch Memory instead of Phone Memory
@@ -6,7 +6,6 @@ Subject: [PATCH] fsstorageplugin: Expose Watch Memory instead of Phone Memory
 Upstream-Status: Inappropriate
 
  + SD Card
-
 ---
  mts/platform/storage/fsstorageplugin/fsstorageplugin.pro       | 2 +-
  mts/platform/storage/fsstorageplugin/sd-card.xml               | 3 ---
@@ -16,10 +15,10 @@ Upstream-Status: Inappropriate
  rename mts/platform/storage/fsstorageplugin/{phone-memory.xml => watch-memory.xml} (59%)
 
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index 3a457a4..d417057 100644
+index 58dc076..0b7ba04 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-@@ -49,7 +49,7 @@ LIBS    += -lmeegomtp
+@@ -45,7 +45,7 @@ LIBS    += -lbuteomtp
  target.path = $$[QT_INSTALL_LIBS]/mtp
  
  configuration.path = /etc/fsstorage.d
