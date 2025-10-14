@@ -4,16 +4,15 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a0b1f3b62af44e24404"
 
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https;branch=master \
-           file://0001-Remove-dependency-to-SSU-and-tests.patch \
+           file://0001-Remove-tests.patch \
            file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
-           file://buteo-mtp"
-SRCREV = "6e0c7d9bb04926b69bb454b479a153ba84d28b9c"
+           file://buteo-mtp \
+           "
+SRCREV = "2bcf6579456086c0ee8fca72d38357d8632ca755"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
-
-EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="
 
 do_configure:prepend() {
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' mts/common.pri
