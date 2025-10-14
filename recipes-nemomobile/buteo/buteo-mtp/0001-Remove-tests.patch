@@ -3,6 +3,8 @@ From: MagneFire <dgriet@gmail.com>
 Date: Sat, 25 Dec 2021 22:40:19 +0100
 Subject: [PATCH] Remove tests.
 
+Upstream-Status: Inappropriate
+
 ---
  buteomtp.pro                                  | 35 -------------------
  .../fsstorageplugin/fsstorageplugin.pro       |  2 +-
