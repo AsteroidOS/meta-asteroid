@@ -1,4 +1,4 @@
-From 7968fd7f124aa3174cb741d1d81738215cf61329 Mon Sep 17 00:00:00 2001
+From 31b4416475b0fbf1b11a3d194a9e738de7d20fd0 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 27 Nov 2022 18:21:43 +0100
 Subject: [PATCH] systemd: Allow the service to be started as root.
@@ -14,7 +14,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 1 deletion(-)
 
 diff --git a/src/nfcd.service b/src/nfcd.service
-index de0c1b6..28f4967 100644
+index 7fc30ad..99db011 100644
 --- a/src/nfcd.service
 +++ b/src/nfcd.service
 @@ -6,7 +6,6 @@ After=dbus.service
@@ -23,5 +23,5 @@ index de0c1b6..28f4967 100644
  BusName=org.sailfishos.nfc.daemon
 -User=nfc
  EnvironmentFile=-/var/lib/environment/nfcd/*.conf
- EnvironmentFile=-/var/lib/environment/nemo/locale.conf
  ExecStart=/usr/sbin/nfcd -o syslog $NFCD_ARGS
+ Restart=always
