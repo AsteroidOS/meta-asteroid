@@ -8,7 +8,7 @@ SRC_URI = "git://anongit.freedesktop.org/git/telepathy/telepathy-qt.git;protocol
            file://0002-Don-t-require-python.patch \
            file://0003-Disable-examples-compilation.patch \
            file://0004-Disable-tests-compilation.patch"
-SRCREV = "744b64e59f1eaae86de1eaeda603d779af99b4a0"
+SRCREV = "188dece432d090809c5ad88a91cd573c5af61c09"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
