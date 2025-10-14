@@ -1,14 +1,14 @@
 SUMMARY = "SailfishOS NFC daemon"
 HOMEPAGE = "https://github.com/sailfishos/nfcd"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=5b3f54b2e4d9f7704287bad532091824"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=f96e17185b6c75073ad970a61adc7ede"
 
 SRC_URI = "git://github.com/sailfishos/nfcd.git;protocol=https;branch=master \
            file://0001-Makefile-Allow-for-CC-to-be-overridden.patch \
            file://0002-Makefile-Allow-for-INSTALL_SYSTEMD_DIR-to-be-overrid.patch \
            file://0003-systemd-Allow-the-service-to-be-started-as-root.patch \
            "
-SRCREV = "0cdf85c5373ea94877af64e20a2b05a80074386a"
+SRCREV = "0355e7f9b66f311a7dd99e0d02800d5ef5e44ce2"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
