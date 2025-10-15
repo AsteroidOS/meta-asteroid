@@ -7,7 +7,7 @@ inherit meson pkgconfig
 
 SRC_URI = "git://github.com/sailfishos/gst-droid.git;protocol=https;branch=master \
            file://0001-Remove-references-to-mode-that-are-not-in-upstream-g.patch"
-SRCREV = "cf2d5f9652364af471cac7d7f04388a7bab9448a"
+SRCREV = "acc60b71274e29426f1046b06d5c99c1b9b4d0f7"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
