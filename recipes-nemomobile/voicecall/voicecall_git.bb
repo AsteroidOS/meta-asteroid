@@ -9,8 +9,8 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "qtbase mapplauncherd-qt libresourceqt nemo-qml-plugin-devicelock qtmultimedia libngf-qt libqofono telepathy-qt"
-inherit qmake5
+DEPENDS += "qtbase mapplauncherd-qt libresourceqt nemo-qml-plugin-devicelock qtmultimedia libngf-qt libqofono telepathy-qt libcommhistory"
+inherit qmake5 pkgconfig
 
 B = "${S}"
 
