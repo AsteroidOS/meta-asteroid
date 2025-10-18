@@ -1,14 +1,15 @@
 SUMMARY = "QML Plugin for alarms on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-alarms"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=51d0e64178c105c6066f6731ee6f40b6"
+LIC_FILES_CHKSUM = "file://LICENSE.BSD;md5=caa037e0975ee5862b72644673e7590c"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-alarms.git;protocol=https;branch=master \
         file://0001-Disable-tests.patch"
-SRCREV = "2893188822726fcaaf1d70f74f64bfecd07d3b13"
+SRCREV = "4377d1e31a56c763ba3e2d61137f97529281c1bd"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
+
 inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative timed"
