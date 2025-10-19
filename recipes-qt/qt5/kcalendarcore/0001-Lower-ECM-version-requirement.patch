@@ -1,0 +1,25 @@
+From 012219ad7a839b625f7cd86823f5271b06556c3a Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Sun, 19 Oct 2025 20:45:30 +0200
+Subject: [PATCH] Lower ECM version requirement
+
+Upstream-Status: Inappropriate
+
+5.96.0 is the version available to us in Walnascar.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cf39706d3..1f5ede67e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,7 +5,7 @@ project(KCalendarCore VERSION ${KF_VERSION})
+ 
+ # ECM setup
+ include(FeatureSummary)
+-find_package(ECM 5.102.0  NO_MODULE)
++find_package(ECM 5.96.0  NO_MODULE)
+ set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
+ feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
+ 
