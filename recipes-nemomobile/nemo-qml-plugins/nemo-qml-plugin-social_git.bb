@@ -14,3 +14,6 @@ DEPENDS += "qtdeclarative qtbase"
 
 FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/social/.debug"
 FILES:${PN} += "/usr/lib/qml/org/nemomobile/social/"
+
+# Only test binaries contain references to TMPDIR, let's ignore
+INSANE_SKIP:${PN}-dbg += "buildpaths"
