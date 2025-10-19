@@ -1,10 +1,10 @@
 SUMMARY = "Mer's fork of KCal"
 HOMEPAGE = "https://github.com/sailfishos/mkcal"
-LICENSE = "LGPL-2.1-only"
-LIC_FILES_CHKSUM = "file://src/mkcal_export.h;beginline=1;endline=20;md5=6b5a610cd22589226883c2df189ff891"
+LICENSE = "LGPL-2.0-only"
+LIC_FILES_CHKSUM = "file://LICENSE.LGPL2;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "git://github.com/sailfishos/mkcal.git;protocol=https;branch=master"
-SRCREV = "dd6e56a0c7394125b5eef2182c507e28174c5049"
+SRCREV = "46a3fb6d54b59f533cad9e10c8278c5414118cac"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
