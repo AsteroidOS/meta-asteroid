@@ -1,0 +1,20 @@
+From cfc90303e9e5e40540c8b47250bb2c18b3fa3ebb Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Mon, 24 Nov 2025 13:26:39 +0100
+Upstream-Status: Inappropriate
+Subject: [PATCH] Fix qdusxml2cpp search path
+
+---
+ src/src.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 7a93631..ef21326 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -1,4 +1,4 @@
+-system($$[QT_HOST_BINS]/qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
++system(qdbusxml2cpp org.freedesktop.Notifications.xml -p notificationmanagerproxy -c NotificationManagerProxy -i notification_p.h)
+ 
+ TEMPLATE = lib
+ TARGET = nemonotifications-qt$${QT_MAJOR_VERSION}
