@@ -25,7 +25,7 @@ do_install:append() {
     sed -i "s@-L/[^ ]*@@" ${D}/usr/lib/pkgconfig/*.pc
 }
 
-B="${S}"
+B = "${S}"
 
 FILES:${PN} += "/usr/lib/qml/QtSparql/ /usr/lib/plugins/sparqldrivers/"
 FILES:${PN}-dev += "/usr/share/mkspecs/features/ /usr/lib/libQt5Sparql.prl"
