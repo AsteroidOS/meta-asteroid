@@ -18,7 +18,7 @@ INSANE_SKIP:append:pn-${PN} = "32bit-time"
 # affects most machine, so suppress it here rather than per-device.
 CFLAGS:append = " -Wno-implicit-function-declaration -Wno-int-conversion -Wno-incompatible-pointer-types"
 
-COMPATIBLE_MACHINE=""
+COMPATIBLE_MACHINE = ""
 
 do_configure:prepend() {
     sed -i "s@=\`\$PKG_CONFIG@=\$\{PKG_CONFIG_SYSROOT_DIR\}\`\$PKG_CONFIG@" ${S}/configure.ac
