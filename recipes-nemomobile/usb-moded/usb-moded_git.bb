@@ -21,8 +21,8 @@ S = "${WORKDIR}/git"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
-EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
-DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd"
+EXTRA_OECONF = "--enable-systemd --enable-debug --enable-app-sync --enable-connman"
+DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
 
 do_configure:prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
