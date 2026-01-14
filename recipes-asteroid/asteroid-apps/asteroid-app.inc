@@ -1,7 +1,7 @@
 SUMMARY = "AsteroidOS apps base recipe"
 
 PR = "r1"
-S = "${WORKDIR}/git"
+PV = "+git${SRCPV}"
 inherit cmake_qt5
 
 DEPENDS += "qml-asteroid asteroid-generate-desktop-native qttools-native qtdeclarative-native"

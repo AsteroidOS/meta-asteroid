@@ -11,7 +11,6 @@ SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master \
 SRCREV = "d136e845f5d2da8bb43cdd70b283300a8b8cd3b9"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit qmake5 asteroid-users pkgconfig
 

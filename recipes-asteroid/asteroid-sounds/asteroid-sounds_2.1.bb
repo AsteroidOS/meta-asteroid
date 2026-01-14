@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=65d3616852dbf7b1a6d4b53b00626032"
 SRC_URI = "git://github.com/AsteroidOS/asteroid-sounds.git;protocol=https;branch=2.0"
 SRCREV = "8d582d135b9486e9add714cc44f0f28c7aeaa0e9"
 PR = "r1"
-S = "${WORKDIR}/git"
+PV = "+git${SRCPV}"
 
 do_install() {
     install -d ${D}/usr/share/sounds/

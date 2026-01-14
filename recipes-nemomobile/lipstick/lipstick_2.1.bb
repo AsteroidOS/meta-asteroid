@@ -12,7 +12,7 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https;branch=2.0 \
     file://Notifications/"
 SRCREV = "b9962d7c81473f6fda1479ae3405fd6f112c6195"
 PR = "r1"
-S = "${WORKDIR}/git"
+PV = "+git${SRCPV}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

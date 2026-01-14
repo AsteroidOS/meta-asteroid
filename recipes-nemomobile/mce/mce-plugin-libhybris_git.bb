@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/nemomobile/mce-plugin-libhybris.git;protocol=https;b
 SRCREV = "b2f6330fdd4af9b11a6be64d93c976851f0ba567"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "mce"
 

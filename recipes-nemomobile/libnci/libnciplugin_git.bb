@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/mer-hybris/libnciplugin.git;protocol=https;branch=ma
 SRCREV = "3b844682112733be1b1d6d2bc745dab40f03b152"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 B = "${S}"
 
 DEPENDS = "libgbinder glib-2.0 libglibutil nfcd libncicore"

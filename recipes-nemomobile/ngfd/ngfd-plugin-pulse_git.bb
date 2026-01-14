@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/ngfd-plugin-pulse.git;protocol=https;bran
 SRCREV = "277c45626720ddcb3e3e89f2262fed9ac56fabfa"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 B = "${S}"
 
 DEPENDS += "pulseaudio glib-2.0 libsndfile1 ngfd"

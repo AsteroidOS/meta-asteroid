@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1702a92c723f09e3fab3583b165a8d90"
 SRC_URI = "git://github.com/AsteroidOS/qml-asteroid.git;protocol=https;branch=2.0"
 SRCREV = "bbd14a66047627fe39943307ce303a2fc893ba5f"
 PR = "r1"
-S = "${WORKDIR}/git"
+PV = "+git${SRCPV}"
 inherit cmake_qt5 pkgconfig
 
 DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mlite mapplauncherd-booster-qtcomponents qtdeclarative-native"

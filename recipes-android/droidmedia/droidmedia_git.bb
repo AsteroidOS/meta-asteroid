@@ -9,4 +9,3 @@ SRC_URI = "git://github.com/sailfishos/droidmedia.git;protocol=https;branch=mast
 SRCREV = "8829b9dcd3b67ea6ea75a5fe17c408d79fb17bc5"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"

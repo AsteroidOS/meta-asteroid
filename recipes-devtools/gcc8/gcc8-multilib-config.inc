@@ -53,7 +53,6 @@ python gcc_multilib_setup() {
     if ('%sgcc' % mlprefix) != pn and (not pn.startswith('gcc8-cross-canadian')) and pn != "nativesdk-gcc8":
         return
 
-
     def write_config(root, files, options, dirnames, osdirnames):
         for ml_conf_file in files:
             with open(root + '/' + ml_conf_file, 'r') as f:
@@ -124,7 +123,6 @@ python gcc_multilib_setup() {
                 with open(root + '/' + ml_conf_file, 'w') as f:
                     f.write(''.join(filelines))
 
-
     gcc_target_config_files = {
         'x86_64'    : ['gcc/config/i386/t-linux64'],
         'i586'      : ['gcc/config/i386/t-linux64'],
@@ -153,7 +151,6 @@ python gcc_multilib_setup() {
     libdir64 = 'SYSTEMLIBS_DIR'
     libdirx32 = 'SYSTEMLIBS_DIR'
     libdirn32 = 'SYSTEMLIBS_DIR'
-
 
     target_arch = (d.getVar('TARGET_ARCH_MULTILIB_ORIGINAL') if mlprefix
                     else d.getVar('TARGET_ARCH'))
