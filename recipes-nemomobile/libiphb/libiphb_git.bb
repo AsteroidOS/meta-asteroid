@@ -8,11 +8,10 @@ SRC_URI = "gitsm://github.com/sailfishos/libiphb.git;protocol=https;branch=maste
 SRCREV = "69f059da35fdd7aa72e38a5f7c596631a2f839cc"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += " mcedevel glib-2.0 dbus-glib dbus libdsme "
 inherit autotools pkgconfig
 
-B = "${WORKDIR}/git"
+B = "${S}"
 
 FILES:${PN}-dbg += "/opt"

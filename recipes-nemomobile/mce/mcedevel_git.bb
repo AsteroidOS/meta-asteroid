@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/mce-dev.git;protocol=https;branch=master"
 SRCREV = "01d50d9670eef183bd6d0f1e1e3656a69af3ac2d"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 ALLOW_EMPTY:${PN} = "1"
 

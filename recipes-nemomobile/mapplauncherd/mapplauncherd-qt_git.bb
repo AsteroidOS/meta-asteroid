@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/neochapay/mapplauncherd-qt.git;protocol=https;branch
 SRCREV = "956e42079a1970c7393752488c2169356f6fc8db"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
 
 # Out-of-source build is broken:

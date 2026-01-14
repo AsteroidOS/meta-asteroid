@@ -10,7 +10,6 @@ SRC_URI = "gitsm://github.com/sailfishos/nemo-keepalive.git;protocol=https;branc
 SRCREV = "c38d05b5ebc871dc36561abaf9bbf1dfb8438e83"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
 
 DEPENDS += "libiphb qtbase mce glib-2.0 qtdeclarative"

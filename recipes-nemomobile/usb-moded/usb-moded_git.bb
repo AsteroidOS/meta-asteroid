@@ -16,11 +16,10 @@ SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https;branch=mas
 SRCREV = "4b7da5afee06332ac175a5b2772a55e416756f74"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
-B = "${WORKDIR}/git"
+B = "${S}"
 EXTRA_OECONF = "--enable-systemd --enable-debug --enable-app-sync --enable-connman"
 DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
 

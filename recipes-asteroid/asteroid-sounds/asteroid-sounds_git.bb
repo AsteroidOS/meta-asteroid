@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-sounds.git;protocol=https;branch
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/share/sounds/

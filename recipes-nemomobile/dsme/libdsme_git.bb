@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/sailfishos/libdsme.git;protocol=https;branch=master 
 SRCREV = "67e57c5e90e37d4a53cf3ea4dae028444c62c8e8"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_compile:prepend () {
     export CFLAGS="$CFLAGS -fPIC"

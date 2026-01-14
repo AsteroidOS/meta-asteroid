@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/qml-asteroid.git;protocol=https;branch=ma
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-cmake pkgconfig
 
 DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mapplauncherd-booster-asteroid qtdeclarative-native qtshadertools qtshadertools-native qt5compat"

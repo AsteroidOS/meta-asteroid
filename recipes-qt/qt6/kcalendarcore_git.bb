@@ -10,8 +10,6 @@ SRC_URI = "git://github.com/sailfishos-mirror/kcalendarcore.git;protocol=https;b
 PV = "1.0+git${SRCPV}"
 SRCREV = "fdbaae49832ef2154d0c7e05825ff410660fcbf4"
 
-S = "${WORKDIR}/git"
-
 inherit qt6-cmake
 
 DEPENDS += "qtbase libical extra-cmake-modules"

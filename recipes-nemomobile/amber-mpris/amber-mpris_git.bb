@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/amber-mpris.git;protocol=https;branch=mas
 SRCREV = "0dc2c15104a13c16f3028cb9e73f1e4dc886f4d0"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative"
