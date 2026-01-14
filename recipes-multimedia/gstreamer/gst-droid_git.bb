@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/sailfishos/gst-droid.git;protocol=https;branch=maste
 SRCREV = "acc60b71274e29426f1046b06d5c99c1b9b4d0f7"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "gstreamer1.0 gstreamer1.0-plugins-bad gstreamer1.0-plugins-base droidmedia gettext-native nemo-gst-interfaces libexif"
 

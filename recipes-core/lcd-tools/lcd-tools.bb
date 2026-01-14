@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/lcd-tools.git;branch=main;protocol=https"
 SRCREV = "f214f505718bcbc58950668c48abed7affaa3ce7"
 PR = "r0"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS = "libhybris cli11 mlite qtbase"
 inherit qt6-cmake pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"

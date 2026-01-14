@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/mer-hybris/nfcd-binder-plugin.git;protocol=https;bra
 SRCREV = "4e9210573118eee93359bdd2653488de4a36649f"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 B = "${S}"
 
 DEPENDS = "libgbinder glib-2.0 libglibutil nfcd libncicore libnciplugin"

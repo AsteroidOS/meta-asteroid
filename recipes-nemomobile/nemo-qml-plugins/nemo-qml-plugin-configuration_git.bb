@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-configuration.git;protoco
 SRCREV = "b8ff8957f7ed9d2e3fceffc782434f2609768686"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative mlite"

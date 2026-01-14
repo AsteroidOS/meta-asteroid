@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/mer-hybris/libgbinder.git;branch=master;protocol=htt
 SRCREV = "1.1.47"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS = "glib-2.0 libglibutil"
 

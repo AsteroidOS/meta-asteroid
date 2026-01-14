@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/mer-hybris/nfcd-mce-plugin.git;protocol=https;branch
 SRCREV = "87e762e063f9c645762ee7e4bb6f9d1df80a052b"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS = "libnciplugin libmce-glib"
 RDEPENDS:${PN} = "libmce-glib"

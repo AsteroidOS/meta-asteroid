@@ -11,7 +11,6 @@ SRC_URI = "git://github.com/sailfishos/mapplauncherd.git;protocol=https;branch=m
 SRCREV = "7216a9b5801ffe58d1021cc71b9e90ff7d67268f"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "dbus systemd glib-2.0 extra-cmake-modules"
 

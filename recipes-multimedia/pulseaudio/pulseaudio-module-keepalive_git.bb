@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/pulseaudio-module-keepalive.git;protocol=
 SRCREV = "8dc7da6ba6419dbdcb80d2518e903a9af0894d60"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libcheck"
 
 inherit meson pkgconfig

@@ -14,7 +14,6 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https;branch=
 SRCREV = "2436c92d90385e33eccf77df22c2e5bad1b6e050"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 FONT_PACKAGES = "ttf-asteroid-fonts"
 

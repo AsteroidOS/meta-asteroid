@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://NOTICE;md5=3f52ca43505196dea390350987d6a022"
 
 SRC_URI = "git://android.googlesource.com/platform/system/libufdt;protocol=https;branch=main-kernel"
 SRCREV = "30486c8b56ac46b2a368918f8851618488832caf"
-S = "${WORKDIR}/git"
 PV = "git"
 
 BBCLASSEXTEND = "native"

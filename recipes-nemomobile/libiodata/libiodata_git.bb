@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libiodata.git;protocol=https;branch=maste
 SRCREV = "85517a9f2103e461cbb69dc195335df73b7a8b7e"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake
 DEPENDS += "qtbase bison-native flex-native"
 B = "${S}"
