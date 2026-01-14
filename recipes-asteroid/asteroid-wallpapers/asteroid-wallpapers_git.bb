@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-wallpapers;protocol=https;branch
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/share/asteroid-launcher/wallpapers/

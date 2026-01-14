@@ -13,7 +13,7 @@ SRC_URI = "git://github.com/mer-hybris/bluetooth-rfkill-event.git;protocol=https
 SRCREV = "f411db38e8f6b49403f2e9a320083630f990bcbc"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git/bluetooth-rfkill-event"
+S = "${UNPACKDIR}/git/bluetooth-rfkill-event"
 
 DEPENDS += "glib-2.0 bluez5"
 RDEPENDS:${PN} += "rfkill bluetooth-rfkill-event-configs"

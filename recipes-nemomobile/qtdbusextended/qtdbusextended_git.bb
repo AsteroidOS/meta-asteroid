@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/nemomobile/qtdbusextended.git;protocol=https;branch=
 SRCREV = "34971431233dc408553245001148d34a09836df1"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtbase"

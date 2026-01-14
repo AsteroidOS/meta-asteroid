@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-social.git;protocol=https
 SRCREV = "1fb5b87badd487651ad4664207683d628e55919c"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdeclarative qtbase"

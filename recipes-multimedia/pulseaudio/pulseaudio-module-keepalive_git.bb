@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/pulseaudio-module-keepalive.git;protocol=
 SRCREV = "3102ee5d92e7b8fb5adb6ea01aa8a47a9c7ce886"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libcheck"
 
 inherit autotools pkgconfig

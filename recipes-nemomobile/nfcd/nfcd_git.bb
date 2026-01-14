@@ -11,7 +11,6 @@ SRC_URI = "git://github.com/sailfishos/nfcd.git;protocol=https;branch=master \
 SRCREV = "0cdf85c5373ea94877af64e20a2b05a80074386a"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "KEEP_SYMBOLS=1 INSTALL_SYSTEMD_DIR=${D}${systemd_unitdir}/system/"
 

@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https;br
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 RDEPENDS:${PN} += "source-han-sans-cn-fonts source-han-sans-kr-fonts ttf-lohit ttf-dejavu-sans"
 

@@ -9,12 +9,13 @@ SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \
 SRCREV = "37ded5a0ca8f0770e3347f3711c7c4603d2a5b25"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS:append = "qtbase glib-2.0 dconf"
 inherit qmake5 pkgconfig
-B = "${WORKDIR}/git" 
+
 # Out of dir build breaks mlite5.pc installation
+B = "${S}"
+
 
 do_configure:prepend() {
     sed -i "s@\$\$\[QT_INSTALL_BINS\]@${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}@" src/src.pro

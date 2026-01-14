@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/voicecall.git;protocol=https;branch=maste
 SRCREV = "aa8876d6b0969a4e2d0bd9565e87967142b84792"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase mapplauncherd-qt libresourceqt nemo-qml-plugin-devicelock qtmultimedia libngf-qt libqofono telepathy-qt"
 inherit qmake5

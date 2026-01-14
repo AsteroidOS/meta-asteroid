@@ -10,7 +10,6 @@ SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit cmake_qt5 pkgconfig
 
 DEPENDS += "qml-asteroid lipstick qttools-native timed"

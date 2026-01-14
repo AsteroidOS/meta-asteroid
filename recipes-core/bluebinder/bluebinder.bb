@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/mer-hybris/bluebinder.git;branch=master;protocol=htt
 SRCREV = "1.0.15"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

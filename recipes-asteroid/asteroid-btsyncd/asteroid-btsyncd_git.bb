@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https;branc
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit cmake_qt5 gsettings pkgconfig
 
 DEPENDS += "qml-asteroid qtbase glibmm qtmpris timed qttools-native nemo-qml-plugin-systemsettings"

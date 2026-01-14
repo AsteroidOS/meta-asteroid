@@ -6,7 +6,6 @@ SRC_URI = "git://gitlab.com/ubports/development/core/hybris-support/tls-padding.
 SRCREV = "c85ac0910effbf0197e43ba803536f2c7e289564"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit pkgconfig
 

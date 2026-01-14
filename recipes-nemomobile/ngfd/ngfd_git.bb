@@ -14,7 +14,6 @@ SRC_URI = "gitsm://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
 SRCREV = "402e45f4e03e901d0bea7716d206b4ffae7406f4"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
