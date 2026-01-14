@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libqofonoext.git;protocol=https;branch=ma
 SRCREV = "7a0e704f8a6f2ccac4e945103574ab07c9cb7e2a"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "ofono qtbase qtdeclarative qtdeclarative-native libqofono extra-cmake-modules"
 inherit qt6-cmake pkgconfig

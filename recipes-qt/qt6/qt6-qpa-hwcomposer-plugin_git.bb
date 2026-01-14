@@ -17,7 +17,6 @@ SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https;
         file://0001-Add-ambient-mode-display-support.patch;striplevel=2 \
         file://0003-Support-Qt-6.10.patch;striplevel=2 \
         file://0005-Explicitly-make-hwcomposer-a-shared-library.patch;striplevel=2"
-S = "${WORKDIR}/git/hwcomposer"
 
 inherit qt6-qmake pkgconfig
 

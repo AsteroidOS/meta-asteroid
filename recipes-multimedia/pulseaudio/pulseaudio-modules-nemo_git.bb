@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/sailfishos/pulseaudio-modules-nemo.git;protocol=http
 SRCREV = "00a733941e8bd56c079c1c9112bf4fbd9291ed59"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libcheck"
 
 TARGET_LDFLAGS += "-L${STAGING_LIBDIR}/pulseaudio/modules"

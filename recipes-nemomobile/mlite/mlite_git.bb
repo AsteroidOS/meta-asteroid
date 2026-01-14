@@ -12,7 +12,6 @@ SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \
 SRCREV = "387404e357d1d4bdfc445d3dafda2dc8f5f64a81"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS:append = "qtbase glib-2.0 dconf"
 inherit qt6-qmake pkgconfig

@@ -8,7 +8,6 @@ inherit qt6-qmake pkgconfig
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-qt.git;protocol=https;branch=master"
 
 SRCREV = "c8fdd05f1a1ff5886f4649d24f2ba8c5f61cfa3a"
-S = "${WORKDIR}/git"
 
 do_install:append() {
     # The build system always installs the test program into ${bindir}.

@@ -13,7 +13,6 @@ SRC_URI = "git://github.com/mer-hybris/geoclue-providers-hybris.git;protocol=htt
 SRCREV = "0.2.40"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "geoclue libhybris libconnman-qt libqofono qofonoext"
 inherit qt6-qmake pkgconfig

@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libmce-glib.git;protocol=https;branch=mas
 SRCREV = "49cff7f515979777d137cbb6a78076a50fdb99f2"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 glib-2.0-native libglibutil mcedevel"
 
