@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-time.git;protocol=https;b
 SRCREV = "d27ce76d70c4e1467c7b929803a71c3a5ec3ee14"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdeclarative timed mce"

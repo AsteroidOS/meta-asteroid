@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/mer-hybris/ngfd-plugin-droid-vibrator.git;protocol=h
 SRCREV = "ecb6b8e4b5314aaae784121c946525e1fc8cd9ac"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 B = "${S}"
 
 DEPENDS += "ngfd libhybris virtual/android-headers"

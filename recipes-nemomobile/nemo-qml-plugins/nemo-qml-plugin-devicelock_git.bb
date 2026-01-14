@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-devicelock.git;protocol=h
 SRCREV = "acc349bee2deb3ea287df8deeeff2bff17203048"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 B = "${S}"

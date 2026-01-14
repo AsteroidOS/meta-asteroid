@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libqtsparql.git;protocol=https;branch=mas
 SRCREV = "2332b2d471ffb5d7884fc45c0031c9d60127ea84"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 EXTRA_QMAKEVARS_PRE += "QMAKE_CFLAGS_ISYSTEM="

@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid;protocol=https;b
 SRCREV = "8283bbe5c932d34f6d427ce02abf455c23b3c3b1"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libhybris"
 RDEPENDS:${PN} += "pulseaudio-module-keepalive"
 

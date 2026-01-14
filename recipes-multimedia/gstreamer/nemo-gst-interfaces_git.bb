@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-gst-interfaces.git;protocol=https;br
 SRCREV = "c1deaea7b52bbd12cea56c4ada69eba17cb602a8"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "gstreamer1.0-plugins-base"
 
 inherit autotools pkgconfig
