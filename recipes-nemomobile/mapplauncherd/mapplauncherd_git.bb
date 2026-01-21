@@ -23,13 +23,13 @@ do_configure:prepend() {
 
 do_install:append() {
     rm ${D}/usr/lib/pkgconfig/applauncherd.pc
-    rmdir ${D}/usr/lib/pkgconfig
+   rmdir ${D}/usr/lib/pkgconfig
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service ]; then
         ln -s /usr/lib/systemd/user/booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
     fi
 }
 
-FILES:${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd/ /usr/lib/libapplauncherd.so.* /usr/lib/systemd/user/default.target.wants/"
 FILES:${PN}-dbg += "/usr/libexec/mapplauncherd/.debug"
-FILES:${PN}-dev = "/usr/include/"
+FILES:${PN}-dev = "/usr/include/ /usr/lib/libapplauncherd.so"
