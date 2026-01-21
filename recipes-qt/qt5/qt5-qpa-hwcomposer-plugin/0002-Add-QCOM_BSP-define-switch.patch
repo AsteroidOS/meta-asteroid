@@ -1,7 +1,7 @@
-From de39cca6ed7f3870871554b74873483aa68fb8e7 Mon Sep 17 00:00:00 2001
+From 1873b7867c419bed3c43e0209e88532511185b8d Mon Sep 17 00:00:00 2001
 From: Simon Busch <morphis@gravedo.de>
 Date: Wed, 12 Nov 2014 12:21:07 +0100
-Subject: [PATCH 2/2] Add QCOM_BSP define switch
+Subject: [PATCH] Add QCOM_BSP define switch
 
 Upstream-Status: Inappropriate
 
@@ -14,17 +14,15 @@ Signed-off-by: Simon Busch <morphis@gravedo.de>
  1 file changed, 2 insertions(+)
 
 diff --git a/hwcomposer/hwcomposer.pro b/hwcomposer/hwcomposer.pro
-index 417f80c..c228926 100644
+index 0885ee2..5e2de3d 100644
 --- a/hwcomposer/hwcomposer.pro
 +++ b/hwcomposer/hwcomposer.pro
-@@ -33,6 +33,8 @@ QT += core-private compositor-private gui-private platformsupport-private
+@@ -56,6 +56,8 @@ enable-systrace {
  DEFINES += QEGL_EXTRA_DEBUG
  CONFIG += egl qpa/genericunixfontdatabase
-
+ 
 +DEFINES += QCOM_BSP
 +
  CONFIG += link_pkgconfig
-
+ 
  # For linking against libQt5PlatformSupport.a
---
-1.9.1

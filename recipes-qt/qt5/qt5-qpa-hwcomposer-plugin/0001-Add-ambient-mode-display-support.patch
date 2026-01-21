@@ -1,7 +1,7 @@
-From bd0a8a5229b36b4ac37f5a7fd16dd9406f13df9e Mon Sep 17 00:00:00 2001
+From 7706c4722a851d4e5a7d807e3743443eeb425747 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Mon, 5 Sep 2022 22:35:07 +0200
-Subject: [PATCH] Add ambient mode display support.
+Subject: [PATCH] Add ambient mode display support
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -16,23 +16,36 @@ If the display fails to be validated the `QPA_HWC2_FORCE_DOZE_UPDATE` environmen
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
- hwcomposer/hwcomposer_backend.cpp     | 39 ++++++++++++++++++++++-----
- hwcomposer/hwcomposer_backend.h       |  5 ++++
- hwcomposer/hwcomposer_backend_v10.cpp | 11 +++++++-
- hwcomposer/hwcomposer_backend_v10.h   |  3 ++-
- hwcomposer/hwcomposer_backend_v11.cpp | 26 +++++++++++++++---
- hwcomposer/hwcomposer_backend_v11.h   |  7 ++++-
- hwcomposer/hwcomposer_backend_v20.cpp | 38 +++++++++++++++++++++-----
- hwcomposer/hwcomposer_backend_v20.h   | 12 ++++++++-
- hwcomposer/hwcomposer_context.cpp     | 16 ++++++++++-
- hwcomposer/hwcomposer_context.h       |  3 +++
- hwcomposer/qeglfsintegration.cpp      |  6 +++++
- 11 files changed, 145 insertions(+), 21 deletions(-)
+ hwcomposer/hwcomposer_backend.cpp     | 46 +++++++++++++++++++++------
+ hwcomposer/hwcomposer_backend.h       |  7 +++-
+ hwcomposer/hwcomposer_backend_v0.cpp  |  4 +--
+ hwcomposer/hwcomposer_backend_v0.h    |  2 +-
+ hwcomposer/hwcomposer_backend_v10.cpp | 12 +++++--
+ hwcomposer/hwcomposer_backend_v10.h   |  2 +-
+ hwcomposer/hwcomposer_backend_v11.cpp | 27 +++++++++++++---
+ hwcomposer/hwcomposer_backend_v11.h   |  6 +++-
+ hwcomposer/hwcomposer_backend_v20.cpp | 39 +++++++++++++++++++----
+ hwcomposer/hwcomposer_backend_v20.h   | 11 ++++++-
+ hwcomposer/hwcomposer_context.cpp     | 18 ++++++++++-
+ hwcomposer/hwcomposer_context.h       |  4 +++
+ hwcomposer/qeglfsintegration.cpp      |  6 ++++
+ 13 files changed, 153 insertions(+), 31 deletions(-)
 
 diff --git a/hwcomposer/hwcomposer_backend.cpp b/hwcomposer/hwcomposer_backend.cpp
-index f57a576..a997553 100644
+index c8bf865..a358e11 100644
 --- a/hwcomposer/hwcomposer_backend.cpp
 +++ b/hwcomposer/hwcomposer_backend.cpp
+@@ -56,8 +56,8 @@ extern "C" void *android_dlopen(const char *filename, int flags);
+ extern "C" void *android_dlsym(void *handle, const char *symbol);
+ extern "C" int android_dlclose(void *handle);
+ 
+-HwComposerBackend::HwComposerBackend(hw_module_t *hwc_module, void *libmsf)
+-    : hwc_module(hwc_module), libminisf(libmsf)
++HwComposerBackend::HwComposerBackend(hw_module_t *hwc_module, power_module_t *pwr_module, void *libmsf)
++    : hwc_module(hwc_module), pwr_module(pwr_module), libminisf(libmsf)
+ {
+ }
+ 
 @@ -75,6 +75,7 @@ HwComposerBackend::create()
  {
      hw_module_t *hwc_module = NULL;
@@ -41,7 +54,7 @@ index f57a576..a997553 100644
      void *libminisf;
      void (*startMiniSurfaceFlinger)(void) = NULL;
  
-@@ -103,6 +104,25 @@ HwComposerBackend::create()
+@@ -103,12 +104,31 @@ HwComposerBackend::create()
          fprintf(stderr, "libminisf is incompatible or missing. Can not possibly start the SurfaceFlinger service. If you're experiencing troubles with media try updating droidmedia (and/or this plugin).");
      }
  
@@ -64,10 +77,17 @@ index f57a576..a997553 100644
 +        fprintf(stderr, "PowerHAL is missing or not working, display doze mode may not work\n");
 +    }
 +
-     // Open hardware composer
-     if (hw_get_module(HWC_HARDWARE_MODULE_ID, (const hw_module_t **)(&hwc_module)) == 0) {
-         fprintf(stderr, "== hwcomposer module ==\n");
-@@ -131,7 +151,7 @@ HwComposerBackend::create()
+ #ifdef HWC_PLUGIN_HAVE_HWCOMPOSER2_API
+     if (!qEnvironmentVariableIsEmpty("QT_QPA_FORCE_HWC2")) {
+         // Create hwcomposer backend directly without opening hardware module
+         // because on some devices loading hwc2 module twice breaks graphics
+         // (The first load is in the composer android service.)
+-        return new HwComposerBackend_v20(NULL, libminisf);
++        return new HwComposerBackend_v20(NULL, pwr_module, libminisf);
+     }
+ #endif
+ 
+@@ -140,7 +160,7 @@ HwComposerBackend::create()
          if ((hwc_device->version == HWC_DEVICE_API_VERSION_0_1) ||
              (hwc_device->version == HWC_DEVICE_API_VERSION_0_2) ||
              (hwc_device->version == HWC_DEVICE_API_VERSION_0_3)) {
@@ -76,7 +96,7 @@ index f57a576..a997553 100644
          }
  #endif
  
-@@ -141,11 +161,11 @@ HwComposerBackend::create()
+@@ -150,11 +170,11 @@ HwComposerBackend::create()
              case HWC_DEVICE_API_VERSION_0_1:
              case HWC_DEVICE_API_VERSION_0_2:
              case HWC_DEVICE_API_VERSION_0_3:
@@ -90,7 +110,7 @@ index f57a576..a997553 100644
  #endif /* HWC_DEVICE_API_VERSION_1_0 */
  #ifdef HWC_PLUGIN_HAVE_HWCOMPOSER1_API
              case HWC_DEVICE_API_VERSION_1_1:
-@@ -163,11 +183,11 @@ HwComposerBackend::create()
+@@ -172,11 +192,11 @@ HwComposerBackend::create()
  #endif
                  // HWC_NUM_DISPLAY_TYPES is the actual size of the array, otherwise
                  // underrun/overruns happen
@@ -104,7 +124,7 @@ index f57a576..a997553 100644
  #endif
              default:
                  fprintf(stderr, "Unknown hwcomposer API: 0x%x/0x%x/0x%x\n",
-@@ -180,7 +200,7 @@ HwComposerBackend::create()
+@@ -189,14 +209,22 @@ HwComposerBackend::create()
  #ifdef HWC_PLUGIN_HAVE_HWCOMPOSER2_API
      else {
          // Create hwc2 backend directly if opening hardware module fails
@@ -113,33 +133,34 @@ index f57a576..a997553 100644
      }
  #endif
  
-@@ -188,6 +208,13 @@ HwComposerBackend::create()
+     fprintf(stderr, "Unable to load hwcomposer module\n");
      return NULL;
  }
- 
 +void
 +HwComposerBackend::ambientModeEnabled(bool enable)
 +{
-+    if (ambientModeSupport()) {
-+        m_ambientMode = enable;
++    if (!ambientModeSupport()) {
++        return;
 +    }
+ 
++    m_ambientMode = enable;
 +}
  void
  HwComposerBackend::destroy(HwComposerBackend *backend)
  {
 diff --git a/hwcomposer/hwcomposer_backend.h b/hwcomposer/hwcomposer_backend.h
-index 68169b7..84b17ba 100644
+index d318124..d308121 100644
 --- a/hwcomposer/hwcomposer_backend.h
 +++ b/hwcomposer/hwcomposer_backend.h
-@@ -50,6 +50,7 @@
- #include <android-config.h>
+@@ -51,6 +51,7 @@
+ 
  #include <hardware/hardware.h>
  #include <hardware/hwcomposer.h>
 +#include <hardware/power.h>
  
  #include <EGL/egl.h>
  #include <EGL/eglext.h>
-@@ -108,6 +109,8 @@ public:
+@@ -109,6 +110,8 @@ public:
      virtual EGLNativeWindowType createWindow(int width, int height) = 0;
      virtual void destroyWindow(EGLNativeWindowType window) = 0;
      virtual void swap(EGLNativeDisplayType display, EGLSurface surface) = 0;
@@ -148,8 +169,12 @@ index 68169b7..84b17ba 100644
      virtual void sleepDisplay(bool sleep) = 0;
      virtual float refreshRate() = 0;
  
-@@ -119,7 +122,9 @@ protected:
-     HwComposerBackend(hw_module_t *hwc_module, void *libmsf);
+@@ -117,10 +120,12 @@ public:
+     virtual bool requestUpdate(QEglFSWindow *) { return false; }
+ 
+ protected:
+-    HwComposerBackend(hw_module_t *hwc_module, void *libmsf);
++    HwComposerBackend(hw_module_t *hwc_module, power_module_t *pwr_module, void *libmsf);
      virtual ~HwComposerBackend();
  
 +    bool m_ambientMode;
@@ -158,77 +183,95 @@ index 68169b7..84b17ba 100644
      void *libminisf;
  };
  
+diff --git a/hwcomposer/hwcomposer_backend_v0.cpp b/hwcomposer/hwcomposer_backend_v0.cpp
+index 0f0cd79..d37a303 100644
+--- a/hwcomposer/hwcomposer_backend_v0.cpp
++++ b/hwcomposer/hwcomposer_backend_v0.cpp
+@@ -44,8 +44,8 @@
+ #ifdef HWC_DEVICE_API_VERSION_0_1
+ #include "hwcomposer_backend_v0.h"
+ 
+-HwComposerBackend_v0::HwComposerBackend_v0(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf)
+-    : HwComposerBackend(hwc_module, libminisf)
++HwComposerBackend_v0::HwComposerBackend_v0(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf)
++    : HwComposerBackend(hwc_module, pwr_module, libminisf)
+     , hwc_device((hwc_composer_device_t *)hw_device)
+     , hwc_layer_list(NULL)
+ {
+diff --git a/hwcomposer/hwcomposer_backend_v0.h b/hwcomposer/hwcomposer_backend_v0.h
+index 3b61657..777d7f6 100644
+--- a/hwcomposer/hwcomposer_backend_v0.h
++++ b/hwcomposer/hwcomposer_backend_v0.h
+@@ -47,7 +47,7 @@
+ 
+ class HwComposerBackend_v0 : public HwComposerBackend {
+ public:
+-    HwComposerBackend_v0(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf);
++    HwComposerBackend_v0(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf);
+     virtual ~HwComposerBackend_v0();
+ 
+     virtual EGLNativeDisplayType display();
 diff --git a/hwcomposer/hwcomposer_backend_v10.cpp b/hwcomposer/hwcomposer_backend_v10.cpp
-index 21648fe..771b09e 100644
+index 21648fe..41e28ec 100644
 --- a/hwcomposer/hwcomposer_backend_v10.cpp
 +++ b/hwcomposer/hwcomposer_backend_v10.cpp
-@@ -135,9 +135,10 @@ static hwc_procs_t global_procs = {
+@@ -135,8 +135,8 @@ static hwc_procs_t global_procs = {
  };
  
  
 -HwComposerBackend_v10::HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf)
-+HwComposerBackend_v10::HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pw_device, void *libminisf)
-     : HwComposerBackend(hwc_module, libminisf)
+-    : HwComposerBackend(hwc_module, libminisf)
++HwComposerBackend_v10::HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf)
++    : HwComposerBackend(hwc_module, pwr_module, libminisf)
      , hwc_device((hwc_composer_device_1_t *)hw_device)
-+    , pwr_device(pw_device)
      , hwc_list(NULL)
      , hwc_mList(NULL)
-     , hwc_numDisplays(1) // "For HWC 1.0, numDisplays will always be one."
-@@ -255,8 +256,16 @@ HwComposerBackend_v10::sleepDisplay(bool sleep)
+@@ -255,8 +255,16 @@ HwComposerBackend_v10::sleepDisplay(bool sleep)
      if (sleep) {
          HWC_PLUGIN_EXPECT_ZERO(hwc_device->eventControl(hwc_device, 0, HWC_EVENT_VSYNC, 0));
          HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, 1));
 +        // Enter non-interactive state after turning off the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, false);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, false);
 +        }
      }
      else {
 +        // Enter interactive state prior to turning on the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, true);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, true);
 +        }
          HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, 0));
          HWC_PLUGIN_EXPECT_ZERO(hwc_device->eventControl(hwc_device, 0, HWC_EVENT_VSYNC, 1));
      }
 diff --git a/hwcomposer/hwcomposer_backend_v10.h b/hwcomposer/hwcomposer_backend_v10.h
-index 1f5da46..d1e8f4b 100644
+index 615a958..e7a87d0 100644
 --- a/hwcomposer/hwcomposer_backend_v10.h
 +++ b/hwcomposer/hwcomposer_backend_v10.h
-@@ -51,7 +51,7 @@
+@@ -52,7 +52,7 @@
  
  class HwComposerBackend_v10 : public HwComposerBackend {
  public:
 -    HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf);
-+    HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pw_device, void *libminisf);
++    HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf);
      virtual ~HwComposerBackend_v10();
  
      virtual EGLNativeDisplayType display();
-@@ -72,6 +72,7 @@ public:
- 
- private:
-     hwc_composer_device_1_t *hwc_device;
-+    power_module_t *pwr_device;
-     hwc_display_contents_1_t *hwc_list;
-     hwc_display_contents_1_t **hwc_mList;
-     int hwc_numDisplays;
 diff --git a/hwcomposer/hwcomposer_backend_v11.cpp b/hwcomposer/hwcomposer_backend_v11.cpp
-index 23e51ab..73f7a93 100644
+index 23e51ab..813a107 100644
 --- a/hwcomposer/hwcomposer_backend_v11.cpp
 +++ b/hwcomposer/hwcomposer_backend_v11.cpp
-@@ -178,9 +178,10 @@ void HWComposer::present(HWComposerNativeWindowBuffer *buffer)
+@@ -178,8 +178,8 @@ void HWComposer::present(HWComposerNativeWindowBuffer *buffer)
      }
  }
  
 -HwComposerBackend_v11::HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf, int num_displays)
-+HwComposerBackend_v11::HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pw_device, void *libminisf, int num_displays)
-     : HwComposerBackend(hwc_module, libminisf)
+-    : HwComposerBackend(hwc_module, libminisf)
++HwComposerBackend_v11::HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf, int num_displays)
++    : HwComposerBackend(hwc_module, pwr_module, libminisf)
      , hwc_device((hwc_composer_device_1_t *)hw_device)
-+    , pwr_device(pw_device)
      , hwc_list(NULL)
      , hwc_mList(NULL)
-     , num_displays(num_displays)
-@@ -359,16 +360,33 @@ HwComposerBackend_v11::sleepDisplay(bool sleep)
+@@ -359,16 +359,33 @@ HwComposerBackend_v11::sleepDisplay(bool sleep)
  
  #ifdef HWC_DEVICE_API_VERSION_1_4
          if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
@@ -254,27 +297,27 @@ index 23e51ab..73f7a93 100644
 +            HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, m_ambientMode ? 0 : 1));
 +
 +        // Enter non-interactive state after turning off the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, false);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, false);
 +        }
      } else {
 +        // Enter interactive state prior to turning on the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, true);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, true);
 +        }
  #ifdef HWC_DEVICE_API_VERSION_1_4
          if (hwc_version == HWC_DEVICE_API_VERSION_1_4) {
              HWC_PLUGIN_EXPECT_ZERO(hwc_device->setPowerMode(hwc_device, 0, HWC_POWER_MODE_NORMAL));
 diff --git a/hwcomposer/hwcomposer_backend_v11.h b/hwcomposer/hwcomposer_backend_v11.h
-index 838557f..edee684 100644
+index 2c9cee0..e7c153e 100644
 --- a/hwcomposer/hwcomposer_backend_v11.h
 +++ b/hwcomposer/hwcomposer_backend_v11.h
-@@ -56,13 +56,17 @@ class QWindow;
+@@ -58,13 +58,17 @@ class QWindow;
  
  class HwComposerBackend_v11 : public QObject, public HwComposerBackend {
  public:
 -    HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, void *libminisf, int num_displays);
-+    HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pw_device, void *libminisf, int num_displays);
++    HwComposerBackend_v11(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pwr_module, void *libminisf, int num_displays);
      virtual ~HwComposerBackend_v11();
  
      virtual EGLNativeDisplayType display();
@@ -288,19 +331,11 @@ index 838557f..edee684 100644
      virtual void sleepDisplay(bool sleep);
      virtual float refreshRate();
      virtual bool getScreenSizes(int *width, int *height, float *physical_width, float *physical_height);
-@@ -76,6 +80,7 @@ public:
- private:
-     int getSingleAttribute(uint32_t attribute);
-     hwc_composer_device_1_t *hwc_device;
-+    power_module_t *pwr_device;
-     hwc_display_contents_1_t *hwc_list;
-     hwc_display_contents_1_t **hwc_mList;
-     uint32_t hwc_version;
 diff --git a/hwcomposer/hwcomposer_backend_v20.cpp b/hwcomposer/hwcomposer_backend_v20.cpp
-index dc1d4ff..5b2a489 100644
+index fae15ca..f8d91e8 100644
 --- a/hwcomposer/hwcomposer_backend_v20.cpp
 +++ b/hwcomposer/hwcomposer_backend_v20.cpp
-@@ -112,22 +112,24 @@ class HWC2Window : public HWComposerNativeWindow
+@@ -117,22 +117,24 @@ class HWC2Window : public HWComposerNativeWindow
          hwc2_compat_display_t *hwcDisplay;
          int lastPresentFence = -1;
          bool m_syncBeforeSet;
@@ -328,7 +363,7 @@ index dc1d4ff..5b2a489 100644
  {
      int bufferCount = qgetenv("QPA_HWC_BUFFER_COUNT").toInt();
      if (bufferCount)
-@@ -137,6 +139,7 @@ HWC2Window::HWC2Window(unsigned int width, unsigned int height,
+@@ -142,6 +144,7 @@ HWC2Window::HWC2Window(unsigned int width, unsigned int height,
          bufferCount = 3;
      setBufferCount(bufferCount);
      m_syncBeforeSet = qEnvironmentVariableIsSet("QPA_HWC_SYNC_BEFORE_SET");
@@ -336,20 +371,20 @@ index dc1d4ff..5b2a489 100644
  }
  
  HWC2Window::~HWC2Window()
-@@ -165,6 +168,12 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+@@ -169,6 +172,12 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+         close(acquireFenceFd);
          acquireFenceFd = -1;
      }
- 
++ 
 +    // Some devices don't support updating the display while it's in doze mode,
 +    // transition the display temporarily on to update it.
 +    if (m_dozeWorkaround && m_backend->isDozing()) {
 +        hwc2_compat_display_set_power_mode(hwcDisplay, HWC2_POWER_MODE_ON);
 +    }
-+
+ 
      error = hwc2_compat_display_validate(hwcDisplay, &numTypes,
                                                      &numRequests);
-     if (error != HWC2_ERROR_NONE && error != HWC2_ERROR_HAS_CHANGES) {
-@@ -207,13 +216,18 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
+@@ -212,12 +221,16 @@ void HWC2Window::present(HWComposerNativeWindowBuffer *buffer)
      lastPresentFence = presentFence != -1 ? dup(presentFence) : -1;
  
      setFenceBufferFd(buffer, presentFence);
@@ -362,14 +397,13 @@ index dc1d4ff..5b2a489 100644
  int HwComposerBackend_v20::composerSequenceId = 0;
  
 -HwComposerBackend_v20::HwComposerBackend_v20(hw_module_t *hwc_module, void *libminisf)
-+HwComposerBackend_v20::HwComposerBackend_v20(hw_module_t *hwc_module, power_module_t *pw_device, void *libminisf)
-     : HwComposerBackend(hwc_module, libminisf)
+-    : HwComposerBackend(hwc_module, libminisf)
++HwComposerBackend_v20::HwComposerBackend_v20(hw_module_t *hwc_module, power_module_t *pwr_module, void *libminisf)
++    : HwComposerBackend(hwc_module, pwr_module, libminisf)
      , hwc2_device(NULL)
-+    , pwr_device(pw_device)
      , hwc2_primary_display(NULL)
      , hwc2_primary_layer(NULL)
-     , m_displayOff(true)
-@@ -283,7 +297,7 @@ HwComposerBackend_v20::createWindow(int width, int height)
+@@ -293,7 +306,7 @@ HwComposerBackend_v20::createWindow(int width, int height)
  
      HWC2Window *hwc_win = new HWC2Window(width, height,
                                           HAL_PIXEL_FORMAT_RGBA_8888,
@@ -378,7 +412,7 @@ index dc1d4ff..5b2a489 100644
  
      return (EGLNativeWindowType) static_cast<ANativeWindow *>(hwc_win);
  }
-@@ -324,8 +338,20 @@ HwComposerBackend_v20::sleepDisplay(bool sleep)
+@@ -334,8 +347,20 @@ HwComposerBackend_v20::sleepDisplay(bool sleep)
          m_vsyncTimeout.stop();
          hwc2_compat_display_set_vsync_enabled(hwc2_primary_display, HWC2_VSYNC_DISABLE);
  
@@ -388,28 +422,28 @@ index dc1d4ff..5b2a489 100644
 +        int powerMode = m_ambientMode ? HWC2_POWER_MODE_DOZE_SUSPEND : HWC2_POWER_MODE_OFF;
 +        hwc2_compat_display_set_power_mode(hwc2_primary_display, powerMode);
 +        // Enter non-interactive state after turning off the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, false);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, false);
 +        }
      } else {
 +        m_dozing = false;
 +        // Enter interactive state prior to turning on the screen.
-+        if (pwr_device) {
-+            pwr_device->setInteractive(pwr_device, true);
++        if (pwr_module) {
++            pwr_module->setInteractive(pwr_module, true);
 +        }
          hwc2_compat_display_set_power_mode(hwc2_primary_display, HWC2_POWER_MODE_ON);
  
          // If we have pending updates, make sure those start happening now..
 diff --git a/hwcomposer/hwcomposer_backend_v20.h b/hwcomposer/hwcomposer_backend_v20.h
-index 0c79cb0..221d6ae 100644
+index f4798f4..b77c34c 100644
 --- a/hwcomposer/hwcomposer_backend_v20.h
 +++ b/hwcomposer/hwcomposer_backend_v20.h
-@@ -57,16 +57,24 @@ class QWindow;
+@@ -58,16 +58,24 @@ class QWindow;
  
  class HwComposerBackend_v20 : public QObject, public HwComposerBackend {
  public:
 -    HwComposerBackend_v20(hw_module_t *hwc_module, void *libminisf);
-+    HwComposerBackend_v20(hw_module_t *hwc_module, power_module_t *pw_device, void *libminisf);
++    HwComposerBackend_v20(hw_module_t *hwc_module, power_module_t *pwr_module, void *libminisf);
      virtual ~HwComposerBackend_v20();
  
      virtual EGLNativeDisplayType display();
@@ -430,12 +464,7 @@ index 0c79cb0..221d6ae 100644
  
      virtual bool requestUpdate(QEglFSWindow *window) Q_DECL_OVERRIDE;
  
-@@ -81,10 +89,12 @@ public:
- 
- private:
-     hwc2_compat_device_t* hwc2_device;
-+    power_module_t *pwr_device;
-     hwc2_compat_display_t* hwc2_primary_display;
+@@ -86,6 +94,7 @@ private:
      hwc2_compat_layer_t* hwc2_primary_layer;
  
      bool m_displayOff;
@@ -444,10 +473,10 @@ index 0c79cb0..221d6ae 100644
      QBasicTimer m_vsyncTimeout;
      QSet<QWindow *> m_pendingUpdate;
 diff --git a/hwcomposer/hwcomposer_context.cpp b/hwcomposer/hwcomposer_context.cpp
-index ca433da..7eea4b8 100644
+index 95ab47f..92a0709 100644
 --- a/hwcomposer/hwcomposer_context.cpp
 +++ b/hwcomposer/hwcomposer_context.cpp
-@@ -73,6 +73,7 @@ static void exit_qt_gracefully(int sig)
+@@ -57,6 +57,7 @@ QT_BEGIN_NAMESPACE
  HwComposerContext::HwComposerContext()
      : info(NULL)
      , backend(NULL)
@@ -455,7 +484,7 @@ index ca433da..7eea4b8 100644
      , display_off(false)
      , window_created(false)
      , fps(0)
-@@ -163,7 +164,7 @@ void HwComposerContext::destroyNativeWindow(EGLNativeWindowType window)
+@@ -137,7 +138,7 @@ void HwComposerContext::destroyNativeWindow(EGLNativeWindowType window)
  
  void HwComposerContext::swapToWindow(QEglFSContext *context, QPlatformSurface *surface)
  {
@@ -464,7 +493,7 @@ index ca433da..7eea4b8 100644
          qWarning("Swap requested while display is off");
          return;
      }
-@@ -173,6 +174,19 @@ void HwComposerContext::swapToWindow(QEglFSContext *context, QPlatformSurface *s
+@@ -147,6 +148,21 @@ void HwComposerContext::swapToWindow(QEglFSContext *context, QPlatformSurface *s
      return backend->swap(egl_display, egl_surface);
  }
  
@@ -475,7 +504,9 @@ index ca433da..7eea4b8 100644
 +
 +void HwComposerContext::ambientModeEnabled(bool enable)
 +{
-+    if (!ambientModeSupport()) return;
++    if (!ambientModeSupport()) {
++        return;
++    }
 +
 +    ambientMode = enable;
 +    backend->ambientModeEnabled(enable);
@@ -485,19 +516,20 @@ index ca433da..7eea4b8 100644
  {
      if (sleep) {
 diff --git a/hwcomposer/hwcomposer_context.h b/hwcomposer/hwcomposer_context.h
-index e81f527..ee731f4 100644
+index 68934a4..37732de 100644
 --- a/hwcomposer/hwcomposer_context.h
 +++ b/hwcomposer/hwcomposer_context.h
-@@ -86,6 +86,8 @@ public:
+@@ -88,6 +88,9 @@ public:
  
      void swapToWindow(QEglFSContext *context, QPlatformSurface *surface);
  
 +    bool ambientModeSupport();
 +    void ambientModeEnabled(bool enable);
++
      void sleepDisplay(bool sleep);
      qreal refreshRate() const;
  
-@@ -94,6 +96,7 @@ public:
+@@ -96,6 +99,7 @@ public:
  private:
      HwComposerScreenInfo *info;
      HwComposerBackend *backend;
@@ -506,10 +538,10 @@ index e81f527..ee731f4 100644
      bool window_created;
      qreal fps;
 diff --git a/hwcomposer/qeglfsintegration.cpp b/hwcomposer/qeglfsintegration.cpp
-index 81cc83d..e14bdfd 100644
+index e66bc84..f103700 100644
 --- a/hwcomposer/qeglfsintegration.cpp
 +++ b/hwcomposer/qeglfsintegration.cpp
-@@ -210,6 +210,12 @@ void *QEglFSIntegration::nativeResourceForIntegration(const QByteArray &resource
+@@ -217,6 +217,12 @@ void *QEglFSIntegration::nativeResourceForIntegration(const QByteArray &resource
  
      if (lowerCaseResource == "egldisplay") {
          return static_cast<QEglFSScreen *>(mScreen)->display();
