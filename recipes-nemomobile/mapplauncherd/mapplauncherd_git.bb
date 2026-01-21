@@ -10,7 +10,7 @@ SRCREV = "7216a9b5801ffe58d1021cc71b9e90ff7d67268f"
 PR = "r1"
 PV = "+git${SRCPV}"
 
-DEPENDS += "dbus systemd glib-2.0 cmake "
+DEPENDS += "dbus systemd glib-2.0 cmake extra-cmake-modules "
 
 inherit cmake pkgconfig
 B = "${S}"
@@ -22,6 +22,8 @@ do_configure:prepend() {
 }
 
 do_install:append() {
+    rm ${D}/usr/lib/pkgconfig/applauncherd.pc
+    rmdir ${D}/usr/lib/pkgconfig
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service ]; then
         ln -s /usr/lib/systemd/user/booster-generic.service ${D}/usr/lib/systemd/user/default.target.wants/booster-generic.service
