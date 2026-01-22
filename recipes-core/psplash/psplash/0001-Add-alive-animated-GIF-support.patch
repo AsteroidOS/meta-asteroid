@@ -1,10 +1,13 @@
-From 896550cb79b2b5aa497b32d509dde6ce0aef8087 Mon Sep 17 00:00:00 2001
-From: MagneFire <IDaNLContact@gmail.com>
-Date: Tue, 9 Nov 2021 15:00:13 +0100
-Subject: [PATCH] Add alive animated GIF support.
+From 918638c9d7665a3c39e411994d8a0a0b68f63fae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 29 Mar 2026 22:41:26 +0200
+Subject: [PATCH] Add alive animated GIF support
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Upstream-Status: Inappropriate [hybris specific]
-
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  Makefile.am     |   2 +
  configure.ac    |   8 +
@@ -14,9 +17,9 @@ Upstream-Status: Inappropriate [hybris specific]
  psplash-alive.h |  66 +++++++
  psplash-fb.c    |   2 +-
  psplash-fb.h    |   8 +
- psplash.c       | 225 ++++++++++++++-------
+ psplash.c       | 104 +++++++++-
  psplash.h       |   7 +
- 10 files changed, 1027 insertions(+), 72 deletions(-)
+ 10 files changed, 973 insertions(+), 5 deletions(-)
  create mode 100644 gifdec.c
  create mode 100644 gifdec.h
  create mode 100644 psplash-alive.c
@@ -36,10 +39,10 @@ index 310e126..ce5b1f7 100644
  		  psplash-poky-img.h psplash-bar-img.h $(FONT_NAME)-font.h
  BUILT_SOURCES = psplash-poky-img.h psplash-bar-img.h
 diff --git a/configure.ac b/configure.ac
-index 2a7da91..a7cfb15 100644
+index 110ce32..bed89d8 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -45,6 +45,14 @@ AS_IF([test x$disable_progress_bar = xtrue], [
+@@ -45,6 +45,14 @@ AS_IF([test "x$enable_progress_bar" = "xno"], [
      EXTRA_GCC_FLAGS="$EXTRA_GCC_FLAGS -DPSPLASH_DISABLE_PROGRESS_BAR"
  ])
  
@@ -53,7 +56,7 @@ index 2a7da91..a7cfb15 100644
 +
  AC_ARG_ENABLE([img-fullscreen],
      AS_HELP_STRING([--enable-img-fullscreen], [Enable the logo image in fullscreen mode)]),
-     [img_fullscreen=true],
+     [enable_img_fullscreen=$enableval],
 diff --git a/gifdec.c b/gifdec.c
 new file mode 100644
 index 0000000..975bca4
@@ -958,10 +961,10 @@ index 16e2b20..978bdab 100644
  psplash_fb_draw_rect (PSplashFB    *fb, 
  		      int          x, 
 diff --git a/psplash.c b/psplash.c
-index ee1af6b..011e3ab 100644
+index 261dd1c..7546e3c 100644
 --- a/psplash.c
 +++ b/psplash.c
-@@ -130,94 +130,162 @@ parse_command (PSplashFB *fb, char *string)
+@@ -130,11 +130,62 @@ parse_command (PSplashFB *fb, char *string)
      {
        return 1;
      }
@@ -1024,20 +1027,10 @@ index ee1af6b..011e3ab 100644
  void 
  psplash_main (PSplashFB *fb, int pipe_fd, int timeout) 
  {
--  int            err;
--  ssize_t        length = 0;
--  fd_set         descriptors;
--  struct timeval tv;
--  char          *end;
-+	int            err;
-+	ssize_t        length = 0;
-+	fd_set         descriptors;
-+	struct timeval tv;
-+	char          *end;
-   char          *cmd;
--  char           command[2048];
-+	char           command[2048];
-+
+@@ -150,6 +201,15 @@ psplash_main (PSplashFB *fb, int pipe_fd, int timeout)
+   tv.tv_sec = timeout;
+   tv.tv_usec = 0;
+ 
 +#ifdef PSPLASH_ENABLE_ANIMATED_GIF
 +	struct timespec tm_current;
 +	struct timespec tm_next_frame;
@@ -1046,22 +1039,22 @@ index ee1af6b..011e3ab 100644
 +  tm_next_frame = tm_timeout = tm_current;
 +	tm_add_ms(&tm_timeout, timeout * 1000);
 +#endif
-+	while (1)
-+	{
-+		FD_ZERO(&descriptors);
-+		FD_SET(pipe_fd, &descriptors);
-+		end = &command[length];
++
+   FD_ZERO(&descriptors);
+   FD_SET(pipe_fd, &descriptors);
  
--  tv.tv_sec = timeout;
--  tv.tv_usec = 0;
+@@ -157,10 +217,32 @@ psplash_main (PSplashFB *fb, int pipe_fd, int timeout)
  
--  FD_ZERO(&descriptors);
--  FD_SET(pipe_fd, &descriptors);
+   while (1) 
+     {
+-      if (timeout != 0) 
+-	err = select(pipe_fd+1, &descriptors, NULL, NULL, &tv);
+-      else
+-	err = select(pipe_fd+1, &descriptors, NULL, NULL, NULL);
 +#ifdef PSPLASH_ENABLE_ANIMATED_GIF
 +    if (psplash_alive_frame_has_next()) {
 +      clock_gettime(CLOCK_MONOTONIC, &tm_current);
- 
--  end = command;
++
 +      if (tm1_ge_tm2(&tm_current, &tm_next_frame))
 +      {
 +        tm_add_ms(&tm_next_frame, psplash_alive_frame_duration_ms());
@@ -1069,133 +1062,25 @@ index ee1af6b..011e3ab 100644
 +        psplash_alive_frame_next();
 +        psplash_fb_flip(fb, 0);
 +      }
- 
--  while (1) 
--    {
--      if (timeout != 0) 
--	err = select(pipe_fd+1, &descriptors, NULL, NULL, &tv);
--      else
--	err = select(pipe_fd+1, &descriptors, NULL, NULL, NULL);
--      
--      if (err <= 0) 
--	{
--	  /*
--	  if (errno == EINTR)
--	    continue;
--	  */
--	  return;
--	}
--      
--      length += read (pipe_fd, end, sizeof(command) - (end - command));
++
 +      tm_diff(&tm_next_frame, &tm_current, &tv);
 +    err = select(pipe_fd + 1, &descriptors, NULL, NULL, &tv);
++    if (err == 0)
++      continue;
 +    } else {
 +#endif
 +    if (timeout != 0) 
-+	    err = select(pipe_fd+1, &descriptors, NULL, NULL, &tv);
++      err = select(pipe_fd+1, &descriptors, NULL, NULL, &tv);
 +    else
-+	    err = select(pipe_fd+1, &descriptors, NULL, NULL, NULL);
- 
--      if (length == 0) 
--	{
--	  /* Reopen to see if there's anything more for us */
--	  close(pipe_fd);
--	  pipe_fd = open(PSPLASH_FIFO,O_RDONLY|O_NONBLOCK);
--	  goto out;
--	}
++      err = select(pipe_fd+1, &descriptors, NULL, NULL, NULL);
++
 +#ifdef PSPLASH_ENABLE_ANIMATED_GIF
 +    }
 +#endif
-+
-+    if (err == 0) /* timeout */
-+      continue;
- 
--      cmd = command;
--      do {
--	int cmdlen;
--        char *cmdend = memchr(cmd, '\n', length);
--
--        /* Replace newlines with string termination */
--        if (cmdend)
--            *cmdend = '\0';
--
--        cmdlen = strnlen(cmd, length);
--
--        /* Skip string terminations */
--	if (!cmdlen && length)
--          {
--            length--;
--            cmd++;
--	    continue;
--          }
--
--	if (parse_command(fb, cmd))
--	  return;
--
--	length -= cmdlen;
--	cmd += cmdlen;
--      } while (length);
--
--    out:
--      end = &command[length];
--    
--      tv.tv_sec = timeout;
--      tv.tv_usec = 0;
--      
--      FD_ZERO(&descriptors);
--      FD_SET(pipe_fd,&descriptors);
-+    if (err <= 0) 
-+    {
-+      /*
-+      if (errno == EINTR)
-+        continue;
-+      */
-+      return;
-+    }
-+        
-+    length += read (pipe_fd, end, sizeof(command) - (end - command));
-+
-+    if (length == 0) {
-+      /* Reopen to see if there's anything more for us */
-+      close(pipe_fd);
-+      pipe_fd = open(PSPLASH_FIFO,O_RDONLY|O_NONBLOCK);
-+      continue;
-     }
- 
--  return;
--}
-+    cmd = command;
-+    do {
-+      int cmdlen;
-+      char *cmdend = memchr(cmd, '\n', length);
-+
-+      /* Replace newlines with string termination */
-+      if (cmdend)
-+          *cmdend = '\0';
-+
-+      cmdlen = strnlen(cmd, length);
-+
-+      /* Skip string terminations */
-+      if (!cmdlen && length) {
-+          length--;
-+          cmd++;
-+          continue;
-+      }
-+
-+	    if (parse_command(fb, cmd))
-+	      return;
-+
-+	    length -= cmdlen;
-+	    cmd += cmdlen;
-+    } while (length);
-+  }
-+ 
-+   return;
-+ }
- 
- int 
- main (int argc, char** argv) 
-@@ -259,6 +327,11 @@ main (int argc, char** argv)
+       
+       if (err <= 0) 
+ 	{
+@@ -261,6 +343,11 @@ main (int argc, char** argv)
        exit(-1);
    }
  
@@ -1207,7 +1092,7 @@ index ee1af6b..011e3ab 100644
    rundir = getenv("PSPLASH_FIFO_DIR");
  
    if (!rundir)
-@@ -300,6 +373,7 @@ main (int argc, char** argv)
+@@ -302,6 +389,7 @@ main (int argc, char** argv)
    psplash_fb_draw_rect (fb, 0, 0, fb->width, fb->height,
                          PSPLASH_BACKGROUND_COLOR);
  
@@ -1215,16 +1100,15 @@ index ee1af6b..011e3ab 100644
    /* Draw the Poky logo  */
    psplash_fb_draw_image (fb, 
  			 (fb->width  - POKY_IMG_WIDTH)/2, 
-@@ -340,9 +414,18 @@ main (int argc, char** argv)
+@@ -342,9 +430,17 @@ main (int argc, char** argv)
     * update.
     */
    psplash_fb_flip(fb, 1);
 +#endif
-+
+ 
 +#ifdef PSPLASH_ENABLE_ANIMATED_GIF
 +	psplash_alive_init();
 +#endif
- 
    psplash_main (fb, pipe_fd, 0);
  
 +#ifdef PSPLASH_ENABLE_ANIMATED_GIF
@@ -1235,7 +1119,7 @@ index ee1af6b..011e3ab 100644
  
   fb_fail:
 diff --git a/psplash.h b/psplash.h
-index 1c42ec7..37a0a12 100644
+index 138e49d..17ec8f6 100644
 --- a/psplash.h
 +++ b/psplash.h
 @@ -35,6 +35,10 @@
@@ -1248,8 +1132,8 @@ index 1c42ec7..37a0a12 100644
 +
  typedef uint8_t  uint8;
  typedef uint16_t uint16;
- typedef int            bool;
-@@ -81,5 +85,8 @@ PSplashFont;
+ 
+@@ -84,5 +88,8 @@ PSplashFont;
  
  #include "psplash-fb.h"
  #include "psplash-console.h"
@@ -1258,6 +1142,3 @@ index 1c42ec7..37a0a12 100644
 +#endif
  
  #endif
--- 
-2.33.1
-
