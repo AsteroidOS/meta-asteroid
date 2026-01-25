@@ -1,4 +1,4 @@
-From e0d3c680c0eb69e3e77172777a63425369ebd1ad Mon Sep 17 00:00:00 2001
+From 62bff250587c71f549a5126af62dadeea5a7d234 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 20 Nov 2022 18:44:31 +0100
 Subject: [PATCH] Makefile: Allow for INSTALL_SYSTEMD_DIR to be overridden.
