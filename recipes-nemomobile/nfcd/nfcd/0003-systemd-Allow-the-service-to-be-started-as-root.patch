@@ -1,4 +1,4 @@
-From 31b4416475b0fbf1b11a3d194a9e738de7d20fd0 Mon Sep 17 00:00:00 2001
+From b9d02498122e3008fd55035caf8939e0d2927e43 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 27 Nov 2022 18:21:43 +0100
 Subject: [PATCH] systemd: Allow the service to be started as root.
