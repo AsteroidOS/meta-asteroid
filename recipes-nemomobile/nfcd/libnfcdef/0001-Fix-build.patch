@@ -1,0 +1,24 @@
+From 6bbce0b346640ea8657f7833e26014536eb2b3ce Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Sun, 25 Jan 2026 22:57:57 +0100
+Subject: [PATCH] Fix build
+
+Upstream-Status: Inappropriate
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index d15e416..14a7f5f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -70,7 +70,7 @@ COVERAGE_BUILD_DIR = $(BUILD_DIR)/coverage
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ WARNINGS = -Wall -Wstrict-aliasing -Wunused-result
+ INCLUDES = -I$(INCLUDE_DIR)
