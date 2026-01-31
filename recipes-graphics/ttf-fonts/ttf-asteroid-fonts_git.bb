@@ -12,7 +12,7 @@ inherit asteroid-users
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https;branch=master \
     file://69-emoji.conf"
-SRCREV = "778f8485c8cd81d736a5244e65e96df0bfa59700"
+SRCREV = "94a161286106ecf8fa2dd5b65e7f347e6db23e2d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
