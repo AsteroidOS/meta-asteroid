@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 SRC_URI = "git://github.com/sailfishos/pulseaudio-modules-nemo.git;protocol=https;branch=master \
            file://0001-Add-meson-option-to-pass-sysroot.patch \
            file://0002-Use-only-xx.xx-versioning-for-pulseaudio.patch \
+           file://0003-mainvolume-Use-multiple-of-10-1-steps.patch \
            "
 SRCREV = "b901d679f246500f3cfab6654eb3043c4cdc43c1"
 PR = "r1"
