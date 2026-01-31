@@ -1,0 +1,31 @@
+From 8a75bca2b0ea3e108b93aaef42657d6d5054386f Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 31 Jan 2026 22:51:13 +0000
+Subject: [PATCH] mainvolume: Use multiple of 10 + 1 steps
+
+Right now our sound page reacts weirdly to volume changes because our UI
+intends to have 11 states: 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 and 100
+But they get remapped to 10 or 20 steps so leaving the sound page leaves
+weird numbers that look like they are off by one or something. Since we
+are using the fallback steps, let's change the number of fallback steps
+to a multiple of 10 + 1 to keep things aligned
+---
+ src/mainvolume/module-meego-mainvolume.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/mainvolume/module-meego-mainvolume.c b/src/mainvolume/module-meego-mainvolume.c
+index 906c9c9..1d44f9b 100644
+--- a/src/mainvolume/module-meego-mainvolume.c
++++ b/src/mainvolume/module-meego-mainvolume.c
+@@ -963,7 +963,7 @@ int pa__init(pa_module *m) {
+     u->steps = pa_hashmap_new_full(pa_idxset_string_hash_func, pa_idxset_string_compare_func,
+                                    NULL, (pa_free_cb_t) mv_volume_steps_set_free);
+ 
+-    fallback = fallback_new("fallback", 10, 20);
++    fallback = fallback_new("fallback", 11, 21);
+     pa_hashmap_put(u->steps, fallback->route, fallback);
+     u->current_steps = fallback;
+ 
+-- 
+2.47.3
+
