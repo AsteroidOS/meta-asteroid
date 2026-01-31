@@ -1,4 +1,4 @@
-From 2fe7fdace9e14c2fa25aa147497642f16b9116e8 Mon Sep 17 00:00:00 2001
+From fb85877251ec975bd611cbb40502b55b757ca30d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Mon, 12 Sep 2022 21:58:38 +0200
 Subject: [PATCH] Revert "[nemo-qml-plugin-systemsettings] Remove storage info
@@ -180,7 +180,7 @@ index b825398..cd172db 100644
      mutable QMap<QString, QString> osReleaseLocalization;
      mutable QMap<QString, QString> hardwareRelease;
 diff --git a/src/plugin/plugins.qmltypes b/src/plugin/plugins.qmltypes
-index 4000f83..b663bf9 100644
+index 7ec3d9e..36e0ca5 100644
 --- a/src/plugin/plugins.qmltypes
 +++ b/src/plugin/plugins.qmltypes
 @@ -24,6 +24,11 @@ Module {
@@ -195,6 +195,3 @@ index 4000f83..b663bf9 100644
      }
      Component {
          name: "AlarmToneModel"
--- 
-2.37.3
-
