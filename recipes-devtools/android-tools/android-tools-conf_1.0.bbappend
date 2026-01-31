@@ -1,1 +1,1 @@
-S = "${WORKDIR}/sources"
+S = "${UNPACKDIR}/sources"
