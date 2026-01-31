@@ -4,15 +4,15 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/displaysettings.cpp;beginline=1;endline=31;md5=99ff23884718e3e2c85992a9294d18df"
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protocol=https;branch=master \
-    file://location.conf \
-    file://0001-Disable-SSU-dependency.patch \
-    file://0002-Remove-developermodesettings.patch \
-    file://0003-Remove-UserModel.patch \
-    file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
-    file://0005-languagemodel-install-languages-in-usr-share-support.patch \
-    file://0006-Revert-nemo-qml-plugin-systemsettings-Remove-storage.patch \
-    "
-SRCREV = "0.8.1"
+           file://location.conf \
+           file://0001-Disable-SSU-dependency.patch \
+           file://0002-Remove-developermodesettings.patch \
+           file://0003-Remove-UserModel.patch \
+           file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
+           file://0005-languagemodel-install-languages-in-usr-share-support.patch \
+           file://0006-Revert-nemo-qml-plugin-systemsettings-Remove-storage.patch \
+           "
+SRCREV = "0.10.18"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
