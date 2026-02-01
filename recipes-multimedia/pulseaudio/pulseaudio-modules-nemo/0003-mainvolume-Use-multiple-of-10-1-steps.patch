@@ -9,6 +9,9 @@ But they get remapped to 10 or 20 steps so leaving the sound page leaves
 weird numbers that look like they are off by one or something. Since we
 are using the fallback steps, let's change the number of fallback steps
 to a multiple of 10 + 1 to keep things aligned
+
+Upstream-Status: Inappropriate
+
 ---
  src/mainvolume/module-meego-mainvolume.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
