@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/mer-hybris/geoclue-providers-hybris.git;protocol=https;branch=master \
     file://0001-pri-Fix-host-contamination-path-issue.patch \
-    file://0002-hal-Handle-not-being-able-to-set-the-SUPL-server.patch"
-SRCREV = "0.2.35"
+    "
+SRCREV = "0.2.38"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

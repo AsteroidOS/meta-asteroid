@@ -1,0 +1,233 @@
+From 8765a35233aa21a932ee92bbbb92a5f8edd4dc68 Mon Sep 17 00:00:00 2001
+From: Chris Adams <chris.adams@qinetic.com.au>
+Date: Thu, 23 Jul 2020 16:09:45 +1000
+Subject: [PATCH] Enforce detail access constraints in contact operations by
+ default
+
+Previously, Irremovable constraints were enforced but ReadOnly
+constraints were not, for in-memory contact detail operations.
+
+While it is simple to work around any constraints simply by recreating
+an identical contact (including id) in-memory, and then saving the
+modified detail into that contact, we should enforce the constraints
+consistently, and provide API to allow the user to ignore the
+constraints for the in-memory operations if they desire (thus leaving
+enforcement up to the backend).
+
+Change-Id: I75909b743a150c0786d9b7f0080817de0166c353
+Reviewed-by: Matthew Vogt <matthew.vogt@qinetic.com.au>
+Reviewed-by: Pekka Vuorela <pvuorela@iki.fi>
+
+Upstream-Status: Backport [8765a35233aa21a932ee92bbbb92a5f8edd4dc68]
+---
+ src/contacts/qcontact.cpp                     | 41 ++++++++++++++-----
+ src/contacts/qcontact.h                       | 10 ++++-
+ .../contacts/memory/qcontactmemorybackend.cpp |  6 +--
+ tests/auto/contacts/qcontact/tst_qcontact.cpp | 38 ++++++++++++++++-
+ 4 files changed, 79 insertions(+), 16 deletions(-)
+
+diff --git a/src/contacts/qcontact.cpp b/src/contacts/qcontact.cpp
+index 481463ef..c8cd7cd8 100644
+--- a/src/contacts/qcontact.cpp
++++ b/src/contacts/qcontact.cpp
+@@ -398,10 +398,14 @@ bool QContact::appendDetail(const QContactDetail &detail)
+  * this contact, that detail is overwritten.  Otherwise, a new id is generated
+  * and set in the detail, and the detail is added to the contact.
+  *
+- * If the detail's access constraint includes \c QContactDetail::ReadOnly,
+- * this function will return true and save the detail in the contact,
+- * however attempting to save the contact in a manager may fail (if that manager
+- * decides that the read only detail should not be updated).
++ * If the detail was previously saved, and its access constraint includes
++ * \c QContactDetail::ReadOnly, this function will return false if \a enforce
++ * is set to \c QContact::EnforceAccessConstraints.
++ * Otherwise, the detail will be saved, but any attempt to save the contact
++ * in the manager may fail due to the backend enforcing the original constraints
++ * (regardless of whether \a enforce is set to \c QContact::ReplaceAccessConstraints,
++ * which is provided for the convenience of backend implementors).
++ *
+  * Details with the \c QContactDetail::ReadOnly constraint set are typically provided
+  * in a contact by the manager, and are usually information that is either
+  * synthesized, or not intended to be changed by the user (e.g. presence information
+@@ -422,7 +426,7 @@ bool QContact::appendDetail(const QContactDetail &detail)
+  *
+  * Note that the caller retains ownership of the detail.
+  */
+-bool QContact::saveDetail(QContactDetail* detail)
++bool QContact::saveDetail(QContactDetail* detail, AccessConstraintsEnforcement enforce)
+ {
+     if (!detail)
+         return false;
+@@ -440,10 +444,24 @@ bool QContact::saveDetail(QContactDetail* detail)
+         const QContactDetail& curr = d.constData()->m_details.at(i);
+         if (detail->d->m_type == curr.d->m_type &&
+                 detail->d->m_detailId == curr.d->m_detailId) {
+-            // update the detail constraints of the supplied detail
+-            detail->d->m_access = curr.accessConstraints();
+             // Found the old version.  Replace it with this one.
++            QContactDetail::AccessConstraints oldAccess = detail->d->m_access;
++            if (enforce == QContact::EnforceAccessConstraints) {
++                // fail the operation if the original detail is immutable.
++                if (curr.accessConstraints() & QContactDetail::ReadOnly) {
++                    return false;
++                }
++                // enforce detail constraints of the original detail
++                detail->d->m_access = curr.accessConstraints();
++            } else if (enforce == QContact::IgnoreAccessConstraints) {
++                // keep the detail constraints of the original detail
++                // but ignore them and apply the values change in memory.
++                detail->d->m_access = curr.accessConstraints();
++            } // else QContact::ReplaceAccessConstraints, so keep as-is.
++            // add the detail to the contact
+             d->m_details[i] = *detail;
++            // return the input detail to its previous state.
++            detail->d->m_access = oldAccess;
+             return true;
+         }
+     }
+@@ -468,13 +486,15 @@ bool QContact::saveDetail(QContactDetail* detail)
+  * the contact, in order to ensure that the remove operation is successful.
+  *
+  * If the detail's access constraint includes \c QContactDetail::Irremovable,
+- * this function will return false.
++ * this function will return false if \a enforce is set to \c QContact::EnforceAccessConstraints.
++ * Otherwise, the detail will be removed, but any attempt to save the contact
++ * in the manager may fail due to the backend enforcing the constraints.
+  *
+  * Returns true if the detail was removed successfully, false if an error occurred.
+  *
+  * Note that the caller retains ownership of the detail.
+  */
+-bool QContact::removeDetail(QContactDetail* detail)
++bool QContact::removeDetail(QContactDetail* detail, AccessConstraintsEnforcement enforce)
+ {
+     if (!detail)
+         return false;
+@@ -492,7 +512,8 @@ bool QContact::removeDetail(QContactDetail* detail)
+     if (removeIndex < 0)
+         return false;
+ 
+-    if (detail->accessConstraints() & QContactDetail::Irremovable)
++    if (enforce == QContact::EnforceAccessConstraints
++            && detail->accessConstraints() & QContactDetail::Irremovable)
+         return false;
+ 
+     if (!d.constData()->m_details.contains(*detail))
+diff --git a/src/contacts/qcontact.h b/src/contacts/qcontact.h
+index 35a1079c..065190e8 100644
+--- a/src/contacts/qcontact.h
++++ b/src/contacts/qcontact.h
+@@ -60,6 +60,12 @@ class QContactData;
+ class Q_CONTACTS_EXPORT QContact
+ {
+ public:
++    enum AccessConstraintsEnforcement {
++        ReplaceAccessConstraints,
++        IgnoreAccessConstraints,
++        EnforceAccessConstraints,
++    };
++
+     QContact();
+ 
+     ~QContact();
+@@ -107,8 +113,8 @@ public:
+     }
+ 
+     /* generic detail addition/removal functions */
+-    bool saveDetail(QContactDetail* detail);
+-    bool removeDetail(QContactDetail* detail);
++    bool saveDetail(QContactDetail* detail, AccessConstraintsEnforcement enforce = EnforceAccessConstraints);
++    bool removeDetail(QContactDetail* detail, AccessConstraintsEnforcement enforce = EnforceAccessConstraints);
+ 
+     /* Relationships that this contact was involved in when it was retrieved from the manager */
+     QList<QContactRelationship> relationships(const QString& relationshipType = QString()) const;
+diff --git a/src/plugins/contacts/memory/qcontactmemorybackend.cpp b/src/plugins/contacts/memory/qcontactmemorybackend.cpp
+index b8d82cb1..4ef86d3a 100644
+--- a/src/plugins/contacts/memory/qcontactmemorybackend.cpp
++++ b/src/plugins/contacts/memory/qcontactmemorybackend.cpp
+@@ -916,7 +916,7 @@ void QContactMemoryEngine::partiallySyncDetails(QContact *to, const QContact &fr
+     // check details to save
+     foreach (QContactDetail detail, fromDetails) {
+         if (!toDetails.contains(detail))
+-            to->saveDetail(&detail);
++            to->saveDetail(&detail, QContact::IgnoreAccessConstraints);
+     }
+ }
+ 
+@@ -1040,7 +1040,7 @@ bool QContactMemoryEngine::saveContact(QContact *theContact, QContactChangeSet &
+         QContactTimestamp ts = theContact->detail(QContactTimestamp::Type);
+         ts.setLastModified(QDateTime::currentDateTime());
+         QContactManagerEngine::setDetailAccessConstraints(&ts, QContactDetail::ReadOnly | QContactDetail::Irremovable);
+-        theContact->saveDetail(&ts);
++        theContact->saveDetail(&ts, QContact::ReplaceAccessConstraints);
+ 
+         // Looks ok, so continue
+         d->m_contacts.replace(index, *theContact);
+@@ -1080,7 +1080,7 @@ bool QContactMemoryEngine::saveContact(QContact *theContact, QContactChangeSet &
+         ts.setLastModified(QDateTime::currentDateTime());
+         ts.setCreated(ts.lastModified());
+         setDetailAccessConstraints(&ts, QContactDetail::ReadOnly | QContactDetail::Irremovable);
+-        theContact->saveDetail(&ts);
++        theContact->saveDetail(&ts, QContact::ReplaceAccessConstraints);
+ 
+         // update the contact item - set its ID
+         QContactId newContactId = contactId(QByteArray(reinterpret_cast<const char *>(&d->m_nextContactId), sizeof(quint32)));
+diff --git a/tests/auto/contacts/qcontact/tst_qcontact.cpp b/tests/auto/contacts/qcontact/tst_qcontact.cpp
+index a4accd1e..2c564ae3 100644
+--- a/tests/auto/contacts/qcontact/tst_qcontact.cpp
++++ b/tests/auto/contacts/qcontact/tst_qcontact.cpp
+@@ -39,7 +39,6 @@ static inline QContactId makeId(const QString &managerName, uint id)
+     return QContactId(QStringLiteral("qtcontacts:basic%1:").arg(managerName), QByteArray(reinterpret_cast<const char *>(&id), sizeof(uint)));
+ }
+ 
+-
+ class tst_QContact: public QObject
+ {
+     Q_OBJECT
+@@ -365,6 +364,43 @@ void tst_QContact::details()
+     QCOMPARE(c.detail(QContactName::Type).value(QContactName::FieldFirstName).toString(), QString());
+     QVERIFY(c.isEmpty());
+     QCOMPARE(c.id(), oldId); // id shouldn't change.
++
++    // ensure that access constraints are enforced properly.
++    // first, save an immutable phone number in a contact.
++    QContact c3;
++    QContactPhoneNumber five;
++    five.setNumber("5");
++    QContactManagerEngine::setDetailAccessConstraints(&five, QContactDetail::ReadOnly | QContactDetail::Irremovable);
++    QCOMPARE(five.accessConstraints(), QContactDetail::ReadOnly | QContactDetail::Irremovable);
++    QVERIFY(c3.saveDetail(&five));
++    QCOMPARE(c3.detail<QContactPhoneNumber>().accessConstraints(), QContactDetail::ReadOnly | QContactDetail::Irremovable);
++    QCOMPARE(c3.detail<QContactPhoneNumber>().number(), QStringLiteral("5"));
++
++    // second, attempt to mutate it while enforcing access constraints - should fail.
++    five.setNumber("55");
++    QVERIFY(!c3.saveDetail(&five));
++    QVERIFY(!c3.saveDetail(&five, QContact::EnforceAccessConstraints));
++    QCOMPARE(c3.detail<QContactPhoneNumber>().number(), QStringLiteral("5"));
++
++    // third, attempt to mutate it while ignoring access constraints - should succeed,
++    // but the access constraints of the detail should remain unchanged.
++    QContactManagerEngine::setDetailAccessConstraints(&five, QContactDetail::Irremovable);
++    QCOMPARE(five.accessConstraints(), QContactDetail::Irremovable);
++    QVERIFY(c3.saveDetail(&five, QContact::IgnoreAccessConstraints));
++    QCOMPARE(c3.detail<QContactPhoneNumber>().accessConstraints(), QContactDetail::ReadOnly | QContactDetail::Irremovable); // unchanged.
++    QCOMPARE(c3.detail<QContactPhoneNumber>().number(), QStringLiteral("55"));
++
++    // fourth, replace the access constraints as well as the value - should succeed.
++    five.setNumber("555");
++    QCOMPARE(five.accessConstraints(), QContactDetail::Irremovable); // shouldn't have been overwritten by the above calls.
++    QVERIFY(c3.saveDetail(&five, QContact::ReplaceAccessConstraints));
++    QCOMPARE(c3.detail<QContactPhoneNumber>().accessConstraints(), QContactDetail::Irremovable); // changed.
++    QCOMPARE(c3.detail<QContactPhoneNumber>().number(), QStringLiteral("555"));
++
++    // fifth, ensure that removing the detail fails if the constraint is enforced (default).
++    QVERIFY(!c3.removeDetail(&five));
++    QVERIFY(!c3.removeDetail(&five, QContact::EnforceAccessConstraints));
++    QVERIFY(c3.removeDetail(&five, QContact::IgnoreAccessConstraints));
+ }
+ 
+ void tst_QContact::preferences()
+-- 
+2.47.3
+

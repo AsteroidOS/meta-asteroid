@@ -1,4 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI += "file://0004-Change-EGL_OPENGL_ES3_BIT_KHR-to-EGL_OPENGL_ES3_BIT.patch"
-
+SRC_URI += "file://0001-Change-EGL_OPENGL_ES3_BIT_KHR-to-EGL_OPENGL_ES3_BIT.patch"

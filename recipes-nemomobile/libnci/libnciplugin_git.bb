@@ -1,12 +1,12 @@
 SUMMARY = "mer-hybris libnciplugin"
 HOMEPAGE = "https://github.com/mer-hybris/libnciplugin"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=c049b5654a2ea5d8d3b45c4416abe4ae"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=98cc3a1c8b4816ed2d8984676c8edaa8"
 
 SRC_URI = "git://github.com/mer-hybris/libnciplugin.git;protocol=https;branch=master \
            file://0001-Makefile-Allow-for-CC-to-be-overridden.patch \
            "
-SRCREV = "3b844682112733be1b1d6d2bc745dab40f03b152"
+SRCREV = "25d15f229f8db462d6f9ea884560918c14739b84"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

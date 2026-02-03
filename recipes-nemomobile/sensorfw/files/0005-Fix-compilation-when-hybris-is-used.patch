@@ -1,4 +1,4 @@
-From e9128183022793c658b3abb45bf9b6049458b0df Mon Sep 17 00:00:00 2001
+From c87747f55f408832bbfaa6a83e823202154bc52c Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Mon, 18 Apr 2022 00:05:25 +0200
 Subject: [PATCH] Fix compilation when hybris is used. Make sure that the
@@ -12,17 +12,16 @@ Content-Transfer-Encoding: 8bit
 Upstream-Status: Inappropriate
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
-
 ---
  core/core.pro | 13 +++++--------
- sensorfw.pro  | 45 +++++++++++++++++++++------------------------
- 2 files changed, 26 insertions(+), 32 deletions(-)
+ sensorfw.pro  | 44 +++++++++++++++++++++-----------------------
+ 2 files changed, 26 insertions(+), 31 deletions(-)
 
 diff --git a/core/core.pro b/core/core.pro
-index 5d7ed0c..f90da22 100644
+index 6225e47..8d32897 100644
 --- a/core/core.pro
 +++ b/core/core.pro
-@@ -93,12 +93,9 @@ lunaservice {
+@@ -96,12 +96,9 @@ lunaservice {
      PKGCONFIG += luna-service2 LunaSysMgrCommon LunaSysMgrIpcMessages
  }
  
@@ -41,48 +40,45 @@ index 5d7ed0c..f90da22 100644
 +target.path = $$SHAREDLIBPATH
 +INSTALLS += target
 diff --git a/sensorfw.pro b/sensorfw.pro
-index 43fbe81..c4eb9f9 100644
+index e3ca9db..82d5f69 100644
 --- a/sensorfw.pro
 +++ b/sensorfw.pro
-@@ -69,24 +69,23 @@ contains(CONFIG,hybris) {
+@@ -68,39 +68,37 @@ contains(CONFIG,hybris) {
      SUBDIRS += core/hybris.pro \
                 adaptors
      }
 -    publicheaders.files += include/*.h
--
--    INSTALLS += PKGCONFIGFILES QTCONFIGFILES
--    PKGCONFIGFILES.path = $$[QT_INSTALL_LIBS]/pkgconfig
--    QTCONFIGFILES.files = sensord.prf
 +}
 +publicheaders.files += include/*.h
  
--    qt-api.depends = datatypes
--    sensord.depends = datatypes adaptors sensors chains
+-    INSTALLS += PKGCONFIGFILES QTCONFIGFILES
+-    PKGCONFIGFILES.path = $$[QT_INSTALL_LIBS]/pkgconfig
+-    QTCONFIGFILES.files = sensord.prf
 +INSTALLS += PKGCONFIGFILES QTCONFIGFILES
 +PKGCONFIGFILES.path = $$[QT_INSTALL_LIBS]/pkgconfig
 +QTCONFIGFILES.files = sensord.prf
  
--    include( doc/doc.pri )
--    include( common-install.pri )
--    include( common-config.pri )
+-    qt-api.depends = datatypes
+-    sensord.depends = datatypes adaptors sensors chains
 +qt-api.depends = datatypes
 +sensord.depends = datatypes adaptors sensors chains
  
--    PKGCONFIGFILES.files = sensord-qt$${QT_MAJOR_VERSION}.pc
--    PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt$${QT_MAJOR_VERSION}.pc'
--    QTCONFIGFILES.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
+-    include( doc/doc.pri )
+-    include( common-install.pri )
+-    include( common-config.pri )
 +include( doc/doc.pri )
 +include( common-install.pri )
 +include( common-config.pri )
  
+-    PKGCONFIGFILES.files = sensord-qt$${QT_MAJOR_VERSION}.pc
+-    PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt$${QT_MAJOR_VERSION}.pc'
+-    QTCONFIGFILES.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
 -}
 +PKGCONFIGFILES.files = sensord-qt5.pc
 +PKGCONFIGFILES.commands = 'sed -i "s/Version:.*/Version: $$PC_VERSION/" $$_PRO_FILE_PWD_/sensord-qt$${QT_MAJOR_VERSION}.pc'
 +QTCONFIGFILES.path = $$[QT_INSTALL_ARCHDATA]/mkspecs/features
  
- 
- 
-@@ -94,17 +93,15 @@ contains(CONFIG,hybris) {
+ # How to make this work in all cases?
  #PKGCONFIGFILES.commands = sed -i \"s/Version:.*$$/Version: `head -n1 debian/changelog | cut -f 2 -d\' \' | tr -d \'()\'`/\" sensord-qt$${QT_MAJOR_VERSION}.pc
  
  
