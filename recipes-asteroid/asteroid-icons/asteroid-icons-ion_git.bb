@@ -4,7 +4,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=92e02b7236a0635eaf1478f8041b0602"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-icons-ion;protocol=https;branch=master"
-SRCREV = "${AUTOREV}"
+SRCREV = "7941cd491296b79941cbdad0d4b72bd34810c5dc"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

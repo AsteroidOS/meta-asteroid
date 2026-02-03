@@ -4,7 +4,7 @@ LICENSE = "CC-BY-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE_CCBY;md5=e5ae8a8ac3605e6baffcd72982f4703b"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-wallpapers;protocol=https;branch=master"
-SRCREV = "${AUTOREV}"
+SRCREV = "3cd501b96343f97de4e26f847351ea0555ccce55"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
