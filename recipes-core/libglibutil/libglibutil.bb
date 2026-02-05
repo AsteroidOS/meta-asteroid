@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/sailfishos/libglibutil.git;protocol=https;branch=mas
 SRCREV = "1.0.62"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS = "glib-2.0"
 

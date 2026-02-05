@@ -7,7 +7,6 @@ SRC_URI = "git://gitlab.com/accounts-sso/signond.git;protocol=https;branch=maste
 SRCREV = "4212b454da1cab2ef36f8def1b3d75cab0506a71"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 do_configure:prepend() {
