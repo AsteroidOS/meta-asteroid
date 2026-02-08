@@ -3,3 +3,4 @@ keycode 115 = VolumeUp
 keycode 139 = MenuKB
 keycode 750 = MenuKB
 keycode 128 = MenuKB
+keycode 116 = Sleep
