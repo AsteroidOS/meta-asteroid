@@ -1,0 +1,30 @@
+From 4067093ef1d410e48eab7b1644d3754ce9120435 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 8 Feb 2026 19:15:18 +0100
+Subject: [PATCH] kmap2qmap: Map Sleep key
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ src/kmap2qmap/main.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/kmap2qmap/main.cpp b/src/kmap2qmap/main.cpp
+index 6aea7b89a..4168014d8 100644
+--- a/src/kmap2qmap/main.cpp
++++ b/src/kmap2qmap/main.cpp
+@@ -281,6 +281,7 @@ static const struct symbol_map_t symbol_map[] = {
+     { "Camera",        Qt::Key_Camera },
+     { "CameraFocus",   Qt::Key_CameraFocus },
+     { "MenuKB",        Qt::Key_MenuKB },
++    { "Sleep",         Qt::Key_Sleep },
+ 
+     { "Call",             Qt::Key_Call },
+     { "Hangup",           Qt::Key_Hangup },
+-- 
+2.53.0
+
