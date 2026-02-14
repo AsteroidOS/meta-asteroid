@@ -1,17 +1,16 @@
-From 5c2f8d75fbb2a2f4157a931ad28e4baa7df66c49 Mon Sep 17 00:00:00 2001
+From bc699f33510b3d8b387fdca3fa8f3f63c8e2662f Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 16 Jan 2017 13:01:23 +0100
 Subject: [PATCH] languagemodel: install languages in
  /usr/share/supported-languages
 
 Upstream-Status: Inappropriate
-
 ---
  src/languagemodel.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
-index 997becb..c85b158 100644
+index 1c4a47c..9df8790 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
 @@ -42,7 +42,7 @@

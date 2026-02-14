@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/qmlbooster.cpp;beginline=1;endline=18;md5=7e2bc27
 SRC_URI = "git://github.com/sailfishos/mapplauncherd-booster-qtcomponents.git;protocol=https;branch=master \
           file://booster-qtcomponents-qt5.service \
           file://preload.qml"
-SRCREV = "0905e88e4091df667baa2155b7cf1683552b1e79"
+SRCREV = "6c0faf11b5e9f0572898a451d41613a8f7ea39c4"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

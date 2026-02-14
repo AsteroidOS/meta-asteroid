@@ -7,7 +7,7 @@ inherit qmake5 pkgconfig
 
 SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-qt.git;protocol=https;branch=master"
 
-SRCREV = "525ec684cfa8d234f797d7e49e21c476eea04d8e"
+SRCREV = "c8fdd05f1a1ff5886f4649d24f2ba8c5f61cfa3a"
 S = "${WORKDIR}/git"
 
 do_install:append() {

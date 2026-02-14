@@ -1,4 +1,4 @@
-From 8884326d594a3d288712fa35179c02667993197f Mon Sep 17 00:00:00 2001
+From d24dbf9b3e1e61bdaaebe4710686f3f35ed2eade Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 11 Sep 2022 22:14:19 +0200
 Subject: [PATCH] Disable SSU dependency.
@@ -9,14 +9,13 @@ Content-Transfer-Encoding: 8bit
 Upstream-Status: Inappropriate
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
-
 ---
  src/deviceinfo.cpp | 30 ------------------------------
  src/src.pro        |  2 +-
  2 files changed, 1 insertion(+), 31 deletions(-)
 
 diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
-index 4ffdba9..543dddd 100644
+index 880521b..a746cdb 100644
 --- a/src/deviceinfo.cpp
 +++ b/src/deviceinfo.cpp
 @@ -33,7 +33,6 @@
@@ -27,7 +26,7 @@ index 4ffdba9..543dddd 100644
  #include <qofonomanager.h>
  #include <qofonomodem.h>
  
-@@ -93,35 +92,6 @@ DeviceInfoPrivate::DeviceInfoPrivate(DeviceInfo *deviceInfo, bool synchronousIni
+@@ -97,35 +96,6 @@ DeviceInfoPrivate::DeviceInfoPrivate(DeviceInfo *deviceInfo, bool synchronousIni
      , m_synchronousInit(synchronousInit)
      , m_updateModemPropertiesTimer(nullptr)
  {
@@ -64,12 +63,12 @@ index 4ffdba9..543dddd 100644
  
  DeviceInfoPrivate::~DeviceInfoPrivate()
 diff --git a/src/src.pro b/src/src.pro
-index 512207d..00bac50 100644
+index 69c3d38..568cc21 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -7,7 +7,7 @@ QT -= gui
  
- CONFIG += c++11 hide_symbols link_pkgconfig
+ CONFIG += hide_symbols link_pkgconfig
  PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto libsailfishkeyprovider connman-qt5 glib-2.0
 -PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
 +PKGCONFIG += nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol

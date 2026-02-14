@@ -1,21 +1,21 @@
 SUMMARY = "SailfishOS NFC daemon"
 HOMEPAGE = "https://github.com/sailfishos/nfcd"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=5b3f54b2e4d9f7704287bad532091824"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=f96e17185b6c75073ad970a61adc7ede"
 
 SRC_URI = "git://github.com/sailfishos/nfcd.git;protocol=https;branch=master \
            file://0001-Makefile-Allow-for-CC-to-be-overridden.patch \
            file://0002-Makefile-Allow-for-INSTALL_SYSTEMD_DIR-to-be-overrid.patch \
            file://0003-systemd-Allow-the-service-to-be-started-as-root.patch \
            "
-SRCREV = "0cdf85c5373ea94877af64e20a2b05a80074386a"
+SRCREV = "482ca8bc3eca4ce2fc04cb9ab368d173353a1c65"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "KEEP_SYMBOLS=1 INSTALL_SYSTEMD_DIR=${D}${systemd_unitdir}/system/"
 
-DEPENDS += "glib-2.0 libglibutil glib-2.0-native systemd libgbinder libdbusaccess file"
+DEPENDS += "glib-2.0 libglibutil glib-2.0-native systemd libgbinder libdbusaccess libnfcdef file"
 RDEPENDS:${PN} += "nfcd-mce-plugin"
 
 SYSTEMD_PACKAGES = "${PN}"

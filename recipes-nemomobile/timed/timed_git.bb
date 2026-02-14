@@ -3,40 +3,37 @@ HOMEPAGE = "https://github.com/sailfishos/timed"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master \
-    file://0001-Fixes-build.patch \
-    file://0002-Add-wakeup-event-for-use-with-ambient-mode.patch \
-    file://timed-qt5.conf \
-    file://timed-qt5.service"
-SRCREV = "d136e845f5d2da8bb43cdd70b283300a8b8cd3b9"
+SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master"
+SRCREV = "80ea5e63cf58db616789adbfeb9cf3bfd63dddaa"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 inherit qmake5 asteroid-users pkgconfig
 
+# Out-of-source build breaks install
 B = "${S}"
 
-do_configure:prepend() {
-    mkdir -p src/h/timed-qt5/
-    cp src/lib/qmacro.h src/h/timed-qt5/qmacro.h
-    sed -i "s@<policy user=\"nemo\">@<policy user=\"ceres\">@" src/server/timed-qt5.conf tests/ut_networktime/fakeofono/org.fakeofono.conf
-    cp ${UNPACKDIR}/timed-qt5.service ${S}/src/server/timed-qt5.service
+# Code expects to be massaged first the same way it's done in RPM .spec
+do_compile:prepend() {
+    mkdir -p ${B}/src/h/timed-qt5
+    # As B=${S} here, src/lib/qmacro.h may exist from previous builds
+    rm -f ${B}/src/h/timed-qt5/qmacro.h
+    cp ${B}/src/lib/qmacro.h ${B}/src/h/timed-qt5/
 }
 
 do_install:append() {
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service ]; then
-        ln -s /usr/lib/systemd/user/timed-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/timed-qt5.service
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/timed.service ]; then
+        ln -s /usr/lib/systemd/user/timed.service ${D}/usr/lib/systemd/user/default.target.wants/timed.service
     fi
     install -d ${D}/var/lib/timed/
     install -g sailfish-datetime -m 2775 -d ${D}/var/lib/timed/shared_settings/
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime
-    cp ${UNPACKDIR}/timed-qt5.conf ${D}/etc/dbus-1/system.d/
 }
 
 pkg_postinst:${PN}() {
-    setcap cap_sys_time+ep $D/usr/bin/timed-qt5
+    setcap cap_sys_time+ep $D/usr/bin/timed
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
@@ -45,4 +42,3 @@ RDEPENDS:${PN} += "libcap-bin tzdata"
 FILES:${PN} += "/usr/lib/ /usr/lib/systemd/user/default.target.wants/"
 FILES:${PN}-dev += "/usr/share/mkspecs"
 FILES:${PN}-dbg += "/opt"
-INSANE_SKIP:${PN} += "dev-deps"

@@ -11,7 +11,7 @@ SRC_URI = "gitsm://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
            file://0001-ngf-Use-relative-path.patch \
            file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch \
            "
-SRCREV = "402e45f4e03e901d0bea7716d206b4ffae7406f4"
+SRCREV = "3372625b3a221fdbdcc3dbb225e93df34ac307c0"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

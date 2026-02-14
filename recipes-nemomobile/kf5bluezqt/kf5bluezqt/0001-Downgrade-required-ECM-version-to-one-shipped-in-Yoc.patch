@@ -1,0 +1,25 @@
+From c1dbadf08ea5eb9765dbdbbe82a4885471f1a24b Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Thu, 2 Oct 2025 20:59:43 +0200
+Subject: [PATCH] Downgrade required ECM version to one shipped in Yocto
+ scarthgap
+
+Upstream-Status: Inappropriate
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 78a6851..dded977 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,7 +4,7 @@ set(KF_VERSION "5.117.0") # handled by release scripts
+ project(BluezQt VERSION ${KF_VERSION})
+ 
+ include(FeatureSummary)
+-find_package(ECM 5.116.0 NO_MODULE)
++find_package(ECM 5.96.0 NO_MODULE)
+ set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
+ feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
+ 

@@ -1,4 +1,4 @@
-From a045e8637509feab0b6cba84169adcd78aca137c Mon Sep 17 00:00:00 2001
+From 88529cfecb60037c6d33d904a8b73b58bd6ea8d5 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 11 Jan 2022 23:44:15 +0100
 Subject: [PATCH] Add heart rate monitor sensor with hybris adaptor
@@ -9,7 +9,6 @@ Content-Transfer-Encoding: 8bit
 Upstream-Status: Inappropriate
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
-
 ---
  adaptors/adaptors.pro                         |  78 +++++-----
  .../hybrishrmadaptor/hybrishrmadaptor.cpp     | 121 ++++++++++++++++
@@ -55,10 +54,10 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  create mode 100644 sensors/hrmsensor/hrmsensor_a.h
 
 diff --git a/adaptors/adaptors.pro b/adaptors/adaptors.pro
-index 70ffb6f..284d7b9 100644
+index 7becdfb..1d79ff7 100644
 --- a/adaptors/adaptors.pro
 +++ b/adaptors/adaptors.pro
-@@ -11,56 +11,48 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
+@@ -12,56 +12,48 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
                   hybrisorientationadaptor \
                   hybrisrotationadaptor \
                   hybrisgeorotationadaptor \
@@ -152,7 +151,7 @@ index 70ffb6f..284d7b9 100644
 -
 diff --git a/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
 new file mode 100644
-index 0000000..ec64e0d
+index 0000000..b1a7909
 --- /dev/null
 +++ b/adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
 @@ -0,0 +1,121 @@
@@ -197,7 +196,7 @@ index 0000000..ec64e0d
 +    powerStatePath = SensorFrameworkConfig::configuration()->value("heartrate/powerstate_path").toByteArray();
 +    if (!powerStatePath.isEmpty() && !QFile::exists(powerStatePath))
 +    {
-+    	sensordLogW() << "Path does not exists: " << powerStatePath;
++    	qCWarning(lcSensorFw) << "Path does not exists: " << powerStatePath;
 +    	powerStatePath.clear();
 +    }
 +    // Set default delay.
@@ -216,13 +215,13 @@ index 0000000..ec64e0d
 +        return false;
 +    if (isRunning() && !powerStatePath.isEmpty())
 +        writeToFile(powerStatePath, "1");
-+    sensordLogD() << "Hybris HybrisHrmAdaptor start\n";
++    qCInfo(lcSensorFw) << "Hybris HybrisHrmAdaptor start\n";
 +    return true;
 +}
 +
 +void HybrisHrmAdaptor::sendInitialData()
 +{
-+    sensordLogW() << "No initial data for heart rate monitor";
++    qCWarning(lcSensorFw) << "No initial data for heart rate monitor";
 +}
 +
 +void HybrisHrmAdaptor::stopSensor()
@@ -230,7 +229,7 @@ index 0000000..ec64e0d
 +    HybrisAdaptor::stopSensor();
 +    if (!isRunning() && !powerStatePath.isEmpty())
 +        writeToFile(powerStatePath, "0");
-+    sensordLogD() << "Hybris HybrisHrmAdaptor stop\n";
++    qCInfo(lcSensorFw) << "Hybris HybrisHrmAdaptor stop\n";
 +}
 +
 +void HybrisHrmAdaptor::processSample(const sensors_event_t& data)
@@ -405,7 +404,7 @@ index 0000000..8819af7
 +
 +void HybrisHrmAdaptorPlugin::Register(class Loader&)
 +{
-+    sensordLogD() << "registering hybrishrmadaptor";
++    qCInfo(lcSensorFw) << "registering hybrishrmadaptor";
 +    SensorManager& sm = SensorManager::instance();
 +    sm.registerDeviceAdaptor<HybrisHrmAdaptor>("hrmadaptor");
 +}
@@ -455,7 +454,7 @@ index 0000000..b0a19f6
 +
 +#endif
 diff --git a/config/20-sensors-default.conf b/config/20-sensors-default.conf
-index 079bcde..5bccd68 100644
+index 95b9285..ca2d6f3 100644
 --- a/config/20-sensors-default.conf
 +++ b/config/20-sensors-default.conf
 @@ -42,6 +42,7 @@ magnetometersensor=True
@@ -467,13 +466,13 @@ index 079bcde..5bccd68 100644
  ; To avoid revisiting config files for all old ports in the future, the
  ; defaults for added sensors should be set "False" by default here, and
 diff --git a/config/sensord-hybris.conf b/config/sensord-hybris.conf
-index 5c5edf9..8d5cdfb 100644
+index b861b57..f55ea4a 100644
 --- a/config/sensord-hybris.conf
 +++ b/config/sensord-hybris.conf
-@@ -7,6 +7,7 @@ gyroscopeadaptor = hybrisgyroscopeadaptor
- orientationadaptor = hybrisorientationadaptor
+@@ -8,6 +8,7 @@ orientationadaptor = hybrisorientationadaptor
  stepcounteradaptor = hybrisstepcounteradaptor
  pressureadaptor = hybrispressureadaptor
+ wakeupadaptor = hybriswakeupadaptor
 +hrmadaptor = hybrishrmadaptor
  
  [magnetometer]
@@ -1081,7 +1080,7 @@ index 0000000..595c739
 +
 +void HrmPlugin::Register(class Loader&)
 +{
-+    sensordLogD() << "registering hrmsensor";
++    qCInfo(lcSensorFw) << "registering hrmsensor";
 +    SensorManager& sm = SensorManager::instance();
 +    sm.registerSensor<HrmSensorChannel>("hrmsensor");
 +}
@@ -1242,7 +1241,7 @@ index 0000000..3c10db9
 +
 +bool HrmSensorChannel::start()
 +{
-+    sensordLogD() << "Starting HrmSensorChannel";
++    qCInfo(lcSensorFw) << "Starting HrmSensorChannel";
 +
 +    if (AbstractSensorChannel::start()) {
 +        marshallingBin_->start();
@@ -1254,7 +1253,7 @@ index 0000000..3c10db9
 +
 +bool HrmSensorChannel::stop()
 +{
-+    sensordLogD() << "Stopping HrmSensorChannel";
++    qCInfo(lcSensorFw) << "Stopping HrmSensorChannel";
 +
 +    if (AbstractSensorChannel::stop()) {
 +        hrmAdaptor_->stopSensor();
@@ -1511,12 +1510,12 @@ index 0000000..598c4f0
 +
 +#endif
 diff --git a/sensors/sensors.pro b/sensors/sensors.pro
-index 6afdb7d..286fecf 100644
+index 1f000c8..97f0b5c 100644
 --- a/sensors/sensors.pro
 +++ b/sensors/sensors.pro
-@@ -16,6 +16,7 @@ SUBDIRS  = accelerometersensor \
-            humiditysensor \
+@@ -17,6 +17,7 @@ SUBDIRS  = accelerometersensor \
             pressuresensor \
+            wakeupsensor \
             temperaturesensor \
 -           stepcountersensor
 +           stepcountersensor \
