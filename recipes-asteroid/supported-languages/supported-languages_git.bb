@@ -3,10 +3,10 @@ HOMEPAGE = "https://github.com/AsteroidOS/supported-languages"
 LICENSE = "CC0-1.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=65d3616852dbf7b1a6d4b53b00626032"
 
-SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https;branch=master \
+SRC_URI = "git://github.com/AsteroidOS/supported-languages.git;protocol=https;branch=2.0 \
     file://locale.conf \
     file://localeEnv.conf"
-SRCREV = "${AUTOREV}"
+SRCREV = "1fe33027ced04a31420a1ec1ae6ba7b79343afba"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

@@ -3,11 +3,11 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-launcher"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/qml/MainScreen.qml;beginline=1;endline=29;md5=3d250dd089f5d6221d9054029963e332"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=master \
+SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=2.0 \
     file://asteroid-launcher.service \
     file://asteroid-launcher-precondition"
 SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
-SRCREV = "${AUTOREV}"
+SRCREV = "451765b88d38f632e8ed47b21bf18b005186ab93"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
