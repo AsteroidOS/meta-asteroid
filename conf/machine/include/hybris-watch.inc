@@ -14,6 +14,6 @@ PREFERRED_PROVIDER_virtual/android-system-image = "android"
 
 KERNEL_IMAGETYPE = "zImage-dtb"
 IMAGE_FSTYPES += "ext4"
-IMAGE_ROOTFS_ALIGNMENT="4"
+IMAGE_ROOTFS_ALIGNMENT = "4"
 
 IMAGE_INSTALL += "android-init android-tools-adbd android-system firmwared"

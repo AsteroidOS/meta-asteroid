@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qtmultimedia-plugins.git;protocol=ht
 SRCREV = "3f8f24be26a65fdc002c66d93ea115ba53afbc20"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
 
 DEPENDS += "qtmultimedia nemo-gst-interfaces"

@@ -6,7 +6,6 @@ LIC_FILES_CHKSUM = "file://LICENSE-APACHE;md5=7b486c2338d225a1405d979ed2c15ce8"
 SRC_URI = "git://github.com/teg/firmwared;protocol=https;branch=master \
            file://firmwared.service"
 SRCREV = "2e6b5db43d63a5c0283a4cae9a6a20b7ad107a04"
-S = "${WORKDIR}/git"
 
 inherit autotools pkgconfig
 
