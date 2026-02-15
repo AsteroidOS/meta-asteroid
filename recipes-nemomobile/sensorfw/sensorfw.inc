@@ -9,6 +9,7 @@ SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master
            file://0003-Add-Wrist-gesture-sensor-via-libhybris-adaptor.patch \
            file://0004-Fix-compilation-when-autohybris-is-used.patch \
            file://0005-Fix-compilation-when-hybris-is-used.patch \
+           file://0006-hybrisadaptor-Queue-erroneous-events-too.patch \
            file://sensorfwd.service"
 SRCREV = "0.14.10"
 PR = "r1"
