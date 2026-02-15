@@ -1,4 +1,4 @@
-From c24b8d1c0a59959af4985c0edd2eac0583915aee Mon Sep 17 00:00:00 2001
+From 0d2ddadfe1389c9096b20777fc7c3ed10a6d22d0 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:48:18 +0100
 Subject: [PATCH] Add Wrist gesture sensor via libhybris adaptor.
@@ -9,10 +9,9 @@ Content-Transfer-Encoding: 8bit
 Upstream-Status: Inappropriate
 
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
-
 ---
  adaptors/adaptors.pro                         |   3 +-
- .../hybriswristgestureadaptor.cpp             |  94 ++++++++++++++
+ .../hybriswristgestureadaptor.cpp             |  95 ++++++++++++++
  .../hybriswristgestureadaptor.h               |  61 +++++++++
  .../hybriswristgestureadaptor.pro             |  14 ++
  .../hybriswristgestureadaptorplugin.cpp       |  34 +++++
@@ -27,7 +26,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  .../wristgesturesensor/wristgesturesensor.pro |  11 ++
  .../wristgesturesensor_a.cpp                  |  49 +++++++
  .../wristgesturesensor/wristgesturesensor_a.h |  57 +++++++++
- 16 files changed, 684 insertions(+), 2 deletions(-)
+ 16 files changed, 685 insertions(+), 2 deletions(-)
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.h
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
@@ -57,10 +56,10 @@ index 284d7b9..d8d5fbe 100644
  contains(CONFIG,hybris) {
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
 new file mode 100644
-index 0000000..8edc6ca
+index 0000000..eebc504
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,95 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -109,7 +108,8 @@ index 0000000..8edc6ca
 +    }
 +
 +    // Set default delay.
-+    setInterval(200, 0);
++    unsigned int interval_us = 200 * 1000;
++    setDefaultInterval(interval_us);
 +}
 +
 +HybrisWristGestureAdaptor::~HybrisWristGestureAdaptor()
@@ -842,3 +842,6 @@ index 0000000..a589337
 +};
 +
 +#endif
+-- 
+2.53.0
+
