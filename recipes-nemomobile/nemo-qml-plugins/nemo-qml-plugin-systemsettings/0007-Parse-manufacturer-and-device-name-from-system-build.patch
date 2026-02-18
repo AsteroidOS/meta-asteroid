@@ -1,0 +1,66 @@
+From e3172aed8d0d68b9aa79a1a4a942c80ec298dc8c Mon Sep 17 00:00:00 2001
+From: Jozef Mlich <jozef.mlich@greycortex.com>
+Date: Thu, 8 Feb 2024 17:27:26 +0100
+Subject: [PATCH] Parse manufacturer and device name from /system/build.prop if
+ wasn't loaded before
+
+---
+ src/aboutsettings.cpp | 15 ++++++++++++++-
+ src/aboutsettings_p.h |  1 +
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/src/aboutsettings.cpp b/src/aboutsettings.cpp
+index 414e6ed..c58232e 100644
+--- a/src/aboutsettings.cpp
++++ b/src/aboutsettings.cpp
+@@ -72,6 +72,10 @@ void parseReleaseFile(const QString &filename, QMap<QString, QString> *result)
+                 continue;
+             }
+ 
++            if (line == "") {
++                continue;
++            }
++
+             QString key = line.section('=', 0, 0);
+             QString value = line.section('=', 1);
+ 
+@@ -86,7 +90,7 @@ void parseReleaseFile(const QString &filename, QMap<QString, QString> *result)
+             //
+             // see http://stackoverflow.com/a/2821183
+             // and http://stackoverflow.com/a/2821201
+-            if (!QRegExp("[a-zA-Z_]+[a-zA-Z0-9_]*").exactMatch(key)) {
++            if (!QRegExp("[a-zA-Z_]+[a-zA-Z0-9_\\-.]*").exactMatch(key)) {
+                 qWarning("Invalid key in input line: '%s'", qPrintable(line));
+                 continue;
+             }
+@@ -174,6 +178,15 @@ AboutSettings::AboutSettings(QObject *parent)
+     d->vendorName = settings.value(QStringLiteral("Name")).toString();
+     d->vendorVersion = settings.value(QStringLiteral("Version")).toString();
+ 
++    parseReleaseFile(QStringLiteral("/system/build.prop"), &d->buildProp);
++
++    if (d->vendorName == "") {
++        d->vendorName = d->buildProp["ro.product.manufacturer"];
++    }
++    if (d->vendorVersion == "") {
++        d->vendorVersion = d->buildProp["ro.product.model"];
++    }
++
+     refreshStorageModels();
+ 
+     connect(&d->partitionManager, &PartitionManager::partitionAdded,
+diff --git a/src/aboutsettings_p.h b/src/aboutsettings_p.h
+index cd172db..47d3449 100644
+--- a/src/aboutsettings_p.h
++++ b/src/aboutsettings_p.h
+@@ -55,6 +55,7 @@ public:
+     mutable QMap<QString, QString> osRelease;
+     mutable QMap<QString, QString> osReleaseLocalization;
+     mutable QMap<QString, QString> hardwareRelease;
++    mutable QMap<QString, QString> buildProp;
+ 
+     QString vendorName;
+     QString vendorVersion;
+-- 
+2.43.0
+
