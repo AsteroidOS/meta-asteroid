@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/mkcal.git;protocol=https;branch=master"
 SRCREV = "dd6e56a0c7394125b5eef2182c507e28174c5049"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit cmake_qt5 pkgconfig
 
 DEPENDS += "extra-cmake-modules qtbase kcalendarcore timed libical sqlite3 util-linux"

@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/sailfish-access-control.git;protocol=http
 SRCREV = "7b3979d8358e46127859eef05c1dc67729e36e34"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0"
 inherit pkgconfig

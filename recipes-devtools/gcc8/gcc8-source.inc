@@ -18,7 +18,6 @@ INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = ""
 PACKAGES = ""
 
-
 # This needs to be Python to avoid lots of shell variables becoming dependencies.
 python do_preconfigure () {
     import subprocess

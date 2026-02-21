@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-notifications.git;protoco
 SRCREV = "84fa6a95eedb6f7d36523033ec7f45883d7c176f"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "qtdeclarative"

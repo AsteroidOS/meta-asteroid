@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libdbusaccess.git;protocol=https;branch=m
 SRCREV = "a311a847c4b6c5bd154858dec63bd5103d11cf63"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 libglibutil glib-2.0-native systemd libgbinder bison-native"
 

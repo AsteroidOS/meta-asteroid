@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/sailfishos/libsailfishkeyprovider.git;protocol=https
 SRCREV = "ebe72a1d6e631bbb9cb3814ed2599d5910930008"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git/lib"
+S = "${UNPACKDIR}/${BP}/lib"
 B = "${S}"
 
 DEPENDS += "qtbase"

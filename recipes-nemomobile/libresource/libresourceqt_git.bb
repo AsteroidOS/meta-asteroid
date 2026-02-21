@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libresourceqt;protocol=https;branch=maste
 SRCREV = "a7f6ef9bdf23c1333c119c970c8cb15a870fd879"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += " qtbase libresource dbus virtual/libgles2"
 inherit qmake5 pkgconfig

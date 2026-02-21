@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/sailfishos/libusb-moded-qt.git;protocol=https;branch
 SRCREV = "0544b73373bd0a9ec21ea05d1f8e4de22ba3e3fa"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase usb-moded"
 inherit qmake5 pkgconfig

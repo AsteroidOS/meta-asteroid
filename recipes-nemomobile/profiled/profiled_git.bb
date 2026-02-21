@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/profiled.git;protocol=https;branch=master
 SRCREV = "bf70ccf650330f1e2bc23b689e51015bb034b77d"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 dbus dbus-glib pkgconfig-native"
 B = "${WORKDIR}/git"

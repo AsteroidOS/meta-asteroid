@@ -16,7 +16,6 @@ SRC_URI = "gitsm://github.com/sailfishos/mce.git;protocol=https;branch=master \
 SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-native usb-moded"
 

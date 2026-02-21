@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/tzdata-timed.git;protocol=https;branch=ma
 SRCREV = "5b8b301e6ea7ab55e46f67b3b0f3350241812852"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 B = "${S}"
 
 DEPENDS = "pcre-native"

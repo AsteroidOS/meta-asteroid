@@ -2,15 +2,14 @@
 
 DESCRIPTION = "Library used to interact with Android's binder module."
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=24f23d12bbc59c7e5ab483c52a172555"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=620d0a3463dc6d04eedd10422a20926c"
 
 SRC_URI = "git://github.com/mer-hybris/libgbinder.git;branch=master;protocol=https \
            file://gbinder.conf \
 "
-SRCREV = "1.1.14"
+SRCREV = "1.1.43"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS = "glib-2.0 libglibutil"
 

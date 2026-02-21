@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/kf5bluezqt.git;protocol=https;branch=mast
 SRCREV = "65c7154e93bf302639e30c5a8ab6a2a4d6e36e40"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative"
 inherit qmake5

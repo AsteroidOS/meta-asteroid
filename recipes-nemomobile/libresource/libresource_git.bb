@@ -7,7 +7,6 @@ SRC_URI = "gitsm://github.com/sailfishos/libresource.git;protocol=https;branch=m
 SRCREV = "52746ef8216a1c1b4eed21763ba3fca824fab864"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_compile:prepend() {
     sed -i "s@\$(top_builddir)/src/libresource.la@libresource.la@g" src/Makefile

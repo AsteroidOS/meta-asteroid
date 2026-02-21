@@ -15,7 +15,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protoc
 SRCREV = "0.8.1"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
 
 do_configure:prepend() {

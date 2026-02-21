@@ -11,7 +11,6 @@ SRC_URI = "git://github.com/sailfishos/pulseaudio-modules-nemo.git;protocol=http
 SRCREV = "b901d679f246500f3cfab6654eb3043c4cdc43c1"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 DEPENDS += "pulseaudio libcheck"
 
 inherit meson pkgconfig

@@ -7,7 +7,6 @@ SRC_URI = "gitsm://github.com/sailfishos/nemo-qml-plugin-dbus.git;protocol=https
 SRCREV = "d5a0ea1a3a5a221c9fe5b2eedaba79f984970738"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "dbus qtdeclarative qtbase"

@@ -6,7 +6,6 @@ LIC_FILES_CHKSUM = "file://mkboot;beginline=1;endline=14;md5=7b23e8b2786c0da7fb7
 SRC_URI = "git://github.com/xiaolu/mkbootimg_tools.git;protocol=https;branch=master \
         file://0001-mkbootimg-Use-Python-3.patch"
 SRCREV = "df5b4ab37854e72e124d8108cbfb5a1b88ee3c63"
-S = "${WORKDIR}/git"
 PV = "git"
 
 BBCLASSEXTEND = "native"

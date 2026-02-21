@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libprofile-qt.git;protocol=https;branch=m
 SRCREV = "6aeb3a0b5ec9241b557dd0e838fbaa1f61d5215d"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "profiled qtbase"
 B = "${WORKDIR}/git" 
