@@ -1,33 +1,26 @@
-From 3d9235ad347a8cd91db9e447ed23685209f57d59 Mon Sep 17 00:00:00 2001
-From: MagneFire <IDaNLContact@gmail.com>
-Date: Fri, 8 Jan 2021 13:36:29 +0100
-Subject: [PATCH] Disable tests.
-
+From 91d83be6b94b70fff1f4ccab2eb8b3c2b45e0a84 Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Thu, 12 Mar 2026 13:35:00 +0100
+Subject: [PATCH] Disable tests
 Upstream-Status: Inappropriate
 
 ---
- libngf-qt.pro | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ libngf-qt.pro | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/libngf-qt.pro b/libngf-qt.pro
-index 85b0b11..ed88304 100644
+index 18f5975..91c75cf 100644
 --- a/libngf-qt.pro
 +++ b/libngf-qt.pro
-@@ -3,14 +3,12 @@ isEmpty(PREFIX) {
+@@ -2,10 +2,9 @@ isEmpty(PREFIX) {
      PREFIX = /usr/local
  }
  TEMPLATE = subdirs
--SUBDIRS += src declarative tests
-+SUBDIRS += src declarative
-
+-SUBDIRS += src declarative tests feedback
++SUBDIRS += src declarative feedback
+ 
+ declarative.depends = src
+-tests.depends = src declarative
+ feedback.depends = src
+ 
  # No need to build this, but if you want then 'qmake EXAMPLE=1 && make'
- count(EXAMPLE, 1) {
-     SUBDIRS += example
- }
-
--include(doc/doc.pri)
--
- # adds 'coverage' make target
- include(coverage.pri)
---
-2.30.0
