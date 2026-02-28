@@ -14,8 +14,7 @@ RDEPENDS:${PN} += " qtscenegraph-adaptation "
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https;branch=master \
-        file://0001-Add-ambient-mode-display-support.patch;striplevel=2 "
-S = "${UNPACKDIR}/git/hwcomposer"
+        file://0001-Add-ambient-mode-display-support.patch;striplevel=1 "
 SRCREV = "f1d9aef9693bb5ed5f586f3e7c07ac6ee756e21f"
 
 inherit qmake5 pkgconfig
