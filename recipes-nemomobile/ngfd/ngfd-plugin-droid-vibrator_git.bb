@@ -7,7 +7,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILESEXTRAPATHS:append := "${THISDIR}/${PN}:"
 SRC_URI = "git://github.com/mer-hybris/ngfd-plugin-droid-vibrator.git;protocol=https;branch=master \
            file://50-droid-vibrator.ini"
-SRCREV = "ecb6b8e4b5314aaae784121c946525e1fc8cd9ac"
+SRCREV = "569c3d835c0f93b1c03112aad7f8ed57e1592985"
 PR = "r1"
 PV = "+git${SRCPV}"
 B = "${S}"
