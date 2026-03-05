@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://src/qusbmoded.cpp;beginline=1;endline=32;md5=ffd9306b
 SRC_URI = "git://github.com/sailfishos/libusb-moded-qt.git;protocol=https;branch=master \
     file://0001-src.pro-Make-sure-com.meego.usb_moded.xml-is-correct.patch \
     file://usb-moded-qt5.pc"
-SRCREV = "0544b73373bd0a9ec21ea05d1f8e4de22ba3e3fa"
+SRCREV = "10f2bcb86e9c116ae94da668d997c09c0966388c"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
