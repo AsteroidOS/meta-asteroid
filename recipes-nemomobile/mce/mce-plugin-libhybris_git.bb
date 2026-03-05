@@ -9,7 +9,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "mce"
+DEPENDS += "mce libmce-glib"
 
 do_install() {
     oe_runmake install DESTDIR=${D}
