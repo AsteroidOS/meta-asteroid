@@ -1,0 +1,25 @@
+From e48f00e177c840ddc4f8cce00f2afdfe6ac483ed Mon Sep 17 00:00:00 2001
+From: zeyus <zeyus@zeyus.com>
+Date: Mon, 9 Mar 2026 11:05:06 +0100
+Subject: [PATCH] Make lsfd call to bsearch compatible with glibc >= 2.38
+
+---
+ misc-utils/lsfd.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/misc-utils/lsfd.c b/misc-utils/lsfd.c
+index 01e88d5..57718c9 100644
+--- a/misc-utils/lsfd.c
++++ b/misc-utils/lsfd.c
+@@ -1569,8 +1569,9 @@ static void mark_poll_fds_as_multiplexed(char *buf,
+ 		struct file *file = list_entry(f, struct file, files);
+ 		if (is_opened_file(file) && !file->multiplexed) {
+ 			int fd = file->association;
+-			if (bsearch(&(struct pollfd){.fd = fd,}, local.iov_base,
+-				    nfds, sizeof(struct pollfd), pollfdcmp))
++			struct pollfd key = { .fd = fd };
++			if (bsearch(&key, local.iov_base,
++						nfds, sizeof(struct pollfd), pollfdcmp))
+ 				file->multiplexed = 1;
+ 		}
+ 	}
