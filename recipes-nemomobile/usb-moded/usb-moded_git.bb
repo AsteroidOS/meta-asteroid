@@ -23,7 +23,11 @@ S = "${WORKDIR}/git"
 inherit autotools pkgconfig
 
 B = "${WORKDIR}/git"
-EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
+# Default USB developer mode IP. Override in local.conf with e.g.:
+#   USB_MODED_DEVELOPER_IP = "192.168.3.15"
+USB_MODED_DEVELOPER_IP ?= "192.168.2.15"
+
+EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman --with-default-ip=${USB_MODED_DEVELOPER_IP}"
 DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
 RDEPENDS:${PN} += "buteo-mtp"
 

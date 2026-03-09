@@ -1,0 +1,40 @@
+From 83168f8f890c532f1571dcc8fb8de35cf5118af8 Mon Sep 17 00:00:00 2001
+From: zeyus <zeyus@zeyus.com>
+Date: Mon, 9 Mar 2026 15:05:15 +0100
+Subject: [PATCH] Allow setting a default USB IP via --with-default-ip
+
+---
+ configure.ac           | 6 ++++++
+ src/usb_moded-config.c | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 54a0c26..b6f9831 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -91,6 +91,12 @@ AC_ARG_ENABLE([systemd], AS_HELP_STRING([--enable-systemd], [Enable systemd noti
+    esac],[systemd=false])
+ AM_CONDITIONAL([SYSTEMD], [test x$systemd = xtrue])
+ 
++AC_ARG_WITH([default-ip],
++  AS_HELP_STRING([--with-default-ip=IP], [Default USB network IP address @<:@default=192.168.2.15@:>@]),
++  [default_ip="${withval}"],
++  [default_ip="192.168.2.15"])
++AC_DEFINE_UNQUOTED([DEFAULT_NETWORK_IP], ["$default_ip"], [Default USB network IP address])
++
+ AC_ARG_ENABLE([ofono], AS_HELP_STRING([--enable-ofono], [Enable ofono DBUS interface for usb tethering roaming detection  @<:@default=false@:>@]),
+   [case "${enableval}" in
+    yes) ofono=true ; CFLAGS="-DOFONO $CFLAGS" ;;
+diff --git a/src/usb_moded-config.c b/src/usb_moded-config.c
+index fd5488f..e2d89e6 100644
+--- a/src/usb_moded-config.c
++++ b/src/usb_moded-config.c
+@@ -678,7 +678,7 @@ char *config_get_network_setting(const char *config)
+ 
+     if( !g_strcmp0(config, NETWORK_IP_KEY) ) {
+         if( !(ret = config_get_network_ip()) )
+-            ret = g_strdup("192.168.2.15");
++            ret = g_strdup(DEFAULT_NETWORK_IP);
+     }
+     else if( !g_strcmp0(config, NETWORK_INTERFACE_KEY)) {
+         /* check main configuration before using
