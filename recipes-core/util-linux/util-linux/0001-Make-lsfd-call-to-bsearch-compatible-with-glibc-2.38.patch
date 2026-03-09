@@ -3,6 +3,7 @@ From: zeyus <zeyus@zeyus.com>
 Date: Mon, 9 Mar 2026 11:05:06 +0100
 Subject: [PATCH] Make lsfd call to bsearch compatible with glibc >= 2.38
 
+Upstream-Status: Inappropriate
 ---
  misc-utils/lsfd.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
@@ -23,3 +24,5 @@ index 01e88d5..57718c9 100644
  				file->multiplexed = 1;
  		}
  	}
+-- 
+2.53.0
