@@ -3,6 +3,7 @@ From: zeyus <zeyus@zeyus.com>
 Date: Mon, 9 Mar 2026 15:05:15 +0100
 Subject: [PATCH] Allow setting a default USB IP via --with-default-ip
 
+Upstream-Status: Inappropriate
 ---
  configure.ac           | 6 ++++++
  src/usb_moded-config.c | 2 +-
