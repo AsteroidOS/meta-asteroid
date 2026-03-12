@@ -3,7 +3,9 @@ HOMEPAGE = "https://github.com/AsteroidOS/asteroid-settings.git"
 LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
-SRC_URI = "git://github.com/AsteroidOS/asteroid-settings.git;protocol=https;branch=master"
+SRC_URI = "git://github.com/AsteroidOS/asteroid-settings.git;protocol=https;branch=master \
+           file://0001-Temporarily-patch-out-DiskUsage-API-dropped-by-nemo.patch \
+           "
 SRCREV = "${AUTOREV}"
 
 require asteroid-app.inc

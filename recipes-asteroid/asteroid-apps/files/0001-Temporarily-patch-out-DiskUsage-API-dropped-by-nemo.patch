@@ -1,0 +1,35 @@
+From 368d354dcc817082b3bf08051b4d73dc08749391 Mon Sep 17 00:00:00 2001
+From: Davids Paskevics <davids.paskevics@gmail.com>
+Date: Mon, 23 Mar 2026 22:10:58 +0100
+Subject: [PATCH] Temporarily patch out DiskUsage (API dropped by nemo)
+Upstream-Status: Inappropriate
+
+---
+ src/qml/AboutPage.qml | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/src/qml/AboutPage.qml b/src/qml/AboutPage.qml
+index 911a1de..1342f5c 100644
+--- a/src/qml/AboutPage.qml
++++ b/src/qml/AboutPage.qml
+@@ -26,9 +26,6 @@ Flickable {
+     AboutSettings {
+         id: about
+     }
+-    DiskUsage {
+-        id: diskUsage
+-    }
+     SysInfo {
+         id: info
+     }
+@@ -88,10 +85,6 @@ Flickable {
+                 { label: qsTr("WLAN MAC"), text: about.wlanMacAddress },
+                 { label: qsTr("IMEI"), text: about.imei },
+                 { label: qsTr("Serial number"), text: about.serial },
+-                { label: qsTr("Total disk space"), text: qsTr("%L1 GB").arg(Math.round(about.totalDiskSpace() / 1e7)/100) },
+-                { label: qsTr("Available disk space"), text: qsTr("%L1 GB (%L2 %)").
+-                    arg(Math.round(about.availableDiskSpace() / 1e7)/100).
+-                    arg((100.0 * about.availableDiskSpace() / about.totalDiskSpace()).toFixed(0)) },
+                 { label: qsTr("Display size"), text: qsTr("%L1W x %L2H").arg(Dims.w(100)).arg(Dims.h(100)) },
+                 { label: qsTr("Kernel version"), text: kernelVersion },
+                 { label: qsTr("Qt version"), text: qtVersion },
