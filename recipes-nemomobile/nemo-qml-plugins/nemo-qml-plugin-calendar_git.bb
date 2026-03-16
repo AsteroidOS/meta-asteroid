@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-calendar.git;protocol=htt
 "
 SRCREV = "7b37d5888304023e52784451450478328f61c187"
 PV = "0.6.51"
-S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative mkcal libaccounts-qt5"

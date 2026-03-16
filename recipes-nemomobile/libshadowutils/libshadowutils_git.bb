@@ -8,6 +8,5 @@ SRC_URI = "git://github.com/sailfishos-mirror/shadow.git;protocol=https;branch=m
 SRCREV = "cde08e422d8c179d4ba622da2290c31ec645c611"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit cmake

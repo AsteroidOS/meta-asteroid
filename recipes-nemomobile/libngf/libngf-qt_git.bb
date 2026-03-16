@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/libngf-qt.git;protocol=https;branch=maste
 SRCREV = "8fabfc5b13ce2e5d4d914e47303844a5c42b388b"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += " qtbase qtdeclarative libngf dbus"
 inherit qmake5

@@ -10,7 +10,6 @@ SRC_URI = "git://github.com/sailfishos/mapplauncherd-qt.git;protocol=https;branc
 SRCREV = "1ff776d787e3c95424a9925097658ef99a6221ba"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5 pkgconfig
 
 DEPENDS += "qtdeclarative qtbase mapplauncherd glib-2.0"

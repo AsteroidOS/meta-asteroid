@@ -120,7 +120,6 @@ do_configure () {
 	export CXXFLAGS_FOR_TARGET="${TARGET_CXXFLAGS}"
 	export LDFLAGS_FOR_TARGET="${TARGET_LDFLAGS}"
 
-
 	oe_runconf
 }
 

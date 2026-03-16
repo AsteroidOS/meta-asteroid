@@ -7,17 +7,16 @@ SRC_URI = "gitsm://github.com/sailfishos/dsme.git;protocol=https;branch=master \
            file://0002-Fix-and-improve-alarm-time-serialization.patch \
            file://dsme.service \
            "
-SRCREV = "4dc34c954a297c59f9c81c72bb7fc9deaeea5fca"
+SRCREV = "ab78f9c1945505c06beb3662878b6be9781565bd"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase libdsme glib-2.0 libngf libiphb systemd dbus dbus-glib mce cryptsetup"
 inherit autotools pkgconfig
 
-B = "${WORKDIR}/git"
+B = "${S}"
 # Poweron-timer needs libcal but I can't find it
-EXTRA_OECONF= " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-validatorlistener --disable-static --enable-usewheel"
+EXTRA_OECONF = " --disable-poweron-timer --disable-upstart --enable-systemd --enable-runlevel --enable-pwrkeymonitor --disable-validatorlistener --disable-static --enable-usewheel"
 
 do_configure:prepend() {
     sed -i "s@<policy user=\"root\">@<policy user=\"ceres\">@" dsme/dsme.conf
