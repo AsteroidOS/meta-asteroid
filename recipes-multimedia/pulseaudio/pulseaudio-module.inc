@@ -1,5 +1,6 @@
 PULSEAUDIO_VERSION = "17.0"
 EXTRA_OECONF += "--with-module-dir=/usr/lib/pulseaudio/modules"
+EXTRA_OEMESON += "-Dmodlibexecdir=/usr/lib/pulseaudio/modules"
 
 do_configure:prepend() {
     echo "${PULSEAUDIO_VERSION}" > "${S}/.tarball-version"

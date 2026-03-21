@@ -1,12 +1,12 @@
 SUMMARY = "mer-hybris libncicore"
 HOMEPAGE = "https://github.com/mer-hybris/libncicore"
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=8dca037da60041e7ec2349c7aedb18c1"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=91469899584792fd3bac502adbdf8225"
 
 SRC_URI = "git://github.com/mer-hybris/libncicore.git;protocol=https;branch=master \
            file://0001-Makefile-Allow-for-CC-to-be-overridden.patch \
            "
-SRCREV = "7c4e1a8a743bbd713e684a824442f663cadb7a83"
+SRCREV = "7063aead7fb89938d5c248c1695f2dd657341da0"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

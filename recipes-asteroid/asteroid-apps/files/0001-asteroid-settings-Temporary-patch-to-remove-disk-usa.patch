@@ -1,0 +1,41 @@
+From 83315dd8ab19c22ec481158e34652466a14394cd Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Thu, 12 Mar 2026 16:10:17 +0100
+Subject: [PATCH] asteroid-settings: Temporary patch to remove disk usage
+Upstream-Status: Inappropriate
+
+It relies on an API dropped by Jolla.
+
+This patch should be made in the asteroid-settings repo,
+it's just here for now to ease testing.
+
+Drop this commit before PR merge!
+---
+ src/qml/AboutPage.qml | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/src/qml/AboutPage.qml b/src/qml/AboutPage.qml
+index 911a1de..1342f5c 100644
+--- a/src/qml/AboutPage.qml
++++ b/src/qml/AboutPage.qml
+@@ -26,9 +26,6 @@ Flickable {
+     AboutSettings {
+         id: about
+     }
+-    DiskUsage {
+-        id: diskUsage
+-    }
+     SysInfo {
+         id: info
+     }
+@@ -88,10 +85,6 @@ Flickable {
+                 { label: qsTr("WLAN MAC"), text: about.wlanMacAddress },
+                 { label: qsTr("IMEI"), text: about.imei },
+                 { label: qsTr("Serial number"), text: about.serial },
+-                { label: qsTr("Total disk space"), text: qsTr("%L1 GB").arg(Math.round(about.totalDiskSpace() / 1e7)/100) },
+-                { label: qsTr("Available disk space"), text: qsTr("%L1 GB (%L2 %)").
+-                    arg(Math.round(about.availableDiskSpace() / 1e7)/100).
+-                    arg((100.0 * about.availableDiskSpace() / about.totalDiskSpace()).toFixed(0)) },
+                 { label: qsTr("Display size"), text: qsTr("%L1W x %L2H").arg(Dims.w(100)).arg(Dims.h(100)) },
+                 { label: qsTr("Kernel version"), text: kernelVersion },
+                 { label: qsTr("Qt version"), text: qtVersion },

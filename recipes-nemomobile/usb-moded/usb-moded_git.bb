@@ -15,7 +15,7 @@ SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https;branch=mas
            file://usb-moded \
            file://init_ffs \
            file://init_gfs"
-SRCREV = "0213e798ade24de1cb66619516eddab7584dce7f"
+SRCREV = "4b7da5afee06332ac175a5b2772a55e416756f74"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -81,3 +81,4 @@ do_install:append() {
 FILES:${PN} += " ${systemd_system_unitdir} /usr/share/dbus-1/services/ /var/lib/misc/udhcpd.leases"
 
 INSANE_SKIP:${PN} = "ldflags"
+INSANE_SKIP:${PN}-dbg += "buildpaths"

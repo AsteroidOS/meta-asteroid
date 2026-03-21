@@ -9,12 +9,10 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-do_compile:prepend() {
-    sed -i "s@\$(top_builddir)/src/libresource.la@libresource.la@g" src/Makefile
-}
+# Parallel make is broken:
+# No rule to make target '../src/libresource.la', needed by 'libresource-glib.la'.  Stop.
+PARALLEL_MAKE=""
 
 DEPENDS += " glib-2.0 dbus-glib dbus libcheck"
-
-inherit autotools pkgconfig
-
-B = "${S}"
+# Out-of-source build is also broken
+inherit autotools-brokensep pkgconfig

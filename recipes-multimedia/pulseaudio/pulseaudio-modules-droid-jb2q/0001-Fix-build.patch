@@ -1,0 +1,24 @@
+From 9cdb0fc5e4f85c6a63c1e27c13b5ffdd9a8f42f4 Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Thu, 12 Mar 2026 15:05:31 +0100
+Subject: [PATCH] Fix build
+Upstream-Status: Inappropriate
+
+---
+ meson.build | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index e66e05b..a15f882 100644
+--- a/meson.build
++++ b/meson.build
+@@ -35,7 +35,8 @@ pa_version_minor = version_split[1]
+ pa_version_major_minor = pa_version_major + '.' + pa_version_minor
+ project_version_str = meson.project_version()
+ project_version_split = project_version_str.split('-')[0].split('.')
+-pa_version_module = project_version_split[2].split('+')[0]
++pa_version_module = project_version_split[0]
++
+ 
+ modlibexecdir = get_option('modlibexecdir')
+ if modlibexecdir == ''

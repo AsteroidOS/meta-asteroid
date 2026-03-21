@@ -1,4 +1,4 @@
-From 60241170a99ca9780db0fe1567da51cd9ca798f0 Mon Sep 17 00:00:00 2001
+From a63db50bc1b942ce469fb601d9139acfe0993192 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 20 Nov 2022 17:55:53 +0100
 Subject: [PATCH] Makefile: Allow for CC to be overridden.
@@ -13,19 +13,22 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  core/Makefile                | 2 +-
  plugins/Makefile             | 2 +-
  src/Makefile                 | 2 +-
+ test/nfc-param/Makefile      | 2 +-
  test/nfcdep-client/Makefile  | 2 +-
  test/nfcdep-service/Makefile | 2 +-
  tools/iso-dep/Makefile       | 2 +-
  tools/ndef-read/Makefile     | 2 +-
+ tools/ndef-share/Makefile    | 2 +-
  tools/ndef-write/Makefile    | 2 +-
+ tools/nfc-io/Makefile        | 2 +-
  unit/common/Makefile         | 2 +-
- 9 files changed, 9 insertions(+), 9 deletions(-)
+ 12 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/core/Makefile b/core/Makefile
-index f815813..c55eac2 100644
+index fed6ad5..c28e055 100644
 --- a/core/Makefile
 +++ b/core/Makefile
-@@ -93,7 +93,7 @@ PCVERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
+@@ -91,7 +91,7 @@ PCVERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
  # Tools and flags
  #
  
@@ -35,10 +38,10 @@ index f815813..c55eac2 100644
  WARNINGS = -Wall -Wstrict-aliasing -Wunused-result
  INCLUDES = -I$(INCLUDE_DIR)
 diff --git a/plugins/Makefile b/plugins/Makefile
-index 7fc9ace..5b8570a 100644
+index a93142e..179d0b3 100644
 --- a/plugins/Makefile
 +++ b/plugins/Makefile
-@@ -256,7 +256,7 @@ $(COVERAGE_DBUS_HANDLERS_BUILD_DIR):
+@@ -261,7 +261,7 @@ $(COVERAGE_DBUS_HANDLERS_BUILD_DIR):
  # Tools and flags
  #
  
@@ -48,10 +51,23 @@ index 7fc9ace..5b8570a 100644
  WARNINGS = -Wall -Wstrict-aliasing -Wunused-result
  INCLUDES = -I. -I../core/include -I$(GEN_DIR)
 diff --git a/src/Makefile b/src/Makefile
-index a5264e7..bd8b630 100644
+index 7d5e519..914f8c7 100644
 --- a/src/Makefile
 +++ b/src/Makefile
 @@ -70,7 +70,7 @@ NFC_PLUGINS_RELEASE_LIB = $(NFC_PLUGINS_BUILD_DIR)/release/$(NFC_PLUGINS_LIB)
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ DEBUG_FLAGS = -g
+ RELEASE_FLAGS =
+diff --git a/test/nfc-param/Makefile b/test/nfc-param/Makefile
+index 6ee47e7..a53fbf5 100644
+--- a/test/nfc-param/Makefile
++++ b/test/nfc-param/Makefile
+@@ -42,7 +42,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
  # Tools and flags
  #
  
@@ -87,7 +103,7 @@ index 33eb950..9021560 100644
  DEBUG_FLAGS = -g
  RELEASE_FLAGS =
 diff --git a/tools/iso-dep/Makefile b/tools/iso-dep/Makefile
-index 51f4b2e..ea20295 100644
+index c7966b0..e559a79 100644
 --- a/tools/iso-dep/Makefile
 +++ b/tools/iso-dep/Makefile
 @@ -44,7 +44,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
@@ -100,10 +116,23 @@ index 51f4b2e..ea20295 100644
  DEBUG_FLAGS = -g
  RELEASE_FLAGS =
 diff --git a/tools/ndef-read/Makefile b/tools/ndef-read/Makefile
-index 51bd9c7..1f01fd2 100644
+index 6fb8d6b..0ec472d 100644
 --- a/tools/ndef-read/Makefile
 +++ b/tools/ndef-read/Makefile
-@@ -55,7 +55,7 @@ NFC_CORE_RELEASE_LIB = $(NFC_CORE_BUILD_DIR)/release/$(NFC_CORE_LIB)
+@@ -45,7 +45,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ DEBUG_FLAGS = -g
+ RELEASE_FLAGS =
+diff --git a/tools/ndef-share/Makefile b/tools/ndef-share/Makefile
+index b295095..78148a0 100644
+--- a/tools/ndef-share/Makefile
++++ b/tools/ndef-share/Makefile
+@@ -49,7 +49,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
  # Tools and flags
  #
  
@@ -113,10 +142,23 @@ index 51bd9c7..1f01fd2 100644
  DEBUG_FLAGS = -g
  RELEASE_FLAGS =
 diff --git a/tools/ndef-write/Makefile b/tools/ndef-write/Makefile
-index 3d47471..6000d81 100644
+index af52a49..3229750 100644
 --- a/tools/ndef-write/Makefile
 +++ b/tools/ndef-write/Makefile
-@@ -56,7 +56,7 @@ NFC_CORE_RELEASE_LIB = $(NFC_CORE_BUILD_DIR)/release/$(NFC_CORE_LIB)
+@@ -47,7 +47,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
+ # Tools and flags
+ #
+ 
+-CC = $(CROSS_COMPILE)gcc
++CC ?= $(CROSS_COMPILE)gcc
+ LD = $(CC)
+ DEBUG_FLAGS = -g
+ RELEASE_FLAGS =
+diff --git a/tools/nfc-io/Makefile b/tools/nfc-io/Makefile
+index 45b71f2..0304369 100644
+--- a/tools/nfc-io/Makefile
++++ b/tools/nfc-io/Makefile
+@@ -45,7 +45,7 @@ RELEASE_BUILD_DIR = $(BUILD_DIR)/release
  # Tools and flags
  #
  
@@ -126,7 +168,7 @@ index 3d47471..6000d81 100644
  DEBUG_FLAGS = -g
  RELEASE_FLAGS =
 diff --git a/unit/common/Makefile b/unit/common/Makefile
-index 96f920c..512d081 100644
+index 008cfc8..8884020 100644
 --- a/unit/common/Makefile
 +++ b/unit/common/Makefile
 @@ -59,7 +59,7 @@ endif

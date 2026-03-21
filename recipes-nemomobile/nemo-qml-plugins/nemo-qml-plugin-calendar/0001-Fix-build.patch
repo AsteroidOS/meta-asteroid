@@ -1,0 +1,42 @@
+From 2b6b978a6b160e9e42cf2bf5178d8bad029e2339 Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Sun, 1 Feb 2026 23:37:32 +0100
+Upstream-Status: Inappropriate
+Subject: [PATCH] Fix build
+
+---
+ lightweight/calendardataservice/calendardataservice.pro | 2 +-
+ src/src.pro                                             | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/lightweight/calendardataservice/calendardataservice.pro b/lightweight/calendardataservice/calendardataservice.pro
+index a71d0cc..8a9335b 100644
+--- a/lightweight/calendardataservice/calendardataservice.pro
++++ b/lightweight/calendardataservice/calendardataservice.pro
+@@ -6,7 +6,7 @@ QT += qml dbus
+ QT -= gui
+ 
+ CONFIG += link_pkgconfig timed-qt5
+-PKGCONFIG += KF5CalendarCore libmkcal-qt5 accounts-qt5
++PKGCONFIG += KF5CalendarCore libmkcal-qt5 accounts-qt5 timed-qt5
+ 
+ HEADERS += \
+     calendardataservice.h \
+diff --git a/src/src.pro b/src/src.pro
+index 2c13f26..e2b1088 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -4,11 +4,11 @@ PLUGIN_IMPORT_PATH = org/nemomobile/calendar
+ TEMPLATE = lib
+ CONFIG += qt plugin hide_symbols timed-qt5
+ 
+-QT += qml concurrent
++QT += qml concurrent dbus
+ QT -= gui
+ 
+ target.path = $$[QT_INSTALL_QML]/$$PLUGIN_IMPORT_PATH
+-PKGCONFIG += KF5CalendarCore libmkcal-qt5 accounts-qt5
++PKGCONFIG += KF5CalendarCore libmkcal-qt5 accounts-qt5 timed-qt5
+ 
+ INSTALLS += target
+ 
