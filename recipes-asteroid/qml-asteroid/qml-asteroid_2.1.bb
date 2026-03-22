@@ -4,9 +4,8 @@ LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1702a92c723f09e3fab3583b165a8d90"
 
 SRC_URI = "git://github.com/AsteroidOS/qml-asteroid.git;protocol=https;branch=2.0"
-SRCREV = "40a1d8befb61ac7066e4ee885f49393f2ec0d377"
+SRCREV = "bbd14a66047627fe39943307ce303a2fc893ba5f"
 PR = "r1"
-PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit cmake_qt5 pkgconfig
 

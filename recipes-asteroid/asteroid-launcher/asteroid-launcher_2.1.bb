@@ -7,9 +7,8 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;bran
     file://asteroid-launcher.service \
     file://asteroid-launcher-precondition"
 SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
-SRCREV = "451765b88d38f632e8ed47b21bf18b005186ab93"
+SRCREV = "4d123865d0c91599fbd6caacad714f1443b0a57d"
 PR = "r1"
-PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit cmake_qt5 pkgconfig
 

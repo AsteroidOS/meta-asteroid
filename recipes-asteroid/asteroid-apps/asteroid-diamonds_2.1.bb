@@ -4,7 +4,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-diamonds.git;protocol=https;branch=2.0"
-SRCREV = "b43461d6ed087265db2ae4c797568e9bead80b92"
+SRCREV = "af2e8d84617df5b1cee277d6250f96d05d7d58a6"
 
 require asteroid-app.inc
 
