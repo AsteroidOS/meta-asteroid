@@ -1,7 +1,6 @@
 SUMMARY = "AsteroidOS apps base recipe"
 
 PR = "r1"
-PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit cmake_qt5
 
