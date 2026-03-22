@@ -4,7 +4,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-alarmclock.git;protocol=https;branch=2.0"
-SRCREV = "e8445747f06043cee437ea5021606cf0c5615d1f"
+SRCREV = "9f085c0afca5a086b3e367ba5b08469337e616ac"
 
 require asteroid-app.inc
 

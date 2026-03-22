@@ -7,7 +7,7 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;bran
     file://asteroid-launcher.service \
     file://asteroid-launcher-precondition"
 SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
-SRCREV = "451765b88d38f632e8ed47b21bf18b005186ab93"
+SRCREV = "fc846919b510e8018ed12d74d3aedf0e8b01f6da"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
