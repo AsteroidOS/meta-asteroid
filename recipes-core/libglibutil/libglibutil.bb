@@ -3,10 +3,10 @@
 DESCRIPTION = "Library of glib utilities."
 LICENSE = "BSD-3-Clause"
 SECTION = "webos/support"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=097b16a03e30548ee88ebcf6f7fbae97"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=b0c7662a54bc9e4dc8386acfbc694e0e"
 
 SRC_URI = "git://github.com/sailfishos/libglibutil.git;protocol=https;branch=master"
-SRCREV = "1.0.62"
+SRCREV = "1.0.80"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

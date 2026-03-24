@@ -1,4 +1,4 @@
-From 0d2ddadfe1389c9096b20777fc7c3ed10a6d22d0 Mon Sep 17 00:00:00 2001
+From 673930d6587577a6238d158df66e1fee15fbc6b6 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:48:18 +0100
 Subject: [PATCH] Add Wrist gesture sensor via libhybris adaptor.
@@ -11,7 +11,7 @@ Upstream-Status: Inappropriate
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  adaptors/adaptors.pro                         |   3 +-
- .../hybriswristgestureadaptor.cpp             |  95 ++++++++++++++
+ .../hybriswristgestureadaptor.cpp             |  94 ++++++++++++++
  .../hybriswristgestureadaptor.h               |  61 +++++++++
  .../hybriswristgestureadaptor.pro             |  14 ++
  .../hybriswristgestureadaptorplugin.cpp       |  34 +++++
@@ -26,7 +26,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  .../wristgesturesensor/wristgesturesensor.pro |  11 ++
  .../wristgesturesensor_a.cpp                  |  49 +++++++
  .../wristgesturesensor/wristgesturesensor_a.h |  57 +++++++++
- 16 files changed, 685 insertions(+), 2 deletions(-)
+ 16 files changed, 684 insertions(+), 2 deletions(-)
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.h
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
@@ -41,10 +41,10 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  create mode 100644 sensors/wristgesturesensor/wristgesturesensor_a.h
 
 diff --git a/adaptors/adaptors.pro b/adaptors/adaptors.pro
-index 284d7b9..d8d5fbe 100644
+index 1d79ff7..17dd2bf 100644
 --- a/adaptors/adaptors.pro
 +++ b/adaptors/adaptors.pro
-@@ -12,7 +12,8 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
+@@ -13,7 +13,8 @@ HYBRIS_SUBDIRS = hybrisaccelerometer \
                   hybrisrotationadaptor \
                   hybrisgeorotationadaptor \
                   hybrisstepcounteradaptor \
@@ -56,10 +56,10 @@ index 284d7b9..d8d5fbe 100644
  contains(CONFIG,hybris) {
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
 new file mode 100644
-index 0000000..eebc504
+index 0000000..60adcb6
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,94 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -103,13 +103,12 @@ index 0000000..eebc504
 +    powerStatePath = SensorFrameworkConfig::configuration()->value("wristgesture/powerstate_path").toByteArray();
 +    if (!powerStatePath.isEmpty() && !QFile::exists(powerStatePath))
 +    {
-+        sensordLogW() << "Path does not exists: " << powerStatePath;
++        qCWarning(lcSensorFw) << "Path does not exists: " << powerStatePath;
 +        powerStatePath.clear();
 +    }
 +
 +    // Set default delay.
-+    unsigned int interval_us = 200 * 1000;
-+    setDefaultInterval(interval_us);
++    setInterval(200, 0);
 +}
 +
 +HybrisWristGestureAdaptor::~HybrisWristGestureAdaptor()
@@ -123,7 +122,7 @@ index 0000000..eebc504
 +        return false;
 +    if (isRunning() && !powerStatePath.isEmpty())
 +        writeToFile(powerStatePath, "1");
-+    sensordLogD() << "Hybris WristGestureAdaptor start\n";
++    qCInfo(lcSensorFw) << "Hybris WristGestureAdaptor start\n";
 +    return true;
 +}
 +
@@ -132,7 +131,7 @@ index 0000000..eebc504
 +    HybrisAdaptor::stopSensor();
 +     if (!isRunning() && !powerStatePath.isEmpty())
 +        writeToFile(powerStatePath, "0");
-+    sensordLogD() << "Hybris WristGestureAdaptor stop\n";
++    qCInfo(lcSensorFw) << "Hybris WristGestureAdaptor stop\n";
 +}
 +
 +void HybrisWristGestureAdaptor::processSample(const sensors_event_t& data)
@@ -149,7 +148,7 @@ index 0000000..eebc504
 +#else
 +    d->value_ = data.u64.step_counter;
 +#endif
-+    sensordLogD() << "HybrisWristGestureAdaptor: processSample(): " << data.data[0];
++    qCInfo(lcSensorFw) << "HybrisWristGestureAdaptor: processSample(): " << data.data[0];
 +#endif
 +
 +    buffer->commit();
@@ -244,7 +243,7 @@ index 0000000..f5465d5
 +}
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptorplugin.cpp b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptorplugin.cpp
 new file mode 100644
-index 0000000..2c7713b
+index 0000000..114ee91
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptorplugin.cpp
 @@ -0,0 +1,34 @@
@@ -278,7 +277,7 @@ index 0000000..2c7713b
 +
 +void HybrisWristGestureAdaptorPlugin::Register(class Loader&)
 +{
-+    sensordLogD() << "registering hybriswristgestureadaptor";
++    qCInfo(lcSensorFw) << "registering hybriswristgestureadaptor";
 +    SensorManager& sm = SensorManager::instance();
 +    sm.registerDeviceAdaptor<HybrisWristGestureAdaptor>("wristgestureadaptor");
 +}
@@ -327,7 +326,7 @@ index 0000000..9e6b8b0
 +
 +#endif
 diff --git a/config/20-sensors-default.conf b/config/20-sensors-default.conf
-index 5bccd68..4439764 100644
+index ca2d6f3..a51e81e 100644
 --- a/config/20-sensors-default.conf
 +++ b/config/20-sensors-default.conf
 @@ -43,6 +43,7 @@ pressuresensor=True
@@ -339,23 +338,23 @@ index 5bccd68..4439764 100644
  ; To avoid revisiting config files for all old ports in the future, the
  ; defaults for added sensors should be set "False" by default here, and
 diff --git a/config/sensord-hybris.conf b/config/sensord-hybris.conf
-index 8d5cdfb..c596172 100644
+index f55ea4a..2a734c9 100644
 --- a/config/sensord-hybris.conf
 +++ b/config/sensord-hybris.conf
-@@ -8,6 +8,7 @@ orientationadaptor = hybrisorientationadaptor
- stepcounteradaptor = hybrisstepcounteradaptor
+@@ -9,6 +9,7 @@ stepcounteradaptor = hybrisstepcounteradaptor
  pressureadaptor = hybrispressureadaptor
+ wakeupadaptor = hybriswakeupadaptor
  hrmadaptor = hybrishrmadaptor
 +wristgestureadaptor = hybriswristgestureadaptor
  
  [magnetometer]
  scale_coefficient = 1
 diff --git a/sensors/sensors.pro b/sensors/sensors.pro
-index 286fecf..52197f5 100644
+index 97f0b5c..b369191 100644
 --- a/sensors/sensors.pro
 +++ b/sensors/sensors.pro
-@@ -17,6 +17,7 @@ SUBDIRS  = accelerometersensor \
-            pressuresensor \
+@@ -18,6 +18,7 @@ SUBDIRS  = accelerometersensor \
+            wakeupsensor \
             temperaturesensor \
             stepcountersensor \
 -           hrmsensor
@@ -365,7 +364,7 @@ index 286fecf..52197f5 100644
  contextprovider:SUBDIRS += contextplugin
 diff --git a/sensors/wristgesturesensor/wristgestureplugin.cpp b/sensors/wristgesturesensor/wristgestureplugin.cpp
 new file mode 100644
-index 0000000..0122916
+index 0000000..97206c4
 --- /dev/null
 +++ b/sensors/wristgesturesensor/wristgestureplugin.cpp
 @@ -0,0 +1,43 @@
@@ -404,7 +403,7 @@ index 0000000..0122916
 +
 +void WristGesturePlugin::Register(class Loader&)
 +{
-+    sensordLogD() << "registering wristgesturesensor";
++    qCInfo(lcSensorFw) << "registering wristgesturesensor";
 +    SensorManager& sm = SensorManager::instance();
 +    sm.registerSensor<WristGestureSensorChannel>("wristgesturesensor");
 +}
@@ -462,7 +461,7 @@ index 0000000..1d9a9eb
 +#endif
 diff --git a/sensors/wristgesturesensor/wristgesturesensor.cpp b/sensors/wristgesturesensor/wristgesturesensor.cpp
 new file mode 100644
-index 0000000..7b03ca4
+index 0000000..2ec7ce5
 --- /dev/null
 +++ b/sensors/wristgesturesensor/wristgesturesensor.cpp
 @@ -0,0 +1,121 @@
@@ -560,7 +559,7 @@ index 0000000..7b03ca4
 +
 +bool WristGestureSensorChannel::start()
 +{
-+    sensordLogD() << "Starting WristGestureSensorChannel";
++    qCInfo(lcSensorFw) << "Starting WristGestureSensorChannel";
 +
 +    if (AbstractSensorChannel::start()) {
 +        marshallingBin_->start();
@@ -572,7 +571,7 @@ index 0000000..7b03ca4
 +
 +bool WristGestureSensorChannel::stop()
 +{
-+    sensordLogD() << "Stopping WristGestureSensorChannel";
++    qCInfo(lcSensorFw) << "Stopping WristGestureSensorChannel";
 +
 +    if (AbstractSensorChannel::stop()) {
 +        wristGestureAdaptor_->stopSensor();
@@ -842,6 +841,3 @@ index 0000000..a589337
 +};
 +
 +#endif
--- 
-2.53.0
-

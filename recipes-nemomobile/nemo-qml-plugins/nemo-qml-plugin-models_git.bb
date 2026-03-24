@@ -1,10 +1,13 @@
 SUMMARY = "QML Plugin for models on Nemo"
 HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-models"
-LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://src/plugin/plugin.cpp;beginline=1;endline=31;md5=95b47fdc8bb7e842db36790ec722350a"
+LICENSE = "BSD-3-Clause & LGPL-2.0-only"
+LIC_FILES_CHKSUM = " \
+        file://LICENSE.BSD;md5=caa037e0975ee5862b72644673e7590c \
+        file://LICENSE.LGPL;md5=5f30f0716dfdd0d91eb439ebec522ec2 \
+        "
 
 SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-models.git;protocol=https;branch=master"
-SRCREV = "242c95ba87fe5cecfe37de40c96a2cced124572d"
+SRCREV = "175c003d307bdde997d143e0034b7ff6e2dfe7cf"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"

@@ -1,0 +1,62 @@
+From 890bb1c9b0fa9a5b512b2f0aa54f65557038e607 Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Wed, 4 Mar 2026 18:50:33 +0100
+Subject: [PATCH] Remove Werror to make it build against newer dependencies
+
+Upstream-Status: Inappropriate
+
+---
+ plugin/plugin.pro                           | 1 -
+ src/src.pro                                 | 1 -
+ tests/common.pri                            | 1 -
+ tools/notificationtool/notificationtool.pro | 1 -
+ 4 files changed, 4 deletions(-)
+
+diff --git a/plugin/plugin.pro b/plugin/plugin.pro
+index 7c40a30c..f44372e7 100644
+--- a/plugin/plugin.pro
++++ b/plugin/plugin.pro
+@@ -25,7 +25,6 @@ OTHER_FILES += \
+     qmldir
+ 
+ QMAKE_CXXFLAGS += \
+-    -Werror \
+     -g \
+     -std=c++0x \
+     -fPIC \
+diff --git a/src/src.pro b/src/src.pro
+index 82867ad5..5fdd66af 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -157,7 +157,6 @@ packagesExist(contentaction5) {
+ QT += dbus xml qml quick sql gui gui-private sensors
+ 
+ QMAKE_CXXFLAGS += \
+-    -Werror \
+     -Wno-error=format-security \
+     -Wno-deprecated-copy \ 
+     -g \
+diff --git a/tests/common.pri b/tests/common.pri
+index 364b0bc5..6a92dce7 100644
+--- a/tests/common.pri
++++ b/tests/common.pri
+@@ -20,7 +20,6 @@ CONFIG += link_pkgconfig
+ PKGCONFIG += mlite5
+ 
+ QMAKE_CXXFLAGS += \
+-    -Werror \
+     -g \
+     -std=c++0x \
+     -fPIC \
+diff --git a/tools/notificationtool/notificationtool.pro b/tools/notificationtool/notificationtool.pro
+index 301ed8e7..97ee2724 100644
+--- a/tools/notificationtool/notificationtool.pro
++++ b/tools/notificationtool/notificationtool.pro
+@@ -22,7 +22,6 @@ SOURCES += \
+      notificationmanagerproxy.cpp
+ 
+ QMAKE_CXXFLAGS += \
+-    -Werror \
+     -g \
+     -std=c++0x \
+     -fvisibility=hidden \

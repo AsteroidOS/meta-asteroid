@@ -1,4 +1,4 @@
-From f0784287165372b435b7496cba03de60d4038a59 Mon Sep 17 00:00:00 2001
+From 67a657412b2ecaa792df81288ad950ae27f4015b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 15 Feb 2026 12:54:38 +0100
 Subject: [PATCH] hybrisadaptor: Queue erroneous events too
@@ -32,18 +32,15 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/hybrisadaptor.cpp b/core/hybrisadaptor.cpp
-index b2779d4..4716214 100644
+index 3c78feb..2c875ef 100644
 --- a/core/hybrisadaptor.cpp
 +++ b/core/hybrisadaptor.cpp
-@@ -1390,7 +1390,7 @@ int HybrisManager::queueEvents(const sensors_event_t *buffer, int numEvents)
+@@ -1487,7 +1487,7 @@ int HybrisManager::queueEvents(const sensors_event_t *buffer, int numEvents)
          ObtainTemporaryWakeLock();
  
      /* Forward via pipe for processing in main threah */
 -    if (!errorInInput && numEvents > 0 && m_eventPipeWriteFd != -1) {
 +    if (numEvents > 0 && m_eventPipeWriteFd != -1) {
          if (::write(m_eventPipeWriteFd, buffer, numEvents * sizeof *buffer) == -1) {
-             sensordLogW("event pipe write failure: %s", strerror(errno));
+             qCWarning(lcSensorFw, "event pipe write failure: %s", strerror(errno));
              errorInInput = true;
--- 
-2.53.0
-

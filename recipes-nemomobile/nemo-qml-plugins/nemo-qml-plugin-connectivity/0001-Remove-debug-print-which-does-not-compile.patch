@@ -1,0 +1,25 @@
+From 4257e24847d5de731ca69ed709a0dbdd42c41bdc Mon Sep 17 00:00:00 2001
+From: casept <davids.paskevics@gmail.com>
+Date: Mon, 26 Jan 2026 00:51:20 +0100
+Subject: [PATCH] Remove debug print which does not compile
+
+Upstream-Status: Inappropriate
+
+---
+ src/nemo-connectivity/mobiledataconnection.cpp | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/nemo-connectivity/mobiledataconnection.cpp b/src/nemo-connectivity/mobiledataconnection.cpp
+index a6d012b..17d304b 100644
+--- a/src/nemo-connectivity/mobiledataconnection.cpp
++++ b/src/nemo-connectivity/mobiledataconnection.cpp
+@@ -126,9 +126,6 @@ void MobileDataConnectionPrivate::updateStatus()
+     if (oldStatus != status) {
+         emit q->statusChanged();
+     }
+-
+-    qCDebug(CONNECTIVITY, "Update status: %d old: %d state: %s connecting service: %d %s", status, oldStatus,
+-            qPrintable(state), connectingService, qPrintable(q->objectName()));
+ }
+ 
+ void MobileDataConnectionPrivate::updateNetworkServicePath()
