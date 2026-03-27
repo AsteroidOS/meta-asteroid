@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/sailfishos/libmce-qt.git;protocol=https;branch=maste
 SRCREV = "431168d7c91ab7c3cfc9d2283ab1a26f09422228"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative mce"
 inherit qmake5 pkgconfig

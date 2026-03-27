@@ -13,7 +13,6 @@ SRC_URI = "git://github.com/AsteroidOS/lipstick.git;protocol=https;branch=master
 SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

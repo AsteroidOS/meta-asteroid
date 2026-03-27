@@ -1,1 +1,1 @@
-PACKAGECONFIG:append = " xz python readline babeltrace "
+PACKAGECONFIG:append = " xz python readline "

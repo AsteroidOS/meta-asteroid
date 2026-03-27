@@ -9,6 +9,4 @@ SRC_URI = " \
     ${QT_GIT}/${QT_MODULE}.git;name=${QT_MODULE};branch=${QT_MODULE_BRANCH};protocol=${QT_GIT_PROTOCOL} \
 "
 
-S = "${WORKDIR}/git"
-
 PV = "5.6.1+git${SRCPV}"

@@ -14,7 +14,6 @@ SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master
 SRCREV = "0.14.10"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 # Avoid potential renaming of the ipk.
 DEBIANNAME:${PN} = "${PN}"

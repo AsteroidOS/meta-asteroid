@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/sailfishos/mapplauncherd-booster-qtcomponents.git;pr
 SRCREV = "0905e88e4091df667baa2155b7cf1683552b1e79"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qmake5
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase"

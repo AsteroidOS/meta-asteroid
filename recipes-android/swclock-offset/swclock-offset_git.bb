@@ -7,7 +7,6 @@ SRC_URI = "git://gitlab.com/postmarketOS/swclock-offset.git;protocol=https;branc
 SRCREV = "6a4e4dcee814c7cfc22e0f69a6dc510086cb7abf"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 SYSTEMD_SERVICE:${PN} = "swclock-offset-boot.service swclock-offset-shutdown.service"
 

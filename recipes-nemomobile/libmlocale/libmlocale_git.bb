@@ -12,7 +12,6 @@ SRC_URI = "git://github.com/sailfishos/libmlocale.git;protocol=https;branch=mast
 SRCREV = "5de5b558d05ce8fa1486dcf3ee76a13f4754cf03"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_configure:prepend() {
     ${S}/configure

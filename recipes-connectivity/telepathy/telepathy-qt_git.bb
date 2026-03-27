@@ -11,7 +11,6 @@ SRC_URI = "git://anongit.freedesktop.org/git/telepathy/telepathy-qt.git;protocol
 SRCREV = "744b64e59f1eaae86de1eaeda603d779af99b4a0"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_configure:append() {
     chmod +x ${S}/tools/*

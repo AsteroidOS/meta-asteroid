@@ -9,7 +9,6 @@ SRC_URI = "git://anongit.freedesktop.org/git/telepathy/telepathy-farstream.git;p
 SRCREV = "cd5910078b9d8f46fa411c093895d5f73432779b"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 dbus dbus-glib telepathy-glib farstream"
 
