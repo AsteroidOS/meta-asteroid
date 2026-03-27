@@ -11,6 +11,7 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-systemsettings.git;protoc
     file://0004-LanguageModel-Notify-asteroid-launcher-of-locale-cha.patch \
     file://0005-languagemodel-install-languages-in-usr-share-support.patch \
     file://0006-Revert-nemo-qml-plugin-systemsettings-Remove-storage.patch \
+    file://0007-Parse-manufacturer-and-device-name-from-system-build.patch \
     "
 SRCREV = "0.8.1"
 PR = "r1"
