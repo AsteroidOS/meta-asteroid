@@ -12,7 +12,7 @@ JAVA:armeb ?= ""
 JAVA:mipsel ?= ""
 JAVA_sh3 ?= ""
 # gcc 3.x expects 'f77', 4.0 expects 'f95', 4.1 and 4.2 expect 'fortran'
-FORTRAN ?= ",f77"
+FORTRAN ??= ",f77"
 LANGUAGES ?= "c,c++${FORTRAN}${JAVA}"
 
 EXTRA_OECONF_BASE ?= ""

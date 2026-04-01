@@ -88,7 +88,7 @@ S = "${TMPDIR}/work-shared/gcc8-${PV}-${PR}/gcc-${PV}"
 B = "${WORKDIR}/gcc8-${PV}/build.${HOST_SYS}.${TARGET_SYS}"
 
 # Language Overrides
-FORTRAN = ""
+FORTRAN ?= ""
 JAVA = ""
 
 LTO = "--enable-lto"
