@@ -102,8 +102,8 @@ ${GNU_MIRROR}/gcc	http://gcc.get-software.com/releases/ \n \
 #
 gcclibdir = "${libdir}/gcc"
 BINV = "${PV}"
-#S = "${WORKDIR}/gcc8-${PV}"
-S = "${TMPDIR}/work-shared/gcc8-${PV}-${PR}/gcc-${PV}"
+UNPACKDIR = "${TMPDIR}/work-shared/gcc8-${PV}-${PR}/sources/gcc-${PV}"
+S = "${UNPACKDIR}/gcc8-${PV}"
 
 B = "${WORKDIR}/gcc8-${PV}/build.${HOST_SYS}.${TARGET_SYS}"
 
