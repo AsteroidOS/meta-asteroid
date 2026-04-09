@@ -1,0 +1,106 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: konty <konty@users.noreply.github.com>
+Date: Wed, 09 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Fix build with glibc 2.43+ system C11 threads
+
+glibc 2.43+ exposes once_flag/call_once from <stdlib.h>, conflicting
+with mesa's bundled C11 threads that redefines once_flag as
+pthread_once_t. Remove the Android-only HAVE_THRD_CREATE guard so
+mesa uses the system <threads.h> on any platform that provides it.
+
+Additionally, the EGL sync code mixed C11 types (cnd_t/mtx_t) with
+POSIX calls (pthread_cond_init with CLOCK_MONOTONIC condattr). With
+system <threads.h>, cnd_t and pthread_cond_t are distinct union types
+in glibc 2.43+. Switch dri2_egl_sync to use pthread types consistently.
+
+Upstream-Status: Backport [Mesa 24.1+]
+Signed-off-by: konty <konty@users.noreply.github.com>
+---
+--- a/meson.build	2024-05-08 06:28:59.000000000 -0700
++++ b/meson.build	2026-04-09 07:21:41.472965796 -0700
+@@ -1423,11 +1423,9 @@
+ 
+ with_c11_threads = false
+ if cc.has_function('thrd_create', prefix: '#include <threads.h>')
+-  if with_platform_android
+-    # Current only Android's c11 <threads.h> are verified
+-    pre_args += '-DHAVE_THRD_CREATE'
+-    with_c11_threads = true
+-  endif
++  # Use the system C11 threads when available (required for glibc 2.43+)
++  pre_args += '-DHAVE_THRD_CREATE'
++  with_c11_threads = true
+ endif
+ 
+ if cc.has_header_symbol('errno.h', 'program_invocation_name',
+--- a/src/egl/drivers/dri2/egl_dri2.h	2024-05-08 06:28:59.000000000 -0700
++++ b/src/egl/drivers/dri2/egl_dri2.h	2026-04-09 07:22:10.320720748 -0700
+@@ -428,8 +428,8 @@
+ 
+ struct dri2_egl_sync {
+    _EGLSync base;
+-   mtx_t mutex;
+-   cnd_t cond;
++   pthread_mutex_t mutex;
++   pthread_cond_t cond;
+    int refcount;
+    void *fence;
+ };
+--- a/src/egl/drivers/dri2/egl_dri2.c	2024-05-08 06:28:59.000000000 -0700
++++ b/src/egl/drivers/dri2/egl_dri2.c	2026-04-09 07:22:10.336522656 -0700
+@@ -3365,7 +3365,7 @@
+    if (p_atomic_dec_zero(&dri2_sync->refcount)) {
+       switch (dri2_sync->base.Type) {
+       case EGL_SYNC_REUSABLE_KHR:
+-         cnd_destroy(&dri2_sync->cond);
++         pthread_cond_destroy(&dri2_sync->cond);
+          break;
+       case EGL_SYNC_NATIVE_FENCE_ANDROID:
+          if (dri2_sync->base.SyncFd != EGL_NO_NATIVE_FENCE_FD_ANDROID)
+@@ -3497,7 +3497,7 @@
+        dri2_sync->base.SyncStatus == EGL_UNSIGNALED_KHR) {
+       dri2_sync->base.SyncStatus = EGL_SIGNALED_KHR;
+       /* unblock all threads currently blocked by sync */
+-      err = cnd_broadcast(&dri2_sync->cond);
++      err = pthread_cond_broadcast(&dri2_sync->cond);
+ 
+       if (err) {
+          _eglError(EGL_BAD_ACCESS, "eglDestroySyncKHR");
+@@ -3594,9 +3594,9 @@
+ 
+       /* if timeout is EGL_FOREVER_KHR, it should wait without any timeout.*/
+       if (timeout == EGL_FOREVER_KHR) {
+-         mtx_lock(&dri2_sync->mutex);
+-         cnd_wait(&dri2_sync->cond, &dri2_sync->mutex);
+-         mtx_unlock(&dri2_sync->mutex);
++         pthread_mutex_lock(&dri2_sync->mutex);
++         pthread_cond_wait(&dri2_sync->cond, &dri2_sync->mutex);
++         pthread_mutex_unlock(&dri2_sync->mutex);
+       } else {
+          /* if reusable sync has not been yet signaled */
+          if (dri2_sync->base.SyncStatus != EGL_SIGNALED_KHR) {
+@@ -3621,11 +3621,11 @@
+                expire.tv_nsec -= 1000000000L;
+             }
+ 
+-            mtx_lock(&dri2_sync->mutex);
+-            ret = cnd_timedwait(&dri2_sync->cond, &dri2_sync->mutex, &expire);
+-            mtx_unlock(&dri2_sync->mutex);
++            pthread_mutex_lock(&dri2_sync->mutex);
++            ret = pthread_cond_timedwait(&dri2_sync->cond, &dri2_sync->mutex, &expire);
++            pthread_mutex_unlock(&dri2_sync->mutex);
+ 
+-            if (ret == thrd_timedout) {
++            if (ret == ETIMEDOUT) {
+                if (dri2_sync->base.SyncStatus == EGL_UNSIGNALED_KHR) {
+                   ret = EGL_TIMEOUT_EXPIRED_KHR;
+                } else {
+@@ -3658,7 +3658,7 @@
+    dri2_sync->base.SyncStatus = mode;
+ 
+    if (mode == EGL_SIGNALED_KHR) {
+-      ret = cnd_broadcast(&dri2_sync->cond);
++      ret = pthread_cond_broadcast(&dri2_sync->cond);
+ 
+       /* fail to broadcast */
+       if (ret)
