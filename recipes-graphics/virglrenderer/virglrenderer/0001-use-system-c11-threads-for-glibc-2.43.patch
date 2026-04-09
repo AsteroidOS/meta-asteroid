@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: konty <konty@users.noreply.github.com>
+Date: Wed, 09 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Use system C11 threads when available for glibc 2.43+
+
+glibc 2.43+ exposes once_flag/call_once from <stdlib.h>, conflicting
+with the bundled C11 threads emulation that redefines once_flag as
+pthread_once_t (int vs struct). Detect system thrd_create and use
+the system <threads.h> when available, skipping the bundled emulation.
+
+Also add explicit #include <pthread.h> to u_thread.h, which previously
+relied on the transitive include from threads_posix.h.
+
+Upstream-Status: Pending
+Signed-off-by: konty <konty@users.noreply.github.com>
+---
+ config.h.meson                | 1 +
+ meson.build                   | 3 +++
+ src/mesa/compat/c11/threads.h | 6 ++++++
+ src/mesa/util/u_thread.h      | 1 +
+ 4 files changed, 11 insertions(+)
+
+diff --git a/config.h.meson b/config.h.meson
+index de4bf58f..a9f156d5 100644
+--- a/config.h.meson
++++ b/config.h.meson
+@@ -29,6 +29,7 @@
+ #mesondefine HAVE_SYS_UIO_H
+ #mesondefine HAVE_PTHREAD
+ #mesondefine HAVE_PTHREAD_SETAFFINITY
++#mesondefine HAVE_THRD_CREATE
+ #mesondefine HAVE_EPOXY_EGL_H
+ #mesondefine HAVE_EPOXY_GLX_H
+ #mesondefine CHECK_GL_ERRORS
+diff --git a/meson.build b/meson.build
+index 10be099e..884f4594 100644
+--- a/meson.build
++++ b/meson.build
+@@ -163,6 +163,9 @@ with_host_darwin = host_machine.system() == 'darwin'
+ 
+ if thread_dep.found() and not with_host_windows
+   conf_data.set('HAVE_PTHREAD', 1)
++  if cc.has_function('thrd_create', prefix: '#include <threads.h>')
++    conf_data.set('HAVE_THRD_CREATE', 1)
++  endif
+   if host_machine.system() != 'netbsd' and cc.has_function(
+       'pthread_setaffinity_np',
+       dependencies : thread_dep,
+diff --git a/src/mesa/compat/c11/threads.h b/src/mesa/compat/c11/threads.h
+index e0cbe719..c718a0b7 100644
+--- a/src/mesa/compat/c11/threads.h
++++ b/src/mesa/compat/c11/threads.h
+@@ -35,6 +35,11 @@
+ #define TIME_UTC 1
+ #endif
+ 
++/* Use system <threads.h> when available (glibc 2.43+ requires this) */
++#if defined(HAVE_THRD_CREATE)
++#include <threads.h>
++#else
++
+ /*---------------------------- types ----------------------------*/
+ typedef void (*tss_dtor_t)(void*);
+ typedef int (*thrd_start_t)(void*);
+@@ -66,6 +71,7 @@ enum {
+ #error Not supported on this platform.
+ #endif
+ 
++#endif /* !HAVE_THRD_CREATE */
+ 
+ 
+ #endif /* EMULATED_THREADS_H_INCLUDED_ */
+diff --git a/src/mesa/util/u_thread.h b/src/mesa/util/u_thread.h
+index ff77de0a..fce81c37 100644
+--- a/src/mesa/util/u_thread.h
++++ b/src/mesa/util/u_thread.h
+@@ -37,6 +37,7 @@
+ #include "macros.h"
+ 
+ #ifdef HAVE_PTHREAD
++#include <pthread.h>
+ #include <signal.h>
+ #ifdef HAVE_PTHREAD_NP_H
+ #include <pthread_np.h>
