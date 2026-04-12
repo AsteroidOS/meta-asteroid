@@ -3,6 +3,7 @@ From: Richard Barnes <rbarnes@umn.edu>
 Date: Wed, 2 Oct 2024 10:35:09 -0700
 Subject: [PATCH] Match `malloc` signature to its use
 
+Upstream-Status: Backport bf254c75b1e0d2641ebbd7fc85fb183f36a62ea7
 ---
  lib/malloc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
