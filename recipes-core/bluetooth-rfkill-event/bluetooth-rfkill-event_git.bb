@@ -41,7 +41,7 @@ SYSTEMD_SERVICE:${PN} = "bluetooth-rfkill-event.service"
 
 do_install() {
 	oe_runmake install INSTALL_ROOT=${D}
-        rm -r ${D}/usr/lib/systemd/system/network.target.wants
+    rm -r ${D}/usr/lib/systemd/system/network.target.wants
 }
 
 FILES:${PN} += "${datadir}/libexec/bluetooth_rfkill_event/killall-wait.sh"
