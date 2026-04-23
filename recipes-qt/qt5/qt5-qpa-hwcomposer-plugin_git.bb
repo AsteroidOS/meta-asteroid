@@ -16,7 +16,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https;branch=master \
         file://0001-Add-ambient-mode-display-support.patch;striplevel=2 "
 S = "${WORKDIR}/git/hwcomposer"
-SRCREV = "f1d9aef9693bb5ed5f586f3e7c07ac6ee756e21f"
+SRCREV = "998956aebe21ac7ba6e7315d1c12e6e11c93d742"
 
 inherit qmake5 pkgconfig
 
