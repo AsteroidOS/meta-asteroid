@@ -12,7 +12,7 @@ SRCREV = "2bcf6579456086c0ee8fca72d38357d8632ca755"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 do_configure:prepend() {
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' mts/common.pri

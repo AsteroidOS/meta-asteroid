@@ -8,7 +8,7 @@ SRCREV = "b36c021a0385fa088f3d0f7916d61fbf028841bf"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qt6-qmake
 
 DEPENDS += "qtdeclarative qtbase"
 

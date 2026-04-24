@@ -19,7 +19,7 @@ do_configure:prepend() {
 }
 
 DEPENDS += "qtbase icu-native qttools-native"
-inherit qmake5
+inherit qt6-qmake
 
 FILES:${PN}-dev += "/usr/share/mkspecs/ /usr/lib/libmlocale5.prl"
 FILES:${PN}-dbg += "/usr/lib/libmlocale-benchmarks5 /usr/share/libmlocale-benchmarks5"

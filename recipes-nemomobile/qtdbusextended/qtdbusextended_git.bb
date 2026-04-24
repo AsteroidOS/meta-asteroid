@@ -10,7 +10,7 @@ SRCREV = "34971431233dc408553245001148d34a09836df1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qt6-qmake
 
 DEPENDS += "qtbase"
 RDEPENDS:${PN} += "qtbase"

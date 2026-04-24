@@ -18,7 +18,7 @@ SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https;
 S = "${WORKDIR}/git/hwcomposer"
 SRCREV = "f1d9aef9693bb5ed5f586f3e7c07ac6ee756e21f"
 
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 # WARNING: The recipe qt5-qpa-hwcomposer-plugin is trying to install files into a shared area when those files already exist. Those files and their manifest location are:
 #   /OE/build/owpb/webos-ports/tmp-eglibc/sysroots/tenderloin/usr/lib/cmake/Qt5Gui/Qt5Gui_QEglFSIntegrationPlugin.cmake

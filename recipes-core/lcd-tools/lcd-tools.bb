@@ -9,7 +9,7 @@ PR = "r0"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 DEPENDS = "libhybris cli11 mlite qtbase"
-inherit cmake_qt5 pkgconfig
+inherit qt6-cmake pkgconfig
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 do_install:append() {

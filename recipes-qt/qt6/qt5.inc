@@ -1,7 +1,7 @@
 # Copyright (C) 2012, 2014 O.S. Systems Software LTDA.
 # Copyright (C) 2013 Martin Jansa <martin.jansa@gmail.com>
 
-inherit qmake5
+inherit qt6-qmake
 
 PACKAGECONFIG_OPENSSL ?= "openssl"
 

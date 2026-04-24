@@ -8,7 +8,7 @@ SRCREV = "46a3fb6d54b59f533cad9e10c8278c5414118cac"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit cmake_qt5 pkgconfig
+inherit qt6-cmake pkgconfig
 
 DEPENDS += "extra-cmake-modules qtbase kcalendarcore timed libical sqlite3 util-linux"
 EXTRA_OECMAKE += " -DBUILD_TESTS=OFF -DBUILD_PLUGINS=OFF"

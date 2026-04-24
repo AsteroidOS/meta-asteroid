@@ -22,7 +22,7 @@ DEBIANNAME:${PN}-src = "${PN}-src"
 DEBIANNAME:${PN}-dbg = "${PN}-dbg"
 DEBIANNAME:${PN}-dev = "${PN}-dev"
 
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 do_configure:prepend() {
     sed "s=@LIB@=lib/=g" "${S}/sensord-qt5.pc.in" > "${S}/sensord-qt5.pc"

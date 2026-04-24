@@ -15,7 +15,7 @@ SRCREV = "368c1816caf5479005c8823e8645b96a3424343b"
 
 S = "${WORKDIR}/git"
 
-inherit cmake_qt5
+inherit qt6-cmake
 
 DEPENDS += "qtbase libical extra-cmake-modules"
 

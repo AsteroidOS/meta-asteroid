@@ -8,7 +8,7 @@ SRCREV = "4c182d24f552acb69e62988624b408cb83f5158d"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qt6-qmake
 
 do_configure:prepend() {
     sed -i "/doc.pri/d" ${S}/signon.pro ${S}/lib/SignOn/SignOn.pro ${S}/lib/plugins/plugins.pro
