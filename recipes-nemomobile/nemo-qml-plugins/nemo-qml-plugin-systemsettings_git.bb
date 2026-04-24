@@ -16,7 +16,7 @@ SRCREV = "0.10.18"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 do_configure:prepend() {
     sed -i "s@\$\$\[QT_INSTALL_BINS\]@${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}@" ${S}/src/src.pro

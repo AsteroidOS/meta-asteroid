@@ -11,7 +11,7 @@ SRCREV = "715a7fc5df4f48e3321106ade7ed872cdbb14904"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 # Out-of-source build is broken:
 # sed: can't read pkgconfig/*.pc: No such file or directory

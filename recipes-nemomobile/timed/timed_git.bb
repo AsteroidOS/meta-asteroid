@@ -12,7 +12,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5 asteroid-users pkgconfig
+inherit qt6-qmake asteroid-users pkgconfig
 
 # Out-of-source build breaks install
 B = "${S}"

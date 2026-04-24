@@ -11,4 +11,4 @@ S = "${WORKDIR}/git/lib"
 B = "${S}"
 
 DEPENDS += "qtbase"
-inherit qmake5
+inherit qt6-qmake

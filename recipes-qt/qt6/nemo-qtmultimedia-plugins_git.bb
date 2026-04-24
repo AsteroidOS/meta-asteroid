@@ -9,7 +9,7 @@ SRCREV = "658d8834a7ef0adb61fdc9a5ea09b9ad24b78888"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtmultimedia nemo-gst-interfaces"
 

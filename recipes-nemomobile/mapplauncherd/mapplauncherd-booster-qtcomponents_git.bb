@@ -10,7 +10,7 @@ SRCREV = "6c0faf11b5e9f0572898a451d41613a8f7ea39c4"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qt6-qmake
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase"
 RDEPENDS:${PN} += "mapplauncherd"

@@ -11,7 +11,7 @@ SRCREV = "c38d05b5ebc871dc36561abaf9bbf1dfb8438e83"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 DEPENDS += "libiphb qtbase mce glib-2.0 qtdeclarative"
 

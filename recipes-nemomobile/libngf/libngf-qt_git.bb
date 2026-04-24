@@ -12,7 +12,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += " qtbase qtdeclarative libngf qtfeedback dbus"
-inherit qmake5
+inherit qt6-qmake
 
 do_install:append() {
     mv ${D}/include/* ${D}/usr/include/

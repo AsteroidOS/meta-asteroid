@@ -14,7 +14,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative extra-cmake-modules"
-inherit cmake_qt5
+inherit qt6-cmake
 
 do_install:append() {
     # Do not violate usrmerge

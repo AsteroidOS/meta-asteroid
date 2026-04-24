@@ -8,7 +8,7 @@ SRCREV = "85517a9f2103e461cbb69dc195335df73b7a8b7e"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5
+inherit qt6-qmake
 DEPENDS += "qtbase bison-native flex-native"
 B = "${S}"
 

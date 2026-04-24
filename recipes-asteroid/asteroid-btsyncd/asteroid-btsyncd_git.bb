@@ -9,7 +9,7 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit cmake_qt5 gsettings pkgconfig
+inherit qt6-cmake gsettings pkgconfig
 
 DEPENDS += "qml-asteroid qtbase glibmm qtmpris qttools-native nemo-qml-plugin-systemsettings"
 RDEPENDS:${PN} += "glibmm qtmpris systemd"

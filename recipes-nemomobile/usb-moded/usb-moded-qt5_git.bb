@@ -12,7 +12,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase usb-moded"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 do_install:append() {
     mv ${D}/include ${D}/usr/

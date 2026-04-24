@@ -14,7 +14,7 @@ S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative"
 
-inherit qmake5
+inherit qt6-qmake
 
 FILES:${PN} += "${OE_QMAKE_PATH_PLUGINS} /usr/lib/qml /usr/lib/libQt5Feedback.prl"
 FILES:${PN}-dev += " \

@@ -10,7 +10,7 @@ SRCREV = "850fb727d111b11312bc7943a433ee0eb05baa3a"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative qtbase libconnman-qt5 qofonoext"
 
