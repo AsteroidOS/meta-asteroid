@@ -1,0 +1,33 @@
+From b397f1df02b4699a7a80fc6c7a50f90492dc40d2 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 29 Apr 2026 19:40:23 +0000
+Subject: [PATCH 3/3] Support Qt >= 6.10
+
+Upstream-Status: Inappropriate
+---
+ hwcomposer/qeglfsintegration.cpp | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/hwcomposer/qeglfsintegration.cpp b/hwcomposer/qeglfsintegration.cpp
+index f103700..f1d65c8 100644
+--- a/hwcomposer/qeglfsintegration.cpp
++++ b/hwcomposer/qeglfsintegration.cpp
+@@ -46,7 +46,14 @@
+ 
+ #include <QtGui/private/qguiapplication_p.h>
+ 
+-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 10, 0))
++#include <QtGui/private/qgenericunixfontdatabase_p.h>
++#include <QtGui/private/qgenericunixeventdispatcher_p.h>
++#include <QtGui/private/qgenericunixtheme_p.h>
++#include <QtGui/private/qeglconvenience_p.h>
++#include <QtGui/private/qeglplatformcontext_p.h>
++#include <QtGui/private/qeglpbuffer_p.h>
++#elif (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+ #include <QtGui/private/qgenericunixfontdatabase_p.h>
+ #include <QtGui/private/qgenericunixeventdispatcher_p.h>
+ #include <QtGui/private/qgenericunixthemes_p.h>
+-- 
+2.47.3
+
