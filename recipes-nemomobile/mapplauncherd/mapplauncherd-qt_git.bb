@@ -3,11 +3,10 @@ HOMEPAGE = "https://github.com/sailfishos/mapplauncherd-qt"
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL21;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://github.com/sailfishos/mapplauncherd-qt.git;protocol=https;branch=master \
-           file://0001-mdeclarativecache5-Share-same-mdeclarativecache_pre_.patch \
-           file://0002-qdeclarative5-boostable-Compile-apps-as-shared-libra.patch \
-           file://booster-qt5.service"
-SRCREV = "715a7fc5df4f48e3321106ade7ed872cdbb14904"
+# TODO: use sailfishos/mapplaunchard-qt when Qt6 support is merged
+SRC_URI = "git://github.com/neochapay/mapplauncherd-qt.git;protocol=https;branch=qt6 \
+           file://booster-qt6.service"
+SRCREV = "956e42079a1970c7393752488c2169356f6fc8db"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
@@ -22,14 +21,14 @@ RDEPENDS:${PN} += "mapplauncherd"
 
 do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd@" ${S}/qtbooster/qtbooster.pro
-    cp ${UNPACKDIR}/booster-qt5.service ${S}/data/booster-qt5.service
+    cp ${UNPACKDIR}/booster-qt6.service ${S}/data/booster-qt6.service
 }
 
 do_install:append() {
-    rm ${D}/usr/lib/systemd/user/booster-qt5-signal.service
+    rm ${D}/usr/lib/systemd/user/booster-qt6-signal.service
     install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service ]; then
-        ln -s /usr/lib/systemd/user/booster-qt5.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt5.service
+    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qt6.service ]; then
+        ln -s /usr/lib/systemd/user/booster-qt6.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt6.service
     fi
 }
 
