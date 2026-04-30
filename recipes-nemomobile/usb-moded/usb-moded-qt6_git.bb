@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://src/qusbmoded.cpp;beginline=1;endline=32;md5=ffd9306b
 
 SRC_URI = "git://github.com/sailfishos/libusb-moded-qt.git;protocol=https;branch=master \
     file://0001-src.pro-Make-sure-com.meego.usb_moded.xml-is-correct.patch \
-    file://usb-moded-qt5.pc"
+    file://usb-moded-qt6.pc"
 SRCREV = "10f2bcb86e9c116ae94da668d997c09c0966388c"
 PR = "r1"
 PV = "+git${SRCPV}"
@@ -16,5 +16,5 @@ inherit qt6-qmake pkgconfig
 
 do_install:append() {
     mv ${D}/include ${D}/usr/
-    install -m 644 -D ${UNPACKDIR}/usb-moded-qt5.pc ${D}/usr/lib/pkgconfig/
+    install -m 644 -D ${UNPACKDIR}/usb-moded-qt6.pc ${D}/usr/lib/pkgconfig/
 }
