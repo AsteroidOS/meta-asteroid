@@ -27,7 +27,7 @@ do_install:append() {
     install -m 0755 ${UNPACKDIR}/buteo-mtp ${D}${bindir}
 }
 
-DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"
+DEPENDS += "buteo-syncfw nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qt5compat"
 
 FILES:${PN} += "${systemd_system_unitdir} /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"
