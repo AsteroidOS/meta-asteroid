@@ -2,5 +2,5 @@ inherit pkgconfig
 
 EXTRA_QMAKEVARS_PRE = "CONFIG+=sensorfw"
 DEPENDS += "sensorfw"
-SRC_URI = "git://github.com/AsteroidOS/qtsensors.git;protocol=https;branch=master"
-SRCREV = "d1b400561060aa1157008697400ea70db2402b6a"
+SRC_URI = "git://github.com/qt/qtsensors.git;protocol=https;branch=6.11;nobranch=1;name=${QT_MODULE};destsuffix=${BB_GIT_DEFAULT_DESTSUFFIX}"
+SRCREV = "6.11.0"
