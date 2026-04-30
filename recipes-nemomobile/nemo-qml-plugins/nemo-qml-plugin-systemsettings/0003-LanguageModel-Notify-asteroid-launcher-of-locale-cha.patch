@@ -1,8 +1,8 @@
-From 0e1ed02cf1ef37d48cd8051a2bb770ea8db09778 Mon Sep 17 00:00:00 2001
+From 24646d138375de40ab7c33197d7fa5ff5d92f065 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Wed, 20 Dec 2017 21:19:45 +0100
-Subject: [PATCH] LanguageModel: Notify asteroid-launcher of locale changes so
- that it can refresh its UI dynamically
+Subject: [PATCH 3/5] LanguageModel: Notify asteroid-launcher of locale changes
+ so that it can refresh its UI dynamically
 
 Upstream-Status: Inappropriate
 ---
@@ -10,7 +10,7 @@ Upstream-Status: Inappropriate
  1 file changed, 3 insertions(+)
 
 diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
-index febd34d..1c4a47c 100644
+index 17ad504..360a6b2 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
 @@ -192,6 +192,9 @@ void LanguageModel::setSystemLocale(const QString &localeCode, LocaleUpdateMode
@@ -23,3 +23,6 @@ index febd34d..1c4a47c 100644
      if (updateMode == UpdateAndReboot) {
          NemoDBus::Interface dsmeInterface(
                  this, QDBusConnection::systemBus(),
+-- 
+2.47.3
+
