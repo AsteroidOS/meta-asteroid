@@ -1,7 +1,7 @@
-From 69065cd63fb1591208af7510d587580bae15e9b7 Mon Sep 17 00:00:00 2001
+From 9434e1fa05f8175ccf71fc3911f9ba1cabcb6752 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Mon, 16 Jan 2017 13:01:23 +0100
-Subject: [PATCH] languagemodel: install languages in
+Subject: [PATCH 4/5] languagemodel: install languages in
  /usr/share/supported-languages
 
 Upstream-Status: Inappropriate
@@ -10,7 +10,7 @@ Upstream-Status: Inappropriate
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
-index 1c4a47c..9df8790 100644
+index 360a6b2..6cbeb6d 100644
 --- a/src/languagemodel.cpp
 +++ b/src/languagemodel.cpp
 @@ -42,7 +42,7 @@
@@ -22,3 +22,6 @@ index 1c4a47c..9df8790 100644
  
  bool nameLessThan(const Language &lang1, const Language &lang2)
  {
+-- 
+2.47.3
+

@@ -1,12 +1,11 @@
-From 320e551e3bf56b341fa9bb9f799d9441829cf27c Mon Sep 17 00:00:00 2001
+From e78db4ed653cccc1021ef121b8ea52e166745bea Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 11 Sep 2022 22:18:12 +0200
-Subject: [PATCH] Remove UserModel.
+Subject: [PATCH 2/5] Remove UserModel.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,18 +47,18 @@ index a1d8634..8497493 100644
      }
  };
 diff --git a/src/src.pro b/src/src.pro
-index 7614c47..dba65c0 100644
+index cca430d..12c6b86 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -7,7 +7,7 @@ QT -= gui
  
  CONFIG += hide_symbols link_pkgconfig
- PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto libsailfishkeyprovider connman-qt5 glib-2.0
+ PKGCONFIG += profile mlite6 mce timed-qt6 blkid libcrypto libsailfishkeyprovider connman-qt6 glib-2.0
 -PKGCONFIG += nemodbus libsystemd sailfishusermanager sailfishaccesscontrol
 +PKGCONFIG += nemodbus libsystemd sailfishaccesscontrol
- PKGCONFIG += qofono-qt5
+ PKGCONFIG += qofono-qt6
  
- system(qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
+ system($$[QT_INSTALL_BINS]/qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
 @@ -36,7 +36,6 @@ SOURCES += \
      udisks2job.cpp \
      udisks2monitor.cpp \
@@ -941,3 +940,6 @@ index bf3794d..0000000
 -    friend class UserModelPrivate;
 -};
 -#endif /* USERMODEL_H */
+-- 
+2.47.3
+
