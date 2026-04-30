@@ -1,0 +1,604 @@
+From 9be4f2cc977b0c0650dd1b46711dc0421db0343a Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 9 May 2026 17:24:26 +0000
+Subject: [PATCH 3/4] Add step counter sensor with sensorfw backend.
+
+Upstream-Status: Pending
+---
+ src/plugins/sensors/sensorfw/CMakeLists.txt   |   1 +
+ src/plugins/sensors/sensorfw/Sensors.conf     |   1 +
+ src/plugins/sensors/sensorfw/main.cpp         |   3 +
+ .../sensorfw/sensorfwstepcountersensor.cpp    |  46 +++++++
+ .../sensorfw/sensorfwstepcountersensor.h      |  34 +++++
+ src/sensors/CMakeLists.txt                    |   3 +
+ src/sensors/qstepcountersensor.cpp            | 122 ++++++++++++++++++
+ src/sensors/qstepcountersensor.h              |  50 +++++++
+ src/sensors/qstepcountersensor_p.h            |  34 +++++
+ src/sensorsquick/CMakeLists.txt               |   1 +
+ src/sensorsquick/qmlstepcountersensor.cpp     |  96 ++++++++++++++
+ src/sensorsquick/qmlstepcountersensor_p.h     |  67 ++++++++++
+ 12 files changed, 458 insertions(+)
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwstepcountersensor.cpp
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwstepcountersensor.h
+ create mode 100644 src/sensors/qstepcountersensor.cpp
+ create mode 100644 src/sensors/qstepcountersensor.h
+ create mode 100644 src/sensors/qstepcountersensor_p.h
+ create mode 100644 src/sensorsquick/qmlstepcountersensor.cpp
+ create mode 100644 src/sensorsquick/qmlstepcountersensor_p.h
+
+diff --git a/src/plugins/sensors/sensorfw/CMakeLists.txt b/src/plugins/sensors/sensorfw/CMakeLists.txt
+index 52fc76e1..acd78932 100644
+--- a/src/plugins/sensors/sensorfw/CMakeLists.txt
++++ b/src/plugins/sensors/sensorfw/CMakeLists.txt
+@@ -23,6 +23,7 @@ qt_internal_add_plugin(sensorfwSensorPlugin
+         sensorfwproximitysensor.cpp sensorfwproximitysensor.h
+         sensorfwrotationsensor.cpp sensorfwrotationsensor.h
+         sensorfwsensorbase.cpp sensorfwsensorbase.h
++        sensorfwstepcountersensor.cpp sensorfwstepcountersensor.h
+         sensorfwtapsensor.cpp sensorfwtapsensor.h
+     LIBRARIES
+         Qt::Core
+diff --git a/src/plugins/sensors/sensorfw/Sensors.conf b/src/plugins/sensors/sensorfw/Sensors.conf
+index cd2985c2..391d86d4 100644
+--- a/src/plugins/sensors/sensorfw/Sensors.conf
++++ b/src/plugins/sensors/sensorfw/Sensors.conf
+@@ -12,3 +12,4 @@ QIRProximitySensor=sensorfw.irproximitysensor
+ QGyroscope=sensorfw.gyroscope
+ QLidSensor=sensorfw.lidsensor
+ QHrmSensor=sensorfw.hrmsensor
++QStepCounterSensor=sensorfw.stepcountersensor
+diff --git a/src/plugins/sensors/sensorfw/main.cpp b/src/plugins/sensors/sensorfw/main.cpp
+index 96bd53bf..4608f80e 100644
+--- a/src/plugins/sensors/sensorfw/main.cpp
++++ b/src/plugins/sensors/sensorfw/main.cpp
+@@ -14,6 +14,7 @@
+ #include "sensorfwlightsensor.h"
+ #include "sensorfwlidsensor.h"
+ #include "sensorfwhrmsensor.h"
++#include "sensorfwstepcountersensor.h"
+ 
+ #include <QtSensors/qsensorplugin.h>
+ #include <QtSensors/qsensorbackend.h>
+@@ -71,6 +72,8 @@ public:
+             return new SensorfwIrProximitySensor(sensor);
+         if (sensor->identifier() == SensorfwHrmSensor::id)
+             return new SensorfwHrmSensor(sensor);
++        if (sensor->identifier() == SensorfwStepCounterSensor::id)
++            return new SensorfwStepCounterSensor(sensor);
+         return 0;
+     }
+ };
+diff --git a/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.cpp b/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.cpp
+new file mode 100644
+index 00000000..0bea9ba2
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.cpp
+@@ -0,0 +1,46 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++#include "sensorfwstepcountersensor.h"
++
++char const * const SensorfwStepCounterSensor::id("sensorfw.stepcountersensor");
++
++SensorfwStepCounterSensor::SensorfwStepCounterSensor(QSensor *sensor)
++    : SensorfwSensorBase(sensor)
++    , m_initDone(false)
++{
++    init();
++    setReading<QStepCounterReading>(&m_reading);
++}
++
++void SensorfwStepCounterSensor::slotDataAvailable(const Unsigned& data)
++{
++    m_reading.setSteps(data.UnsignedData().value_);
++    m_reading.setTimestamp(data.UnsignedData().timestamp_);
++    newReadingAvailable();
++}
++
++bool SensorfwStepCounterSensor::doConnect()
++{
++    Q_ASSERT(m_sensorInterface);
++    return QObject::connect(m_sensorInterface, SIGNAL(StepCounterChanged(Unsigned)),
++                            this, SLOT(slotDataAvailable(Unsigned)));
++}
++
++QString SensorfwStepCounterSensor::sensorName() const
++{
++    return "stepcountersensor";
++}
++
++void SensorfwStepCounterSensor::init()
++{
++    m_initDone = false;
++    initSensor<StepCounterSensorChannelInterface>(m_initDone);
++}
++
++void SensorfwStepCounterSensor::start()
++{
++    if (reinitIsNeeded)
++        init();
++    SensorfwSensorBase::start();
++}
+diff --git a/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.h b/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.h
+new file mode 100644
+index 00000000..fc9babad
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwstepcountersensor.h
+@@ -0,0 +1,34 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++
++#ifndef SENSORFWSTEPCOUNTERSENSOR_H
++#define SENSORFWSTEPCOUNTERSENSOR_H
++
++#include "sensorfwsensorbase.h"
++#include <QtSensors/qstepcountersensor.h>
++
++#include <stepcountersensor_i.h>
++#include <datatypes/unsigned.h>
++
++
++class SensorfwStepCounterSensor : public SensorfwSensorBase
++{
++    Q_OBJECT
++
++public:
++    static char const * const id;
++    SensorfwStepCounterSensor(QSensor *sensor);
++protected:
++    bool doConnect() override;
++    QString sensorName() const override;
++    void start() override;
++    virtual void init();
++private:
++    QStepCounterReading m_reading;
++    bool m_initDone;
++private slots:
++    void slotDataAvailable(const Unsigned& data);
++};
++
++#endif
+diff --git a/src/sensors/CMakeLists.txt b/src/sensors/CMakeLists.txt
+index 78ab7125..dbf2ddc2 100644
+--- a/src/sensors/CMakeLists.txt
++++ b/src/sensors/CMakeLists.txt
+@@ -31,6 +31,7 @@ qt_internal_add_module(Sensors
+     qhumiditysensor.h
+     qlidsensor.h
+     qhrmsensor.h
++    qstepcountersensor.h
+     qsensor_p.h
+     qaccelerometer_p.h
+     qambientlightsensor_p.h
+@@ -49,6 +50,7 @@ qt_internal_add_module(Sensors
+     qhumiditysensor_p.h
+     qlidsensor_p.h
+     qhrmsensor_p.h
++    qstepcountersensor_p.h
+     qsensor.cpp
+     qaccelerometer.cpp
+     qambientlightsensor.cpp
+@@ -67,6 +69,7 @@ qt_internal_add_module(Sensors
+     qhumiditysensor.cpp
+     qlidsensor.cpp
+     qhrmsensor.cpp
++    qstepcountersensor.cpp
+     DEFINES
+         $<$<CONFIG:Debug>:ENABLE_RUNTIME_SENSORLOG>
+     LIBRARIES
+diff --git a/src/sensors/qstepcountersensor.cpp b/src/sensors/qstepcountersensor.cpp
+new file mode 100644
+index 00000000..add9f8a7
+--- /dev/null
++++ b/src/sensors/qstepcountersensor.cpp
+@@ -0,0 +1,122 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#include <qstepcountersensor.h>
++#include "qstepcountersensor_p.h"
++
++QT_BEGIN_NAMESPACE
++
++IMPLEMENT_READING(QStepCounterReading)
++
++/*!
++    \class QStepCounterReading
++    \ingroup sensors_reading
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QStepCounterReading class holds readings from the StepCounter sensor.
++
++    \section2 QStepCounterReading Units
++    The step counter returns the user's steps since boot.
++*/
++
++/*!
++    \property QStepCounterReading::steps
++    \brief A value indicating the number of steps since boot.
++
++    \sa {QStepCounterReading Units}
++*/
++
++int QStepCounterReading::steps() const
++{
++    return d->steps;
++}
++
++/*!
++    Sets the steps since boot to \a steps.
++*/
++void QStepCounterReading::setSteps(int steps)
++{
++    d->steps = steps;
++}
++
++// =====================================================================
++
++/*!
++    \class QStepCounterFilter
++    \ingroup sensors_filter
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QStepCounterFilter class is a convenience wrapper around QSensorFilter.
++
++    The only difference is that the filter() method features a pointer to QStepCounterReading
++    instead of QSensorReading.
++*/
++
++/*!
++    \fn QStepCounterFilter::filter(QStepCounterReading *reading)
++
++    Called when \a reading changes. Returns false to prevent the reading from propagating.
++
++    \sa QSensorFilter::filter()
++*/
++
++bool QStepCounterFilter::filter(QSensorReading *reading)
++{
++    return filter(static_cast<QStepCounterReading*>(reading));
++}
++
++char const * const QStepCounterSensor::sensorType("QStepCounterSensor");
++
++/*!
++    \class QStepCounterSensor
++    \ingroup sensors_type
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QStepCounterSensor class is a convenience wrapper around QSensor.
++
++    The only behavioural difference is that this class sets the type properly.
++
++    This class also features a reading() function that returns a QStepCounterReading instead
++    of a QSensorReading.
++
++    For details about how the sensor works, see \l QStepCounterReading.
++
++    \sa QStepCounterReading
++*/
++
++/*!
++    Construct the sensor as a child of \a parent.
++*/
++QStepCounterSensor::QStepCounterSensor(QObject *parent)
++    : QSensor(QStepCounterSensor::sensorType, parent)
++{
++}
++
++/*!
++    Destroy the sensor. Stops the sensor if it has not already been stopped.
++*/
++QStepCounterSensor::~QStepCounterSensor()
++{
++}
++
++/*!
++    \fn QStepCounterSensor::reading() const
++
++    Returns the reading class for this sensor.
++
++    \sa QSensor::reading()
++*/
++
++QStepCounterReading *QStepCounterSensor::reading() const
++{
++    return static_cast<QStepCounterReading*>(QSensor::reading());
++}
++
++QT_END_NAMESPACE
++
++#include "moc_qstepcountersensor.cpp"
+diff --git a/src/sensors/qstepcountersensor.h b/src/sensors/qstepcountersensor.h
+new file mode 100644
+index 00000000..5d33d494
+--- /dev/null
++++ b/src/sensors/qstepcountersensor.h
+@@ -0,0 +1,50 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QSTEPCOUNTERSENSOR_H
++#define QSTEPCOUNTERSENSOR_H
++
++#include <QtSensors/qsensor.h>
++
++QT_BEGIN_NAMESPACE
++
++class QStepCounterReadingPrivate;
++
++class Q_SENSORS_EXPORT QStepCounterReading : public QSensorReading
++{
++    Q_OBJECT
++    Q_PROPERTY(int steps READ steps)
++    DECLARE_READING(QStepCounterReading)
++public:
++
++    int steps() const;
++    void setSteps(int steps);
++
++Q_SIGNALS:
++    void stepsChanged(int steps);
++};
++
++class Q_SENSORS_EXPORT QStepCounterFilter : public QSensorFilter
++{
++public:
++    virtual bool filter(QStepCounterReading *reading) = 0;
++private:
++    bool filter(QSensorReading *reading) override;
++};
++
++class Q_SENSORS_EXPORT QStepCounterSensor : public QSensor
++{
++    Q_OBJECT
++
++public:
++    explicit QStepCounterSensor(QObject *parent = nullptr);
++    ~QStepCounterSensor();
++    QStepCounterReading *reading() const;
++    static char const * const sensorType;
++
++private:
++    Q_DISABLE_COPY(QStepCounterSensor)
++};
++
++QT_END_NAMESPACE
++
++#endif
+diff --git a/src/sensors/qstepcountersensor_p.h b/src/sensors/qstepcountersensor_p.h
+new file mode 100644
+index 00000000..03422305
+--- /dev/null
++++ b/src/sensors/qstepcountersensor_p.h
+@@ -0,0 +1,34 @@
++// Copyright (C) 2016 Canonical, Ltd
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QSTEPCOUNTERSENSOR_P_H
++#define QSTEPCOUNTERSENSOR_P_H
++
++//
++//  W A R N I N G
++//  -------------
++//
++// This file is not part of the Qt API. It exists purely as an
++// implementation detail. This header file may change from version to
++// version without notice, or even be removed.
++//
++// We mean it.
++//
++
++#include <QtCore/private/qglobal_p.h>
++
++QT_BEGIN_NAMESPACE
++
++class QStepCounterReadingPrivate
++{
++public:
++    QStepCounterReadingPrivate()
++        : steps(0)
++    {
++    }
++
++    int steps;
++};
++
++QT_END_NAMESPACE
++
++#endif
+diff --git a/src/sensorsquick/CMakeLists.txt b/src/sensorsquick/CMakeLists.txt
+index f3425c30..1d09dd70 100644
+--- a/src/sensorsquick/CMakeLists.txt
++++ b/src/sensorsquick/CMakeLists.txt
+@@ -23,6 +23,7 @@ qt_internal_add_qml_module(SensorsQuick
+         qmlsensor.cpp qmlsensor_p.h
+         qmlsensorglobal.cpp qmlsensorglobal_p.h
+         qmlsensorrange.cpp qmlsensorrange_p.h
++        qmlstepcountersensor.cpp qmlstepcountersensor_p.h
+         qmltapsensor.cpp qmltapsensor_p.h
+         qmltiltsensor.cpp qmltiltsensor_p.h
+         qsensorsquickglobal_p.h
+diff --git a/src/sensorsquick/qmlstepcountersensor.cpp b/src/sensorsquick/qmlstepcountersensor.cpp
+new file mode 100644
+index 00000000..fa6b961a
+--- /dev/null
++++ b/src/sensorsquick/qmlstepcountersensor.cpp
+@@ -0,0 +1,96 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#include "qmlstepcountersensor_p.h"
++#include <QtSensors/QStepCounterSensor>
++
++/*!
++    \qmltype StepCounterSensor
++//!    \nativetype QmlStepCounterSensor
++    \ingroup qml-sensors_type
++    \inqmlmodule QtSensors
++    \since QtSensors 5.9
++    \inherits Sensor
++    \brief The StepCounterSensor element reports on the user's steps since boot.
++    \internal
++
++    The StepCounterSensor element reports on the user's steps since boot.
++
++    This element wraps the QStepCounterSensor class. Please see the documentation for
++    QStepCounterSensor for details.
++
++    \sa StepCounterReading
++*/
++
++QmlStepCounterSensor::QmlStepCounterSensor(QObject *parent)
++    : QmlSensor(parent)
++    , m_sensor(new QStepCounterSensor(this))
++{
++}
++
++QmlStepCounterSensor::~QmlStepCounterSensor()
++{
++}
++
++QmlSensorReading *QmlStepCounterSensor::createReading() const
++{
++    return new QmlStepCounterReading(m_sensor);
++}
++
++QSensor *QmlStepCounterSensor::sensor() const
++{
++    return m_sensor;
++}
++
++/*!
++    \qmltype StepCounterReading
++//!    \nativetype QmlStepCounterReading
++    \ingroup qml-sensors_reading
++    \inqmlmodule QtSensors
++    \since QtSensors 5.9
++    \inherits SensorReading
++    \brief The StepCounterReading element holds the most recent StepCounterSensor reading.
++    \internal
++
++    The StepCounterReading element holds the most recent StepCounterSensor reading.
++
++    This element wraps the QStepCounterReading class. Please see the documentation for
++    QStepCounterReading for details.
++
++    This element cannot be directly created.
++*/
++
++QmlStepCounterReading::QmlStepCounterReading(QStepCounterSensor *sensor)
++    : m_sensor(sensor)
++{
++}
++
++QmlStepCounterReading::~QmlStepCounterReading()
++{
++}
++
++/*!
++    \qmlproperty real StepCounterReading::steps
++    This property holds the number of steps since boot.
++
++    Please see QStepCounterReading::steps for information about this property.
++*/
++
++int QmlStepCounterReading::steps() const
++{
++    return m_steps;
++}
++
++QBindable<int> QmlStepCounterReading::bindableSteps() const
++{
++    return &m_steps;
++}
++
++QSensorReading *QmlStepCounterReading::reading() const
++{
++    return m_sensor->reading();
++}
++
++void QmlStepCounterReading::readingUpdate()
++{
++    m_steps = m_sensor->reading()->steps();
++}
+diff --git a/src/sensorsquick/qmlstepcountersensor_p.h b/src/sensorsquick/qmlstepcountersensor_p.h
+new file mode 100644
+index 00000000..30d374fd
+--- /dev/null
++++ b/src/sensorsquick/qmlstepcountersensor_p.h
+@@ -0,0 +1,67 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QMLSTEPCOUNTERSENSOR_P_H
++#define QMLSTEPCOUNTERSENSOR_P_H
++
++//
++//  W A R N I N G
++//  -------------
++//
++// This file is not part of the Qt API.  It exists purely as an
++// implementation detail.  This header file may change from version to
++// version without notice, or even be removed.
++//
++// We mean it.
++//
++
++#include "qmlsensor_p.h"
++
++QT_BEGIN_NAMESPACE
++
++class QStepCounterSensor;
++
++class Q_SENSORSQUICK_EXPORT QmlStepCounterSensor : public QmlSensor
++{
++    Q_OBJECT
++    QML_NAMED_ELEMENT(StepCounterSensor)
++    QML_ADDED_IN_VERSION(5,9)
++public:
++    explicit QmlStepCounterSensor(QObject *parent = 0);
++    ~QmlStepCounterSensor();
++    QSensor *sensor() const override;
++
++private:
++    QmlSensorReading *createReading() const override;
++
++    QStepCounterSensor *m_sensor;
++};
++
++class Q_SENSORSQUICK_EXPORT QmlStepCounterReading : public QmlSensorReading
++{
++    Q_OBJECT
++    Q_PROPERTY(int steps READ steps
++               NOTIFY stepsChanged BINDABLE bindableSteps)
++    QML_NAMED_ELEMENT(StepCounterReading)
++    QML_UNCREATABLE("Cannot create StepCounterReading")
++    QML_ADDED_IN_VERSION(5,9)
++public:
++    explicit QmlStepCounterReading(QStepCounterSensor *sensor);
++    ~QmlStepCounterReading();
++
++    int steps() const;
++    QBindable<int> bindableSteps() const;
++
++Q_SIGNALS:
++    void stepsChanged(int steps);
++
++private:
++    QSensorReading *reading() const override;
++    void readingUpdate() override;
++
++    QStepCounterSensor *m_sensor;
++    Q_OBJECT_BINDABLE_PROPERTY(QmlStepCounterReading, int,
++                               m_steps, &QmlStepCounterReading::stepsChanged)
++};
++
++QT_END_NAMESPACE
++#endif
+-- 
+2.47.3
+

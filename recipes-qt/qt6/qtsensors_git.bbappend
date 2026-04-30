@@ -1,6 +1,11 @@
 inherit pkgconfig
 
-EXTRA_QMAKEVARS_PRE = "CONFIG+=sensorfw"
 DEPENDS += "sensorfw"
-SRC_URI = "git://github.com/AsteroidOS/qtsensors.git;protocol=https;branch=master"
-SRCREV = "d1b400561060aa1157008697400ea70db2402b6a"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/qtsensors:"
+SRC_URI += " \
+    file://0001-Enable-sensorfw.patch \
+    file://0002-Add-heart-rate-monitor-sensor-with-sensorfw-backend.patch \
+    file://0003-Add-step-counter-sensor-with-sensorfw-backend.patch \
+    file://0004-Add-sensorfw-backend-for-pressure-sensor.patch \
+"

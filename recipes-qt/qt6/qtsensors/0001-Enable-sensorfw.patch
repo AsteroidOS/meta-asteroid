@@ -1,0 +1,91 @@
+From 3735894de2dfa6b3359c1cc7cff50ee08a461efe Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 9 May 2026 17:35:21 +0000
+Subject: [PATCH 1/4] Enable sensorfw
+
+Upstream-Status: Pending
+---
+ cmake/FindSensorfw.cmake                    |  2 +-
+ src/plugins/sensors/CMakeLists.txt          |  7 +++----
+ src/plugins/sensors/sensorfw/CMakeLists.txt | 12 +++++++++++-
+ src/sensors/configure.cmake                 |  7 +------
+ 4 files changed, 16 insertions(+), 12 deletions(-)
+
+diff --git a/cmake/FindSensorfw.cmake b/cmake/FindSensorfw.cmake
+index c6238a92..1f3039a0 100644
+--- a/cmake/FindSensorfw.cmake
++++ b/cmake/FindSensorfw.cmake
+@@ -3,7 +3,7 @@
+ 
+ find_package(PkgConfig)
+ if (PKG_CONFIG_FOUND)
+-    pkg_check_modules(Sensorfw sensord-qt5 IMPORTED_TARGET)
++    pkg_check_modules(Sensorfw sensord-qt6 IMPORTED_TARGET GLOBAL)
+     if (NOT TARGET PkgConfig::Sensorfw)
+         set(Sensorfw_FOUND 0)
+     endif()
+diff --git a/src/plugins/sensors/CMakeLists.txt b/src/plugins/sensors/CMakeLists.txt
+index e7527d8f..66efaf9f 100644
+--- a/src/plugins/sensors/CMakeLists.txt
++++ b/src/plugins/sensors/CMakeLists.txt
+@@ -8,10 +8,9 @@ if(ANDROID AND NOT SENSORS_PLUGINS OR "sensorfw" IN_LIST SENSORS_PLUGINS)
+     add_subdirectory(android)
+ endif()
+ 
+-# Currently disabled, see src/sensors/configure.cmake
+-#if (QT_FEATURE_sensorfw AND NOT SENSORS_PLUGINS OR "sensorfw" IN_LIST SENSORS_PLUGINS)
+-#     add_subdirectory(sensorfw)
+-#endif()
++if (QT_FEATURE_sensorfw AND NOT SENSORS_PLUGINS OR "sensorfw" IN_LIST SENSORS_PLUGINS)
++     add_subdirectory(sensorfw)
++endif()
+ 
+ if (QT_FEATURE_winrt_sensors AND NOT SENSORS_PLUGINS OR "winrt" IN_LIST SENSORS_PLUGINS)
+     add_subdirectory(winrt)
+diff --git a/src/plugins/sensors/sensorfw/CMakeLists.txt b/src/plugins/sensors/sensorfw/CMakeLists.txt
+index cc5e9dad..68eb0d56 100644
+--- a/src/plugins/sensors/sensorfw/CMakeLists.txt
++++ b/src/plugins/sensors/sensorfw/CMakeLists.txt
+@@ -28,9 +28,19 @@ qt_internal_add_plugin(sensorfwSensorPlugin
+         Qt::DBus
+         Qt::Network
+         Qt::SensorsPrivate
+-        sensorfw
++        PkgConfig::Sensorfw
+ )
+ 
++# sensord-qt6 public headers (e.g. datatypes/datarange.h) use Qt's `foreach`
++# keyword, which qtsensors disables via QT_NO_FOREACH. Re-enable it for this
++# plugin so the sensorfw headers compile.
++qt_internal_undefine_global_definition(sensorfwSensorPlugin QT_NO_FOREACH)
++get_target_property(_sensorfw_defs sensorfwSensorPlugin COMPILE_DEFINITIONS)
++if(_sensorfw_defs)
++    list(REMOVE_ITEM _sensorfw_defs "QT_NO_FOREACH=1" "QT_NO_FOREACH")
++    set_property(TARGET sensorfwSensorPlugin PROPERTY COMPILE_DEFINITIONS "${_sensorfw_defs}")
++endif()
++
+ #### Keys ignored in scope 1:.:.:sensorfw.pro:<TRUE>:
+ # CONFIGFILES.files = "Sensors.conf"
+ # CONFIGFILES.path = "/etc/xdg/QtProject/"
+diff --git a/src/sensors/configure.cmake b/src/sensors/configure.cmake
+index 95895794..2121309a 100644
+--- a/src/sensors/configure.cmake
++++ b/src/sensors/configure.cmake
+@@ -38,13 +38,8 @@ qt_feature("winrt_sensors" PRIVATE
+ 
+ qt_configure_add_summary_section(NAME "Qt Sensors")
+ if (LINUX)
+-    # At the moment there is no Qt6 version of sensorfw, and while the
+-    # FindSensorfw.cmake in this repo would find the package using pkg-config,
+-    # it would not work. Once the Qt6 version exists, remove the
+-    # "sensorfw_enabled_with_cmake" entry, enable build in
+-    # src/plugins/sensors/CMakeLists.txt and fix any potential errors.
+     qt_configure_add_summary_entry(ARGS "sensorfw")
+-#    qt_configure_add_summary_entry(ARGS "sensorfw_enabled_with_cmake")
++    qt_configure_add_summary_entry(ARGS "sensorfw_enabled_with_cmake")
+ endif()
+ 
+ if (WIN32)
+-- 
+2.47.3
+
