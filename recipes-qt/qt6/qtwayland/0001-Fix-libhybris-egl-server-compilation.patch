@@ -1,0 +1,26 @@
+From 40fb756e293068c481e8dc1e2d9529526163b9c6 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 14:22:01 +0000
+Subject: [PATCH] Fix libhybris-egl-server compilation
+
+Upstream-Status: Inappropriate
+---
+ .../libhybriseglserverbufferintegration.cpp                     | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/hardwareintegration/compositor/libhybris-egl-server/libhybriseglserverbufferintegration.cpp b/src/hardwareintegration/compositor/libhybris-egl-server/libhybriseglserverbufferintegration.cpp
+index f28c6df6..cf0aa17c 100644
+--- a/src/hardwareintegration/compositor/libhybris-egl-server/libhybriseglserverbufferintegration.cpp
++++ b/src/hardwareintegration/compositor/libhybris-egl-server/libhybriseglserverbufferintegration.cpp
+@@ -4,7 +4,7 @@
+ #include "libhybriseglserverbufferintegration.h"
+ 
+ #include <QtGui/QOpenGLContext>
+-#include <QtGui/QOpenGLTexture>
++#include <QtOpenGL/QOpenGLTexture>
+ #include <hybris/eglplatformcommon/hybris_nativebufferext.h>
+ #include <wayland-server-core.h>
+ 
+-- 
+2.47.3
+

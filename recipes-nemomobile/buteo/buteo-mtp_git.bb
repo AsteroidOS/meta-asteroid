@@ -6,13 +6,14 @@ LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https;branch=master \
            file://0001-Remove-tests.patch \
            file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
+           file://0003-Fix-build-on-Qt6.patch \
            file://buteo-mtp \
            "
 SRCREV = "2bcf6579456086c0ee8fca72d38357d8632ca755"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 do_configure:prepend() {
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' mts/common.pri
@@ -27,7 +28,7 @@ do_install:append() {
     install -m 0755 ${UNPACKDIR}/buteo-mtp ${D}${bindir}
 }
 
-DEPENDS += "buteo-syncfw libqtsparql nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus"
+DEPENDS += "buteo-syncfw nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qt5compat"
 
 FILES:${PN} += "${systemd_system_unitdir} /usr/lib/systemd/user/ /usr/share/mtp/ /usr/lib/mtp/ /usr/lib/buteo-plugins-qt5"
 B="${S}"

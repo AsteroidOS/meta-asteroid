@@ -1,7 +1,8 @@
-From f36f94c279c04e0d39b4e307d4864fb6f8c4b980 Mon Sep 17 00:00:00 2001
+From ce495464768fd63f82e6e34cc066fd7f66527250 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Fri, 5 May 2017 17:34:18 +0200
-Subject: [PATCH] fsstorageplugin: Expose Watch Memory instead of Phone Memory
+Subject: [PATCH 2/3] fsstorageplugin: Expose Watch Memory instead of Phone
+ Memory
 
 Upstream-Status: Inappropriate
 
@@ -15,7 +16,7 @@ Upstream-Status: Inappropriate
  rename mts/platform/storage/fsstorageplugin/{phone-memory.xml => watch-memory.xml} (59%)
 
 diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
-index 58dc076..0b7ba04 100644
+index 9bd47ad..f0cfdfd 100644
 --- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 +++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.pro
 @@ -45,7 +45,7 @@ LIBS    += -lbuteomtp
@@ -49,3 +50,6 @@ index 1bd73fb..3f3df56 100644
 +<storage name="media" path="/home/ceres" description="Watch Memory">
      <blacklist>homedir-blacklist.conf</blacklist>
  </storage>
+-- 
+2.47.3
+

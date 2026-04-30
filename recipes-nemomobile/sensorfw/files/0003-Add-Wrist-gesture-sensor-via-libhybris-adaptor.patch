@@ -1,7 +1,7 @@
-From 673930d6587577a6238d158df66e1fee15fbc6b6 Mon Sep 17 00:00:00 2001
+From 0ec06757407ffaed175c389a8960b4cffb92e914 Mon Sep 17 00:00:00 2001
 From: MagneFire <dgriet@gmail.com>
 Date: Tue, 11 Jan 2022 23:48:18 +0100
-Subject: [PATCH] Add Wrist gesture sensor via libhybris adaptor.
+Subject: [PATCH 3/6] Add Wrist gesture sensor via libhybris adaptor.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -19,14 +19,14 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  config/20-sensors-default.conf                |   1 +
  config/sensord-hybris.conf                    |   1 +
  sensors/sensors.pro                           |   3 +-
- .../wristgesturesensor/wristgestureplugin.cpp |  43 +++++++
+ .../wristgesturesensor/wristgestureplugin.cpp |  47 +++++++
  .../wristgesturesensor/wristgestureplugin.h   |  42 ++++++
  .../wristgesturesensor/wristgesturesensor.cpp | 121 ++++++++++++++++++
  .../wristgesturesensor/wristgesturesensor.h   | 114 +++++++++++++++++
  .../wristgesturesensor/wristgesturesensor.pro |  11 ++
  .../wristgesturesensor_a.cpp                  |  49 +++++++
  .../wristgesturesensor/wristgesturesensor_a.h |  57 +++++++++
- 16 files changed, 684 insertions(+), 2 deletions(-)
+ 16 files changed, 688 insertions(+), 2 deletions(-)
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.h
  create mode 100644 adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
@@ -223,7 +223,7 @@ index 0000000..ebdd729
 +#endif
 diff --git a/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
 new file mode 100644
-index 0000000..f5465d5
+index 0000000..0aea7d2
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.pro
 @@ -0,0 +1,14 @@
@@ -235,7 +235,7 @@ index 0000000..f5465d5
 +SOURCES += hybriswristgestureadaptor.cpp \
 +           hybriswristgestureadaptorplugin.cpp
 +
-+LIBS+= -L../../core -lhybrissensorfw-qt5
++LIBS+= -L../../core -lhybrissensorfw-qt$${QT_MAJOR_VERSION}
 +
 +include( ../adaptor-config.pri )
 +config_hybris {
@@ -364,10 +364,10 @@ index 97f0b5c..b369191 100644
  contextprovider:SUBDIRS += contextplugin
 diff --git a/sensors/wristgesturesensor/wristgestureplugin.cpp b/sensors/wristgesturesensor/wristgestureplugin.cpp
 new file mode 100644
-index 0000000..97206c4
+index 0000000..144928f
 --- /dev/null
 +++ b/sensors/wristgesturesensor/wristgestureplugin.cpp
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,47 @@
 +/**
 +   @file wristgestureplugin.cpp
 +   @brief Plugin for WristGestureSensor
@@ -409,7 +409,11 @@ index 0000000..97206c4
 +}
 +
 +QStringList WristGesturePlugin::Dependencies() {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
++    return QString("wristgestureadaptor").split(":", Qt::SkipEmptyParts);
++#else
 +    return QString("wristgestureadaptor").split(":", QString::SkipEmptyParts);
++#endif
 +}
 diff --git a/sensors/wristgesturesensor/wristgestureplugin.h b/sensors/wristgesturesensor/wristgestureplugin.h
 new file mode 100644
@@ -841,3 +845,6 @@ index 0000000..a589337
 +};
 +
 +#endif
+-- 
+2.47.3
+

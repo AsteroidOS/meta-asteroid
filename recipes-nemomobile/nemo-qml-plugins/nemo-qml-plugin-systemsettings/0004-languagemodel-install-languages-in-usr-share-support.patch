@@ -1,0 +1,27 @@
+From 9434e1fa05f8175ccf71fc3911f9ba1cabcb6752 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 16 Jan 2017 13:01:23 +0100
+Subject: [PATCH 4/5] languagemodel: install languages in
+ /usr/share/supported-languages
+
+Upstream-Status: Inappropriate
+---
+ src/languagemodel.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/languagemodel.cpp b/src/languagemodel.cpp
+index 360a6b2..6cbeb6d 100644
+--- a/src/languagemodel.cpp
++++ b/src/languagemodel.cpp
+@@ -42,7 +42,7 @@
+ #include <nemo-dbus/interface.h>
+ 
+ namespace {
+-const char * const LanguageSupportDirectory = "/usr/share/jolla-supported-languages";
++const char * const LanguageSupportDirectory = "/usr/share/supported-languages";
+ 
+ bool nameLessThan(const Language &lang1, const Language &lang2)
+ {
+-- 
+2.47.3
+

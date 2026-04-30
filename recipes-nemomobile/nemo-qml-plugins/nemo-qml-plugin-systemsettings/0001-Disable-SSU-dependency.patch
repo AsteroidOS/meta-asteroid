@@ -1,7 +1,7 @@
-From d58def46a2ed41ac7639a64886c5358d8c709a67 Mon Sep 17 00:00:00 2001
+From e79d0745c1263ae931c95ac977cc77abd9533451 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 11 Sep 2022 22:14:19 +0200
-Subject: [PATCH] Disable SSU dependency.
+Subject: [PATCH 1/5] Disable SSU dependency.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -15,7 +15,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  2 files changed, 1 insertion(+), 31 deletions(-)
 
 diff --git a/src/deviceinfo.cpp b/src/deviceinfo.cpp
-index 880521b..a746cdb 100644
+index 106e50a..4dd768e 100644
 --- a/src/deviceinfo.cpp
 +++ b/src/deviceinfo.cpp
 @@ -33,7 +33,6 @@
@@ -63,15 +63,18 @@ index 880521b..a746cdb 100644
  
  DeviceInfoPrivate::~DeviceInfoPrivate()
 diff --git a/src/src.pro b/src/src.pro
-index 69c3d38..568cc21 100644
+index c45d525..cca430d 100644
 --- a/src/src.pro
 +++ b/src/src.pro
 @@ -7,7 +7,7 @@ QT -= gui
  
  CONFIG += hide_symbols link_pkgconfig
- PKGCONFIG += profile mlite5 mce timed-qt5 blkid libcrypto libsailfishkeyprovider connman-qt5 glib-2.0
--PKGCONFIG += ssu-sysinfo nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
-+PKGCONFIG += nemodbus packagekitqt5 libsystemd sailfishusermanager sailfishaccesscontrol
- PKGCONFIG += qofono-qt5
+ PKGCONFIG += profile mlite6 mce timed-qt6 blkid libcrypto libsailfishkeyprovider connman-qt6 glib-2.0
+-PKGCONFIG += ssu-sysinfo nemodbus libsystemd sailfishusermanager sailfishaccesscontrol
++PKGCONFIG += nemodbus libsystemd sailfishusermanager sailfishaccesscontrol
+ PKGCONFIG += qofono-qt6
  
  system($$[QT_INSTALL_BINS]/qdbusxml2cpp -p mceiface.h:mceiface.cpp mce.xml)
+-- 
+2.47.3
+

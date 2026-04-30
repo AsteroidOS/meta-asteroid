@@ -1,0 +1,31 @@
+From 890ede8302a8268c19ff3a8e35011f2d84360cf1 Mon Sep 17 00:00:00 2001
+From: Simon Busch <morphis@gravedo.de>
+Date: Wed, 12 Nov 2014 12:21:07 +0100
+Subject: [PATCH 2/3] Add QCOM_BSP define switch
+
+Upstream-Status: Inappropriate
+
+Needed as otherwise the structures defined on the android side doesn't match the ones
+we're using here.
+
+Signed-off-by: Simon Busch <morphis@gravedo.de>
+---
+ hwcomposer/hwcomposer.pro | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hwcomposer/hwcomposer.pro b/hwcomposer/hwcomposer.pro
+index 0885ee2..5e2de3d 100644
+--- a/hwcomposer/hwcomposer.pro
++++ b/hwcomposer/hwcomposer.pro
+@@ -56,6 +56,8 @@ enable-systrace {
+ DEFINES += QEGL_EXTRA_DEBUG
+ CONFIG += egl qpa/genericunixfontdatabase
+ 
++DEFINES += QCOM_BSP
++
+ CONFIG += link_pkgconfig
+ 
+ # For linking against libQt5PlatformSupport.a
+-- 
+2.47.3
+

@@ -10,7 +10,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative timed"
 

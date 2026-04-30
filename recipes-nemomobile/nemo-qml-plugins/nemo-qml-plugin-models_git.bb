@@ -11,10 +11,10 @@ SRCREV = "175c003d307bdde997d143e0034b7ff6e2dfe7cf"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qmake5 pkgconfig
+inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative timed libmlocale"
 
-FILES:${PN}-dev += "/usr/lib/libnemomodels-qt5.prl"
+FILES:${PN}-dev += "/usr/lib/libnemomodels-qt6.prl"
 FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/models/.debug"
 FILES:${PN} += "/usr/lib/qml/org/nemomobile/models/"

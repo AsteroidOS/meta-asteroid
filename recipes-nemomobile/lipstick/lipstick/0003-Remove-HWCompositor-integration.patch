@@ -1,0 +1,2216 @@
+From 0c76b0acde5162cb5489088a4fe01fee901479d6 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 20:21:57 +0000
+Subject: [PATCH 3/5] Remove HWCompositor integration
+
+Upstream-Status: Inappropriate
+---
+ plugin/lipstickplugin.cpp                   |   2 -
+ src/compositor/compositor.pri               |   8 +-
+ src/compositor/hwcimage.cpp                 | 702 --------------------
+ src/compositor/hwcimage.h                   | 125 ----
+ src/compositor/hwcinterface.h               | 179 -----
+ src/compositor/hwcrenderstage.cpp           | 529 ---------------
+ src/compositor/hwcrenderstage.h             | 134 ----
+ src/compositor/lipstickcompositor.cpp       |   3 -
+ src/compositor/lipstickcompositorwindow.cpp | 264 +-------
+ src/compositor/lipstickcompositorwindow.h   |   9 +-
+ src/screenshotservice.cpp                   |   9 -
+ src/src.pro                                 |   1 -
+ 12 files changed, 9 insertions(+), 1956 deletions(-)
+ delete mode 100644 src/compositor/hwcimage.cpp
+ delete mode 100644 src/compositor/hwcimage.h
+ delete mode 100644 src/compositor/hwcinterface.h
+ delete mode 100644 src/compositor/hwcrenderstage.cpp
+ delete mode 100644 src/compositor/hwcrenderstage.h
+
+diff --git a/plugin/lipstickplugin.cpp b/plugin/lipstickplugin.cpp
+index 1c8177f3..6f906e56 100644
+--- a/plugin/lipstickplugin.cpp
++++ b/plugin/lipstickplugin.cpp
+@@ -32,7 +32,6 @@
+ #include <compositor/windowmodel.h>
+ #include <compositor/windowpixmapitem.h>
+ #include <lipstickapi.h>
+-#include <hwcimage.h>
+ 
+ static QObject *lipstickApi_callback(QQmlEngine *e, QJSEngine *)
+ {
+@@ -55,7 +54,6 @@ void LipstickPlugin::registerTypes(const char *uri)
+     qmlRegisterType<LauncherItem>("org.nemomobile.lipstick", 0, 1, "LauncherItem");
+     qmlRegisterType<LauncherFolderModelType>("org.nemomobile.lipstick", 0, 1, "LauncherFolderModel");
+     qmlRegisterType<LauncherFolderItem>("org.nemomobile.lipstick", 0, 1, "LauncherFolderItem");
+-    qmlRegisterType<HwcImage>("org.nemomobile.lipstick", 0, 1, "HwcImage");
+ 
+     qmlRegisterUncreatableType<NotificationPreviewPresenter>("org.nemomobile.lipstick", 0, 1, "NotificationPreviewPresenter", "This type is initialized by HomeApplication");
+     qmlRegisterUncreatableType<NotificationFeedbackPlayer>("org.nemomobile.lipstick", 0, 1, "NotificationFeedbackPlayer", "This type is initialized by HomeApplication");
+diff --git a/src/compositor/compositor.pri b/src/compositor/compositor.pri
+index 44d6a224..a4fc2b0b 100644
+--- a/src/compositor/compositor.pri
++++ b/src/compositor/compositor.pri
+@@ -11,9 +11,7 @@ PUBLICHEADERS += \
+ 
+ HEADERS += \
+     $$PWD/windowpixmapitem.h \
+-    $$PWD/lipstickrecorder.h \
+-    $$PWD/hwcrenderstage.h \
+-    $$PWD/hwcimage.h \
++    $$PWD/lipstickrecorder.h
+ 
+ SOURCES += \
+     $$PWD/lipstickcompositor.cpp \
+@@ -21,9 +19,7 @@ SOURCES += \
+     $$PWD/lipstickcompositorprocwindow.cpp \
+     $$PWD/lipstickcompositoradaptor.cpp \
+     $$PWD/windowmodel.cpp \
+-    $$PWD/windowpixmapitem.cpp \
+-    $$PWD/hwcrenderstage.cpp \
+-    $$PWD/hwcimage.cpp \
++    $$PWD/windowpixmapitem.cpp
+ 
+ DEFINES += QT_COMPOSITOR_QUICK
+ 
+diff --git a/src/compositor/hwcimage.cpp b/src/compositor/hwcimage.cpp
+deleted file mode 100644
+index 6b1bf296..00000000
+--- a/src/compositor/hwcimage.cpp
++++ /dev/null
+@@ -1,702 +0,0 @@
+-/***************************************************************************
+-**
+-** Copyright (C) 2015 Jolla Ltd.
+-** Contact: Gunnar Sletta <gunnar.sletta@jollamobile.com>
+-**
+-** This file is part of lipstick.
+-**
+-** This library is free software; you can redistribute it and/or
+-** modify it under the terms of the GNU Lesser General Public
+-** License version 2.1 as published by the Free Software Foundation
+-** and appearing in the file LICENSE.LGPL included in the packaging
+-** of this file.
+-**
+-****************************************************************************/
+-
+-#include "hwcimage.h"
+-#include "hwcrenderstage.h"
+-
+-#include <QRunnable>
+-#include <QThreadPool>
+-#include <QCoreApplication>
+-
+-#include <QQuickWindow>
+-#include <QSGSimpleTextureNode>
+-#include <QFileInfo>
+-
+-#include <private/qquickitem_p.h>
+-
+-#include <EGL/egl.h>
+-#include <EGL/eglext.h>
+-
+-#include <math.h>
+-
+-static bool hwcimage_is_enabled();
+-
+-#define HWCIMAGE_LOAD_EVENT ((QEvent::Type) (QEvent::User + 1))
+-
+-class HwcImageLoadRequest : public QRunnable, public QEvent
+-{
+-public:
+-    HwcImageLoadRequest()
+-        : QEvent(HWCIMAGE_LOAD_EVENT)
+-    {
+-        setAutoDelete(false);
+-    }
+-
+-    ~HwcImageLoadRequest() {
+-        qCDebug(LIPSTICK_LOG_HWC, "HwcImageLoadRequest completed and destroyed...");
+-    }
+-
+-    void execute() {
+-        image = QImage(file).convertToFormat(QImage::Format_RGB32);
+-
+-        if (rotation != 0) {
+-            QTransform xform;
+-            xform.rotate(rotation);
+-            image = image.transformed(xform, Qt::FastTransformation);
+-        }
+-
+-        if (textureSize.width() > 0 && textureSize.height() > 0)
+-            image = image.scaled(textureSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+-        else if (maxTextureSize > 0) {
+-            if (image.width() > maxTextureSize || image.height() > maxTextureSize) {
+-                qreal s = maxTextureSize / (qreal) qMax(image.width(), image.height());
+-                image = image.scaled(image.size() * s, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+-            }
+-        }
+-
+-        if (image.size().isValid()) {
+-
+-            QPainter p(&image);
+-
+-            // Apply overlay
+-            if (overlay.isValid())
+-                p.fillRect(image.rect(), overlay);
+-
+-            // Apply glass..
+-            if (effect.contains(QStringLiteral("glass"))) {
+-                QImage glass("/usr/share/themes/sailfish-default/meegotouch/icons/graphic-shader-texture.png");
+-                glass = glass.scaled(glass.width(), glass.height(),
+-                                     Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+-                p.save();
+-                p.setOpacity(0.1);
+-                p.setCompositionMode(QPainter::CompositionMode_Plus);
+-                p.fillRect(image.rect(), glass);
+-                p.restore();
+-            }
+-        }
+-    }
+-
+-    void run() {
+-        execute();
+-        mutex.lock();
+-        if (hwcImage && hwcImage->m_pendingRequest == this) {
+-            hwcImage->m_pendingRequest = 0;
+-            QCoreApplication::postEvent(hwcImage, this);
+-        } else {
+-            setAutoDelete(true);
+-        }
+-        mutex.unlock();
+-    }
+-
+-    QImage image;
+-    QString file;
+-    QString effect;
+-    QColor overlay;
+-    QSize textureSize;
+-    qreal pixelRatio;
+-    qreal rotation;
+-    int maxTextureSize;
+-
+-    HwcImage *hwcImage;
+-
+-    static QMutex mutex;
+-};
+-
+-QMutex HwcImageLoadRequest::mutex;
+-
+-HwcImage::HwcImage()
+-    : m_pendingRequest(0)
+-    , m_rotationHandler(0)
+-    , m_status(Null)
+-    , m_textureRotation(0)
+-    , m_asynchronous(true)
+-    , m_usedInEffect(false)
+-    , m_updateImage(false)
+-{
+-    setFlag(ItemHasContents, true);
+-    connect(this, &QQuickItem::windowChanged, this, &HwcImage::onWindowChange);
+-}
+-
+-HwcImage::~HwcImage()
+-{
+-    HwcImageLoadRequest::mutex.lock();
+-    if (m_pendingRequest)
+-        m_pendingRequest->hwcImage = 0;
+-    HwcImageLoadRequest::mutex.unlock();
+-}
+-
+-
+-/* We want to track the item that does rotation changes explicitly. This isn't
+-   strictly needed, but it is easy to do and means we get away with tracking
+-   one single object as opposed to listening for changes in an entire parent
+-   hierarchy which would also be a lot slower.
+-  */
+-void HwcImage::setRotationHandler(QQuickItem *item)
+-{
+-    if (!hwcimage_is_enabled()) {
+-        qCDebug(LIPSTICK_LOG_HWC, "HwcImage ignoring rotation handler as HWC is disabled");
+-        return;
+-    }
+-
+-    if (m_rotationHandler == item)
+-        return;
+-    if (m_rotationHandler)
+-        disconnect(m_rotationHandler, &QQuickItem::rotationChanged, this, &HwcImage::handlerRotationChanged);
+-    m_rotationHandler = item;
+-    if (m_rotationHandler)
+-        connect(m_rotationHandler, &QQuickItem::rotationChanged, this, &HwcImage::handlerRotationChanged);
+-    emit rotationHandlerChanged();
+-    polish();
+-
+-    qCDebug(LIPSTICK_LOG_HWC) << "HwcImage" << this << "tracking rotation handler" << item;
+-}
+-
+-void HwcImage::setAsynchronous(bool is)
+-{
+-    if (m_asynchronous == is)
+-        return;
+-    m_asynchronous = is;
+-    emit asynchronousChanged();
+-    polish();
+-}
+-
+-void HwcImage::setSource(const QUrl &source)
+-{
+-    if (source == m_source)
+-        return;
+-    m_source = source;
+-    emit sourceChanged();
+-    m_status = Loading;
+-    emit statusChanged();
+-    polish();
+-}
+-
+-void HwcImage::setOverlayColor(const QColor &color)
+-{
+-    if (m_overlayColor == color)
+-        return;
+-    m_overlayColor = color;
+-    emit overlayColorChanged();
+-    polish();
+-}
+-
+-void HwcImage::setMaxTextureSize(int size)
+-{
+-    if (m_maxTextureSize == size)
+-        return;
+-    m_maxTextureSize = size;
+-    emit maxTextureSizeChanged();
+-    polish();
+-}
+-
+-void HwcImage::setTextureSize(const QSize &size)
+-{
+-    if (m_textureSize == size)
+-        return;
+-    m_textureSize = size;
+-    emit textureSizeChanged();
+-    polish();
+-}
+-
+-void HwcImage::setEffect(const QString &effect)
+-{
+-    if (m_effect == effect)
+-        return;
+-    m_effect = effect;
+-    emit effectChanged();
+-    polish();
+-}
+-
+-void HwcImage::setPixelRatio(qreal ratio)
+-{
+-    if (m_pixelRatio == ratio)
+-        return;
+-    m_pixelRatio = ratio;
+-    emit pixelRatioChanged();
+-    polish();
+-}
+-
+-qreal hwcimage_get_rotation(QQuickItem *item)
+-{
+-    qreal rotation = fmod(item->rotation(), 360.0);
+-    return rotation < 0 ? 360.0 + rotation : rotation;
+-}
+-
+-void HwcImage::handlerRotationChanged()
+-{
+-    qreal rotation = hwcimage_get_rotation(m_rotationHandler);
+-    bool is90 = qFuzzyCompare(0.0, fmod(rotation, 90));
+-    qCDebug(LIPSTICK_LOG_HWC, " - rotation changed: %6.3f, 90 degree=%s", rotation, is90 ? "yes" : "no");
+-    if (is90 && m_textureRotation != rotation)
+-        polish();
+-}
+-
+-void HwcImage::updatePolish()
+-{
+-    if (m_source.isEmpty()) {
+-        // Trigger deletion of the sg node and texture in case the source has been
+-        // removed.
+-        m_image = QImage();
+-        m_updateImage = true;
+-        update();
+-        return;
+-    }
+-
+-    if (!QFileInfo(m_source.toLocalFile()).exists()) {
+-        qCDebug(LIPSTICK_LOG_HWC, "HwcImage: source file does not exist (%s)", qPrintable(m_source.toString()));
+-        return;
+-    }
+-
+-    m_status = Loading;
+-    emit statusChanged();
+-
+-    m_image = QImage();
+-    HwcImageLoadRequest *req = new HwcImageLoadRequest();
+-    req->hwcImage = this;
+-    req->file = m_source.toLocalFile();
+-    req->textureSize = m_textureSize;
+-    req->effect = m_effect;
+-    req->overlay = m_overlayColor;
+-    req->pixelRatio = m_pixelRatio;
+-    req->rotation = m_rotationHandler ? hwcimage_get_rotation(m_rotationHandler) : 0;
+-    req->maxTextureSize = m_maxTextureSize;
+-
+-    if (m_maxTextureSize > 0 && m_textureSize.width() > 0 && m_textureSize.height() > 0)
+-        qWarning() << "HwcImage: both 'textureSize' and 'maxTextureSize' are set; 'textureSize' will take presedence" << this;
+-
+-    qCDebug(LIPSTICK_LOG_HWC,
+-            "Scheduling HwcImage request, source=%s, (%d x %d), eff=%s, olay=%s, rot=%f, pr=%f, %s",
+-            qPrintable(m_source.toString()),
+-            m_textureSize.width(), m_textureSize.height(),
+-            qPrintable(m_effect),
+-            qPrintable(m_overlayColor.name(QColor::HexArgb)),
+-            req->rotation,
+-            m_pixelRatio,
+-            (m_asynchronous ? "async" : "sync")
+-            );
+-
+-    if (m_asynchronous) {
+-        HwcImageLoadRequest::mutex.lock();
+-        m_pendingRequest = req;
+-        QThreadPool::globalInstance()->start(m_pendingRequest);
+-        HwcImageLoadRequest::mutex.unlock();
+-    } else {
+-        req->execute();
+-        apply(req);
+-        delete req;
+-    }
+-}
+-
+-void HwcImage::apply(HwcImageLoadRequest *req)
+-{
+-    m_image = req->image;
+-    QSize s = m_image.size();
+-    setSize(s);
+-    m_status = s.isValid() ? Ready : Error;
+-    emit statusChanged();
+-    m_textureRotation = req->rotation;
+-    m_updateImage = true;
+-    update();
+-}
+-
+-bool HwcImage::event(QEvent *e)
+-{
+-    if (e->type() == HWCIMAGE_LOAD_EVENT) {
+-        HwcImageLoadRequest *req = static_cast<HwcImageLoadRequest *>(e);
+-
+-        bool accept = m_source.toLocalFile() == req->file
+-                      && m_effect == req->effect
+-                      && m_textureSize == req->textureSize
+-                      && m_pixelRatio == req->pixelRatio
+-                      && m_overlayColor == req->overlay;
+-        qCDebug(LIPSTICK_LOG_HWC,
+-                "HwcImage request completed: %s, source=%s, (%d x %d), eff=%s, olay=%s, rot=%f, pr=%f",
+-                (accept ? "accepted" : "rejected"),
+-                qPrintable(req->file),
+-                req->textureSize.width(), req->textureSize.height(),
+-                qPrintable(req->effect),
+-                qPrintable(req->overlay.name(QColor::HexArgb)),
+-                req->rotation,
+-                req->pixelRatio);
+-        if (accept)
+-            apply(req);
+-
+-        return true;
+-    }
+-    return QQuickItem::event(e);
+-}
+-
+-void HwcImage::onWindowChange()
+-{
+-    if (m_window)
+-        disconnect(m_window.data(), &QQuickWindow::beforeSynchronizing, this, &HwcImage::onSync);
+-    m_window = window();
+-    if (m_window)
+-        connect(m_window.data(), &QQuickWindow::beforeSynchronizing, this, &HwcImage::onSync, Qt::DirectConnection);
+-}
+-
+-void HwcImage::onSync()
+-{
+-    const bool used = hasEffectReferences(this);
+-
+-    if (used != m_usedInEffect) {
+-        m_usedInEffect = used;
+-        update();
+-    }
+-}
+-
+-bool HwcImage::hasEffectReferences(QQuickItem *item)
+-{
+-    for (; item; item = item->parentItem()) {
+-        QQuickItemPrivate *d = QQuickItemPrivate::get(item);
+-        if (d->extra.isAllocated() && d->extra->effectRefCount > 0) {
+-            return true;
+-        }
+-    }
+-    return false;
+-}
+-
+-
+-class HwcImageTexture : public QSGTexture
+-{
+-    Q_OBJECT
+-
+-public:
+-    HwcImageTexture(EGLClientBuffer buffer, EGLImageKHR image, const QSize &size, HwcRenderStage *hwc);
+-    ~HwcImageTexture();
+-    void release();
+-
+-    int textureId() const { return m_id; }
+-    QSize textureSize() const { return m_size; }
+-    bool hasAlphaChannel() const { return false; }
+-    bool hasMipmaps() const { return false; }
+-    void bind();
+-
+-    static QSGTexture *create(const QImage &image, QQuickWindow *window);
+-
+-    void *handle() const;
+-
+-private:
+-    GLuint m_id;
+-    HwcRenderStage *m_hwc;
+-    EGLClientBuffer m_buffer;
+-    EGLImageKHR m_image;
+-    QSize m_size;
+-    void *m_handle;
+-    bool m_bound;
+-};
+-
+-class HwcImageNode : public QSGSimpleTextureNode
+-{
+-public:
+-    HwcImageNode() {
+-        qCDebug(LIPSTICK_LOG_HWC) << "HwcImageNode is created...";
+-        qsgnode_set_description(this, QStringLiteral("hwc-image-node"));
+-    }
+-    ~HwcImageNode() {
+-        qCDebug(LIPSTICK_LOG_HWC) << "HwcImageNode is gone...";
+-        releaseTexture();
+-    }
+-    void *handle() const {
+-        HwcImageTexture *t = static_cast<HwcImageTexture *>(texture());
+-        return t ? t->handle() : 0;
+-    }
+-    void releaseTexture() {
+-        if (HwcImageTexture *t = qobject_cast<HwcImageTexture *>(texture()))
+-            t->release();
+-        else
+-            delete texture();
+-    }
+-};
+-
+-HwcImageNode *HwcImage::updateActualPaintNode(QSGNode *old)
+-{
+-    if ((m_updateImage && m_image.isNull()) || width() <= 0 || height() <= 0) {
+-        delete old;
+-        return 0;
+-    }
+-
+-    HwcImageNode *tn = static_cast<HwcImageNode *>(old);
+-    if (!tn)
+-        tn = new HwcImageNode();
+-
+-    if (m_updateImage) {
+-        tn->releaseTexture();
+-        QSGTexture *t = HwcImageTexture::create(m_image, window());
+-        if (t)
+-            tn->setTexture(t);
+-        else
+-            tn->setTexture(window()->createTextureFromImage(m_image));
+-        m_image = QImage();
+-        m_updateImage = false;
+-    }
+-    tn->setRect(0, 0, width(), height());
+-    return tn;
+-}
+-
+-QMatrix4x4 HwcImage::reverseTransform() const
+-{
+-    if (!m_rotationHandler)
+-        return QMatrix4x4();
+-    // We assume a center-oriented rotation with no monkey busines between us
+-    // and the rotationHandler and the rotationHandler must be a parent of
+-    // ourselves. (It wouldn't rotate otherwise)
+-    float w2 = width() / 2;
+-    float h2 = height() / 2;
+-    QMatrix4x4 m;
+-    m.translate(w2, h2);
+-    m.rotate(-m_textureRotation, 0, 0, 1);
+-    m.translate(-w2, -h2);
+-    return m;
+-}
+-
+-
+-QSGNode *HwcImage::updatePaintNode(QSGNode *old, UpdatePaintNodeData *)
+-{
+-
+-    if (!hwcimage_is_enabled()) {
+-        qCDebug(LIPSTICK_LOG_HWC) << "HwcImage" << this << "updating paint node without HWC support";
+-        return updateActualPaintNode(old);
+-    }
+-
+-    /*
+-        When we're using hwcomposer, we replace the image with a slightly more
+-        complex subtree. There is an HwcNode which is where we put the buffer
+-        handle which the HwcRenderStage will pick up. Then we have a
+-        QSGTransformNode which we use to apply reverse transforms. For different
+-        orientations we create a rotated texture and invert the transform
+-        in the scene graph.
+-
+-        HwcNode             <- The hook which makes us get picked up by the HwcRenderStage
+-           |
+-        QSGTransformNode    <- The reverse transform used to get correct orientation
+-           |
+-        HwcImageNode        <- The texture node which gets rendered as a fallback.
+-     */
+-    HwcNode *hwcNode = 0;
+-
+-    if (old) {
+-        qCDebug(LIPSTICK_LOG_HWC) << "HwcImage" << this << "updating paint existing node";
+-        hwcNode = static_cast<HwcNode *>(old);
+-        HwcImageNode *contentNode = updateActualPaintNode(hwcNode->firstChild()->firstChild());
+-        if (contentNode == 0) {
+-            delete hwcNode;
+-            return 0;
+-        } else if (contentNode != hwcNode->firstChild()->firstChild()) {
+-            // No need to remove the old node as the updatePaintNode call will
+-            // already have deleted the old content node and it would thus have
+-            // already been taken out.
+-            hwcNode->firstChild()->appendChildNode(contentNode);
+-        }
+-        static_cast<QSGTransformNode *>(hwcNode->firstChild())->setMatrix(reverseTransform());
+-        hwcNode->update(contentNode, contentNode->handle());
+-    } else if (HwcImageNode *contentNode = updateActualPaintNode(0)) {
+-        qCDebug(LIPSTICK_LOG_HWC) << "HwcImage" << this << "creating new node";
+-        hwcNode = new HwcNode(window());
+-        QSGTransformNode *xnode = new QSGTransformNode();
+-        xnode->setMatrix(reverseTransform());
+-        qsgnode_set_description(xnode, QStringLiteral("hwc-reverse-xform"));
+-        xnode->appendChildNode(contentNode);
+-        hwcNode->appendChildNode(xnode);
+-        hwcNode->update(contentNode, contentNode->handle());
+-    } else {
+-        return 0;
+-    }
+-
+-    if (hwcNode)
+-        hwcNode->setForcedGLRendering(m_usedInEffect);
+-
+-    return hwcNode;
+-}
+-
+-
+-// from hybris_nativebuffer.h in libhybris
+-#define HYBRIS_USAGE_SW_WRITE_RARELY    0x00000020
+-#define HYBRIS_USAGE_HW_TEXTURE         0x00000100
+-#define HYBRIS_USAGE_HW_COMPOSER        0x00000800
+-#define HYBRIS_PIXEL_FORMAT_RGBA_8888   1
+-#define HYBRIS_PIXEL_FORMAT_RGB_888     3
+-#define HYBRIS_PIXEL_FORMAT_BGRA_8888   5
+-
+-#define EGL_NATIVE_BUFFER_HYBRIS        0x3140
+-
+-extern "C" {
+-    typedef EGLBoolean (EGLAPIENTRYP _eglHybrisCreateNativeBuffer)(EGLint width, EGLint height, EGLint usage, EGLint format, EGLint *stride, EGLClientBuffer *buffer);
+-    typedef EGLBoolean (EGLAPIENTRYP _eglHybrisLockNativeBuffer)(EGLClientBuffer buffer, EGLint usage, EGLint l, EGLint t, EGLint w, EGLint h, void **vaddr);
+-    typedef EGLBoolean (EGLAPIENTRYP _eglHybrisUnlockNativeBuffer)(EGLClientBuffer buffer);
+-    typedef EGLBoolean (EGLAPIENTRYP _eglHybrisReleaseNativeBuffer)(EGLClientBuffer buffer);
+-    typedef EGLBoolean (EGLAPIENTRYP _eglHybrisNativeBufferHandle)(EGLDisplay dpy, EGLClientBuffer buffer, void **handle);
+-
+-    typedef void (EGLAPIENTRYP _glEGLImageTargetTexture2DOESlipstick)(GLenum target, EGLImageKHR image);
+-    typedef EGLImageKHR (EGLAPIENTRYP _eglCreateImageKHR)(EGLDisplay dpy, EGLContext ctx, EGLenum target, EGLClientBuffer buffer, const EGLint *attribs);
+-    typedef EGLBoolean (EGLAPIENTRYP _eglDestroyImageKHR)(EGLDisplay dpy, EGLImageKHR image);
+-}
+-
+-static _glEGLImageTargetTexture2DOESlipstick glEGLImageTargetTexture2DOESlipstick = 0;
+-static _eglCreateImageKHR eglCreateImageKHR = 0;
+-static _eglDestroyImageKHR eglDestroyImageKHR = 0;
+-
+-static _eglHybrisCreateNativeBuffer eglHybrisCreateNativeBuffer = 0;
+-static _eglHybrisLockNativeBuffer eglHybrisLockNativeBuffer = 0;
+-static _eglHybrisUnlockNativeBuffer eglHybrisUnlockNativeBuffer = 0;
+-static _eglHybrisReleaseNativeBuffer eglHybrisReleaseNativeBuffer = 0;
+-static _eglHybrisNativeBufferHandle eglHybrisNativeBufferHandle = 0;
+-
+-static void hwcimage_initialize()
+-{
+-    static bool initialized = false;
+-    if (initialized)
+-        return;
+-    initialized = true;
+-
+-    glEGLImageTargetTexture2DOESlipstick = (_glEGLImageTargetTexture2DOESlipstick) eglGetProcAddress("glEGLImageTargetTexture2DOES");
+-    eglCreateImageKHR = (_eglCreateImageKHR) eglGetProcAddress("eglCreateImageKHR");
+-    eglDestroyImageKHR = (_eglDestroyImageKHR) eglGetProcAddress("eglDestroyImageKHR");
+-    eglHybrisCreateNativeBuffer = (_eglHybrisCreateNativeBuffer) eglGetProcAddress("eglHybrisCreateNativeBuffer");
+-    eglHybrisLockNativeBuffer = (_eglHybrisLockNativeBuffer) eglGetProcAddress("eglHybrisLockNativeBuffer");
+-    eglHybrisUnlockNativeBuffer = (_eglHybrisUnlockNativeBuffer) eglGetProcAddress("eglHybrisUnlockNativeBuffer");
+-    eglHybrisReleaseNativeBuffer = (_eglHybrisReleaseNativeBuffer) eglGetProcAddress("eglHybrisReleaseNativeBuffer");
+-    eglHybrisNativeBufferHandle = (_eglHybrisNativeBufferHandle) eglGetProcAddress("eglHybrisNativeBufferHandle");
+-}
+-
+-static bool hwcimage_is_enabled()
+-{
+-    if (!HwcRenderStage::isHwcEnabled())
+-        return false;
+-
+-    // Check for availablility of EGL_HYBRIS_native_buffer support, which we
+-    // need to do hwc layering of background images...
+-    static int hybrisBuffers = -1;
+-    if (hybrisBuffers < 0) {
+-        if (strstr(eglQueryString(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_EXTENSIONS), "EGL_HYBRIS_native_buffer2") == 0) {
+-            qCDebug(LIPSTICK_LOG_HWC, "Missing required EGL extensions: 'EGL_HYBRIS_native_buffer2'");
+-            hybrisBuffers = 0;
+-        } else {
+-            hybrisBuffers = 1;
+-        }
+-    }
+-    return hybrisBuffers == 1;
+-}
+-
+-QSGTexture *HwcImageTexture::create(const QImage &image, QQuickWindow *window)
+-{
+-    hwcimage_initialize();
+-
+-    if (!hwcimage_is_enabled())
+-        return 0;
+-
+-    EGLClientBuffer buffer = 0;
+-    int width = image.width();
+-    int height = image.height();
+-    int usage = HYBRIS_USAGE_SW_WRITE_RARELY | HYBRIS_USAGE_HW_TEXTURE | HYBRIS_USAGE_HW_COMPOSER;
+-    int stride = 0;
+-    int format = HYBRIS_PIXEL_FORMAT_BGRA_8888;
+-    char *data;
+-
+-    eglHybrisCreateNativeBuffer(width, height, usage, format, &stride, &buffer);
+-    Q_ASSERT(buffer);
+-    eglHybrisLockNativeBuffer(buffer, HYBRIS_USAGE_SW_WRITE_RARELY, 0, 0, width, height, (void **) &data);
+-    Q_ASSERT(data);
+-
+-    const int dbpl = stride * 4;
+-    const int bpl = qMin(dbpl, image.bytesPerLine());
+-    for (int y=0; y<height; ++y)
+-        memcpy(data + y * dbpl, image.constScanLine(y), bpl);
+-
+-    eglHybrisUnlockNativeBuffer(buffer);
+-
+-    EGLImageKHR eglImage = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY),
+-                                             EGL_NO_CONTEXT,
+-                                             EGL_NATIVE_BUFFER_HYBRIS,
+-                                             buffer,
+-                                             0);
+-    Q_ASSERT(eglImage);
+-    Q_ASSERT(QQuickWindowPrivate::get(window));
+-    Q_ASSERT(QQuickWindowPrivate::get(window)->customRenderStage);
+-
+-    return new HwcImageTexture(buffer,
+-                               eglImage,
+-                               QSize(width, height),
+-                               static_cast<HwcRenderStage *>(QQuickWindowPrivate::get(window)->customRenderStage));
+-}
+-
+-
+-HwcImageTexture::HwcImageTexture(EGLClientBuffer buffer, EGLImageKHR image, const QSize &size, HwcRenderStage *hwc)
+-    : m_hwc(hwc)
+-    , m_buffer(buffer)
+-    , m_image(image)
+-    , m_size(size)
+-    , m_bound(false)
+-{
+-    Q_ASSERT(m_hwc);
+-    glGenTextures(1, &m_id);
+-    qCDebug(LIPSTICK_LOG_HWC,
+-            "HwcImageTexture(%p) created, size=(%d x %d), texId=%d, buffer=%p, image=%p",
+-            this, m_size.width(), m_size.height(), m_id, m_buffer, m_image);
+-}
+-
+-HwcImageTexture::~HwcImageTexture()
+-{
+-    Q_ASSERT(m_id == 0); // Should have been deleted via release().
+-
+-    eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
+-    eglHybrisReleaseNativeBuffer(m_buffer);
+-    qCDebug(LIPSTICK_LOG_HWC,
+-            "HwcImageTexture(%p) destroyed, size=(%d x %d), texId=%d, buffer=%p, image=%p",
+-            this, m_size.width(), m_size.height(), m_id, m_buffer, m_image);
+-}
+-
+-void HwcImageTexture::bind()
+-{
+-    glBindTexture(GL_TEXTURE_2D, m_id);
+-    updateBindOptions(!m_bound);
+-    if (!m_bound) {
+-        m_bound = true;
+-        glEGLImageTargetTexture2DOESlipstick(GL_TEXTURE_2D, m_image);
+-    }
+-}
+-
+-void hwcimage_delete_texture(void *, void *callbackData)
+-{
+-    delete (QObject *) callbackData;
+-}
+-
+-void HwcImageTexture::release()
+-{
+-    qCDebug(LIPSTICK_LOG_HWC,
+-            "HwcImageTexture(%p) released, size=(%d x %d), texId=%d, buffer=%p, image=%p",
+-            this, m_size.width(), m_size.height(), m_id, m_buffer, m_image);
+-
+-    // We're on the render thread, so delete the texture right away
+-    Q_ASSERT(m_id);
+-    glDeleteTextures(1, &m_id);
+-    m_id = 0;
+-
+-    // Register for a callback so we can delete ourselves when HWC is done
+-    // with our buffer. Chances are the cleanup will happen on the HWC thread,
+-    // but this is safe as the EGL resource can be deleted from any thread..
+-    m_hwc->signalOnBufferRelease(hwcimage_delete_texture, handle(), this);
+-}
+-
+-void *HwcImageTexture::handle() const
+-{
+-    void *h;
+-    eglHybrisNativeBufferHandle(eglGetCurrentDisplay(), m_buffer, &h);
+-    return h;
+-}
+-
+-
+-#include "hwcimage.moc"
+-
+diff --git a/src/compositor/hwcimage.h b/src/compositor/hwcimage.h
+deleted file mode 100644
+index 5d776c39..00000000
+--- a/src/compositor/hwcimage.h
++++ /dev/null
+@@ -1,125 +0,0 @@
+-/***************************************************************************
+-**
+-** Copyright (C) 2015 Jolla Ltd.
+-** Contact: Gunnar Sletta <gunnar.sletta@jollamobile.com>
+-**
+-** This file is part of lipstick.
+-**
+-** This library is free software; you can redistribute it and/or
+-** modify it under the terms of the GNU Lesser General Public
+-** License version 2.1 as published by the Free Software Foundation
+-** and appearing in the file LICENSE.LGPL included in the packaging
+-** of this file.
+-**
+-****************************************************************************/
+-
+-#ifndef HWCIMAGE_H
+-#define HWCIMAGE_H
+-
+-#include <QUrl>
+-#include <QImage>
+-#include <QQuickItem>
+-#include <QPointer>
+-
+-#include "lipstickglobal.h"
+-
+-class HwcImageNode;
+-class HwcImageLoadRequest;
+-
+-class QSGTexture;
+-
+-class LIPSTICK_EXPORT HwcImage : public QQuickItem
+-{
+-    Q_OBJECT
+-    Q_PROPERTY(QUrl source READ source WRITE setSource NOTIFY sourceChanged)
+-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+-    Q_PROPERTY(QColor overlayColor READ overlayColor WRITE setOverlayColor NOTIFY overlayColorChanged)
+-    Q_PROPERTY(qreal pixelRatio READ pixelRatio WRITE setPixelRatio NOTIFY pixelRatioChanged)
+-    Q_PROPERTY(QSize textureSize READ textureSize WRITE setTextureSize NOTIFY textureSizeChanged)
+-    Q_PROPERTY(int maxTextureSize READ maxTextureSize WRITE setMaxTextureSize NOTIFY maxTextureSizeChanged)
+-    Q_PROPERTY(QString effect READ effect WRITE setEffect NOTIFY effectChanged)
+-    Q_PROPERTY(QQuickItem *rotationHandler READ rotationHandler WRITE setRotationHandler NOTIFY rotationHandlerChanged)
+-    Q_PROPERTY(bool asynchronous READ isAsynchronous WRITE setAsynchronous NOTIFY asynchronousChanged)
+-
+-    Q_ENUMS(Status)
+-
+-public:
+-    enum Status { Null, Ready, Loading, Error };
+-
+-	HwcImage();
+-	~HwcImage();
+-
+-	void setSource(const QUrl &url);
+-	QUrl source() const { return m_source; }
+-
+-    void setOverlayColor(const QColor &color);
+-    QColor overlayColor() const { return m_overlayColor; }
+-
+-    Status status() const { return m_status; }
+-
+-    void setMaxTextureSize(int size);
+-    int maxTextureSize() const { return m_maxTextureSize; }
+-
+-    void setTextureSize(const QSize &size);
+-    QSize textureSize() const { return m_textureSize; }
+-
+-    void setEffect(const QString &effect);
+-    QString effect() const { return m_effect; }
+-
+-    void setPixelRatio(qreal);
+-    qreal pixelRatio() const { return m_pixelRatio; }
+-
+-    void setAsynchronous(bool is);
+-    bool isAsynchronous() const { return m_asynchronous; }
+-
+-    void setRotationHandler(QQuickItem *rotationHandler);
+-    QQuickItem *rotationHandler() const { return m_rotationHandler; }
+-
+-    static bool hasEffectReferences(QQuickItem *item);
+-
+-protected:
+-    bool event(QEvent *event);
+-	void updatePolish();
+-
+-	QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *data);
+-
+-signals:
+-    void sourceChanged();
+-    void statusChanged();
+-    void overlayColorChanged();
+-    void textureSizeChanged();
+-    void effectChanged();
+-    void pixelRatioChanged();
+-    void asynchronousChanged();
+-    void rotationHandlerChanged();
+-    void maxTextureSizeChanged();
+-
+-private slots:
+-    void handlerRotationChanged();
+-    void onWindowChange();
+-    void onSync();
+-
+-private:
+-    friend class HwcImageLoadRequest;
+-    void apply(HwcImageLoadRequest *);
+-    QMatrix4x4 reverseTransform() const;
+-    HwcImageNode *updateActualPaintNode(QSGNode *node);
+-
+-    HwcImageLoadRequest *m_pendingRequest;
+-    QPointer<QQuickWindow> m_window;
+-    QQuickItem *m_rotationHandler;
+-	QUrl m_source;
+-    QImage m_image;
+-    QSize m_textureSize;
+-    QString m_effect;
+-    Status m_status;
+-    QColor m_overlayColor;
+-    qreal m_pixelRatio;
+-    qreal m_textureRotation;
+-    int m_maxTextureSize;
+-    bool m_asynchronous : 1;
+-    bool m_usedInEffect : 1;
+-    bool m_updateImage : 1;
+-};
+-
+-#endif
+diff --git a/src/compositor/hwcinterface.h b/src/compositor/hwcinterface.h
+deleted file mode 100644
+index ab2b2184..00000000
+--- a/src/compositor/hwcinterface.h
++++ /dev/null
+@@ -1,179 +0,0 @@
+-// IMPORTANT!!!!
+-//
+-// This file is a copy from the one in the hwcomposer platform plugin
+-// Make sure it is up to date, failing to do so will result in the
+-// hardware compositor not working or at worst, binary incompatibility.
+-
+-/****************************************************************************
+-**
+-** Copyright (C) 2015 Jolla Ltd.
+-** Contact: Gunnar Sletta <gunnar.sletta@jollamobile.com>
+-**
+-** This file is part of the hwcomposer plugin.
+-**
+-** GNU Lesser General Public License Usage
+-** Alternatively, this file may be used under the terms of the GNU Lesser
+-** General Public License version 2.1 as published by the Free Software
+-** Foundation and appearing in the file LICENSE.LGPL included in the
+-** packaging of this file.  Please review the following information to
+-** ensure the GNU Lesser General Public License version 2.1 requirements
+-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+-**
+-** In addition, as a special exception, Digia gives you certain additional
+-** rights.  These rights are described in the Digia Qt LGPL Exception
+-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+-**
+-** GNU General Public License Usage
+-** Alternatively, this file may be used under the terms of the GNU
+-** General Public License version 3.0 as published by the Free Software
+-** Foundation and appearing in the file LICENSE.GPL included in the
+-** packaging of this file.  Please review the following information to
+-** ensure the GNU General Public License version 3.0 requirements will be
+-** met: http://www.gnu.org/copyleft/gpl.html.
+-**
+-****************************************************************************/
+-
+-#ifndef HWCINTERFACE_H
+-#define HWCINTERFACE_H
+-
+-//
+-// IMPORTANT!!!
+-//
+-// If you make any changes to this file, make sure that you also increment the
+-// version of the native resource "hwcinterface" in the platform integration.
+-// Applications that ask for this resource will be binary compatible and crash
+-// unless they get the exact version they are asking for.
+-//
+-// You should also update any applications you know of that makes use of this
+-// interface after changing it.
+-//
+-
+-#define HWC_INTERFACE_STRING "hwcinterface v0.2"
+-
+-namespace HwcInterface
+-{
+-
+-
+-    struct Layer
+-    {
+-        // The hardware buffer handle, typically a buffer_handle_t
+-        void *handle;
+-
+-        // The target rect, in pixels
+-        int tx, ty, tw, th;
+-
+-        // The source rect, in pixels.
+-        int sx, sy, sw, sh;
+-
+-        // Set to true after the layer list has become active. Indicates that
+-        // the layer will be handled by the hardware compositor. In a list of
+-        // 4 layers where only 2 layers are supported, the back-most two
+-        // layers will be accepted. This allows for composition of the front-
+-        // most two in the EGL surface.
+-        //
+-        // This value will be set by the hardware compositor when accepted.
+-        // Changing it from the client side will result in undefined behavior.
+-        uint accepted: 1;
+-
+-        // we don't have HWCs that support opacity or color layers, so ignore these for now
+-        // Also, sailfish does orientation changes by rendering rotated, so 90 degree flipping
+-        // is not required for now. Lets keep it as simple as possible...
+-
+-        // for future use...
+-        uint reserved : 31;
+-    };
+-
+-    struct LayerList
+-    {
+-        // Set by the caller to indicate that EGL rendering is in use
+-        // and that the compositor should reserve space for that in the
+-        // internal render list.
+-        //
+-        // This value can be changed by the Compositor to true if layers are not
+-        // accepted and must be composited in EGL.
+-        uint eglRenderingEnabled : 1;
+-
+-        // for future use...
+-        uint reserved : 31;
+-
+-        /* The number of layers in 'layers'
+-         */
+-        int layerCount;
+-
+-        // The actual layers, packed at the end of this struct..
+-        Layer layers[0];
+-    };
+-
+-    class Compositor
+-    {
+-    public:
+-        virtual ~Compositor() {}
+-
+-        /*
+-
+-           Will be called by the EGL rendering thread, will schedule a
+-           prepare() call on HWC to check how feasible it is to perform the
+-           composition of these layers. Each call MUST contain a uniqure
+-           pointer.
+-
+-           Compositor takes ownership of the LayerList and will call the
+-           'ReleaseLayerListCallback' once the list is no longer in use.
+-
+-           The LayerList should be considered an invalid pointer until the
+-           time it reappears as 'acceptedLayerList'. From this moment on,
+-           until the next scheduleLayerList is called, the user can update
+-           buffer handles only.
+-
+-           If a scheduled layer list is not accepted at all, for instance
+-           because all buffers try to use an unsupported feature, the
+-           'scheduledLayerList' will never become accepted.
+-
+-         */
+-        virtual void scheduleLayerList(LayerList *list) = 0;
+-
+-        /*
+-
+-           Will be called by the EGL rendering thread. By default this will be 0.
+-           After a call to scheduleLayerList, the HWC thread will make a prepare()
+-           call to check the feasibility of compositing the layers. After this
+-           call has completed, the layer list will be accepted.
+-
+-           An accepted layer list is only actually taken into use once a call
+-           to swapLayerList with this specific layer list is called.
+-
+-          */
+-        virtual const LayerList *acceptedLayerList() const = 0;
+-
+-        // Swaps the layer list.
+-        // It is a fatal error if the list is different from 'acceptedLayerList'.
+-        // It is a fatal error if the list contains changes other than updates
+-        // to buffer handles.
+-        virtual void swapLayerList(LayerList *list) = 0;
+-
+-        typedef void (*ReleaseLayerListCallback)(LayerList *list);
+-        virtual void setReleaseLayerListCallback(ReleaseLayerListCallback callback) = 0;
+-
+-        typedef void (*BufferAvailableCallback)(void *handle, void *data);
+-        virtual void setBufferAvailableCallback(BufferAvailableCallback, void *) = 0;
+-
+-        /*
+-
+-           The invalidation callback will be called when the hwc decides to
+-           invalidate its surface list. This can happen, for instance, because
+-           the HWC has gone into power saving mode and wants the composition
+-           to be done using a single buffer.
+-
+-           The application must immediately schedule a new layer list and do
+-           another render pass. The current layer list is immediately rejected.
+-
+-           This function will be called on Qt's GUI thread.
+-
+-         */
+-        typedef void (*InvalidateCallback)(void *data);
+-        virtual void setInvalidateCallback(InvalidateCallback, void *) = 0;
+-    };
+-
+-}; // end namespace
+-
+-#endif // HWCINTERFACE_H
+-
+diff --git a/src/compositor/hwcrenderstage.cpp b/src/compositor/hwcrenderstage.cpp
+deleted file mode 100644
+index e63570c5..00000000
+--- a/src/compositor/hwcrenderstage.cpp
++++ /dev/null
+@@ -1,529 +0,0 @@
+-/***************************************************************************
+-**
+-** Copyright (C) 2015 Jolla Ltd.
+-** Contact: Gunnar Sletta <gunnar.sletta@jollamobile.com>
+-**
+-** This file is part of lipstick.
+-**
+-** This library is free software; you can redistribute it and/or
+-** modify it under the terms of the GNU Lesser General Public
+-** License version 2.1 as published by the Free Software Foundation
+-** and appearing in the file LICENSE.LGPL included in the packaging
+-** of this file.
+-**
+-****************************************************************************/
+-
+-#include "hwcrenderstage.h"
+-#include "hwcinterface.h"
+-
+-#include "lipstickcompositor.h"
+-
+-#include <private/qguiapplication_p.h>
+-#include <qpa/qplatformintegration.h>
+-#include <qpa/qplatformnativeinterface.h>
+-
+-#include <qsgnode.h>
+-#include <qsgtexturematerial.h>
+-
+-#include <EGL/egl.h>
+-
+-Q_LOGGING_CATEGORY(LIPSTICK_LOG_HWC, "qt.lipstick.hwc")
+-
+-const QEvent::Type HWC_BufferRelease = (QEvent::Type) (QEvent::User + 1);
+-
+-class HwcBufferReleaseEvent : public QEvent
+-{
+-public:
+-    HwcBufferReleaseEvent(void *b) : QEvent(HWC_BufferRelease), buffer(b) { }
+-    void *buffer;
+-};
+-
+-HwcNode::HwcNode(QQuickWindow *window)
+-    : QSGNode(QSG_HWC_NODE_TYPE)
+-    , m_contentNode(0)
+-    , m_buffer_handle(0)
+-    , m_x(0)
+-    , m_y(0)
+-    , m_blocked(false)
+-    , m_forceGLRendering(false)
+-{
+-    qsgnode_set_description(this, QStringLiteral("hwcnode"));
+-    m_renderStage = (HwcRenderStage *) QQuickWindowPrivate::get(window)->customRenderStage;
+-    Q_ASSERT(m_renderStage);
+-}
+-
+-HwcNode::~HwcNode()
+-{
+-    m_renderStage->hwcNodeDeleted(this);
+-}
+-
+-void HwcNode::update(QSGGeometryNode *node, void *handle)
+-{
+-    m_contentNode = node;
+-    m_buffer_handle = handle;
+-}
+-
+-void HwcNode::setBlocked(bool blocked)
+-{
+-    if (m_blocked != blocked) {
+-        m_blocked = blocked;
+-        markDirty(DirtySubtreeBlocked);
+-    }
+-}
+-
+-QRect HwcNode::bounds() const
+-{
+-    Q_ASSERT(m_contentNode);
+-    QSGGeometry *g = m_contentNode->geometry();
+-    QSGGeometry::TexturedPoint2D *v = g->vertexDataAsTexturedPoint2D();
+-    float x1 = v[0].x;        // v0--v2
+-    float y1 = v[0].y;        // |  / |
+-    float x2 = v[2].x;        // | /  |
+-    float y2 = v[1].y;        // v1--v3
+-    return QRect(x1, y1, x2-x1, y2-y1);
+-}
+-
+-#ifndef QT_NO_DEBUG
+-static inline bool hwc_renderstage_isRect(QSGGeometry::TexturedPoint2D *v)
+-{
+-    return v[0].x == v[1].x && v[2].x == v[3].x
+-           && v[0].y == v[2].y && v[1].y == v[3].y
+-           && v[0].tx == v[1].tx && v[2].tx == v[3].tx
+-           && v[0].ty == v[2].ty && v[1].ty == v[3].ty;
+-}
+-
+-static inline void hwc_renderstage_check_node(QSGNode *node)
+-{
+-    static const QSGMaterialType *opaqueTextureType = QSGOpaqueTextureMaterial().type();
+-    static const QSGMaterialType *alphaTextureType = QSGTextureMaterial().type();
+-    static const QSGGeometry::Attribute *attributes = QSGGeometry::defaultAttributes_TexturedPoint2D().attributes;
+-
+-    Q_ASSERT(node->type() == QSG_HWC_NODE_TYPE);
+-    QSGGeometryNode *gn = static_cast<HwcNode *>(node)->contentNode();
+-    Q_ASSERT(gn);
+-    QSGGeometry *g = gn->geometry();
+-    Q_ASSERT(g->vertexCount() == 4);
+-    Q_ASSERT(g->indexCount() == 0);
+-    Q_ASSERT(g->attributes() == attributes);
+-    Q_ASSERT(hwc_renderstage_isRect(g->vertexDataAsTexturedPoint2D()));
+-    Q_ASSERT(gn->opaqueMaterial() && gn->opaqueMaterial()->type() == opaqueTextureType);
+-    Q_ASSERT(gn->material()->type() == alphaTextureType);
+-}
+-#else
+-#define hwc_renderstage_check_node(node)
+-#endif
+-
+-bool HwcRenderStage::m_hwcEnabled = false;
+-
+-void HwcRenderStage::initialize(LipstickCompositor *lipstick)
+-{
+-    static bool enabled = qgetenv("LIPSTICK_HARDWARE_COMPOSITOR").toInt() != 0;
+-    QPlatformNativeInterface *iface = QGuiApplicationPrivate::platform_integration->nativeInterface();
+-    if (!enabled) {
+-        qDebug() << "Hardware Compositor support is disabled";
+-        return;
+-    }
+-    Q_ASSERT(iface);
+-    EGLDisplay eglDisplay = iface->nativeResourceForIntegration("egldisplay");
+-    Q_ASSERT(eglDisplay);
+-
+-    qCDebug(LIPSTICK_LOG_HWC, "EGL Extensions: %s", eglQueryString(eglDisplay, EGL_EXTENSIONS));
+-
+-    void *compositor = iface->nativeResourceForIntegration(HWC_INTERFACE_STRING);
+-    if (!compositor) {
+-        qDebug("Hardware Compositor is not enabled, missing native resource named: '%s'", HWC_INTERFACE_STRING);
+-        return;
+-    }
+-    Q_ASSERT(compositor);
+-    QQuickWindowPrivate::get(lipstick->quickWindow())->customRenderStage = new HwcRenderStage(lipstick, compositor);
+-    qDebug() << "Hardware Compositor support is enabled";
+-    m_hwcEnabled = true;
+-}
+-
+-static HwcInterface::LayerList *hwc_renderstage_create_list(const QVector<HwcNode *> &nodes)
+-{
+-    int size = sizeof(HwcInterface::LayerList) + sizeof(HwcInterface::Layer) * nodes.size();
+-    HwcInterface::LayerList *list = (HwcInterface::LayerList *) malloc(size);
+-    memset(list, 0, size);
+-    list->layerCount = nodes.size();
+-    for (int i=0; i<nodes.size(); ++i) {
+-        HwcInterface::Layer &l = list->layers[i];
+-        HwcNode *n = nodes.at(i);
+-        QRect r = n->bounds();
+-        l.sx = 0;
+-        l.sy = 0;
+-        l.tx = r.x() + n->x();
+-        l.ty = r.y() + n->y();
+-        l.sw = l.tw = r.width();
+-        l.sh = l.th = r.height();
+-        l.handle = n->handle();
+-    }
+-    return list;
+-}
+-
+-static void hwc_renderstage_buffer_available(void *handle, void *hwc)
+-{
+-    // ignore for now.. We're only using this for static bg images atm..
+-    static_cast<HwcRenderStage *>(hwc)->bufferReleased(handle);
+-}
+-
+-static void hwc_renderstage_delete_list(HwcInterface::LayerList *list)
+-{
+-    free(list);
+-}
+-
+-static void hwc_renderstage_invalidate(void *hwc)
+-{
+-    static_cast<HwcRenderStage *>(hwc)->invalidated();
+-}
+-
+-static void hwc_renderstage_dump_layerlist(HwcInterface::LayerList *list)
+-{
+-    qCDebug(LIPSTICK_LOG_HWC, " - eglRenderingEnabled: %d", list->eglRenderingEnabled);
+-    for (int i=0; i<list->layerCount; ++i) {
+-        const HwcInterface::Layer &l = list->layers[i];
+-        qCDebug(LIPSTICK_LOG_HWC, " - layer %d: target=(%d,%d, %dx%d), source=(%d,%d, %dx%d) handle=%p, accepted=%d",
+-                i,
+-                l.tx, l.ty, l.tw, l.th,
+-                l.sx, l.sy, l.sw, l.sh,
+-                l.handle, l.accepted);
+-    }
+-}
+-
+-
+-HwcRenderStage::HwcRenderStage(LipstickCompositor *lipstick, void *compositorHandle)
+-    : m_lipstick(lipstick)
+-    , m_window(lipstick->quickWindow())
+-    , m_hwc(reinterpret_cast<HwcInterface::Compositor *>(compositorHandle))
+-    , m_hwcBypass(0)
+-    , m_invalidated(0)
+-    , m_invalidationCountdown(0)
+-    , m_scheduledLayerList(false)
+-    , m_invalidateTimer(0)
+-{
+-    m_hwc->setReleaseLayerListCallback(hwc_renderstage_delete_list);
+-    m_hwc->setBufferAvailableCallback(hwc_renderstage_buffer_available, this);
+-    m_hwc->setInvalidateCallback(hwc_renderstage_invalidate, this);
+-    connect(m_window, &QQuickWindow::frameSwapped, this, &HwcRenderStage::onFrameSwapped);
+-}
+-
+-HwcRenderStage::~HwcRenderStage()
+-{
+-}
+-
+-void HwcRenderStage::onFrameSwapped()
+-{
+-    if (m_invalidateTimer > 0) {
+-        killTimer(m_invalidateTimer);
+-        m_invalidateTimer = 0;
+-    }
+-    // If we're currently in 'layer mode', disable that in a while..
+-    if (m_hwc->acceptedLayerList())
+-        m_invalidateTimer = startTimer(1000);
+-}
+-
+-void HwcRenderStage::timerEvent(QTimerEvent *timerEvent)
+-{
+-    if (timerEvent->timerId() == m_invalidateTimer) {
+-        killTimer(m_invalidateTimer);
+-        m_invalidateTimer = 0;
+-        invalidated();
+-    }
+-}
+-
+-bool HwcRenderStage::render()
+-{
+-    QQuickWindowPrivate *d = QQuickWindowPrivate::get(m_window);
+-    if (d->renderer && d->renderer->rootNode()) {
+-
+-        if (m_invalidated.testAndSetRelaxed(1, 0)) {
+-            m_invalidationCountdown = 5;
+-            disableHwc();
+-            return false;
+-        }
+-
+-        if (m_hwcBypass.load()) {
+-            disableHwc();
+-            return false;;
+-        }
+-
+-        QSGRootNode *rootNode = d->renderer->rootNode();
+-        m_nodesToTry.clear();
+-        bool layersOnly = checkSceneGraph(rootNode) && m_nodesToTry.size() > 0;
+-
+-        bool isUsingLayersOnly = m_layerList && m_layerList == m_hwc->acceptedLayerList() && !m_layerList->eglRenderingEnabled;
+-
+-        if (m_nodesToTry.size()) {
+-
+-            bool scheduleAgain = (m_nodesInList != m_nodesToTry) || (layersOnly != isUsingLayersOnly);
+-
+-            // After an invalidate, there will be a few frames where the HWC
+-            // refuses our layer lists, so we need to keep trying to convince
+-            // it.
+-            if (m_invalidationCountdown > 0 && m_layerList != m_hwc->acceptedLayerList()) {
+-                --m_invalidationCountdown;
+-                qCDebug(LIPSTICK_LOG_HWC, "HwcRenderStage::render(): invalidation countdown: %d", m_invalidationCountdown);
+-                scheduleAgain = true;
+-            }
+-
+-            if (scheduleAgain) {
+-                m_layerList = hwc_renderstage_create_list(m_nodesToTry);
+-                m_layerList->eglRenderingEnabled = !layersOnly;
+-                if (LIPSTICK_LOG_HWC().isDebugEnabled()) {
+-                    qCDebug(LIPSTICK_LOG_HWC, "HwcRenderStage::render(), scheduling new layer list (using GL)");
+-                    hwc_renderstage_dump_layerlist(m_layerList);
+-                }
+-                foreach (HwcNode *n, m_nodesInList)
+-                    n->setBlocked(false);
+-                m_nodesInList = m_nodesToTry;
+-                m_scheduledLayerList = true;
+-                m_hwc->scheduleLayerList(m_layerList);
+-            }
+-
+-            if (m_layerList && m_layerList == m_hwc->acceptedLayerList()) {
+-                m_invalidationCountdown = 0;
+-                if (m_scheduledLayerList) {
+-                    // newly accepted, toggle blocking in the scene graph...
+-                    if (LIPSTICK_LOG_HWC().isDebugEnabled()) {
+-                        qCDebug(LIPSTICK_LOG_HWC, "HwcRenderStage::render(), layer list was accepted (using HWC%s)",
+-                                m_layerList->eglRenderingEnabled ? "+GL" : "");
+-                        hwc_renderstage_dump_layerlist(m_layerList);
+-                    }
+-                    m_scheduledLayerList = false;
+-                    for (int i=0; i<m_nodesToTry.size(); ++i) {
+-                        HwcNode *n = m_nodesInList[i];
+-                        n->setBlocked(m_layerList->layers[i].accepted);
+-                    }
+-                }
+-
+-                m_buffersInUseMutex.lock();
+-                for (int i=0; i<m_nodesInList.size(); ++i) {
+-                    HwcInterface::Layer &l = m_layerList->layers[i];
+-                    if (l.accepted) {
+-                        l.handle = m_nodesInList.at(i)->handle();
+-                        storeBuffer(l.handle);
+-                    } else {
+-                        l.handle = 0;
+-                    }
+-                }
+-                m_buffersInUseMutex.unlock();
+-
+-                if (!m_layerList->eglRenderingEnabled) {
+-                    // Our list is the only content, so skip SG render stage.
+-                    return true;
+-                }
+-            }
+-
+-        } else {
+-            if (LIPSTICK_LOG_HWC().isDebugEnabled()) {
+-                static bool once = false;
+-                if (m_layerList || !once) {
+-                    qCDebug(LIPSTICK_LOG_HWC, "HwcRenderStage::render(), no layers (using GL)");
+-                    once = true;
+-                }
+-            }
+-            disableHwc();
+-        }
+-    }
+-    return false;
+-}
+-
+-bool HwcRenderStage::swap()
+-{
+-    if (m_layerList && m_layerList == m_hwc->acceptedLayerList()) {
+-        m_hwc->swapLayerList(m_layerList);
+-        return true;
+-    }
+-    return false;
+-}
+-
+-// see disabledHwc docs below..
+-void HwcRenderStage::setBypassHwc(bool bypass)
+-{
+-    m_hwcBypass = int(bypass);
+-}
+-
+-/*
+-    Called during the custom render stage's render if m_hwcBypass is set to true.
+-    This is typically used during screenshotting to make sure all HWC content is
+-    being rendered through textures.
+-
+-    A note about threading. The flag to disable this is a QAtomicInt. It will
+-    be set before rendering and turned off once the result has been grabbed.
+-    This is safe because if the m_hwcBypass is set while rendering of an
+-    actual frame is about to happen, then we end up disabling HWC for that
+-    frame which means it is a bit slower to draw, but it still comes out ok.
+-
+-    If we set the bypass flag during rendering of a frame, nothing will happen
+-    until the next render pass which should be the actual pass to grab stuff.
+-    In this pass it is set and HWC is disabled.
+-
+-    Once the bypass flag is unset, rendering will continue as normal and we'll
+-    schedule a new layer list and should enter back into HWC composition mode
+-    within a frame or two and all is back to normal.
+- */
+-void HwcRenderStage::disableHwc()
+-{
+-    if (!m_layerList)
+-        return;
+-    qCDebug(LIPSTICK_LOG_HWC, "HwcRenderStage: Hwc has been disabled, using only GL");
+-    foreach (HwcNode *n, m_nodesInList)
+-        n->setBlocked(false);
+-    m_nodesInList.clear();
+-    m_layerList = 0;
+-    // Tell the HwcInterface that we're no longer going to use the old list.
+-    m_hwc->scheduleLayerList(0);
+-}
+-
+-void HwcRenderStage::hwcNodeDeleted(HwcNode *node)
+-{
+-    for (int i=0; i<m_nodesInList.size(); ) {
+-        if (m_nodesInList.at(i) == node) {
+-            m_nodesInList.remove(i);
+-        } else {
+-            ++i;
+-        }
+-    }
+-    disableHwc();
+-}
+-
+-// We cannot use QMatrix4x4::optimize + translate bits or qFuzzyCompare because
+-// matrices have a high degree of floating point error and we need to take that
+-// into account when checking. Hence do a manual check using a fairly rough
+-// threshold.
+-static bool hwc_renderstage_isTranslate(const QMatrix4x4 &m)
+-{
+-    #define M0(r,c) (qAbs(m(r,c)) < T)
+-    #define M1(r,c) (qAbs(m(r,c) - 1) < T)
+-    static const qreal T = 0.0001;
+-    return M1(0,0) && M0(0,1) && M0(0,2)
+-        && M0(1,0) && M1(1,1) && M0(1,2)
+-        && M0(2,0) && M0(2,1) && M1(2,2) && M0(2,3)
+-        && M0(3,0) && M0(3,1) && M0(3,2) && M1(3,3);
+-    #undef M0
+-    #undef M1
+-}
+-
+-/*
+-    Iterates over the scene graph in a left-to-right depth first manner,
+-    (back-to-front in visual terms). When it finds composer compatible
+-    nodes, these are added to the composition list.
+-
+-    When a node is hit that is not hwcomposer compatible, the function starts
+-    returning false.
+-
+-    Returns true if all content in the scene graph could be rendered by the
+-    hardware composer.
+-
+-    Returns false if there exists content in the graph that must be rendered
+-    using EGL.
+-
+-    The nodes to compose (if any) will be listed in m_nodesToTry.
+- */
+-
+-bool HwcRenderStage::checkSceneGraph(QSGNode *node)
+-{
+-    if (node->type() == QSG_HWC_NODE_TYPE) {
+-
+-        HwcNode *hwcNode = static_cast<HwcNode *>(node);
+-        if (hwcNode->forcedGLRendering())
+-            return false;
+-
+-        QQuickWindowPrivate *d = QQuickWindowPrivate::get(m_window);
+-        QSGRootNode *root = d->renderer->rootNode();
+-        Q_ASSERT(hwcNode->contentNode()); // It shouldn't be in the tree otherwise...
+-
+-        // get x/y offset on screen and check for transformations...
+-        QSGNode *p = hwcNode->contentNode()->parent();
+-        QMatrix4x4 cm;
+-        while (p != root) {
+-            if (p->type() == QSGNode::TransformNodeType) {
+-                QSGTransformNode *tn = static_cast<QSGTransformNode *>(p);
+-                const QMatrix4x4 &m = tn->matrix();
+-                cm = m * cm;
+-            }
+-            p = p->parent();
+-        }
+-
+-        if (!hwc_renderstage_isTranslate(cm))
+-            return false;
+-
+-        hwc_renderstage_check_node(hwcNode);
+-        hwcNode->setPos(cm(0, 3), cm(1, 3));
+-        m_nodesToTry << hwcNode;
+-
+-        // HwcNodes have only the one child, which is whatever node that holds
+-        // the buffer, so we don't want to traverse downwards from here.
+-        return true;
+-
+-    } else if (node->isSubtreeBlocked()) {
+-        return true;
+-
+-    } else if (node->type() == QSGNode::GeometryNodeType
+-               || (node->type() == QSGNode::OpacityNodeType && static_cast<QSGOpacityNode *>(node)->opacity() < 1.0f)
+-               || node->type() == QSGNode::ClipNodeType
+-               || node->type() == QSGNode::RenderNodeType) {
+-            return false;
+-    }
+-
+-    for (QSGNode *child = node->firstChild(); child; child = child->nextSibling()) {
+-        if (!checkSceneGraph(child))
+-            return false;
+-    }
+-
+-    return true;
+-}
+-
+-void HwcRenderStage::storeBuffer(void *handle)
+-{
+-    // m_buffersInUseMutex must be locked during this call. See render()
+-    foreach (const BufferAndResource &b, m_buffersInUse)
+-        if (b.handle == handle)
+-            return;
+-    BufferAndResource b;
+-    b.callback = 0;
+-    b.callbackData = 0;
+-    b.handle = handle;
+-    m_buffersInUse << b;
+-}
+-
+-void HwcRenderStage::signalOnBufferRelease(BufferReleaseCallback callback, void *handle, void *callbackData)
+-{
+-    QMutexLocker locker(&m_buffersInUseMutex);
+-
+-    // Check if the buffer is in use and store for signalling later
+-    for (int i=0; i<m_buffersInUse.size(); ++i) {
+-        BufferAndResource &b = m_buffersInUse[i];
+-        if (b.handle == handle) {
+-            b.callbackData = callbackData;
+-            b.callback = callback;
+-            return;
+-        }
+-    }
+-
+-    // Buffer is not in use so we can signal right away.
+-    callback(handle, callbackData);
+-}
+-
+-void HwcRenderStage::bufferReleased(void *handle)
+-{
+-    QMutexLocker locker(&m_buffersInUseMutex);
+-
+-    // Look up the buffer in the "in use" list and signal present
+-    for (int i=0; i<m_buffersInUse.size(); ++i) {
+-        BufferAndResource &b = m_buffersInUse[i];
+-        if (b.handle == handle) {
+-            if (b.callback)
+-                b.callback(b.handle, b.callbackData);
+-            m_buffersInUse.remove(i);
+-            return;
+-        }
+-    }
+-}
+-
+-void HwcRenderStage::invalidated()
+-{
+-    m_invalidated = 1;
+-    m_window->update();
+-}
+-
+diff --git a/src/compositor/hwcrenderstage.h b/src/compositor/hwcrenderstage.h
+deleted file mode 100644
+index cbd1f090..00000000
+--- a/src/compositor/hwcrenderstage.h
++++ /dev/null
+@@ -1,134 +0,0 @@
+-/***************************************************************************
+-**
+-** Copyright (C) 2015 Jolla Ltd.
+-** Contact: Gunnar Sletta <gunnar.sletta@jollamobile.com>
+-**
+-** This file is part of lipstick.
+-**
+-** This library is free software; you can redistribute it and/or
+-** modify it under the terms of the GNU Lesser General Public
+-** License version 2.1 as published by the Free Software Foundation
+-** and appearing in the file LICENSE.LGPL included in the packaging
+-** of this file.
+-**
+-****************************************************************************/
+-
+-#ifndef HWCRENDERSTAGE
+-#define HWCRENDERSTAGE
+-
+-#include <private/qquickwindow_p.h>
+-#include <private/qsgrenderer_p.h>
+-
+-Q_DECLARE_LOGGING_CATEGORY(LIPSTICK_LOG_HWC)
+-
+-class LipstickCompositor;
+-class HwcRenderStage;
+-
+-namespace HwcInterface {
+-    class Compositor;
+-    class LayerList;
+-}
+-
+-class HwcNode : public QSGNode
+-{
+-public:
+-    HwcNode(QQuickWindow *window);
+-    ~HwcNode();
+-
+-    QRect bounds() const;
+-
+-    void update(QSGGeometryNode *node, void *handle);
+-
+-    void *handle() const { return m_buffer_handle; }
+-    bool isSubtreeBlocked() const { return m_blocked; }
+-    void setBlocked(bool b);
+-
+-    void setForcedGLRendering(bool f) { m_forceGLRendering = f; }
+-    bool forcedGLRendering() const { return m_forceGLRendering; }
+-
+-    float x() const { return m_x; }
+-    float y() const { return m_y; }
+-    void setPos(float x, float y) {
+-        m_x = x;
+-        m_y = y;
+-    }
+-
+-    QSGGeometryNode *contentNode() const { return m_contentNode; }
+-    HwcRenderStage *renderStage() const { return m_renderStage; }
+-
+-private:
+-    HwcRenderStage *m_renderStage;
+-    QSGGeometryNode *m_contentNode;
+-    void *m_buffer_handle;
+-    float m_x, m_y;
+-    bool m_blocked : 1;
+-    bool m_forceGLRendering : 1;
+-};
+-
+-// Any number above QSGNode::RenderNode will strictly do..
+-#define QSG_HWC_NODE_TYPE ((QSGNode::NodeType) 1000)
+-
+-class HwcRenderStage : public QObject, public QQuickCustomRenderStage
+-{
+-    Q_OBJECT
+-
+-public:
+-    HwcRenderStage(LipstickCompositor *lipstick, void *hwcHandle);
+-    ~HwcRenderStage();
+-    bool render() Q_DECL_OVERRIDE;
+-    bool swap() Q_DECL_OVERRIDE;
+-
+-    typedef void (*BufferReleaseCallback)(void *bufferHandle, void *callbackData);
+-    void signalOnBufferRelease(BufferReleaseCallback callback, void *handle, void *callbackData);
+-
+-    static void initialize(LipstickCompositor *lipstick);
+-    static bool isHwcEnabled() { return m_hwcEnabled; }
+-
+-    void bufferReleased(void *);
+-    void setBypassHwc(bool bypass);
+-    void hwcNodeDeleted(HwcNode *node);
+-    void invalidated();
+-
+-    void timerEvent(QTimerEvent *e);
+-
+-    // LipstickCompositorWindowHwcNode will post events to this object for the
+-    // sole purpose of having them delivered on the GUI thread when the LCW
+-    // instance might have been destroyed might have been destroyed. Keep this
+-    // in mind if HwcRenderStage::event() ever gets implemented.
+-
+-public slots:
+-    void onFrameSwapped();
+-
+-private:
+-    bool checkSceneGraph(QSGNode *node);
+-    void storeBuffer(void *handle);
+-    void disableHwc();
+-
+-    LipstickCompositor *m_lipstick;
+-    QQuickWindow *m_window;
+-
+-    HwcInterface::Compositor *m_hwc;
+-    QVector<HwcNode *> m_nodesInList;
+-    QVector<HwcNode *> m_nodesToTry;
+-    QAtomicInt m_hwcBypass;
+-    QAtomicInt m_invalidated;
+-    int m_invalidationCountdown; // R&W on render thread only
+-
+-    struct BufferAndResource {
+-        void *handle;
+-        BufferReleaseCallback callback;
+-        void *callbackData;
+-    };
+-    QVector<BufferAndResource> m_buffersInUse;
+-    QMutex m_buffersInUseMutex;
+-
+-    HwcInterface::LayerList *m_layerList; // R&W on render thread only
+-
+-    bool m_scheduledLayerList;
+-
+-    int m_invalidateTimer;
+-
+-    static bool m_hwcEnabled;
+-};
+-
+-#endif // HWCRENDERSTAGE
+diff --git a/src/compositor/lipstickcompositor.cpp b/src/compositor/lipstickcompositor.cpp
+index 61eedcdc..161cc9a2 100644
+--- a/src/compositor/lipstickcompositor.cpp
++++ b/src/compositor/lipstickcompositor.cpp
+@@ -31,7 +31,6 @@
+ #include "lipstickcompositoradaptor.h"
+ #include "lipsticksettings.h"
+ #include <qpa/qwindowsysteminterface.h>
+-#include "hwcrenderstage.h"
+ #include <private/qguiapplication_p.h>
+ #include <QtGui/qpa/qplatformintegration.h>
+ #include <QWaylandQuickShellSurfaceItem>
+@@ -113,8 +112,6 @@ LipstickCompositor::LipstickCompositor()
+ 
+     connect(QGuiApplication::clipboard(), SIGNAL(dataChanged()), SLOT(clipboardDataChanged()));
+ 
+-    HwcRenderStage::initialize(this);
+-
+     m_timedDbus = new Maemo::Timed::Interface();
+     if( !m_timedDbus->isValid() )
+     {
+diff --git a/src/compositor/lipstickcompositorwindow.cpp b/src/compositor/lipstickcompositorwindow.cpp
+index 508de494..73908e91 100644
+--- a/src/compositor/lipstickcompositorwindow.cpp
++++ b/src/compositor/lipstickcompositorwindow.cpp
+@@ -24,18 +24,12 @@
+ #include "lipstickcompositorwindow.h"
+ 
+ 
+-#include "hwcimage.h"
+-#include "hwcrenderstage.h"
+-#include <EGL/egl.h>
+-#include <private/qwaylandsurface_p.h>
+-#include <private/qquickwindow_p.h>
+-
+ LipstickCompositorWindow::LipstickCompositorWindow(int windowId, const QString &category,
+                                                    QWaylandSurface *surface, QQuickItem *parent)
+ : QWaylandQuickItem(), m_windowId(windowId), m_category(category),
+   m_delayRemove(false), m_windowClosed(false), m_removePosted(false),
+-  m_interceptingTouch(false), m_mapped(false), m_noHardwareComposition(false),
+-  m_focusOnTouch(false), m_hasVisibleReferences(false)
++  m_interceptingTouch(false), m_mapped(false), m_processId(0),
++  m_focusOnTouch(false)
+ {
+     setFlags(QQuickItem::ItemIsFocusScope | flags());
+ 
+@@ -46,10 +40,11 @@ LipstickCompositorWindow::LipstickCompositorWindow(int windowId, const QString &
+ 
+     if(surface) {
+         connect(surface, SIGNAL(surfaceDestroyed()), this, SLOT(deleteLater()));
++        connect(surface, &QWaylandSurface::configure, this, &LipstickCompositorWindow::committed);
++
++        m_processId = surface->client()->processId();
+         setSurface(surface);
+     }
+-    Q_UNUSED(parent)
+-    connectSurfaceSignals();
+ }
+ 
+ LipstickCompositorWindow::~LipstickCompositorWindow()
+@@ -80,9 +75,7 @@ int LipstickCompositorWindow::windowId() const
+ 
+ qint64 LipstickCompositorWindow::processId() const
+ {
+-    if (surface())
+-        return surface()->client()->processId();
+-    else return 0;
++    return m_processId;
+ }
+ 
+ bool LipstickCompositorWindow::delayRemove() const
+@@ -95,12 +88,6 @@ void LipstickCompositorWindow::setDelayRemove(bool delay)
+     if (delay == m_delayRemove)
+         return;
+ 
+-    m_delayRemove = delay;
+-    if (m_delayRemove)
+-        disconnect(surface(), SIGNAL(surfaceDestroyed()), this, SLOT(deleteLater()));
+-    else
+-        connect(surface(), SIGNAL(surfaceDestroyed()), this, SLOT(deleteLater()));
+-
+     emit delayRemoveChanged();
+ 
+     tryRemove();
+@@ -208,15 +195,6 @@ void LipstickCompositorWindow::itemChange(ItemChange change, const ItemChangeDat
+ {
+     if (change == ItemSceneChange) {
+         handleTouchCancel();
+-
+-        if (QQuickWindow *w = window()) {
+-            disconnect(w, &QQuickWindow::beforeSynchronizing, this, &LipstickCompositorWindow::onSync);
+-        }
+-
+-        if (data.window) {
+-            connect(data.window, &QQuickWindow::beforeSynchronizing, this, &LipstickCompositorWindow::onSync, Qt::DirectConnection);
+-        }
+-
+     }
+     QWaylandQuickItem::itemChange(change, data);
+ }
+@@ -382,140 +360,6 @@ void LipstickCompositorWindow::killProcess()
+     }
+ }
+ 
+-void LipstickCompositorWindow::connectSurfaceSignals()
+-{
+-    foreach (const QMetaObject::Connection &connection, m_surfaceConnections) {
+-        disconnect(connection);
+-    }
+-
+-    m_surfaceConnections.clear();
+-    if (surface()) {
+-        m_surfaceConnections << connect(surface(), &QWaylandSurface::configure, this, &LipstickCompositorWindow::committed);
+-    }
+-}
+-
+-static bool hwc_windowsurface_is_enabled();
+-
+-typedef EGLBoolean (EGLAPIENTRYP Ptr_eglHybrisAcquireNativeBufferWL)(EGLDisplay dpy, struct wl_resource *wlBuffer, EGLClientBuffer *buffer);
+-typedef EGLBoolean (EGLAPIENTRYP Ptr_eglHybrisNativeBufferHandle)(EGLDisplay dpy, EGLClientBuffer buffer, void **handle);
+-typedef EGLBoolean (EGLAPIENTRYP Ptr_eglHybrisReleaseNativeBuffer)(EGLClientBuffer buffer);
+-static Ptr_eglHybrisAcquireNativeBufferWL eglHybrisAcquireNativeBufferWL;
+-static Ptr_eglHybrisNativeBufferHandle eglHybrisNativeBufferHandle;
+-static Ptr_eglHybrisReleaseNativeBuffer eglHybrisReleaseNativeBuffer;
+-
+-class LipstickCompositorWindowHwcNode : public HwcNode
+-{
+-public:
+-    LipstickCompositorWindowHwcNode(QQuickWindow *window) : HwcNode(window), eglBuffer(0) { }
+-    ~LipstickCompositorWindowHwcNode();
+-
+-    void update(QWaylandSurfacePrivate *s, EGLClientBuffer newBuffer, void *newHandle, QSGNode *contentNode);
+-
+-    EGLClientBuffer eglBuffer;
+-    QWaylandBufferRef waylandBuffer;
+-};
+-
+-static bool lcw_checkForVisibleReferences(const QVector<QQuickItem *> &refs)
+-{
+-    foreach (QQuickItem *i, refs)
+-        if (i->opacity() > 0 && i->isVisible())
+-            return true;
+-    return false;
+-}
+-
+-void LipstickCompositorWindow::onSync()
+-{
+-    const bool hasReferences = !isVisible()
+-                || lcw_checkForVisibleReferences(m_refs)
+-                || HwcImage::hasEffectReferences(this);
+-    if (m_hasVisibleReferences != hasReferences) {
+-        m_hasVisibleReferences = hasReferences;
+-        update();
+-    }
+-}
+-
+-QSGNode *LipstickCompositorWindow::updatePaintNode(QSGNode *old, UpdatePaintNodeData *data)
+-{
+-    if (!hwc_windowsurface_is_enabled() || m_noHardwareComposition)
+-        return QWaylandQuickItem::updatePaintNode(old, data);
+-
+-    // qCDebug(LIPSTICK_LOG_HWC, "LipstickCompositorWindow(%p)::updatePaintNode(), old=%p", this, old);
+-
+-    // If we have visible references, then the texture is being used in a
+-    // WindowPixmapItem. The hwc logic below would interfere with that, such
+-    // as texture being destroyed too early so we just use the standard node
+-    // in this case (and disable HWC which is anyways not needed). Similarily,
+-    // if we are in 'fallback' mode and there are no more references, we want
+-    // to switch to the hwc path
+-    // Added to this logic, we have the case of a window surface suddenly
+-    // appearing with a shm buffer. We then need to switch to normal
+-    // composition.
+-
+-                               // TODO: a327ca8d8a1f6e0a44a3aa6bd4dac716911c434e
+-    bool hwBuffer = surface(); // TODO && surface()->type() == QWaylandSurface::Texture;
+-    int wantedNodeType = m_hasVisibleReferences || !hwBuffer ? QSGNode::GeometryNodeType : QSG_HWC_NODE_TYPE;
+-    if (old && old->type() != wantedNodeType) {
+-        delete old;
+-        old = 0;
+-    }
+-    if (m_hasVisibleReferences || !hwBuffer)
+-        return QWaylandQuickItem::updatePaintNode(old, data);
+-
+-    // No surface, abort..
+-    if (!surface() || !QWaylandSurfacePrivate::get(surface()) || !surface()->hasContent() || !textureProvider()->texture()) {
+-        delete old;
+-        return 0;
+-    }
+-
+-    // Follow the unmaplock logic inside QtWayland. If a surface is still
+-    // visible but has a null buffer attached, we retain the copy we have
+-    // until further notice...
+-    QWaylandSurfacePrivate *s = QWaylandSurfacePrivate::get(surface());
+-    wl_resource *surfaceBufferHandle = s->bufferRef.hasBuffer() ? s->bufferRef.wl_buffer() : 0;
+-    if (!surfaceBufferHandle && surface()->hasContent()) {
+-        qCDebug(LIPSTICK_LOG_HWC, " - visible with attached 'null' buffer, reusing previous buffer");
+-        return old;
+-    }
+-
+-    // Find the old node if applicable and call updatePaintNode on the wayland
+-    // surface item. If this results in a null node, we abort.
+-    LipstickCompositorWindowHwcNode *hwcNode = old ? static_cast<LipstickCompositorWindowHwcNode *>(old) : 0;
+-    QSGNode *oldContentNode = hwcNode ? hwcNode->firstChild() : 0;
+-    QSGNode *newContentNode = QWaylandQuickItem::updatePaintNode(oldContentNode, data);
+-    if (!newContentNode) {
+-        delete old;
+-        return 0;
+-    }
+-
+-    // Check if we can extract the HWC handles from the wayland buffer. If
+-    // not, we disable hardware composition for this window.
+-    EGLDisplay display = eglGetCurrentDisplay();
+-    EGLClientBuffer eglBuffer = 0;
+-    void *hwcHandle = 0;
+-    if (!eglHybrisAcquireNativeBufferWL(display, surfaceBufferHandle, &eglBuffer)) {
+-        qCDebug(LIPSTICK_LOG_HWC, " - failed to acquire native buffer (buffers are probably not allocated server-side)");
+-        m_noHardwareComposition = true;
+-        delete old;
+-        return QWaylandQuickItem::updatePaintNode(0, data);
+-    }
+-    eglHybrisNativeBufferHandle(eglGetCurrentDisplay(), eglBuffer, &hwcHandle);
+-    Q_ASSERT(hwcHandle);
+-
+-    // At this point we know we are visible and we have access to hwc buffers,
+-    // make sure we have  an HwcNode instance.
+-    if (!hwcNode)
+-        hwcNode = new LipstickCompositorWindowHwcNode(window());
+-
+-    // Add the new content node. The old one, if present would already have
+-    // been removed because it was deleted in the
+-    // QWaylandQuickItem::updatePaintNode() call above.
+-    if (newContentNode != hwcNode->firstChild())
+-        hwcNode->appendChildNode(newContentNode);
+-
+-    hwcNode->update(s, eglBuffer, hwcHandle, newContentNode);
+-    return hwcNode;
+-}
+-
+ bool LipstickCompositorWindow::focusOnTouch() const
+ {
+     return m_focusOnTouch;
+@@ -530,99 +374,3 @@ void LipstickCompositorWindow::setFocusOnTouch(bool focusOnTouch)
+     emit focusOnTouchChanged();
+ }
+ 
+-static bool hwc_windowsurface_is_enabled()
+-{
+-    if (!HwcRenderStage::isHwcEnabled())
+-        return false;
+-
+-    static int checked = 0;
+-    if (!checked) {
+-        const char *acquireNativeBufferExtension = "EGL_HYBRIS_WL_acquire_native_buffer";
+-        const char *nativeBuffer2Extensions = "EGL_HYBRIS_native_buffer2";
+-        const char *extensions = eglQueryString(eglGetCurrentDisplay(), EGL_EXTENSIONS);
+-
+-        if (strstr(extensions, acquireNativeBufferExtension) != 0) {
+-            eglHybrisAcquireNativeBufferWL = (Ptr_eglHybrisAcquireNativeBufferWL) eglGetProcAddress("eglHybrisAcquireNativeBufferWL");
+-            checked |= 0x1;
+-        } else {
+-            qCDebug(LIPSTICK_LOG_HWC, "Missing required EGL extension: '%s'", acquireNativeBufferExtension);
+-        }
+-        if (strstr(extensions, nativeBuffer2Extensions) != 0) {
+-            eglHybrisNativeBufferHandle = (Ptr_eglHybrisNativeBufferHandle) eglGetProcAddress("eglHybrisNativeBufferHandle");
+-            eglHybrisReleaseNativeBuffer = (Ptr_eglHybrisReleaseNativeBuffer) eglGetProcAddress("eglHybrisReleaseNativeBuffer");
+-            checked |= 0x2;
+-        } else {
+-            qCDebug(LIPSTICK_LOG_HWC, "Missing required EGL extension: '%s'", nativeBuffer2Extensions);
+-        }
+-
+-        // If both extensions were found
+-        if (checked == (0x1 | 0x2)) {
+-            qCDebug(LIPSTICK_LOG_HWC, "HWC composition of window surfaces is enabled");
+-        } else {
+-            qCDebug(LIPSTICK_LOG_HWC, "HWC composition of window surfaces is disabled");
+-            checked = -1;
+-        }
+-
+-    }
+-    return checked > 0;
+-}
+-
+-class LipstickCompositorWindowReleaseEvent : public QEvent
+-{
+-public:
+-    LipstickCompositorWindowReleaseEvent(LipstickCompositorWindowHwcNode *n)
+-        : QEvent(QEvent::User)
+-        , eventTarget(n->renderStage())
+-        , eglBuffer(n->eglBuffer)
+-        , waylandBuffer(n->waylandBuffer)
+-    {
+-    }
+-
+-    HwcRenderStage *eventTarget;
+-    EGLClientBuffer eglBuffer;
+-    QWaylandBufferRef waylandBuffer;
+-};
+-
+-void hwc_windowsurface_release_native_buffer(void *, void *callbackData)
+-{
+-    LipstickCompositorWindowReleaseEvent *e = (LipstickCompositorWindowReleaseEvent *) callbackData;
+-    // qCDebug(LIPSTICK_LOG_HWC, " - window surface buffers released: handle=%p, eglBuffer=%post", handle, e->eglBuffer);
+-    eglHybrisReleaseNativeBuffer(e->eglBuffer);
+-    e->eglBuffer = 0;
+-
+-    // This may seem a bit odd, and indeed it is.. We need to release the
+-    // QWaylandBufferRef on the GUI thread, so we post the event to a QObject
+-    // which lives on the GUI thread, so the event destructor runs there which
+-    // will in turn release the wlBuffer there. Since the
+-    // LipstickCompositorWindow could have been nuked we post it to the
+-    // HwcRenderStage which is always there.
+-    QCoreApplication::postEvent(e->eventTarget, e);
+-}
+-
+-void LipstickCompositorWindowHwcNode::update(QWaylandSurfacePrivate *s, EGLClientBuffer newBuffer, void *newHandle, QSGNode *contentNode)
+-{
+-    // If we're taking a new buffer into use when there already was
+-    // one, set up the old to be removed.
+-    if (handle() && handle() != newHandle) {
+-        // qCDebug(LIPSTICK_LOG_HWC, " - releasing old buffer, EGLClientBuffer=%p, gralloc=%p", eglBuffer, handle());
+-        Q_ASSERT(eglBuffer);
+-        LipstickCompositorWindowReleaseEvent *e = new LipstickCompositorWindowReleaseEvent(this);
+-        renderStage()->signalOnBufferRelease(hwc_windowsurface_release_native_buffer, handle(), e);
+-    }
+-    // qCDebug(LIPSTICK_LOG_HWC, " - setting buffers on HwcNode, EGLClientBuffer=%p, gralloc=%p", newBuffer, newHandle);
+-    eglBuffer = newBuffer;
+-    waylandBuffer = QWaylandBufferRef(s->bufferRef);
+-
+-    Q_ASSERT(contentNode->type() == QSGNode::GeometryNodeType);
+-    HwcNode::update(static_cast<QSGGeometryNode *>(contentNode), newHandle);
+-}
+-
+-LipstickCompositorWindowHwcNode::~LipstickCompositorWindowHwcNode()
+-{
+-    // qCDebug(LIPSTICK_LOG_HWC, " - window surface node destroyed, node=%p, handle=%p, eglBuffer=%p", this, handle(), eglBuffer);
+-    Q_ASSERT(handle());
+-    Q_ASSERT(eglBuffer);
+-    LipstickCompositorWindowReleaseEvent *e = new LipstickCompositorWindowReleaseEvent(this);
+-    renderStage()->signalOnBufferRelease(hwc_windowsurface_release_native_buffer, handle(), e);
+-}
+-
+diff --git a/src/compositor/lipstickcompositorwindow.h b/src/compositor/lipstickcompositorwindow.h
+index 4af3693c..f031f8f0 100644
+--- a/src/compositor/lipstickcompositorwindow.h
++++ b/src/compositor/lipstickcompositorwindow.h
+@@ -20,8 +20,6 @@
+ #include <QWaylandBufferRef>
+ #include "lipstickglobal.h"
+ 
+-class LipstickCompositorWindowHwcNode;
+-
+ class LIPSTICK_EXPORT LipstickCompositorWindow : public QWaylandQuickItem
+ {
+     Q_OBJECT
+@@ -61,8 +59,6 @@ public:
+ 
+     Q_INVOKABLE void terminateProcess(int killTimeout);
+ 
+-    QSGNode *updatePaintNode(QSGNode *old, UpdatePaintNodeData *);
+-
+     bool focusOnTouch() const;
+     void setFocusOnTouch(bool focusOnTouch);
+ 
+@@ -89,7 +85,6 @@ signals:
+ private slots:
+     void handleTouchCancel();
+     void killProcess();
+-    void connectSurfaceSignals();
+ 
+ private:
+     friend class LipstickCompositor;
+@@ -97,7 +92,6 @@ private:
+     friend class WindowPixmapItem;
+     void imageAddref(QQuickItem *item);
+     void imageRelease(QQuickItem *item);
+-    void onSync();
+ 
+     bool canRemove() const;
+     void tryRemove();
+@@ -106,6 +100,7 @@ private:
+     void setTitle(QString title);
+     QString m_title;
+ 
++    qint64 m_processId;
+     int m_windowId;
+     QString m_category;
+     bool m_delayRemove:1;
+@@ -115,9 +110,7 @@ private:
+     bool m_mapped : 1;
+     bool m_noHardwareComposition: 1;
+     bool m_focusOnTouch : 1;
+-    bool m_hasVisibleReferences : 1;
+     QVariant m_data;
+-    QList<QMetaObject::Connection> m_surfaceConnections;
+     QVector<QQuickItem *> m_refs;
+ };
+ 
+diff --git a/src/screenshotservice.cpp b/src/screenshotservice.cpp
+index 2738df34..a2b47127 100644
+--- a/src/screenshotservice.cpp
++++ b/src/screenshotservice.cpp
+@@ -12,7 +12,6 @@
+ ** of this file.
+ **
+ ****************************************************************************/
+-#include "hwcrenderstage.h"
+ #include "lipstickcompositor.h"
+ #include "screenshotservice.h"
+ 
+@@ -32,11 +31,6 @@ ScreenshotService::ScreenshotService(QObject *parent) :
+ void ScreenshotService::saveScreenshot(const QString &path)
+ {
+     if (LipstickCompositor *compositor = LipstickCompositor::instance()) {
+-        QQuickWindowPrivate *wd = QQuickWindowPrivate::get(compositor->quickWindow());
+-        HwcRenderStage *renderStage = (HwcRenderStage *) wd->customRenderStage;
+-        if (renderStage)
+-            renderStage->setBypassHwc(true);
+-
+         QImage grab(compositor->quickWindow()->grabWindow());
+ 
+         int rotation(QGuiApplication::primaryScreen()->angleBetween(Qt::PrimaryOrientation, compositor->topmostWindowOrientation()));
+@@ -47,8 +41,5 @@ void ScreenshotService::saveScreenshot(const QString &path)
+         }
+ 
+         grab.save(path.isEmpty() ? (QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/" + QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".png") : path, 0, 100);
+-
+-        if (renderStage)
+-            renderStage->setBypassHwc(false);
+     }
+ }
+diff --git a/src/src.pro b/src/src.pro
+index 5fdd66af..202f6ccf 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -10,7 +10,6 @@ TARGET = lipstick-qt5
+ # Override the version from the spec file, we need .so version 1.0
+ VERSION = 1.0
+ 
+-DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x000000
+ DEFINES += LIPSTICK_BUILD_LIBRARY
+ DEFINES += VERSION=\\\"$${VERSION}\\\"
+ 
+-- 
+2.47.3
+

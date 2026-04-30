@@ -1,7 +1,7 @@
-From 67a657412b2ecaa792df81288ad950ae27f4015b Mon Sep 17 00:00:00 2001
+From 1681cf2395b202b9b9865e5a2181959a00cba376 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Sun, 15 Feb 2026 12:54:38 +0100
-Subject: [PATCH] hybrisadaptor: Queue erroneous events too
+Subject: [PATCH 6/6] hybrisadaptor: Queue erroneous events too
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -44,3 +44,6 @@ index 3c78feb..2c875ef 100644
          if (::write(m_eventPipeWriteFd, buffer, numEvents * sizeof *buffer) == -1) {
              qCWarning(lcSensorFw, "event pipe write failure: %s", strerror(errno));
              errorInInput = true;
+-- 
+2.47.3
+

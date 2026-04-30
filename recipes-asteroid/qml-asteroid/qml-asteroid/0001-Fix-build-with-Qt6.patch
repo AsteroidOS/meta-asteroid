@@ -1,0 +1,99 @@
+From 511bd8ceee71bc4b2f10ce006c6a1ede72beece5 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 18:08:41 +0000
+Subject: [PATCH] Fix build with Qt6
+
+Upstream-Status: Inappropriate
+---
+ CMakeLists.txt                       | 4 ++--
+ cmake/FindLipstick.cmake             | 8 ++++----
+ cmake/FindTimed.cmake                | 6 +++---
+ src/controls/src/controls_plugin.cpp | 4 ----
+ 4 files changed, 9 insertions(+), 13 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c32e186..5d60c65 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -29,8 +29,8 @@ set(ASTEROID_MODULES_INSTALL_DIR ${CMAKE_INSTALL_DATADIR}/asteroidapp/cmake)
+ if (${QT_VERSION_MAJOR} EQUAL 6)
+     set(QT_MIN_VERSION "6.10.0")
+     find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED DBus Qml Quick Svg)
+-    ecm_find_qmlmodule(Qt5Compat.GraphicalEffects 1.0 REQUIRED)
+-    ecm_find_qmlmodule(QtQuick.VirtualKeyboard 2.1 REQUIRED)
++    ecm_find_qmlmodule(Qt5Compat.GraphicalEffects 1.0)
++    ecm_find_qmlmodule(QtQuick.VirtualKeyboard 2.1)
+     if (WITH_ASTEROIDAPP)
+         find_package(Mapplauncherd_qt6 MODULE REQUIRED)
+     endif()
+diff --git a/cmake/FindLipstick.cmake b/cmake/FindLipstick.cmake
+index 85098b1..ebdb0c7 100644
+--- a/cmake/FindLipstick.cmake
++++ b/cmake/FindLipstick.cmake
+@@ -1,4 +1,4 @@
+-# Try to find lipstick-qt5
++# Try to find lipstick-qt6
+ # Once done this will define
+ # LIPSTICK_FOUND - System has lipstick
+ # LIPSTICK_INCLUDE_DIRS - The lipstick include directories
+@@ -6,16 +6,16 @@
+ # LIPSTICK_DEFINITIONS - Compiler switches required for using lipstick
+ 
+ find_package(PkgConfig REQUIRED)
+-pkg_check_modules(PC_Lipstick QUIET lipstick-qt5)
++pkg_check_modules(PC_Lipstick QUIET lipstick-qt6)
+ set(Lipstick_DEFINITIONS ${PC_Lipstick_CFLAGS_OTHER})
+ 
+ find_path(Lipstick_INCLUDE_DIRS
+ 	NAMES lipstickcompositor.h
+-	PATH_SUFFIXES lipstick-qt5
++	PATH_SUFFIXES lipstick-qt6
+ 	PATHS ${PC_Lipstick_INCLUDEDIR} ${PC_Lipstick_INCLUDE_DIRS})
+ 
+ find_library(Lipstick_LIBRARIES
+-	NAMES lipstick-qt5
++	NAMES lipstick-qt6
+ 	PATHS ${PC_Lipstick_LIBDIR} ${PC_Lipstick_LIBRARY_DIRS})
+ 
+ set(Lipstick_VERSION ${PC_Lipstick_VERSION})
+diff --git a/cmake/FindTimed.cmake b/cmake/FindTimed.cmake
+index c3f1fbc..f9e9711 100644
+--- a/cmake/FindTimed.cmake
++++ b/cmake/FindTimed.cmake
+@@ -1,14 +1,14 @@
+-# Try to find timed-qt5
++# Try to find timed-qt6
+ # Once done this will define
+ # TIMED_FOUND - System has timed
+ # TIMED_INCLUDE_DIRS - The timed include directories
+ # TIMED_LIBRARIES - The libraries needed to use timed
+ 
+ find_package(PkgConfig REQUIRED)
+-pkg_check_modules(PC_Timed QUIET timed-qt5)
++pkg_check_modules(PC_Timed QUIET timed-qt6)
+ 
+ find_library(Timed_LIBRARIES
+-	NAMES timed-qt5
++	NAMES timed-qt6
+ 	PATHS ${PC_Timed_LIBDIR} ${PC_Timed_LIBRARY_DIRS})
+ 
+ set(Timed_VERSION ${PC_Timed_VERSION})
+diff --git a/src/controls/src/controls_plugin.cpp b/src/controls/src/controls_plugin.cpp
+index e0d1a48..deb01dc 100644
+--- a/src/controls/src/controls_plugin.cpp
++++ b/src/controls/src/controls_plugin.cpp
+@@ -20,11 +20,7 @@
+ #include <QGuiApplication>
+ #include <QtQml>
+ #include "application_p.h"
+-#ifdef QT6
+-#include "flatmesh_qt6.h"
+-#else
+ #include "flatmesh.h"
+-#endif
+ #include "icon.h"
+ 
+ ControlsPlugin::ControlsPlugin(QObject *parent) : QQmlExtensionPlugin(parent)
+-- 
+2.47.3
+
