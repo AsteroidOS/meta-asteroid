@@ -1,0 +1,142 @@
+From b5e2f969ad48dcde4a032da34e0e69d4534887e9 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 18:16:36 +0000
+Subject: [PATCH] Fix build with Qt6
+
+Upstream-Status: Inappropriate
+---
+ booster-qtcomponents.pro              |  8 +++----
+ data/booster-qtcomponents-qt6.service | 14 +++++++++++++
+ qml-qt5/preload.qml                   | 30 ---------------------------
+ qml-qt6/preload.qml                   | 19 +++++++++++++++++
+ src/eventhandler.cpp                  |  2 +-
+ 5 files changed, 38 insertions(+), 35 deletions(-)
+ create mode 100644 data/booster-qtcomponents-qt6.service
+ delete mode 100644 qml-qt5/preload.qml
+ create mode 100644 qml-qt6/preload.qml
+
+diff --git a/booster-qtcomponents.pro b/booster-qtcomponents.pro
+index 459a355..20adf4c 100644
+--- a/booster-qtcomponents.pro
++++ b/booster-qtcomponents.pro
+@@ -1,8 +1,8 @@
+ TEMPLATE = app
+ 
+-TARGET = booster-qtcomponents-qt5
++TARGET = booster-qtcomponents-qt6
+ QT += qml quick concurrent
+-qml.files = qml-qt5/preload.qml
++qml.files = qml-qt6/preload.qml
+ 
+ CONFIG += qdeclarative-boostable
+ 
+@@ -14,10 +14,10 @@ service.files = data/$${TARGET}.service
+ 
+ INSTALLS += target qml service
+ 
+-LIBS += -lapplauncherd
++LIBS += -lapplauncherd -lmdeclarativecache6
+ INCLUDEPATH += /usr/include/applauncherd/
+ 
+ SOURCES += src/qmlbooster.cpp src/eventhandler.cpp
+ HEADERS += src/qmlbooster.h src/eventhandler.h
+-OTHER_FILES += qml-qt5/preload.qml
++OTHER_FILES += qml-qt6/preload.qml
+ 
+diff --git a/data/booster-qtcomponents-qt6.service b/data/booster-qtcomponents-qt6.service
+new file mode 100644
+index 0000000..0cd99a8
+--- /dev/null
++++ b/data/booster-qtcomponents-qt6.service
+@@ -0,0 +1,14 @@
++[Unit]
++Description=Application launch booster for Qt Components on QtQuick2
++Requires=dbus.socket asteroid-launcher.service
++After=asteroid-launcher.service
++ConditionUser=!root
++
++[Service]
++Type=notify
++ExecStart=/usr/libexec/mapplauncherd/booster-qtcomponents-qt6 --systemd
++EnvironmentFile=/var/lib/environment/mapplauncherd/qtcomponents-qt6.conf
++OOMScoreAdjust=-250
++
++[Install]
++WantedBy=user-session.target
+diff --git a/qml-qt5/preload.qml b/qml-qt5/preload.qml
+deleted file mode 100644
+index f667b90..0000000
+--- a/qml-qt5/preload.qml
++++ /dev/null
+@@ -1,30 +0,0 @@
+-import QtQuick 2.0
+-import com.nokia.meego 2.0
+-
+-ApplicationWindow {
+-    Button { }
+-    Label { }
+-    PageHeader { }
+-    Slider { }
+-    Switch { }
+-    TextArea { }
+-    TextField { }
+-    Component {
+-        // These will be compiled but not instantiated.
+-        // If instantiation won't result in further caching then place those
+-        // components here.
+-        Item {
+-            ContextMenu { }
+-            DatePickerDialog { }
+-            TimePickerDialog { }
+-            Dialog { }
+-            ScrollDecorator { }
+-            Menu {
+-                MenuItem { }
+-            }
+-            Page { }
+-            Sheet { }
+-        }
+-    }
+-}
+-
+diff --git a/qml-qt6/preload.qml b/qml-qt6/preload.qml
+new file mode 100644
+index 0000000..9930139
+--- /dev/null
++++ b/qml-qt6/preload.qml
+@@ -0,0 +1,19 @@
++import QtQuick 2.6
++import org.asteroid.controls 1.0
++
++Application {
++    BorderGestureArea { }
++    CircularSpinner { }
++    HandWritingKeyboard { }
++    IconButton { }
++    Indicator { }
++    Label {}
++    LayerStack { }
++    Marquee { }
++    PageDot { }
++    Spinner { }
++    StatusPage { }
++    Switch { }
++    TextField { }
++}
++
+diff --git a/src/eventhandler.cpp b/src/eventhandler.cpp
+index 30603e4..2568520 100644
+--- a/src/eventhandler.cpp
++++ b/src/eventhandler.cpp
+@@ -53,7 +53,7 @@ void EventHandler::runEventLoop()
+     connect(this, SIGNAL(connectionRejected()), QCoreApplication::instance(), SLOT(quit()));
+ 
+     // Start another thread to listen connection from invoker
+-    QtConcurrent::run(this, &EventHandler::accept);
++    QtConcurrent::run([this]() { accept(); });
+ 
+     // Create socket pair for SIGHUP
+     bool handlerIsSet = false;
+-- 
+2.47.3
+
