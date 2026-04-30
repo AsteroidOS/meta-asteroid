@@ -15,6 +15,6 @@ inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtdeclarative timed libmlocale"
 
-FILES:${PN}-dev += "/usr/lib/libnemomodels-qt5.prl"
+FILES:${PN}-dev += "/usr/lib/libnemomodels-qt6.prl"
 FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/models/.debug"
 FILES:${PN} += "/usr/lib/qml/org/nemomobile/models/"
