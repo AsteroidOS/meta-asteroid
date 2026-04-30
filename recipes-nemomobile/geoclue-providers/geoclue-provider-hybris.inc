@@ -11,7 +11,7 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "geoclue libhybris libconnman-qt5 libqofono qofonoext nemo-qml-plugin-systemsettings"
+DEPENDS += "geoclue libhybris libconnman-qt libqofono qofonoext nemo-qml-plugin-systemsettings"
 inherit qt6-qmake pkgconfig
 
 # Ensures that the root sources can be found.
