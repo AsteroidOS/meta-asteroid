@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include/usb-moded-qt6
+
+Name: libusb-moded-qt6
+Description: Qt bindings for usb_moded
+Version: 1.0.0
+Libs: -lusb-moded-qt6
+Cflags: -I${includedir}
+
