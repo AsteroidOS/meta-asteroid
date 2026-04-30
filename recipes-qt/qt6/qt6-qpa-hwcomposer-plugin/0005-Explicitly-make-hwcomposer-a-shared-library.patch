@@ -1,0 +1,26 @@
+From a8e057abe3a26baca32962313b430927bfd25de9 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 12:57:38 +0000
+Subject: [PATCH] Explicitly make hwcomposer a shared library
+
+Upstream-Status: Inappropriate
+---
+ hwcomposer/hwcomposer.pro | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hwcomposer/hwcomposer.pro b/hwcomposer/hwcomposer.pro
+index 0885ee2..6afb409 100644
+--- a/hwcomposer/hwcomposer.pro
++++ b/hwcomposer/hwcomposer.pro
+@@ -4,6 +4,8 @@ PLUGIN_TYPE = platforms
+ PLUGIN_CLASS_NAME = QEglFShwcIntegrationPlugin
+ load(qt_plugin)
+ load(configure)
++TEMPLATE = lib
++CONFIG += plugin shared
+ 
+ INCLUDEPATH += .
+ DEPENDPATH += .
+-- 
+2.47.3
+

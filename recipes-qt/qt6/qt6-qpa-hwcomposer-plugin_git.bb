@@ -4,19 +4,20 @@ sometimes also SoC type (generic, qcom, exynos4, ...)."
 LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://hwcomposer_backend.cpp;beginline=1;endline=40;md5=09c08382077db2dbc01b1b5536ec6665"
 
-PV = "5.15.0+gitr${SRCPV}"
+PV = "6.3.0+git"
+SRCREV = "998956aebe21ac7ba6e7315d1c12e6e11c93d742"
 
-DEPENDS = "qtbase qtsensors libhybris mtdev glib-2.0 udev qtwayland virtual/android-headers "
-RDEPENDS:${PN} += " qtscenegraph-adaptation "
+DEPENDS = "qtbase libhybris qtwayland virtual/android-headers "
 
 # We need to be ${MACHINE_ARCH} as we need to compile the source against a specific
 # Android version we select per machine
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 SRC_URI = "git://github.com/mer-hybris/qt5-qpa-hwcomposer-plugin;protocol=https;branch=master \
-        file://0001-Add-ambient-mode-display-support.patch;striplevel=2 "
+        file://0001-Add-ambient-mode-display-support.patch;striplevel=2 \
+        file://0003-Support-Qt-6.10.patch;striplevel=2 \
+        file://0005-Explicitly-make-hwcomposer-a-shared-library.patch;striplevel=2"
 S = "${WORKDIR}/git/hwcomposer"
-SRCREV = "f1d9aef9693bb5ed5f586f3e7c07ac6ee756e21f"
 
 inherit qt6-qmake pkgconfig
 
