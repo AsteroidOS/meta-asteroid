@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://mts/mts.cpp;beginline=1;endline=30;md5=a2b2b5351d5e7a
 SRC_URI = "git://github.com/sailfishos/buteo-mtp.git;protocol=https;branch=master \
            file://0001-Remove-tests.patch \
            file://0002-fsstorageplugin-Expose-Watch-Memory-instead-of-Phone.patch \
+           file://0003-Fix-build-on-Qt6.patch \
            file://buteo-mtp \
            "
 SRCREV = "2bcf6579456086c0ee8fca72d38357d8632ca755"
