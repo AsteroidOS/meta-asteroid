@@ -10,7 +10,7 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qt6-cmake pkgconfig
 
-DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mapplauncherd-booster-qtcomponents qtdeclarative-native qtshadertools qtshadertools-native qt5compat"
+DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mapplauncherd-booster-asteroid qtdeclarative-native qtshadertools qtshadertools-native qt5compat"
 RDEPENDS:${PN} += "asteroid-machine-config qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
 
 FILES:${PN} += "/usr/lib /usr/share/icons/asteroid/"
