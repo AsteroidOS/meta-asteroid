@@ -11,8 +11,8 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qt6-cmake gsettings pkgconfig
 
-DEPENDS += "qml-asteroid qtbase glibmm qtmpris qttools-native nemo-qml-plugin-systemsettings"
-RDEPENDS:${PN} += "glibmm qtmpris systemd"
+DEPENDS += "qml-asteroid qtbase glibmm amber-mpris qttools-native nemo-qml-plugin-systemsettings"
+RDEPENDS:${PN} += "glibmm amber-mpris systemd"
 
 FILES:${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
 

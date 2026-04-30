@@ -8,5 +8,5 @@ SRCREV = "${AUTOREV}"
 
 require asteroid-app.inc
 
-DEPENDS += "qtmpris"
-RDEPENDS:${PN} += "qtmpris"
+DEPENDS += "amber-mpris"
+RDEPENDS:${PN} += "amber-mpris"
