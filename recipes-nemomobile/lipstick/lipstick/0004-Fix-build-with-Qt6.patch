@@ -1,0 +1,395 @@
+From 31ddeed327095d5ba170c2d9e823bbafda0c1027 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 16:41:39 +0000
+Subject: [PATCH 4/5] Fix build with Qt6
+
+Some of the changes required are:
+- Switching from QRegExp to QRegularExpression
+- Dropping QT_BEGIN_HEADER, QT_END_HEADER
+- Using a newer C++ standard
+- Using new dependencies
+- Using Qt features that got moved to different namespaces
+
+Upstream-Status: Inappropriate
+---
+ plugin/plugin.pro                                |  3 +--
+ src/components/launcheritem.cpp                  |  8 ++++----
+ src/compositor/lipstickcompositor.h              |  7 ++++---
+ src/compositor/lipstickcompositorwindow.cpp      |  3 ++-
+ src/compositor/windowmodel.cpp                   | 12 ++++++++++++
+ src/compositor/windowpixmapitem.cpp              |  2 ++
+ src/notifications/androidprioritystore.cpp       |  2 +-
+ src/notifications/lipsticknotification.cpp       |  2 +-
+ src/notifications/notificationfeedbackplayer.cpp |  2 +-
+ src/notifications/notificationpreviewpresenter.h |  2 +-
+ src/qmsystem2/qmactivity.h                       |  4 ----
+ src/qmsystem2/qmdisplaystate.h                   |  4 ----
+ src/qmsystem2/qmlocks.h                          |  4 ----
+ src/qmsystem2/qmsystemstate.h                    |  4 ----
+ src/qmsystem2/qmthermal.h                        |  4 ----
+ src/src.pro                                      |  5 ++---
+ src/volume/pulseaudiocontrol.cpp                 |  2 +-
+ tools/notificationtool/notificationtool.pro      |  3 +--
+ 18 files changed, 33 insertions(+), 40 deletions(-)
+
+diff --git a/plugin/plugin.pro b/plugin/plugin.pro
+index f44372e7..0a2e1d20 100644
+--- a/plugin/plugin.pro
++++ b/plugin/plugin.pro
+@@ -4,7 +4,7 @@ VERSION = 0.1
+ 
+ CONFIG += qt plugin link_pkgconfig
+ QT += core gui qml quick waylandcompositor dbus
+-PKGCONFIG += mlite5 dsme_dbus_if thermalmanager_dbus_if usb-moded-qt5
++PKGCONFIG += mlite6 dsme_dbus_if thermalmanager_dbus_if usb-moded-qt6
+ 
+ INSTALLS = target qmldirfile
+ qmldirfile.files = qmldir
+@@ -26,7 +26,6 @@ OTHER_FILES += \
+ 
+ QMAKE_CXXFLAGS += \
+     -g \
+-    -std=c++0x \
+     -fPIC \
+     -fvisibility=hidden \
+     -fvisibility-inlines-hidden
+diff --git a/src/components/launcheritem.cpp b/src/components/launcheritem.cpp
+index bd3c635d..9be99d6a 100644
+--- a/src/components/launcheritem.cpp
++++ b/src/components/launcheritem.cpp
+@@ -232,12 +232,12 @@ void LauncherItem::launchApplication()
+ 
+     // Take care of the freedesktop standards things
+ 
+-    commandText.replace(QRegExp("%k"), filePath());
+-    commandText.replace(QRegExp("%c"), _desktopEntry->name());
+-    commandText.remove(QRegExp("%[fFuU]"));
++    commandText.replace(QRegularExpression("%k"), filePath());
++    commandText.replace(QRegularExpression("%c"), _desktopEntry->name());
++    commandText.remove(QRegularExpression("%[fFuU]"));
+ 
+     if (!_desktopEntry->icon().isEmpty())
+-        commandText.replace(QRegExp("%i"), QString("--icon ") + _desktopEntry->icon());
++        commandText.replace(QRegularExpression("%i"), QString("--icon ") + _desktopEntry->icon());
+ 
+     // DETAILS: http://standards.freedesktop.org/desktop-entry-spec/latest/index.html
+     // DETAILS: http://standards.freedesktop.org/desktop-entry-spec/latest/ar01s06.html
+diff --git a/src/compositor/lipstickcompositor.h b/src/compositor/lipstickcompositor.h
+index 52ac9a27..151d1c6a 100644
+--- a/src/compositor/lipstickcompositor.h
++++ b/src/compositor/lipstickcompositor.h
+@@ -17,6 +17,7 @@
+ #define LIPSTICKCOMPOSITOR_H
+ 
+ #include <QQuickWindow>
++#include <QWaylandSurface>
+ #include "lipstickglobal.h"
+ #include <QWaylandQuickCompositor>
+ #include <QWaylandQuickOutput>
+@@ -29,9 +30,9 @@
+ #include <MDConfItem>
+ #include <qmdisplaystate.h>
+ 
+-#include <timed-qt5/interface>
+-#include <timed-qt5/exception>
+-#include <timed-qt5/event-declarations.h>
++#include <timed-qt6/interface>
++#include <timed-qt6/exception>
++#include <timed-qt6/event-declarations.h>
+ 
+ class WindowModel;
+ class LipstickCompositorWindow;
+diff --git a/src/compositor/lipstickcompositorwindow.cpp b/src/compositor/lipstickcompositorwindow.cpp
+index 73908e91..c35be75b 100644
+--- a/src/compositor/lipstickcompositorwindow.cpp
++++ b/src/compositor/lipstickcompositorwindow.cpp
+@@ -261,7 +261,8 @@ void LipstickCompositorWindow::wheelEvent(QWheelEvent *event)
+             QPointF pos(0, 0);
+             inputDevice->sendMouseMoveEvent(v, pos, pos);
+         }
+-        inputDevice->sendMouseWheelEvent(event->orientation(), event->delta());
++        QPoint angle = event->angleDelta();
++        inputDevice->sendMouseWheelEvent(Qt::Vertical, angle.y());
+     } else {
+         event->ignore();
+     }
+diff --git a/src/compositor/windowmodel.cpp b/src/compositor/windowmodel.cpp
+index c942d493..a9fa2115 100644
+--- a/src/compositor/windowmodel.cpp
++++ b/src/compositor/windowmodel.cpp
+@@ -14,10 +14,18 @@
+ ****************************************************************************/
+ 
+ #include <QDBusConnection>
++#include <QFile>
+ #include "lipstickcompositorwindow.h"
+ #include "lipstickcompositor.h"
+ #include "windowmodel.h"
+ 
++
++#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
++#    include <QRegExp>
++#else
++#    include <QRegularExpression>
++#endif
++
+ WindowModel::WindowModel()
+ : m_complete(false)
+ {
+@@ -176,7 +184,11 @@ void WindowModel::launchProcess(const QString &binaryName)
+     if (!m_complete || !c)
+         return;
+ 
++#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+     QStringList binaryParts = binaryName.split(QRegExp(QRegExp("\\s+")));
++#else
++    QStringList binaryParts = binaryName.split(QRegularExpression(QRegularExpression("\\s+")));
++#endif
+ 
+     for (QHash<int, LipstickCompositorWindow *>::ConstIterator iter = c->m_mappedSurfaces.begin();
+         iter != c->m_mappedSurfaces.end(); ++iter) {
+diff --git a/src/compositor/windowpixmapitem.cpp b/src/compositor/windowpixmapitem.cpp
+index 36dc2420..fe7a0a6a 100644
+--- a/src/compositor/windowpixmapitem.cpp
++++ b/src/compositor/windowpixmapitem.cpp
+@@ -20,7 +20,9 @@
+ 
+ WindowPixmapItem::WindowPixmapItem() : m_id(0)
+ {
++#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+     setSizeFollowsSurface(false);
++#endif
+     setEnabled(false);
+ }
+ 
+diff --git a/src/notifications/androidprioritystore.cpp b/src/notifications/androidprioritystore.cpp
+index d92561fe..44df24e1 100644
+--- a/src/notifications/androidprioritystore.cpp
++++ b/src/notifications/androidprioritystore.cpp
+@@ -27,7 +27,7 @@ const int StandardAndroidPriority = 50;
+ AndroidPriorityStore::PriorityDetails detailsForFeedback(const QString &feedback)
+ {
+     if (!feedback.isEmpty()) {
+-        QStringList feedbackEntries = feedback.split(",", QString::SkipEmptyParts);
++        QStringList feedbackEntries = feedback.split(",", Qt::SkipEmptyParts);
+         QSet<QString> tokens(feedbackEntries.begin(), feedbackEntries.end());
+ 
+         // If the only feedback tokens are for email, this is a medium-priority notification
+diff --git a/src/notifications/lipsticknotification.cpp b/src/notifications/lipsticknotification.cpp
+index af6d6073..9730c73f 100644
+--- a/src/notifications/lipsticknotification.cpp
++++ b/src/notifications/lipsticknotification.cpp
+@@ -284,7 +284,7 @@ QVariantList LipstickNotification::remoteActions() const
+             }
+ 
+             // Extract the element of the DBus call
+-            QStringList elements(hint.split(' ', QString::SkipEmptyParts));
++            QStringList elements(hint.split(' ', Qt::SkipEmptyParts));
+             if (elements.size() <= 3) {
+                 qWarning() << "Unable to decode invalid remote action:" << hint;
+             } else {
+diff --git a/src/notifications/notificationfeedbackplayer.cpp b/src/notifications/notificationfeedbackplayer.cpp
+index fa6d58a5..eac28333 100644
+--- a/src/notifications/notificationfeedbackplayer.cpp
++++ b/src/notifications/notificationfeedbackplayer.cpp
+@@ -62,7 +62,7 @@ void NotificationFeedbackPlayer::addNotification(uint id)
+         if (!notification->hints().value(NotificationManager::HINT_FEEDBACK_SUPPRESSED).toBool()) {
+             // Play the feedback related to the notification if any
+             const QString feedback = notification->hints().value(NotificationManager::HINT_FEEDBACK).toString();
+-            const QStringList feedbackItems = feedback.split(QStringLiteral(","), QString::SkipEmptyParts);
++            const QStringList feedbackItems = feedback.split(QStringLiteral(","), Qt::SkipEmptyParts);
+             if (!feedbackItems.isEmpty()) {
+                 QMap<QString, QVariant> properties;
+                 if (notification->hints().value(NotificationManager::HINT_LED_DISABLED_WITHOUT_BODY_AND_SUMMARY, true).toBool() &&
+diff --git a/src/notifications/notificationpreviewpresenter.h b/src/notifications/notificationpreviewpresenter.h
+index 34ad91ea..bf803df6 100644
+--- a/src/notifications/notificationpreviewpresenter.h
++++ b/src/notifications/notificationpreviewpresenter.h
+@@ -17,10 +17,10 @@
+ #define NOTIFICATIONPREVIEWPRESENTER_H
+ 
+ #include "lipstickglobal.h"
++#include "lipsticknotification.h"
+ #include <QObject>
+ 
+ class HomeWindow;
+-class LipstickNotification;
+ class NotificationFeedbackPlayer;
+ 
+ namespace MeeGo {
+diff --git a/src/qmsystem2/qmactivity.h b/src/qmsystem2/qmactivity.h
+index 36d462dc..b15c2f49 100644
+--- a/src/qmsystem2/qmactivity.h
++++ b/src/qmsystem2/qmactivity.h
+@@ -33,8 +33,6 @@
+ #include <QtCore/qobject.h>
+ #include "system_global.h"
+ 
+-QT_BEGIN_HEADER
+-
+ namespace MeeGo {
+ 
+ class QmActivityPrivate;
+@@ -99,8 +97,6 @@ private:
+ 
+ } // MeeGo namespace
+ 
+-QT_END_HEADER
+-
+ #endif /*QMACTIVITY_H*/
+ 
+ // End of file
+diff --git a/src/qmsystem2/qmdisplaystate.h b/src/qmsystem2/qmdisplaystate.h
+index 6fcbca15..a7e59436 100644
+--- a/src/qmsystem2/qmdisplaystate.h
++++ b/src/qmsystem2/qmdisplaystate.h
+@@ -35,8 +35,6 @@
+ #include "system_global.h"
+ #include <QtCore/qobject.h>
+ 
+-QT_BEGIN_HEADER
+-
+ namespace MeeGo {
+ 
+ class QmDisplayStatePrivate;
+@@ -102,8 +100,6 @@ private:
+ 
+ } //MeeGo namespace
+ 
+-QT_END_HEADER
+-
+ #endif /* QMDISPLAYSTATE_H */
+ 
+ // End of file
+diff --git a/src/qmsystem2/qmlocks.h b/src/qmsystem2/qmlocks.h
+index 2f8c9573..87685141 100644
+--- a/src/qmsystem2/qmlocks.h
++++ b/src/qmsystem2/qmlocks.h
+@@ -35,8 +35,6 @@
+ #include "system_global.h"
+ #include <QtCore/qobject.h>
+ 
+-QT_BEGIN_HEADER
+-
+ namespace MeeGo {
+ 
+ class QmLocksPrivate;
+@@ -126,8 +124,6 @@ private:
+ 
+ } // namspace MeeGo
+ 
+-QT_END_HEADER
+-
+ #endif /* QMLOCKS_H */
+ 
+ // End of file
+diff --git a/src/qmsystem2/qmsystemstate.h b/src/qmsystem2/qmsystemstate.h
+index 7af3c7b8..53beb7e8 100644
+--- a/src/qmsystem2/qmsystemstate.h
++++ b/src/qmsystem2/qmsystemstate.h
+@@ -38,8 +38,6 @@
+ #include "system_global.h"
+ #include <QtCore/qobject.h>
+ 
+-QT_BEGIN_HEADER
+-
+ namespace MeeGo {
+ 
+ class QmSystemStatePrivate;
+@@ -94,8 +92,6 @@ private:
+ 
+ } // MeeGo namespace
+ 
+-QT_END_HEADER
+-
+ #endif // QMSYSTEMSTATE_H
+ 
+ // End of file
+diff --git a/src/qmsystem2/qmthermal.h b/src/qmsystem2/qmthermal.h
+index 2c1b63cf..400fa51f 100644
+--- a/src/qmsystem2/qmthermal.h
++++ b/src/qmsystem2/qmthermal.h
+@@ -35,8 +35,6 @@
+ #include "system_global.h"
+ #include <QtCore/qobject.h>
+ 
+-QT_BEGIN_HEADER
+-
+ namespace MeeGo{
+ 
+ class QmThermalPrivate;
+@@ -102,8 +100,6 @@ private:
+ 
+ } // MeeGo namespace
+ 
+-QT_END_HEADER
+-
+ #endif /*QMTHERMAL_H*/
+ 
+ // End of file
+diff --git a/src/src.pro b/src/src.pro
+index 202f6ccf..0d054abb 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -13,7 +13,7 @@ VERSION = 1.0
+ DEFINES += LIPSTICK_BUILD_LIBRARY
+ DEFINES += VERSION=\\\"$${VERSION}\\\"
+ 
+-PKGCONFIG += timed-qt5
++PKGCONFIG += timed-qt6
+ 
+ CONFIG += qt wayland-scanner
+ INSTALLS = target ts_install engineering_english_install
+@@ -141,7 +141,7 @@ SOURCES += \
+ 
+ CONFIG += link_pkgconfig mobility qt warn_on depend_includepath qmake_cache target_qt
+ CONFIG -= link_prl
+-PKGCONFIG += mlite5 mce mce-qt5 keepalive dbus-1 dbus-glib-1 libresourceqt5 ngf-qt5 Qt5SystemInfo libsystemd dsme_dbus_if thermalmanager_dbus_if usb-moded-qt5 egl
++PKGCONFIG += mlite6 mce mce-qt6 keepalive dbus-1 dbus-glib-1 libresourceqt6 ngf-qt6 libsystemd dsme_dbus_if thermalmanager_dbus_if usb-moded-qt6 egl
+ 
+ LIBS += -lrt
+ 
+@@ -159,7 +159,6 @@ QMAKE_CXXFLAGS += \
+     -Wno-error=format-security \
+     -Wno-deprecated-copy \ 
+     -g \
+-    -std=c++0x \
+     -fPIC \
+     -fvisibility=hidden \
+     -fvisibility-inlines-hidden
+diff --git a/src/volume/pulseaudiocontrol.cpp b/src/volume/pulseaudiocontrol.cpp
+index cfef929b..965a8afe 100644
+--- a/src/volume/pulseaudiocontrol.cpp
++++ b/src/volume/pulseaudiocontrol.cpp
+@@ -63,7 +63,7 @@ void PulseAudioControl::openConnection()
+         message.setArguments(QVariantList() << "org.PulseAudio.ServerLookup1" << "Address");
+         QDBusMessage reply = QDBusConnection::sessionBus().call(message);
+         if (reply.type() == QDBusMessage::ReplyMessage && reply.arguments().count() > 0) {
+-            addressArray = reply.arguments().first().value<QDBusVariant>().variant().toString().toAscii();
++            addressArray = reply.arguments().first().value<QDBusVariant>().variant().toString().toLatin1();
+             pa_bus_address = addressArray.data();
+         }
+     }
+diff --git a/tools/notificationtool/notificationtool.pro b/tools/notificationtool/notificationtool.pro
+index 97ee2724..a2d52980 100644
+--- a/tools/notificationtool/notificationtool.pro
++++ b/tools/notificationtool/notificationtool.pro
+@@ -5,7 +5,7 @@ TARGET = notificationtool
+ 
+ QT += core dbus
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5 dsme_dbus_if thermalmanager_dbus_if usb_moded
++PKGCONFIG += mlite6 dsme_dbus_if thermalmanager_dbus_if usb_moded
+ 
+ INSTALLS = target
+ target.path = /usr/bin
+@@ -23,6 +23,5 @@ SOURCES += \
+ 
+ QMAKE_CXXFLAGS += \
+     -g \
+-    -std=c++0x \
+     -fvisibility=hidden \
+     -fvisibility-inlines-hidden
+-- 
+2.47.3
+
