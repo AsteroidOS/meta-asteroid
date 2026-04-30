@@ -1,8 +1,8 @@
-From 4e4298f8782ed83fbb9b4e2da1a92d72a49d1fd0 Mon Sep 17 00:00:00 2001
+From 7d0e6caa24981a22a5ce353e818523cde85d3939 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Mon, 12 Sep 2022 21:58:38 +0200
-Subject: [PATCH] Revert "[nemo-qml-plugin-systemsettings] Remove storage info
- api from AboutSettings. JB#56808"
+Subject: [PATCH 5/5] Revert "[nemo-qml-plugin-systemsettings] Remove storage
+ info api from AboutSettings. JB#56808"
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -20,10 +20,10 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  4 files changed, 107 insertions(+)
 
 diff --git a/src/aboutsettings.cpp b/src/aboutsettings.cpp
-index d3c60f0..414e6ed 100644
+index aae8bd0..6570b04 100644
 --- a/src/aboutsettings.cpp
 +++ b/src/aboutsettings.cpp
-@@ -173,12 +173,37 @@ AboutSettings::AboutSettings(QObject *parent)
+@@ -174,12 +174,37 @@ AboutSettings::AboutSettings(QObject *parent)
      QSettings settings(QStringLiteral("/mnt/vendor_data/vendor-data.ini"), QSettings::IniFormat);
      d->vendorName = settings.value(QStringLiteral("Name")).toString();
      d->vendorVersion = settings.value(QStringLiteral("Version")).toString();
@@ -61,7 +61,7 @@ index d3c60f0..414e6ed 100644
  QString AboutSettings::wlanMacAddress() const
  {
      Q_D(const AboutSettings);
-@@ -279,3 +304,54 @@ QString AboutSettings::vendorVersion() const
+@@ -280,3 +305,54 @@ QString AboutSettings::vendorVersion() const
      Q_D(const AboutSettings);
      return d->vendorVersion;
  }
@@ -195,3 +195,6 @@ index 7ec3d9e..36e0ca5 100644
      }
      Component {
          name: "AlarmToneModel"
+-- 
+2.47.3
+
