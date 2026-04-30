@@ -1,7 +1,7 @@
-From 834870fb8f0170d86abd82a3dfcae0eec3e48d05 Mon Sep 17 00:00:00 2001
+From dcff8d9703e35902c46d598e5bcbe451f2766cd1 Mon Sep 17 00:00:00 2001
 From: Florent Revest <revestflo@gmail.com>
 Date: Tue, 11 Jan 2022 23:44:15 +0100
-Subject: [PATCH] Add heart rate monitor sensor with hybris adaptor
+Subject: [PATCH 2/6] Add heart rate monitor sensor with hybris adaptor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -26,7 +26,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  qt-api/hrmsensor_i.cpp                        |  80 +++++++++++
  qt-api/hrmsensor_i.h                          | 121 ++++++++++++++++
  qt-api/qt-api.pro                             |   6 +-
- sensors/hrmsensor/hrmplugin.cpp               |  49 +++++++
+ sensors/hrmsensor/hrmplugin.cpp               |  53 +++++++
  sensors/hrmsensor/hrmplugin.h                 |  43 ++++++
  sensors/hrmsensor/hrmsensor.cpp               | 123 ++++++++++++++++
  sensors/hrmsensor/hrmsensor.h                 | 101 +++++++++++++
@@ -34,7 +34,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  sensors/hrmsensor/hrmsensor_a.cpp             |  38 +++++
  sensors/hrmsensor/hrmsensor_a.h               |  55 ++++++++
  sensors/sensors.pro                           |   3 +-
- 24 files changed, 1215 insertions(+), 48 deletions(-)
+ 24 files changed, 1219 insertions(+), 48 deletions(-)
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.cpp
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.h
  create mode 100644 adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
@@ -351,7 +351,7 @@ index 0000000..2426871
 +#endif
 diff --git a/adaptors/hybrishrmadaptor/hybrishrmadaptor.pro b/adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
 new file mode 100644
-index 0000000..f7b7d6c
+index 0000000..0ffef44
 --- /dev/null
 +++ b/adaptors/hybrishrmadaptor/hybrishrmadaptor.pro
 @@ -0,0 +1,13 @@
@@ -362,7 +362,7 @@ index 0000000..f7b7d6c
 +
 +SOURCES += hybrishrmadaptor.cpp \
 +           hybrishrmadaptorplugin.cpp
-+LIBS+= -L../../core -lhybrissensorfw-qt5
++LIBS+= -L../../core -lhybrissensorfw-qt$${QT_MAJOR_VERSION}
 +
 +include( ../adaptor-config.pri )
 +config_hybris {
@@ -1041,10 +1041,10 @@ index c3ee297..2e331d6 100644
      ../include \
 diff --git a/sensors/hrmsensor/hrmplugin.cpp b/sensors/hrmsensor/hrmplugin.cpp
 new file mode 100644
-index 0000000..454779a
+index 0000000..891dc02
 --- /dev/null
 +++ b/sensors/hrmsensor/hrmplugin.cpp
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,53 @@
 +/**
 +   @file hrmplugin.cpp
 +   @brief Plugin for heart rate monitor sensor
@@ -1092,7 +1092,11 @@ index 0000000..454779a
 +}
 +
 +QStringList HrmPlugin::Dependencies() {
++#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
++    return QString("hrmadaptor").split(":", Qt::SkipEmptyParts);
++#else
 +    return QString("hrmadaptor").split(":", QString::SkipEmptyParts);
++#endif
 +}
 diff --git a/sensors/hrmsensor/hrmplugin.h b/sensors/hrmsensor/hrmplugin.h
 new file mode 100644
@@ -1522,3 +1526,6 @@ index 1f000c8..97f0b5c 100644
 +           hrmsensor
  
  contextprovider:SUBDIRS += contextplugin
+-- 
+2.47.3
+

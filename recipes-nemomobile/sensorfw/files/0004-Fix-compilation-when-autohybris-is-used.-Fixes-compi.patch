@@ -1,0 +1,63 @@
+From dceccd13917e502e76181d1eee63508e6aaf1a83 Mon Sep 17 00:00:00 2001
+From: MagneFire <dgriet@gmail.com>
+Date: Tue, 11 Jan 2022 23:39:11 +0100
+Subject: [PATCH 4/6] Fix compilation when autohybris is used. Fixes
+ compilation by adding android-headers via pkgconfig and re-adding the hybris
+ subdirs when autohybris is used.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ adaptors/adaptor-config.pri | 4 ++++
+ core/hybris.pro             | 3 +++
+ sensorfw.pro                | 4 ++--
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/adaptors/adaptor-config.pri b/adaptors/adaptor-config.pri
+index e8e1d79..cfcf90f 100644
+--- a/adaptors/adaptor-config.pri
++++ b/adaptors/adaptor-config.pri
+@@ -16,3 +16,7 @@ publicheaders.files += $$HEADERS
+ target.path = $$PLUGINPATH
+ 
+ INSTALLS += target
++
++config_hybris {
++    CONFIG += link_pkgconfig
++}
+diff --git a/core/hybris.pro b/core/hybris.pro
+index a9c87dc..0f92da2 100644
+--- a/core/hybris.pro
++++ b/core/hybris.pro
+@@ -5,6 +5,9 @@ TARGET = hybrissensorfw
+ 
+ include( ../common-config.pri )
+ 
++CONFIG += link_pkgconfig
++PKGCONFIG += android-headers
++
+ SENSORFW_INCLUDEPATHS = .. \
+                         ../include \
+                         ../filters \
+diff --git a/sensorfw.pro b/sensorfw.pro
+index 3c1084c..e3ca9db 100644
+--- a/sensorfw.pro
++++ b/sensorfw.pro
+@@ -59,8 +59,8 @@ contains(CONFIG,configs) {
+ 
+ contains(CONFIG,hybris) {
+ 
+-    SUBDIRS = core/hybris.pro \
+-              adaptors
++    SUBDIRS += core/hybris.pro \
++               adaptors
+ } else {
+     config_hybris {
+     # Reorder so that adaptors are built after hybris.
+-- 
+2.47.3
+

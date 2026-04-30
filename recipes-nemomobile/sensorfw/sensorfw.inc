@@ -15,6 +15,7 @@ SRCREV = "0.15.1"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
+B = "${S}"
 
 # Avoid potential renaming of the ipk.
 DEBIANNAME:${PN} = "${PN}"
@@ -25,7 +26,7 @@ DEBIANNAME:${PN}-dev = "${PN}-dev"
 inherit qt6-qmake pkgconfig
 
 do_configure:prepend() {
-    sed "s=@LIB@=lib/=g" "${S}/sensord-qt5.pc.in" > "${S}/sensord-qt5.pc"
+    sed "s=@LIB@=lib/=g" "${S}/sensord-qt6.pc.in" > "${S}/sensord-qt6.pc"
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' "${S}/core/core.pro"
     sed -i '/include( doc\/doc.pri )/d' "${S}/sensorfw.pro"
 }
