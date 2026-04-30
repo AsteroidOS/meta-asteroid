@@ -1,0 +1,84 @@
+From 072f16b2af7bd3c03e13c4629ea30615adbbe9d1 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Thu, 30 Apr 2026 15:35:49 +0000
+Subject: [PATCH 3/3] Fix build on Qt6
+
+Upstream-Status: Inappropriate
+---
+ mts/mts.pro                                              | 2 +-
+ mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp | 3 ++-
+ mts/transport/usb/threadio.cpp                           | 4 ++--
+ service/service.pro                                      | 2 +-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/mts/mts.pro b/mts/mts.pro
+index dc57ec6..788315e 100644
+--- a/mts/mts.pro
++++ b/mts/mts.pro
+@@ -1,6 +1,6 @@
+ include(common.pri)
+ 
+-QT += xml dbus
++QT += xml dbus core5compat
+ QT -= gui
+ 
+ CONFIG += link_pkgconfig debug
+diff --git a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+index f7ea737..599bdc3 100644
+--- a/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
++++ b/mts/platform/storage/fsstorageplugin/fsstorageplugin.cpp
+@@ -54,6 +54,7 @@
+ #include <QDateTime>
+ #include <QMetaObject>
+ #include <QLocale>
++#include <QRegularExpression>
+ 
+ #ifndef UT_ON
+ #include <blkid.h>
+@@ -3147,7 +3148,7 @@ bool FSStoragePlugin::isFileNameValid(const QString &fileName, const StorageItem
+ {
+     // Check if the file name contains illegal characters, or if the file with
+     // the same name is already present under the parent
+-    if (fileName.contains(QRegExp(FILENAMES_FILTER_REGEX)) || QRegExp("[\\.]+").exactMatch(fileName)) {
++    if (fileName.contains(QRegularExpression(FILENAMES_FILTER_REGEX)) || QRegularExpression("^[\\.]+$").match(fileName).hasMatch()) {
+         // Illegal characters, or all .'s
+         return false;
+     }
+diff --git a/mts/transport/usb/threadio.cpp b/mts/transport/usb/threadio.cpp
+index 12ca070..f95e24e 100644
+--- a/mts/transport/usb/threadio.cpp
++++ b/mts/transport/usb/threadio.cpp
+@@ -486,7 +486,7 @@ void BulkWriterThread::setData(const quint8 *buffer, quint32 dataLen, bool termi
+     m_dataLen = dataLen;
+     m_terminateTransfer = terminateTransfer;
+     m_result = false;
+-    m_result_ready.store(0);
++    m_result_ready.storeRelease(0);
+ }
+ 
+ void BulkWriterThread::execute()
+@@ -546,7 +546,7 @@ void BulkWriterThread::execute()
+ 
+ bool BulkWriterThread::resultReady()
+ {
+-    return m_result_ready.load() != 0;
++    return m_result_ready.loadAcquire() != 0;
+ }
+ 
+ bool BulkWriterThread::getResult()
+diff --git a/service/service.pro b/service/service.pro
+index 92ece24..9c4de03 100644
+--- a/service/service.pro
++++ b/service/service.pro
+@@ -6,7 +6,7 @@ LIBS += -L../mts -lbuteomtp
+ 
+ QT -= gui
+ CONFIG += link_pkgconfig
+-PKGCONFIG += mlite5
++PKGCONFIG += mlite6
+ 
+ SOURCES += service.cpp
+ 
+-- 
+2.47.3
+
