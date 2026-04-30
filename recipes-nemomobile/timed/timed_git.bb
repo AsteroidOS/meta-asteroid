@@ -19,10 +19,10 @@ B = "${S}"
 
 # Code expects to be massaged first the same way it's done in RPM .spec
 do_compile:prepend() {
-    mkdir -p ${B}/src/h/timed-qt5
+    mkdir -p ${B}/src/h/timed-qt6
     # As B=${S} here, src/lib/qmacro.h may exist from previous builds
-    rm -f ${B}/src/h/timed-qt5/qmacro.h
-    cp ${B}/src/lib/qmacro.h ${B}/src/h/timed-qt5/
+    rm -f ${B}/src/h/timed-qt6/qmacro.h
+    cp ${B}/src/lib/qmacro.h ${B}/src/h/timed-qt6/
 }
 
 do_install:append() {
