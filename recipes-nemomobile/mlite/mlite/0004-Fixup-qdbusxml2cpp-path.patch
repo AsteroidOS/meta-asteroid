@@ -1,0 +1,26 @@
+From 9f764cf6cab536d3a7cfbb98230b70cf3eee51db Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 29 Apr 2026 19:58:38 +0000
+Subject: [PATCH 2/2] Fixup qdbusxml2cpp path
+
+Upstream-Status: Inappropriate
+---
+ src/src.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index e13a464..1d3c8d8 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -47,7 +47,7 @@ packagesExist(dconf) {
+     warning("dconf not found; MDConfItem will not be built")
+ }
+ 
+-QDBUSXML2CPP = $$[QT_INSTALL_BINS]/qdbusxml2cpp
++QDBUSXML2CPP = qdbusxml2cpp
+ 
+ system($$QDBUSXML2CPP notificationmanager.xml -p mnotificationmanagerproxy -c MNotificationManagerProxy -i metatypedeclarations.h)
+ 
+-- 
+2.47.3
+

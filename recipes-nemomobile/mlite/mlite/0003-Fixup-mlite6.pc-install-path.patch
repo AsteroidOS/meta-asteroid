@@ -1,0 +1,26 @@
+From db2d5eb00a9b9763ae86f8c441087efed8398cc3 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 29 Apr 2026 19:57:35 +0000
+Subject: [PATCH 1/2] Fixup mlite6.pc install path
+
+Upstream-Status: Inappropriate
+---
+ src/src.pro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/src.pro b/src/src.pro
+index 9118f2e..e13a464 100644
+--- a/src/src.pro
++++ b/src/src.pro
+@@ -96,7 +96,7 @@ PCFILE=mlite$${NODASH_QT_VERSION}.pc
+ configure($${PWD}/$${PCFILE}.in)
+ pcfiles.files = $$OUT_PWD/$$PCFILE
+ pcfiles.CONFIG = no_check_exist
+-pcfiles.path += $$INSTALL_ROOT/$$[QT_INSTALL_LIBS]/pkgconfig
++pcfiles.path += $$[QT_INSTALL_LIBS]/pkgconfig
+ 
+ headers.files += $$INSTALL_HEADERS
+ headers.path += /usr/include/mlite$${NODASH_QT_VERSION}
+-- 
+2.47.3
+
