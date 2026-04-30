@@ -1,0 +1,699 @@
+From d2d8bbbb1fd72475881c083237d04e6f2c950a10 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 9 May 2026 16:57:13 +0000
+Subject: [PATCH 2/4] Add heart rate monitor sensor with sensorfw backend
+
+Upstream-Status: Pending
+---
+ src/plugins/sensors/sensorfw/CMakeLists.txt   |   1 +
+ src/plugins/sensors/sensorfw/Sensors.conf     |   1 +
+ src/plugins/sensors/sensorfw/main.cpp         |   3 +
+ .../sensors/sensorfw/sensorfwhrmsensor.cpp    |  63 ++++++++
+ .../sensors/sensorfw/sensorfwhrmsensor.h      |  34 ++++
+ src/sensors/CMakeLists.txt                    |   3 +
+ src/sensors/qhrmsensor.cpp                    | 150 ++++++++++++++++++
+ src/sensors/qhrmsensor.h                      |  69 ++++++++
+ src/sensors/qhrmsensor_p.h                    |  45 ++++++
+ src/sensorsquick/CMakeLists.txt               |   1 +
+ src/sensorsquick/qmlhrmsensor.cpp             | 110 +++++++++++++
+ src/sensorsquick/qmlhrmsensor_p.h             |  73 +++++++++
+ 12 files changed, 553 insertions(+)
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwhrmsensor.cpp
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwhrmsensor.h
+ create mode 100644 src/sensors/qhrmsensor.cpp
+ create mode 100644 src/sensors/qhrmsensor.h
+ create mode 100644 src/sensors/qhrmsensor_p.h
+ create mode 100644 src/sensorsquick/qmlhrmsensor.cpp
+ create mode 100644 src/sensorsquick/qmlhrmsensor_p.h
+
+diff --git a/src/plugins/sensors/sensorfw/CMakeLists.txt b/src/plugins/sensors/sensorfw/CMakeLists.txt
+index 68eb0d56..52fc76e1 100644
+--- a/src/plugins/sensors/sensorfw/CMakeLists.txt
++++ b/src/plugins/sensors/sensorfw/CMakeLists.txt
+@@ -14,6 +14,7 @@ qt_internal_add_plugin(sensorfwSensorPlugin
+         sensorfwals.cpp sensorfwals.h
+         sensorfwcompass.cpp sensorfwcompass.h
+         sensorfwgyroscope.cpp sensorfwgyroscope.h
++        sensorfwhrmsensor.cpp sensorfwhrmsensor.h
+         sensorfwirproximitysensor.cpp sensorfwirproximitysensor.h
+         sensorfwlidsensor.cpp sensorfwlidsensor.h
+         sensorfwlightsensor.cpp sensorfwlightsensor.h
+diff --git a/src/plugins/sensors/sensorfw/Sensors.conf b/src/plugins/sensors/sensorfw/Sensors.conf
+index b3db5ff3..cd2985c2 100644
+--- a/src/plugins/sensors/sensorfw/Sensors.conf
++++ b/src/plugins/sensors/sensorfw/Sensors.conf
+@@ -11,3 +11,4 @@ QLightSensor=sensorfw.lightsensor
+ QIRProximitySensor=sensorfw.irproximitysensor
+ QGyroscope=sensorfw.gyroscope
+ QLidSensor=sensorfw.lidsensor
++QHrmSensor=sensorfw.hrmsensor
+diff --git a/src/plugins/sensors/sensorfw/main.cpp b/src/plugins/sensors/sensorfw/main.cpp
+index 9e8b6ac9..96bd53bf 100644
+--- a/src/plugins/sensors/sensorfw/main.cpp
++++ b/src/plugins/sensors/sensorfw/main.cpp
+@@ -13,6 +13,7 @@
+ #include "sensorfwgyroscope.h"
+ #include "sensorfwlightsensor.h"
+ #include "sensorfwlidsensor.h"
++#include "sensorfwhrmsensor.h"
+ 
+ #include <QtSensors/qsensorplugin.h>
+ #include <QtSensors/qsensorbackend.h>
+@@ -68,6 +69,8 @@ public:
+             return new SensorfwLightSensor(sensor);
+         if (sensor->identifier() == SensorfwIrProximitySensor::id)
+             return new SensorfwIrProximitySensor(sensor);
++        if (sensor->identifier() == SensorfwHrmSensor::id)
++            return new SensorfwHrmSensor(sensor);
+         return 0;
+     }
+ };
+diff --git a/src/plugins/sensors/sensorfw/sensorfwhrmsensor.cpp b/src/plugins/sensors/sensorfw/sensorfwhrmsensor.cpp
+new file mode 100644
+index 00000000..af6e541c
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwhrmsensor.cpp
+@@ -0,0 +1,63 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++#include "sensorfwhrmsensor.h"
++
++char const * const SensorfwHrmSensor::id("sensorfw.hrmsensor");
++
++SensorfwHrmSensor::SensorfwHrmSensor(QSensor *sensor)
++    : SensorfwSensorBase(sensor)
++    , m_initDone(false)
++{
++    init();
++    setReading<QHrmReading>(&m_reading);
++}
++
++void SensorfwHrmSensor::slotDataAvailable(const HeartRate& data)
++{
++    QHrmSensor *hrmSensor = static_cast<QHrmSensor*>(sensor());
++    m_reading.setBpm(data.heartRateData().bpm_);
++    m_reading.setTimestamp(data.heartRateData().timestamp_);
++    switch(data.heartRateData().status_) {
++        case HrmUnreliable:
++            hrmSensor->setStatus(QHrmSensor::Unreliable);
++            break;
++        case HrmAccuracyLow:
++            hrmSensor->setStatus(QHrmSensor::AccuracyLow);
++            break;
++        case HrmAccuracyMedium:
++            hrmSensor->setStatus(QHrmSensor::AccuracyMedium);
++            break;
++        case HrmAccuracyHigh:
++            hrmSensor->setStatus(QHrmSensor::AccuracyHigh);
++            break;
++        case HrmNoContact:
++            hrmSensor->setStatus(QHrmSensor::NoContact);
++    }
++    newReadingAvailable();
++}
++
++bool SensorfwHrmSensor::doConnect()
++{
++    Q_ASSERT(m_sensorInterface);
++    return QObject::connect(m_sensorInterface, SIGNAL(HeartRateChanged(HeartRate)),
++                            this, SLOT(slotDataAvailable(HeartRate)));
++}
++
++QString SensorfwHrmSensor::sensorName() const
++{
++    return "hrmsensor";
++}
++
++void SensorfwHrmSensor::init()
++{
++    m_initDone = false;
++    initSensor<HrmSensorChannelInterface>(m_initDone);
++}
++
++void SensorfwHrmSensor::start()
++{
++    if (reinitIsNeeded)
++        init();
++    SensorfwSensorBase::start();
++}
+diff --git a/src/plugins/sensors/sensorfw/sensorfwhrmsensor.h b/src/plugins/sensors/sensorfw/sensorfwhrmsensor.h
+new file mode 100644
+index 00000000..72cbed69
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwhrmsensor.h
+@@ -0,0 +1,34 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++
++#ifndef SENSORFWHRMSENSOR_H
++#define SENSORFWHRMSENSOR_H
++
++#include "sensorfwsensorbase.h"
++#include <QtSensors/qhrmsensor.h>
++
++#include <hrmsensor_i.h>
++#include <datatypes/heartrate.h>
++
++
++class SensorfwHrmSensor : public SensorfwSensorBase
++{
++    Q_OBJECT
++
++public:
++    static char const * const id;
++    SensorfwHrmSensor(QSensor *sensor);
++protected:
++    bool doConnect() override;
++    QString sensorName() const override;
++    void start() override;
++    virtual void init();
++private:
++    QHrmReading m_reading;
++    bool m_initDone;
++private slots:
++    void slotDataAvailable(const HeartRate& data);
++};
++
++#endif
+diff --git a/src/sensors/CMakeLists.txt b/src/sensors/CMakeLists.txt
+index 9a17670e..78ab7125 100644
+--- a/src/sensors/CMakeLists.txt
++++ b/src/sensors/CMakeLists.txt
+@@ -30,6 +30,7 @@ qt_internal_add_module(Sensors
+     qpressuresensor.h
+     qhumiditysensor.h
+     qlidsensor.h
++    qhrmsensor.h
+     qsensor_p.h
+     qaccelerometer_p.h
+     qambientlightsensor_p.h
+@@ -47,6 +48,7 @@ qt_internal_add_module(Sensors
+     qpressuresensor_p.h
+     qhumiditysensor_p.h
+     qlidsensor_p.h
++    qhrmsensor_p.h
+     qsensor.cpp
+     qaccelerometer.cpp
+     qambientlightsensor.cpp
+@@ -64,6 +66,7 @@ qt_internal_add_module(Sensors
+     qpressuresensor.cpp
+     qhumiditysensor.cpp
+     qlidsensor.cpp
++    qhrmsensor.cpp
+     DEFINES
+         $<$<CONFIG:Debug>:ENABLE_RUNTIME_SENSORLOG>
+     LIBRARIES
+diff --git a/src/sensors/qhrmsensor.cpp b/src/sensors/qhrmsensor.cpp
+new file mode 100644
+index 00000000..8cd0c11f
+--- /dev/null
++++ b/src/sensors/qhrmsensor.cpp
+@@ -0,0 +1,150 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#include <qhrmsensor.h>
++#include "qhrmsensor_p.h"
++
++QT_BEGIN_NAMESPACE
++
++IMPLEMENT_READING(QHrmReading)
++
++/*!
++    \class QHrmReading
++    \ingroup sensors_reading
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QHrmReading class holds readings from the Hrm sensor.
++
++    \section2 QHrmReading Units
++    The heart rate monitor returns the user's heart rate in beats per minute.
++*/
++
++/*!
++    \property QHrmReading::bpm
++    \brief A value indicating the number of beats per minute.
++
++    \sa {QHrmReading Units}
++*/
++
++int QHrmReading::bpm() const
++{
++    return d->bpm;
++}
++
++/*!
++    Sets the heart rate beats-per-minute reading to \a bpm. This is to be
++    called from the backend.
++*/
++void QHrmReading::setBpm(int bpm)
++{
++    d->bpm = bpm;
++}
++
++// =====================================================================
++
++/*!
++    \class QHrmFilter
++    \ingroup sensors_filter
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QHrmFilter class is a convenience wrapper around QSensorFilter.
++
++    The only difference is that the filter() method features a pointer to QHrmReading
++    instead of QSensorReading.
++*/
++
++/*!
++    \fn QHrmFilter::filter(QHrmReading *reading)
++
++    Called when \a reading changes. Returns false to prevent the reading from propagating.
++
++    \sa QSensorFilter::filter()
++*/
++
++bool QHrmFilter::filter(QSensorReading *reading)
++{
++    return filter(static_cast<QHrmReading*>(reading));
++}
++
++char const * const QHrmSensor::sensorType("QHrmSensor");
++
++/*!
++    \class QHrmSensor
++    \ingroup sensors_type
++    \inmodule QtSensors
++    \since 5.9
++    \internal
++
++    \brief The QHrmSensor class is a convenience wrapper around QSensor.
++
++    The only behavioural difference is that this class sets the type properly.
++
++    This class also features a reading() function that returns a QHrmReading instead
++    of a QSensorReading.
++
++    For details about how the sensor works, see \l QHrmReading.
++
++    \sa QHrmReading
++*/
++
++/*!
++    Construct the sensor as a child of \a parent.
++*/
++QHrmSensor::QHrmSensor(QObject *parent)
++    : QSensor(QHrmSensor::sensorType, parent)
++{
++}
++
++/*!
++    Destroy the sensor. Stops the sensor if it has not already been stopped.
++*/
++QHrmSensor::~QHrmSensor()
++{
++}
++
++/*!
++    \fn QHrmSensor::reading() const
++
++    Returns the reading class for this sensor.
++
++    \sa QSensor::reading()
++*/
++
++QHrmReading *QHrmSensor::reading() const
++{
++    return static_cast<QHrmReading*>(QSensor::reading());
++}
++
++/*!
++    \property QHrmSensor::status
++    \brief a value indicating the status of the heart rate monitor.
++
++    This is an enum that represents the status of the sensor.
++*/
++
++QHrmSensor::Status QHrmSensor::status() const
++{
++    Q_D(const QHrmSensor);
++    return d->status;
++}
++
++/*!
++    \since 5.1
++
++    Sets the status to \a status. This is to be called from the backend.
++*/
++void QHrmSensor::setStatus(QHrmSensor::Status status)
++{
++    Q_D(QHrmSensor);
++    if (d->status != status) {
++        d->status = status;
++        emit statusChanged(status);
++    }
++}
++
++QT_END_NAMESPACE
++
++#include "moc_qhrmsensor.cpp"
+diff --git a/src/sensors/qhrmsensor.h b/src/sensors/qhrmsensor.h
+new file mode 100644
+index 00000000..2cc9bc4b
+--- /dev/null
++++ b/src/sensors/qhrmsensor.h
+@@ -0,0 +1,69 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QHRMSENSOR_H
++#define QHRMSENSOR_H
++
++#include <QtSensors/qsensor.h>
++
++QT_BEGIN_NAMESPACE
++
++class QHrmReadingPrivate;
++class QHrmSensorPrivate;
++
++class Q_SENSORS_EXPORT QHrmReading : public QSensorReading
++{
++    Q_OBJECT
++    Q_PROPERTY(int bpm READ bpm)
++    DECLARE_READING(QHrmReading)
++public:
++
++    int bpm() const;
++    void setBpm(int bpm);
++
++Q_SIGNALS:
++    void bpmChanged(int bpm);
++};
++
++class Q_SENSORS_EXPORT QHrmFilter : public QSensorFilter
++{
++public:
++    virtual bool filter(QHrmReading *reading) = 0;
++private:
++    bool filter(QSensorReading *reading) override;
++};
++
++class Q_SENSORS_EXPORT QHrmSensor : public QSensor
++{
++    Q_OBJECT
++    Q_ENUMS (Status)
++    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
++
++public:
++    enum Status
++    {
++        NoContact,
++        Unreliable,
++        AccuracyLow,
++        AccuracyMedium,
++        AccuracyHigh
++    };
++
++    explicit QHrmSensor(QObject *parent = nullptr);
++    ~QHrmSensor();
++    QHrmReading *reading() const;
++    static char const * const sensorType;
++
++    QHrmSensor::Status status() const;
++    void setStatus(QHrmSensor::Status status);
++
++Q_SIGNALS:
++    void statusChanged(QHrmSensor::Status status);
++
++private:
++    Q_DECLARE_PRIVATE(QHrmSensor)
++    Q_DISABLE_COPY(QHrmSensor)
++};
++
++QT_END_NAMESPACE
++
++#endif
+diff --git a/src/sensors/qhrmsensor_p.h b/src/sensors/qhrmsensor_p.h
+new file mode 100644
+index 00000000..11cf72c9
+--- /dev/null
++++ b/src/sensors/qhrmsensor_p.h
+@@ -0,0 +1,45 @@
++// Copyright (C) 2016 Canonical, Ltd
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QHRMSENSOR_P_H
++#define QHRMSENSOR_P_H
++
++//
++//  W A R N I N G
++//  -------------
++//
++// This file is not part of the Qt API. It exists purely as an
++// implementation detail. This header file may change from version to
++// version without notice, or even be removed.
++//
++// We mean it.
++//
++
++#include <QtCore/private/qglobal_p.h>
++
++QT_BEGIN_NAMESPACE
++
++class QHrmReadingPrivate
++{
++public:
++    QHrmReadingPrivate()
++        : bpm(0)
++    {
++    }
++
++    int bpm;
++};
++
++class QHrmSensorPrivate
++{
++public:
++    QHrmSensorPrivate()
++        : status(QHrmSensor::NoContact)
++    {
++    }
++
++    QHrmSensor::Status status;
++};
++
++QT_END_NAMESPACE
++
++#endif
+diff --git a/src/sensorsquick/CMakeLists.txt b/src/sensorsquick/CMakeLists.txt
+index 5ae32088..f3425c30 100644
+--- a/src/sensorsquick/CMakeLists.txt
++++ b/src/sensorsquick/CMakeLists.txt
+@@ -11,6 +11,7 @@ qt_internal_add_qml_module(SensorsQuick
+         qmlcompass.cpp qmlcompass_p.h
+         qmlgyroscope.cpp qmlgyroscope_p.h
+         qmlhumiditysensor.cpp qmlhumiditysensor_p.h
++        qmlhrmsensor.cpp qmlhrmsensor_p.h
+         qmlirproximitysensor.cpp qmlirproximitysensor_p.h
+         qmllidsensor.cpp qmllidsensor_p.h
+         qmllightsensor.cpp qmllightsensor_p.h
+diff --git a/src/sensorsquick/qmlhrmsensor.cpp b/src/sensorsquick/qmlhrmsensor.cpp
+new file mode 100644
+index 00000000..13b09a51
+--- /dev/null
++++ b/src/sensorsquick/qmlhrmsensor.cpp
+@@ -0,0 +1,110 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#include "qmlhrmsensor_p.h"
++#include <QtSensors/QHrmSensor>
++
++/*!
++    \qmltype HrmSensor
++//!    \nativetype QmlHrmSensor
++    \ingroup qml-sensors_type
++    \inqmlmodule QtSensors
++    \since QtSensors 5.9
++    \inherits Sensor
++    \brief The HrmSensor element reports on the user's heart rate in bpm.
++    \internal
++
++    The HrmSensor element reports on the user's heart rate in bpm.
++
++    This element wraps the QHrmSensor class. Please see the documentation for
++    QHrmSensor for details.
++
++    \sa HrmReading
++*/
++
++QmlHrmSensor::QmlHrmSensor(QObject *parent)
++    : QmlSensor(parent)
++    , m_sensor(new QHrmSensor(this))
++{
++    connect(m_sensor, SIGNAL(statusChanged(QHrmSensor::Status)),
++            this, SIGNAL(statusChanged(QHrmSensor::Status)));
++}
++
++QmlHrmSensor::~QmlHrmSensor()
++{
++}
++
++QmlSensorReading *QmlHrmSensor::createReading() const
++{
++    return new QmlHrmReading(m_sensor);
++}
++
++QSensor *QmlHrmSensor::sensor() const
++{
++    return m_sensor;
++}
++
++/*!
++    \qmlproperty qreal HrmSensor::status
++    This property holds a value indicating the status of the heart rate monitor.
++
++    Please see QHrmSensor::status for information about this property.
++*/
++
++QHrmSensor::Status QmlHrmSensor::status() const
++{
++    return m_sensor->status();
++}
++
++/*!
++    \qmltype HrmReading
++//!    \nativetype QmlHrmReading
++    \ingroup qml-sensors_reading
++    \inqmlmodule QtSensors
++    \since QtSensors 5.9
++    \inherits SensorReading
++    \brief The HrmReading element holds the most recent HrmSensor reading.
++    \internal
++
++    The HrmReading element holds the most recent HrmSensor reading.
++
++    This element wraps the QHrmReading class. Please see the documentation for
++    QHrmReading for details.
++
++    This element cannot be directly created.
++*/
++
++QmlHrmReading::QmlHrmReading(QHrmSensor *sensor)
++    : m_sensor(sensor)
++{
++}
++
++QmlHrmReading::~QmlHrmReading()
++{
++}
++
++/*!
++    \qmlproperty real HrmReading::bpm
++    This property holds the number of beats per minute.
++
++    Please see QHrmReading::bpm for information about this property.
++*/
++
++int QmlHrmReading::bpm() const
++{
++    return m_bpm;
++}
++
++QBindable<int> QmlHrmReading::bindableBpm() const
++{
++    return &m_bpm;
++}
++
++QSensorReading *QmlHrmReading::reading() const
++{
++    return m_sensor->reading();
++}
++
++void QmlHrmReading::readingUpdate()
++{
++    m_bpm = m_sensor->reading()->bpm();
++}
+diff --git a/src/sensorsquick/qmlhrmsensor_p.h b/src/sensorsquick/qmlhrmsensor_p.h
+new file mode 100644
+index 00000000..7b91c5c5
+--- /dev/null
++++ b/src/sensorsquick/qmlhrmsensor_p.h
+@@ -0,0 +1,73 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++#ifndef QMLHRMSENSOR_P_H
++#define QMLHRMSENSOR_P_H
++
++//
++//  W A R N I N G
++//  -------------
++//
++// This file is not part of the Qt API.  It exists purely as an
++// implementation detail.  This header file may change from version to
++// version without notice, or even be removed.
++//
++// We mean it.
++//
++
++#include "qmlsensor_p.h"
++
++QT_BEGIN_NAMESPACE
++
++class QHrmSensor;
++
++class Q_SENSORSQUICK_EXPORT QmlHrmSensor : public QmlSensor
++{
++    Q_OBJECT
++    QML_NAMED_ELEMENT(HrmSensor)
++    QML_ADDED_IN_VERSION(5,9)
++    Q_PROPERTY(QHrmSensor::Status status READ status NOTIFY statusChanged)
++public:
++    explicit QmlHrmSensor(QObject *parent = 0);
++    ~QmlHrmSensor();
++    QSensor *sensor() const override;
++
++    QHrmSensor::Status status() const;
++
++Q_SIGNALS:
++    void statusChanged(QHrmSensor::Status status);
++
++private:
++    QmlSensorReading *createReading() const override;
++
++    QHrmSensor *m_sensor;
++};
++
++class Q_SENSORSQUICK_EXPORT QmlHrmReading : public QmlSensorReading
++{
++    Q_OBJECT
++    Q_PROPERTY(int bpm READ bpm
++               NOTIFY bpmChanged BINDABLE bindableBpm)
++    QML_NAMED_ELEMENT(HrmReading)
++    QML_UNCREATABLE("Cannot create HrmReading")
++    QML_ADDED_IN_VERSION(5,9)
++public:
++    explicit QmlHrmReading(QHrmSensor *sensor);
++    ~QmlHrmReading();
++
++    int bpm() const;
++    QBindable<int> bindableBpm() const;
++
++Q_SIGNALS:
++    void bpmChanged(int bpm);
++
++private:
++    QSensorReading *reading() const override;
++    void readingUpdate() override;
++
++    QHrmSensor *m_sensor;
++    Q_OBJECT_BINDABLE_PROPERTY(QmlHrmReading, int,
++                               m_bpm, &QmlHrmReading::bpmChanged)
++};
++
++QT_END_NAMESPACE
++#endif
+-- 
+2.47.3
+

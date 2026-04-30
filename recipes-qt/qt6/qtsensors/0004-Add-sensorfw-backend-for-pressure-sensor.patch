@@ -1,0 +1,153 @@
+From 1933880d1ab6e31af2fbe6eb83af2c123aa6a423 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 9 May 2026 17:32:45 +0000
+Subject: [PATCH 4/4] Add sensorfw backend for pressure sensor
+
+Upstream-Status: Pending
+---
+ src/plugins/sensors/sensorfw/CMakeLists.txt   |  1 +
+ src/plugins/sensors/sensorfw/Sensors.conf     |  1 +
+ src/plugins/sensors/sensorfw/main.cpp         |  3 ++
+ .../sensorfw/sensorfwpressuresensor.cpp       | 46 +++++++++++++++++++
+ .../sensors/sensorfw/sensorfwpressuresensor.h | 34 ++++++++++++++
+ 5 files changed, 85 insertions(+)
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwpressuresensor.cpp
+ create mode 100644 src/plugins/sensors/sensorfw/sensorfwpressuresensor.h
+
+diff --git a/src/plugins/sensors/sensorfw/CMakeLists.txt b/src/plugins/sensors/sensorfw/CMakeLists.txt
+index acd78932..12f563e0 100644
+--- a/src/plugins/sensors/sensorfw/CMakeLists.txt
++++ b/src/plugins/sensors/sensorfw/CMakeLists.txt
+@@ -20,6 +20,7 @@ qt_internal_add_plugin(sensorfwSensorPlugin
+         sensorfwlightsensor.cpp sensorfwlightsensor.h
+         sensorfwmagnetometer.cpp sensorfwmagnetometer.h
+         sensorfworientationsensor.cpp sensorfworientationsensor.h
++        sensorfwpressuresensor.cpp sensorfwpressuresensor.h
+         sensorfwproximitysensor.cpp sensorfwproximitysensor.h
+         sensorfwrotationsensor.cpp sensorfwrotationsensor.h
+         sensorfwsensorbase.cpp sensorfwsensorbase.h
+diff --git a/src/plugins/sensors/sensorfw/Sensors.conf b/src/plugins/sensors/sensorfw/Sensors.conf
+index 391d86d4..b38de068 100644
+--- a/src/plugins/sensors/sensorfw/Sensors.conf
++++ b/src/plugins/sensors/sensorfw/Sensors.conf
+@@ -13,3 +13,4 @@ QGyroscope=sensorfw.gyroscope
+ QLidSensor=sensorfw.lidsensor
+ QHrmSensor=sensorfw.hrmsensor
+ QStepCounterSensor=sensorfw.stepcountersensor
++QPressureSensor=sensorfw.pressuresensor
+diff --git a/src/plugins/sensors/sensorfw/main.cpp b/src/plugins/sensors/sensorfw/main.cpp
+index 4608f80e..7fc60c2f 100644
+--- a/src/plugins/sensors/sensorfw/main.cpp
++++ b/src/plugins/sensors/sensorfw/main.cpp
+@@ -15,6 +15,7 @@
+ #include "sensorfwlidsensor.h"
+ #include "sensorfwhrmsensor.h"
+ #include "sensorfwstepcountersensor.h"
++#include "sensorfwpressuresensor.h"
+ 
+ #include <QtSensors/qsensorplugin.h>
+ #include <QtSensors/qsensorbackend.h>
+@@ -74,6 +75,8 @@ public:
+             return new SensorfwHrmSensor(sensor);
+         if (sensor->identifier() == SensorfwStepCounterSensor::id)
+             return new SensorfwStepCounterSensor(sensor);
++        if (sensor->identifier() == SensorfwPressureSensor::id)
++            return new SensorfwPressureSensor(sensor);
+         return 0;
+     }
+ };
+diff --git a/src/plugins/sensors/sensorfw/sensorfwpressuresensor.cpp b/src/plugins/sensors/sensorfw/sensorfwpressuresensor.cpp
+new file mode 100644
+index 00000000..13363816
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwpressuresensor.cpp
+@@ -0,0 +1,46 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++#include "sensorfwpressuresensor.h"
++
++char const * const SensorfwPressureSensor::id("sensorfw.pressuresensor");
++
++SensorfwPressureSensor::SensorfwPressureSensor(QSensor *sensor)
++    : SensorfwSensorBase(sensor)
++    , m_initDone(false)
++{
++    init();
++    setReading<QPressureReading>(&m_reading);
++}
++
++void SensorfwPressureSensor::slotDataAvailable(const Unsigned& data)
++{
++    m_reading.setPressure(data.UnsignedData().value_);
++    m_reading.setTimestamp(data.UnsignedData().timestamp_);
++    newReadingAvailable();
++}
++
++bool SensorfwPressureSensor::doConnect()
++{
++    Q_ASSERT(m_sensorInterface);
++    return QObject::connect(m_sensorInterface, SIGNAL(pressureChanged(Unsigned)),
++                            this, SLOT(slotDataAvailable(Unsigned)));
++}
++
++QString SensorfwPressureSensor::sensorName() const
++{
++    return "pressuresensor";
++}
++
++void SensorfwPressureSensor::init()
++{
++    m_initDone = false;
++    initSensor<PressureSensorChannelInterface>(m_initDone);
++}
++
++void SensorfwPressureSensor::start()
++{
++    if (reinitIsNeeded)
++        init();
++    SensorfwSensorBase::start();
++}
+diff --git a/src/plugins/sensors/sensorfw/sensorfwpressuresensor.h b/src/plugins/sensors/sensorfw/sensorfwpressuresensor.h
+new file mode 100644
+index 00000000..061fbe1c
+--- /dev/null
++++ b/src/plugins/sensors/sensorfw/sensorfwpressuresensor.h
+@@ -0,0 +1,34 @@
++// Copyright (C) 2026 AsteroidOS
++// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
++
++
++#ifndef SENSORFWPRESSURESENSOR_H
++#define SENSORFWPRESSURESENSOR_H
++
++#include "sensorfwsensorbase.h"
++#include <QtSensors/qpressuresensor.h>
++
++#include <pressuresensor_i.h>
++#include <datatypes/unsigned.h>
++
++
++class SensorfwPressureSensor : public SensorfwSensorBase
++{
++    Q_OBJECT
++
++public:
++    static char const * const id;
++    SensorfwPressureSensor(QSensor *sensor);
++protected:
++    bool doConnect() override;
++    QString sensorName() const override;
++    void start() override;
++    virtual void init();
++private:
++    QPressureReading m_reading;
++    bool m_initDone;
++private slots:
++    void slotDataAvailable(const Unsigned& data);
++};
++
++#endif
+-- 
+2.47.3
+
