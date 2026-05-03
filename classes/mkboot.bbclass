@@ -15,14 +15,7 @@ do_deploy:append() {
     sed -i "s@%%RAMDISK_SIZE%%@$(stat --printf="%s" ${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz)@" img_info
     mkboot . boot.img || { echo "mkboot failed"; exit 1; }
 
-    # We're probably interested only in zImage KERNEL_IMAGETYPE, but keep
-    # the for loop for consistency with other bbclasses
-    for type in ${KERNEL_IMAGETYPES} ; do
-        base_name=${type}-${KERNEL_IMAGE_NAME}
-        symlink_name=${type}-${KERNEL_IMAGE_LINK_NAME}
-        cp ${B}/boot.img ${DEPLOYDIR}/${base_name}.fastboot
-        ln -sf ${base_name}.fastboot ${DEPLOYDIR}/${symlink_name}.fastboot
-    done
+    cp ${B}/boot.img ${DEPLOYDIR}/boot.img
 
     install -d ${D}/${KERNEL_IMAGEDEST}
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
