@@ -3,9 +3,8 @@ HOMEPAGE = "https://github.com/sailfishos/nemo-qml-plugin-calendar"
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://src/plugin.cpp;beginline=1;endline=31;md5=4f66b392565d1dd726d4c892676d96fd"
 
-# TODO: use sailfishos/nemo-qml-plugin-calendar when https://github.com/sailfishos/nemo-qml-plugin-calendar/pull/73 is merged
-SRC_URI = "git://github.com/PureTryOut/nemo-qml-plugin-calendar.git;protocol=https;branch=feat/qt6"
-SRCREV = "ef4f8d0e7a3e801b26991c3f034148b5bf8de48a"
+SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-calendar.git;protocol=https;branch=master"
+SRCREV = "8f790f1026dee5065cdc4112a273272f28d0f4f5"
 PV = "0.7.8"
 S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
