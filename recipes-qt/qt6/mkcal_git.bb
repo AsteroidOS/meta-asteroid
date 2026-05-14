@@ -3,9 +3,8 @@ HOMEPAGE = "https://github.com/sailfishos/mkcal"
 LICENSE = "LGPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.LGPL2;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
-# TODO: use sailfishos/mkcal when https://github.com/sailfishos/mkcal/pull/75 is merged
-SRC_URI = "git://github.com/gber/mkcal.git;protocol=https;branch=qt6"
-SRCREV = "eee1a9460a27c8d10cd6f1871bb3c61acb6b6a2f"
+SRC_URI = "git://github.com/sailfishos/mkcal.git;protocol=https;branch=master"
+SRCREV = "1b5e8287081453122fcd3abea705c41bd781bb31"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
