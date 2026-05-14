@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://src/qml/MainScreen.qml;beginline=1;endline=29;md5=dc9
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;branch=master \
     file://asteroid-launcher.service \
-    file://asteroid-launcher-precondition"
+    file://asteroid-launcher-precondition \
+    file://qt6-hidpi.conf"
 SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
 SRCREV = "${AUTOREV}"
 PR = "r1"
@@ -15,7 +16,7 @@ inherit qt6-cmake pkgconfig
 
 DEPENDS += "qml-asteroid lipstick qttools-native timed"
 RDEPENDS:${PN} += "qtdeclarative-qmlplugins qml-asteroid mce-qt5 qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-configuration asteroid-wallpapers asteroid-launcher-configs"
-FILES:${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/ /usr/bin/"
+FILES:${PN} += "/usr/share/asteroid-launcher/ /usr/lib/systemd/user/ /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/ /usr/bin/ ${localstatedir}/lib/environment/compositor/"
 
 do_install:append() {
     lrelease -idbased ${S}/i18n/asteroid-launcher.*.ts
@@ -30,6 +31,9 @@ do_install:append() {
     if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service ]; then
         ln -s /usr/lib/systemd/user/asteroid-launcher.service ${D}/usr/lib/systemd/user/default.target.wants/asteroid-launcher.service
     fi
+
+    install -d ${D}${localstatedir}/lib/environment/compositor
+    install -m 0644 ${UNPACKDIR}/qt6-hidpi.conf ${D}${localstatedir}/lib/environment/compositor/
 }
 
 do_install:apppend:hybris-machine() {
