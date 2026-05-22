@@ -4,7 +4,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 SRC_URI = "git://github.com/AsteroidOS/lcd-tools.git;branch=main;protocol=https"
-SRCREV = "5c0010418607f489c5bab4e4657e3ca114f549fa"
+SRCREV = "4d9e30e3fdbc021ee5df1ef792de94cce370c0ce"
 PR = "r0"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
