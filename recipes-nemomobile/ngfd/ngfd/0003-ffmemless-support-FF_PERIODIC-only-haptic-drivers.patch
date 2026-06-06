@@ -1,0 +1,132 @@
+From: Florent Revest <revestflo@gmail.com>
+Subject: [PATCH] ffmemless: support FF_PERIODIC-only haptic drivers
+
+Upstream-Status: Pending
+
+Modern Linux FF drivers like the Cirrus cs40l26 (used on smartwatches
+such as the Pixel Watch 2) advertise only FF_PERIODIC + FF_SINE +
+FF_GAIN -- no FF_CONSTANT, no FF_RUMBLE. ffmemless was written before
+these chips existed; it filters them out at probe, has no
+FF_PERIODIC default-fallback effect, and never fires single-shot
+events for them in the first place. This patch makes it work:
+
+1. evdev selection: accept any of FF_RUMBLE / FF_CONSTANT /
+   FF_PERIODIC as a sufficient indication of a usable force-feedback
+   device. EVIOCSFF still fails per-effect at upload time for effects
+   the device doesn't support, so this is no less safe than before.
+
+2. Default fall-back effect: add a third branch that uses FF_PERIODIC
+   with an FF_SINE waveform when neither FF_CONSTANT nor FF_RUMBLE is
+   available. Combined with (1) this lets ffmemless init successfully
+   on cs40l26 and similar.
+
+3. Single-shot events: the original code only fires the FF effect when
+   sound.repeat=true or haptic.duration>0 (because then sink_prepare
+   bumps copy->repeat to INT32_MAX). For non-repeating events with no
+   haptic.duration the default copy->repeat=0 makes ffm_play() hit the
+   STOP branch and never start. On sound-less haptic-only setups
+   (smartwatches with no audio) this means press / notif_normal /
+   notif_strong silently no-op. Fix: treat such events as single-shot
+   and fire them exactly once.
+
+4. Per-event duration: when haptic.duration is set, also drive the
+   kernel-side ff_effect.replay.length from it. Drivers like cs40l26
+   BUZZGEN play for exactly replay.length ms and then stop -- writing
+   EV_FF with value=INT32_MAX does NOT extend the buzz; only changing
+   replay.length does. This lets events.d define per-event durations
+   that the user can actually feel.
+
+5. events.d type coercion: parse haptic.duration via a uint-then-string
+   fallback. ngfd's events.d loader stores every key as a string unless
+   the key is pre-registered in ngfd.ini's [keytypes] as INTEGER, so
+   n_proplist_get_uint() silently returns 0 for events.d values. Fall
+   back to n_proplist_get_string() + strtoul.
+
+Signed-off-by: Florent Revest <revestflo@gmail.com>
+---
+ src/plugins/ffmemless/ffmemless.c |  6 ++--
+ src/plugins/ffmemless/plugin.c    | 36 +++++++++++++++++++++++--
+ 2 files changed, 38 insertions(+), 4 deletions(-)
+
+diff --git a/src/plugins/ffmemless/ffmemless.c b/src/plugins/ffmemless/ffmemless.c
+--- a/src/plugins/ffmemless/ffmemless.c
++++ b/src/plugins/ffmemless/ffmemless.c
+@@ -109,9 +109,9 @@ int ffmemless_evdev_file_search(unsigned long features[4])
+ 			i++;
+ 			continue;
+ 		}
+-		result = test_bit(FF_RUMBLE, features);
+-		result = result || test_bit(FF_CONSTANT, features);
+-		result = result && test_bit(FF_PERIODIC, features);
++		result = test_bit(FF_RUMBLE, features) ||
++			 test_bit(FF_CONSTANT, features) ||
++			 test_bit(FF_PERIODIC, features);
+ 		if (result)
+ 			return fp;
+
+diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
+--- a/src/plugins/ffmemless/plugin.c
++++ b/src/plugins/ffmemless/plugin.c
+@@ -269,12 +269,25 @@ static int ffm_setup_default_effect(GHashTable *effects, int dev_fd)
+ 		ff.type = FF_CONSTANT;
+ 		ff.replay.length = NGF_DEFAULT_DURATION;
+ 		ff.u.constant.level = NGF_DEFAULT_LEVEL;
+-	} else {
++	} else if (ffmemless_has_feature(FF_RUMBLE, ffm.features)) {
+ 		N_DEBUG (LOG_CAT "Using rumble default effect");
+ 		ff.type = FF_RUMBLE;
+ 		ff.replay.length = NGF_DEFAULT_DURATION;
+ 		ff.u.rumble.strong_magnitude = NGF_DEFAULT_RMAGNITUDE;
+ 		ff.u.rumble.weak_magnitude = NGF_DEFAULT_RMAGNITUDE;
++	} else {
++		N_DEBUG (LOG_CAT "Using periodic sine default effect");
++		ff.type = FF_PERIODIC;
++		ff.replay.length = NGF_DEFAULT_DURATION;
++		ff.u.periodic.waveform = FF_SINE;
++		ff.u.periodic.period = 50;
++		ff.u.periodic.magnitude = NGF_DEFAULT_RMAGNITUDE;
++		ff.u.periodic.offset = 0;
++		ff.u.periodic.phase = 0;
++		ff.u.periodic.envelope.attack_length = 0;
++		ff.u.periodic.envelope.attack_level = 0;
++		ff.u.periodic.envelope.fade_length = 0;
++		ff.u.periodic.envelope.fade_level = 0;
+ 	}
+ 	if (ffm.cache_effects) {
+ 		memcpy(&data->cached_effect, &ff, sizeof(ff));
+@@ -719,6 +732,15 @@
+
+ 	repeat = n_proplist_get_bool (props, FFM_SOUND_REPEAT_KEY);
+ 	playback_time = n_proplist_get_uint (props, FFM_HAPTIC_DURATION_KEY);
++	if (!playback_time) {
++		/* Events.d stores unregistered keys as strings, so
++		 * n_proplist_get_uint() returns 0 for haptic.duration
++		 * read from events.d -- fall back to string parsing. */
++		const char *s = n_proplist_get_string (props,
++				FFM_HAPTIC_DURATION_KEY);
++		if (s)
++			playback_time = (guint) strtoul (s, NULL, 10);
++	}
+ 	if (repeat || playback_time) {
+ 		/*
+ 		 * If duration was not defined, it's zero and we don't report playback
+@@ -729,8 +751,20 @@
+ 		if (!copy->playback_time && playback_time) {
+ 			copy->playback_time = playback_time;
+ 		};
++	} else {
++		/* No sound.repeat AND no haptic.duration: single-shot
++		 * haptic. Fire it once -- without this branch copy->repeat
++		 * stays 0 and ffm_play() takes the STOP path. */
++		copy->repeat = 1;
+ 	}
+
++	/* Drive the kernel-side effect length too, not just the cleanup
++	 * timer. cs40l26 (and other timed_output / BUZZGEN style drivers)
++	 * play replay.length ms and stop; looping the EV_FF write does
++	 * not extend a buzz. */
++	if (playback_time && playback_time <= G_MAXUINT16)
++		copy->cached_effect.replay.length = playback_time;
++
+ 	N_DEBUG (LOG_CAT "prep effect %s, repeat %d times, duration of %d ms",
+ 			key, copy->repeat, copy->playback_time);
