@@ -4,7 +4,7 @@ LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://src/qmlbooster.cpp;beginline=1;endline=18;md5=7e2bc276f949feb1d8229e665a6a2559"
 
 SRC_URI = "git://github.com/AsteroidOS/mapplauncherd-booster-asteroid.git;protocol=https;branch=main"
-SRCREV = "278f6f9e414e634c29d334a7518177d7788e0843"
+SRCREV = "40f3ce8e479678b4fdb275982dc53bd0835ea884"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
