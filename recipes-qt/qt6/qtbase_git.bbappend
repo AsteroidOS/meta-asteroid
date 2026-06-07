@@ -5,7 +5,7 @@ SRC_URI += " file://0002-qplatforminputcontextfactory-Use-qtvirtualkeyboard-b.pa
 PACKAGECONFIG:append = " gles2 sql-sqlite glib fontconfig "
 
 # Remove dependencies to mesa on hybris-based machines
-PACKAGECONFIG:remove:hybris-machine = " tests widgets gl gbm kms "
+PACKAGECONFIG:remove:hybris-machine = " gl gbm kms "
 
 QT_CONFIG_FLAGS += "--no-feature-getentropy"
 
