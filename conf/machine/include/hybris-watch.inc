@@ -3,6 +3,8 @@ MACHINEOVERRIDES =. "hybris-machine:"
 
 SERIAL_CONSOLE = "115200 ttyHSL0"
 
+QTWEBENGINE_SUPPORTED:forcevariable = "0"
+
 PREFERRED_PROVIDER_virtual/mesa = "libhybris"
 PREFERRED_PROVIDER_virtual/egl = "libhybris"
 PREFERRED_PROVIDER_virtual/libgles1 = "libhybris"
