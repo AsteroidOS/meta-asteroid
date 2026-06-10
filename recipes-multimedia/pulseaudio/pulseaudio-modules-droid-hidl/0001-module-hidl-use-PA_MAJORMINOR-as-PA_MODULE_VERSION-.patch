@@ -1,0 +1,91 @@
+From aa792382bc23ad112cdc426c8ab9d926f6a4fc8b Mon Sep 17 00:00:00 2001
+From: Martin Jansa <Martin.Jansa@gmail.com>
+Date: Mon, 20 Jun 2022 15:44:04 +0200
+Subject: [PATCH] module-droid-*: use PA_MAJORMINOR as PA_MODULE_VERSION
+ instead of PACKAGE_VERSION
+
+* latest version is currently 14.2.97, but we need to build this for
+  pulseaudio 15.0 in kirkstone and 16.0 in langdale
+
+  use PA_MAJORMINOR which matches the version of libpulse we're building
+  against:
+
+  m4_define(pa_major, `pkg-config --modversion libpulse | cut -d. -f1 | cut -d- -f1`)
+  m4_define(pa_minor, `pkg-config --modversion libpulse | cut -d. -f2 | cut -d- -f1`)
+  ...
+  AC_SUBST(PA_MAJOR, pa_major)
+  AC_SUBST(PA_MAJORMINOR, pa_major.pa_minor)
+
+  instead of pa_module_version which is from ./git-version:
+  pulseaudio-modules-droid/16.0-r0/git $ ./git-version-gen .tarball-version
+  14.2.88-52-g80015ed
+
+* relevant parts from configure.ac:
+  AC_INIT([pulseaudio-modules-droid], [m4_esyscmd(./git-version-gen .tarball-version)], [mer-general@lists.merproject.org])
+  m4_define(pa_module_version, `echo $VERSION | cut -d. -f3 | cut -d- -f1`)
+
+  so for this revision:
+  PACKAGE_VERSION: 14.2.88-52-g80015ed
+  PA_MODULE_VERSION: 88 (used only by common/libdroid-util.pc.in:Version: @PA_MODULE_VERSION@)
+
+Signed-off-by: Martin Jansa <Martin.Jansa@gmail.com>
+Upstream-Status: Pending
+---
+ configure.ac                   | 4 ++--
+ src/hidl/Makefile.am           | 2 +-
+ src/hidl/module-droid-hidl.c   | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/hidl/Makefile.am b/src/hidl/Makefile.am
+index fa117f5..f819852 100644
+--- a/src/hidl/Makefile.am
++++ b/src/hidl/Makefile.am
+@@ -6,7 +6,7 @@ AM_CFLAGS = \
+ 	$(PULSEAUDIO_CFLAGS) \
+ 	$(DBUS_CFLAGS) \
+ 	$(DROIDHEADERS_CFLAGS) \
+-	-DPULSEAUDIO_VERSION=@PA_MAJOR@ \
++	-DPULSEAUDIO_VERSION=\"@PA_MAJORMINOR@\" \
+ 	-I$(top_srcdir)/src/hidl
+ 
+ 
+diff --git a/src/hidl/module-droid-hidl.c b/src/hidl/module-droid-hidl.c
+index 68baa6d..80a699c 100644
+--- a/src/hidl/module-droid-hidl.c
++++ b/src/hidl/module-droid-hidl.c
+@@ -58,7 +58,7 @@
+ 
+ PA_MODULE_AUTHOR("Juho Hämäläinen");
+ PA_MODULE_DESCRIPTION("Droid AudioSystem passthrough");
+-PA_MODULE_VERSION(PACKAGE_VERSION);
++PA_MODULE_VERSION(PULSEAUDIO_VERSION);
+ PA_MODULE_USAGE(
+         "module_id=<unused> "
+         "helper=<spawn helper binary, default true>"
+diff --git a/configure.ac b/configure.ac
+index db8981f..b02d2c1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -15,6 +15,10 @@ if type -p stow > /dev/null && test -d /usr/local/stow ; then
+    ac_default_prefix="/usr/local/stow/${PACKAGE_NAME}-${PACKAGE_VERSION}"
+ fi
+ 
++m4_define(pa_major, `pkg-config --modversion libpulse | cut -d. -f1 | cut -d- -f1`)
++m4_define(pa_minor, `pkg-config --modversion libpulse | cut -d. -f2 | cut -d- -f1`)
++AC_SUBST(PA_MAJORMINOR, pa_major.pa_minor)
++
+ AC_PROG_CC
+ AC_PROG_CC_C99
+ AM_PROG_CC_C_O
+@@ -179,8 +183,8 @@ AC_SUBST(PASSTHROUGH_COMMON_LIBS)
+ 
+ AC_ARG_WITH(
+         [module-dir],
+-        AS_HELP_STRING([--with-module-dir],[Directory where to install the module to (mandatory).]),
+-        [modlibexecdir=$withval], [modlibexecdir=""]
++        AS_HELP_STRING([--with-module-dir],[Directory where to install the modules to (defaults to ${libdir}/pulse-${PA_MAJORMINOR}/modules]),
++        [modlibexecdir=$withval], [modlibexecdir="${libdir}/pulse-${PA_MAJORMINOR}/modules"]
+ )
+ 
+ AS_IF([test "x$modlibexecdir" = "x"],
+
