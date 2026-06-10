@@ -1,0 +1,136 @@
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 06 Jun 2026 00:00:00 +0000
+Subject: [PATCH] Make 5 audio enums optional for Halium android-headers
+
+Upstream-Status: Pending
+
+The mer-hybris/pulseaudio-modules-droid master branch targets A11.x and
+assumes that AOSP `system/audio.h` unconditionally defines:
+
+  - AUDIO_DEVICE_IN_HDMI_ARC          (added A10)
+  - AUDIO_DEVICE_IN_ECHO_REFERENCE    (added A10)
+  - AUDIO_MODE_CALL_SCREEN            (added A10)
+  - AUDIO_SOURCE_VOICE_PERFORMANCE    (added A10)
+  - AUDIO_INPUT_FLAG_DIRECT           (added A11)
+
+Halium's android-headers halium-11.0 branch is named after A11 but its
+`ANDROID_API` is actually 28 (= A9 / Pie) -- the headers are frozen
+before any of these symbols landed. Build fails with:
+
+  droid-util-audio.h:123: error: 'AUDIO_DEVICE_IN_HDMI_ARC' undeclared
+  droid-util-audio.h:124: error: 'AUDIO_DEVICE_IN_ECHO_REFERENCE'
+  droid-util-audio.h:177: error: 'AUDIO_MODE_CALL_SCREEN'
+  droid-util-audio.h:307: error: 'AUDIO_SOURCE_VOICE_PERFORMANCE'
+  droid-util-audio.h:356: error: 'AUDIO_INPUT_FLAG_DIRECT'
+
+The repo already has a mechanism for "may or may not be defined" enums:
+meson `cc.has_header_symbol` probes a list in `check_enums`, and for
+each it emits `STRING_ENTRY_IF_<NAME>` / `FANCY_ENTRY_IF_<NAME>(n)`
+macros that expand to either the table entry or nothing. Extend that
+list to cover the 5 enums above and convert their unconditional use in
+droid-util-audio.h to the same conditional pattern. No behavioural
+change on hosts whose headers do define them; cleanly skipped on hosts
+(like Halium 11.0) whose headers don't.
+---
+ meson.build                  | 12 +++++++++++-
+ src/common/droid-util-audio.h | 28 +++++++++++++++-------------
+ 2 files changed, 26 insertions(+), 14 deletions(-)
+
+diff --git a/meson.build b/meson.build
+--- a/meson.build
++++ b/meson.build
+@@ -120,7 +120,9 @@ else
+ endif
+
+ check_enums = [
+-  # Input devices
++  # Input devices.
++  'AUDIO_DEVICE_IN_HDMI_ARC',
++  'AUDIO_DEVICE_IN_ECHO_REFERENCE',
+   'AUDIO_DEVICE_IN_FM_RX',
+   'AUDIO_DEVICE_IN_FM_RX_A2DP',
+   # Audio sources
+@@ -128,12 +130,17 @@ check_enums = [
+   'AUDIO_SOURCE_FM_TUNER',
+   'AUDIO_SOURCE_FM_RX',
+   'AUDIO_SOURCE_FM_RX_A2DP',
++  'AUDIO_SOURCE_VOICE_PERFORMANCE',
++  # Audio modes
++  'AUDIO_MODE_CALL_SCREEN',
+   # Output flags
+   'AUDIO_OUTPUT_FLAG_COMPRESS_PASSTHROUGH',
+   'AUDIO_OUTPUT_FLAG_GAPLESS_OFFLOAD',
+   'AUDIO_OUTPUT_FLAG_SPATIALIZER',
+   'AUDIO_OUTPUT_FLAG_ULTRASOUND',
+   'AUDIO_OUTPUT_FLAG_BIT_PERFECT',
++  # Input flags
++  'AUDIO_INPUT_FLAG_DIRECT',
+   # Channels
+   'AUDIO_CHANNEL_IN_VOICE_CALL_MONO',
+   'AUDIO_CHANNEL_IN_VOICE_UPLINK_MONO',
+diff --git a/src/common/droid-util-audio.h b/src/common/droid-util-audio.h
+--- a/src/common/droid-util-audio.h
++++ b/src/common/droid-util-audio.h
+@@ -120,8 +120,12 @@ uint32_t source_for_input_device[][2] = {
+     { AUDIO_DEVICE_IN_PROXY,                        AUDIO_SOURCE_MIC                        },
+     { AUDIO_DEVICE_IN_USB_HEADSET,                  AUDIO_SOURCE_MIC                        },
+     { AUDIO_DEVICE_IN_BLUETOOTH_BLE,                AUDIO_SOURCE_MIC                        },
++#if defined(HAVE_ENUM_AUDIO_DEVICE_IN_HDMI_ARC)
+     { AUDIO_DEVICE_IN_HDMI_ARC,                     AUDIO_SOURCE_MIC                        },
++#endif
++#if defined(HAVE_ENUM_AUDIO_DEVICE_IN_ECHO_REFERENCE)
+     { AUDIO_DEVICE_IN_ECHO_REFERENCE,               AUDIO_SOURCE_MIC                        },
++#endif
+
+ #if defined(HAVE_ENUM_AUDIO_DEVICE_IN_FM_RX) && defined(HAVE_ENUM_AUDIO_SOURCE_FM_RX)
+     { AUDIO_DEVICE_IN_FM_RX,                        AUDIO_SOURCE_FM_RX                      },
+@@ -174,7 +178,9 @@ struct string_conversion string_conversion_table_audio_mode_fancy[] = {
+     { AUDIO_MODE_RINGTONE,                              "ringtone"                          },
+     { AUDIO_MODE_IN_CALL,                               "in call"                           },
+     { AUDIO_MODE_IN_COMMUNICATION,                      "in communication"                  },
++#if defined(HAVE_ENUM_AUDIO_MODE_CALL_SCREEN)
+     { AUDIO_MODE_CALL_SCREEN,                           "call screen"                       },
++#endif
+
+     { 0, NULL }
+ };
+@@ -244,8 +250,8 @@ struct string_conversion string_conversion_table_input_device[] = {
+     STRING_ENTRY( AUDIO_DEVICE_IN_PROXY                             ),
+     STRING_ENTRY( AUDIO_DEVICE_IN_USB_HEADSET                       ),
+     STRING_ENTRY( AUDIO_DEVICE_IN_BLUETOOTH_BLE                     ),
+-    STRING_ENTRY( AUDIO_DEVICE_IN_HDMI_ARC                          ),
+-    STRING_ENTRY( AUDIO_DEVICE_IN_ECHO_REFERENCE                    ),
++    STRING_ENTRY_IF_AUDIO_DEVICE_IN_HDMI_ARC
++    STRING_ENTRY_IF_AUDIO_DEVICE_IN_ECHO_REFERENCE
+     STRING_ENTRY( AUDIO_DEVICE_IN_DEFAULT                           ),
+
+     /* Devices which may or may not be defined for all devices. */
+@@ -281,8 +287,8 @@ struct string_conversion string_conversion_table_input_device_fancy[] = {
+     { AUDIO_DEVICE_IN_PROXY,                            "input-proxy"                       },
+     { AUDIO_DEVICE_IN_USB_HEADSET,                      "input-usb_headset"                 },
+     { AUDIO_DEVICE_IN_BLUETOOTH_BLE,                    "input-bluetooth_ble"               },
+-    { AUDIO_DEVICE_IN_HDMI_ARC,                         "input-hdmi_arc"                    },
+-    { AUDIO_DEVICE_IN_ECHO_REFERENCE,                   "input-echo_reference"              },
++    FANCY_ENTRY_IF_AUDIO_DEVICE_IN_HDMI_ARC           ( "input-hdmi_arc"                    )
++    FANCY_ENTRY_IF_AUDIO_DEVICE_IN_ECHO_REFERENCE     ( "input-echo_reference"              )
+     { AUDIO_DEVICE_IN_DEFAULT,                          "input-default"                     },
+
+     /* Devices which may or may not be defined for all devices. */
+@@ -304,7 +310,7 @@ struct string_conversion string_conversion_table_audio_source_fancy[] = {
+     { AUDIO_SOURCE_VOICE_COMMUNICATION,                 "voice communication"               },
+     { AUDIO_SOURCE_REMOTE_SUBMIX,                       "remote submix"                     },
+     { AUDIO_SOURCE_UNPROCESSED,                         "unprocessed"                       },
+-    { AUDIO_SOURCE_VOICE_PERFORMANCE,                   "voice performance"                 },
++    FANCY_ENTRY_IF_AUDIO_SOURCE_VOICE_PERFORMANCE     ( "voice performance"                 )
+
+     /* Audio sources which may or may not be defined for all devices. */
+     FANCY_ENTRY_IF_AUDIO_SOURCE_ECHO_REFERENCE        ( "echo reference"                    )
+@@ -353,7 +359,7 @@ struct string_conversion string_conversion_table_input_flag[] = {
+     STRING_ENTRY( AUDIO_INPUT_FLAG_MMAP_NOIRQ                       ),
+     STRING_ENTRY( AUDIO_INPUT_FLAG_VOIP_TX                          ),
+     STRING_ENTRY( AUDIO_INPUT_FLAG_HW_AV_SYNC                       ),
+-    STRING_ENTRY( AUDIO_INPUT_FLAG_DIRECT                           ),
++    STRING_ENTRY_IF_AUDIO_INPUT_FLAG_DIRECT
+
+     { 0, NULL }
+ };
