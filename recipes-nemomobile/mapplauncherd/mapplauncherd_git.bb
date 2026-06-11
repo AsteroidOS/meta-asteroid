@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=243b725d71bb5df4a1e5920b344b86ad"
 
 SRC_URI = "git://github.com/sailfishos/mapplauncherd.git;protocol=https;branch=master \
            file://0001-Fix-dynamic-opening-issues.patch \
+           file://0002-invoker-skip-the-sailjaild-D-Bus-query-when-sailjail.patch \
            file://booster-generic.service \
            "
 SRCREV = "7216a9b5801ffe58d1021cc71b9e90ff7d67268f"

@@ -1,0 +1,40 @@
+From 934565b7817b85a341b88d23df7c90a28c62dd0a Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Wed, 10 Jun 2026 23:20:09 +0000
+Subject: [PATCH] invoker: skip the sailjaild D-Bus query when sailjail is not
+ installed
+
+Every launch performs a synchronous D-Bus round-trip (bus connect +
+method call + ServiceUnknown error reply) to org.sailfishos.sailjaild1
+on systems that do not ship the sandboxing daemon. Sandbox enforcement
+prepends /usr/bin/sailjail to the command anyway, so when that binary
+does not exist the query can never lead anywhere: gate it on
+access(SAILJAIL_PATH, X_OK) and drop the dead bus traffic from the
+launch critical path.
+
+Upstream-Status: Pending
+---
+ src/invoker/invoker.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/invoker/invoker.c b/src/invoker/invoker.c
+index 2bc1143..9642a7d 100644
+--- a/src/invoker/invoker.c
++++ b/src/invoker/invoker.c
+@@ -1136,6 +1136,13 @@ int main(int argc, char *argv[])
+         free(path);
+     }
+ 
++    // Sandboxing needs the sailjail binary (it gets prepended to the
++    // command below). On systems that do not ship it, skip the sailjaild
++    // D-Bus query: it is a synchronous bus round-trip (connect + method
++    // call + error reply) on the critical path of every single launch.
++    if (args.sandboxing_id && access(SAILJAIL_PATH, X_OK) == -1)
++        args.sandboxing_id = NULL;
++
+     // Application specific boosters are running in sandbox and can
+     // thus launch only sandboxed processes, otherwise
+     // If arguments don't define sailjail and sailjaild says the app must be sandboxed,
+-- 
+2.47.3
+
