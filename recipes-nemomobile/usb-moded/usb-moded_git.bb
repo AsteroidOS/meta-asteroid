@@ -5,13 +5,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 SRC_URI = "gitsm://github.com/sailfishos/usb-moded.git;protocol=https;branch=master \
            file://0001-Correct-rndis-configfs-function-name.patch \
-           file://0002-usb-modded-worker-Use-buteo-mtp-wrapper.patch \
            file://0003-usb-moded-Return-success-when-already-mounted.patch \
            file://0004-usb-moded-Move-ifconfig-to-ip.patch \
            file://usb-moded.service \
            file://com.meego.usb_moded.service \
            file://udhcp-daemon.service \
-           file://buteo-session.service \
            file://usb-moded \
            file://init_ffs \
            file://init_gfs"
@@ -25,7 +23,6 @@ inherit autotools pkgconfig
 B = "${WORKDIR}/git"
 EXTRA_OECONF="--enable-systemd --enable-debug --enable-app-sync --enable-connman"
 DEPENDS += "dbus dbus-glib glib-2.0 udev kmod systemd libdsme"
-RDEPENDS:${PN} += "buteo-mtp"
 
 do_configure:prepend() {
     sed -i "s@systemd-daemon@systemd@" configure.ac
@@ -58,7 +55,6 @@ do_install:append() {
     install -m 644 -D ${UNPACKDIR}/usb-moded.service ${D}${systemd_system_unitdir}/usb-moded.service
     ln -s ../usb-moded.service ${D}${systemd_system_unitdir}/multi-user.target.wants/usb-moded.service
     install -m 644 -D ${UNPACKDIR}/udhcp-daemon.service ${D}${systemd_system_unitdir}/udhcp-daemon.service
-    install -m 644 -D ${UNPACKDIR}/buteo-session.service ${D}${systemd_system_unitdir}/buteo-session.service
 
     install -d ${D}/usr/share/dbus-1/services/
     install -m 644 -D ${UNPACKDIR}/com.meego.usb_moded.service ${D}/usr/share/dbus-1/services/com.meego.usb_moded.service
