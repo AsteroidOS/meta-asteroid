@@ -13,7 +13,7 @@ S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libresourceqt libngf-qt mce usb-moded-qt6 systemd wayland nemo-keepalive qttools-native mce-qt5"
+DEPENDS += "timed qtbase qtsensors qtdeclarative qtwayland mlite dbus dbus-glib libngf-qt mce usb-moded-qt6 systemd wayland nemo-keepalive qttools-native mce-qt5"
 RDEPENDS:${PN} += "${PN}-locale"
 
 inherit qt6-qmake pkgconfig asteroid-users
