@@ -10,5 +10,5 @@ require asteroid-app.inc
 
 inherit pkgconfig
 
-DEPENDS += "nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus polkit-ceres-rule-reboot qtmultimedia"
-RDEPENDS:${PN} += "nemo-qml-plugin-systemsettings nemo-qml-plugin-dbus qtmultimedia-qmlplugins libconnman-qt polkit-ceres-rule-reboot"
+DEPENDS += "qml-asteroid mce nemo-qml-plugin-dbus polkit-ceres-rule-reboot qtmultimedia"
+RDEPENDS:${PN} += "qml-asteroid nemo-qml-plugin-dbus qtmultimedia-qmlplugins libconnman-qt polkit-ceres-rule-reboot"
