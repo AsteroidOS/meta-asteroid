@@ -28,7 +28,7 @@ do_install:append() {
     install -m 0644 ${UNPACKDIR}/location.conf ${D}/var/lib/location/location.conf
 }
 
-DEPENDS += "qtdeclarative profiled usb-moded-qt6 mlite mce timed shadow nemo-qml-plugin-dbus nemo-qml-plugin-models libsailfishkeyprovider libconnman-qt qttools-native libqofono qt5compat"
+DEPENDS += "qtdeclarative profiled usb-moded-qt6 mlite mce timed shadow nemo-qml-plugin-dbus libsailfishkeyprovider libconnman-qt qttools-native libqofono qt5compat"
 RDEPENDS:${PN} += "profiled"
 
 FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/systemsettings/.debug /opt/ /usr/share/nemo-qml-plugin-systemsettings-tests /usr/lib/nemo-qml-plugin-systemsettings-tests"
