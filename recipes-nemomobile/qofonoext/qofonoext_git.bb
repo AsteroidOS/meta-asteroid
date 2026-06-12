@@ -9,7 +9,9 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "ofono qtbase libqofono"
+DEPENDS += "ofono qtbase qtdeclarative qtdeclarative-native libqofono extra-cmake-modules"
 inherit qt6-cmake pkgconfig
 
-FILES:${PN} += "/usr/lib/qml/org/nemomobile/ofono/"
+EXTRA_OECMAKE += "-DQT_MAJOR_VERSION=6"
+
+FILES:${PN} += "${libdir}/qt6/qml/org/nemomobile/ofono/"
