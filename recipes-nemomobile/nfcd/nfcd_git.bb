@@ -13,9 +13,9 @@ PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = "KEEP_SYMBOLS=1 INSTALL_SYSTEMD_DIR=${D}${systemd_unitdir}/system/"
+EXTRA_OEMAKE = "KEEP_SYMBOLS=1 HAVE_DBUSACCESS=0 INSTALL_SYSTEMD_DIR=${D}${systemd_unitdir}/system/"
 
-DEPENDS += "glib-2.0 libglibutil glib-2.0-native systemd libgbinder libdbusaccess libnfcdef file"
+DEPENDS += "glib-2.0 libglibutil glib-2.0-native systemd libgbinder libnfcdef file"
 RDEPENDS:${PN} += "nfcd-mce-plugin"
 
 SYSTEMD_PACKAGES = "${PN}"
