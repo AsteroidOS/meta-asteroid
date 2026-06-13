@@ -26,10 +26,6 @@ do_configure:prepend() {
 
 do_install:append() {
     rm ${D}/usr/lib/systemd/user/booster-qt6-signal.service
-    install -d ${D}/usr/lib/systemd/user/default.target.wants/
-    if [ ! -f ${D}/usr/lib/systemd/user/default.target.wants/booster-qt6.service ]; then
-        ln -s /usr/lib/systemd/user/booster-qt6.service ${D}/usr/lib/systemd/user/default.target.wants/booster-qt6.service
-    fi
 }
 
 FILES:${PN} += "/usr/lib/systemd/user /usr/libexec/mapplauncherd /usr/lib/systemd/user/default.target.wants/"
