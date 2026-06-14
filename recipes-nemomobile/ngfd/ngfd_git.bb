@@ -10,6 +10,7 @@ SRC_URI = "gitsm://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
            file://50-ffmemless.ini \
            file://0001-ngf-Use-relative-path.patch \
            file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch \
+           file://0003-ffmemless-support-FF_PERIODIC-only-haptic-drivers.patch \
            "
 SRCREV = "3372625b3a221fdbdcc3dbb225e93df34ac307c0"
 PR = "r1"
