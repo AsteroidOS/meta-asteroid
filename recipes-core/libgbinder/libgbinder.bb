@@ -2,12 +2,12 @@
 
 DESCRIPTION = "Library used to interact with Android's binder module."
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=24f23d12bbc59c7e5ab483c52a172555"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=6b4103b77e6fa766a75a1c2c3ba715c8"
 
 SRC_URI = "git://github.com/mer-hybris/libgbinder.git;branch=master;protocol=https \
            file://gbinder.conf \
 "
-SRCREV = "1.1.14"
+SRCREV = "1.1.47"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
