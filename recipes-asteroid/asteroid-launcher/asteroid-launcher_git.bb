@@ -30,7 +30,7 @@ DEPENDS += " \
     dbus-glib \
     libngf-qt \
     mce \
-    mce-qt5 \
+    mce-qt6 \
     usb-moded-qt6 \
     systemd \
     nemo-keepalive \
@@ -38,7 +38,7 @@ DEPENDS += " \
 "
 RDEPENDS:${PN}:append:hybris-machine = " qt6-qpa-hwcomposer-plugin "
 
-RDEPENDS:${PN} += "qtdeclarative-qmlplugins qml-asteroid mce-qt5 qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-configuration asteroid-wallpapers asteroid-launcher-configs"
+RDEPENDS:${PN} += "qtdeclarative-qmlplugins qml-asteroid mce-qt6 qtwayland-plugins nemo-qml-plugin-time nemo-qml-plugin-configuration asteroid-wallpapers asteroid-launcher-configs"
 FILES:${PN} += "/usr/share/asteroid-launcher/ /usr/share/lipstick/ /usr/lib/systemd/user/ /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/ /usr/bin/ ${localstatedir}/lib/environment/compositor/ /home/ceres/.local/share/system/privileged/Notifications"
 
 do_install:append() {
