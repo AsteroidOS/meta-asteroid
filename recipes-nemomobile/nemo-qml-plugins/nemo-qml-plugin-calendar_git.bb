@@ -9,7 +9,7 @@ PV = "0.7.8"
 S = "${WORKDIR}/git"
 inherit qt6-qmake pkgconfig
 
-DEPENDS += "qtbase qtdeclarative mkcal libaccounts-qt5 timed"
+DEPENDS += "qtbase qtdeclarative mkcal libaccounts-qt6 timed"
 
 FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/calendar/.debug"
 FILES:${PN} += "/usr/lib/qml/org/nemomobile/calendar/ /usr/share/dbus-1/services/org.nemomobile.calendardataservice.service"
