@@ -1,0 +1,66 @@
+From ff7b482c908584ef0204baf06e452579c4fbf377 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 13 Jun 2026 07:49:16 +0000
+Subject: [PATCH] dbus: Annotate signal arguments with QtTypeName.Out for Qt6
+
+Qt6's qdbusxml2cpp treats signal arguments as outgoing and looks for
+QtTypeName.Out<N> annotations on them, whereas the XML used In<N> (the
+Qt5 convention). Without the Out annotation it cannot resolve the custom
+container types and aborts do_compile with e.g. 'unknown type (idd)'.
+
+Rename the signal-argument annotations from In to Out in the Position,
+Satellite and Connectiond interfaces. Method input arguments (genuine
+'in' direction, e.g. Connectiond.sendUserReply) are left as In.
+
+Upstream-Status: Pending
+---
+ com.jollamobile.Connectiond.xml       | 2 +-
+ org.freedesktop.Geoclue.Position.xml  | 2 +-
+ org.freedesktop.Geoclue.Satellite.xml | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/com.jollamobile.Connectiond.xml b/com.jollamobile.Connectiond.xml
+index 82dd574..26f6ec6 100644
+--- a/com.jollamobile.Connectiond.xml
++++ b/com.jollamobile.Connectiond.xml
+@@ -20,7 +20,7 @@
+     <signal name="userInputRequested">
+       <arg name="service" type="s" direction="out"/>
+       <arg name="fields" type="a{sv}" direction="out"/>
+-      <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out1" value="QVariantMap"/>
+     </signal>
+     <signal name="configurationNeeded">
+       <arg name="type" type="s" direction="out"/>
+diff --git a/org.freedesktop.Geoclue.Position.xml b/org.freedesktop.Geoclue.Position.xml
+index b884f53..f1ff773 100644
+--- a/org.freedesktop.Geoclue.Position.xml
++++ b/org.freedesktop.Geoclue.Position.xml
+@@ -17,7 +17,7 @@
+       <arg type="d" name="longitude"/>
+       <arg type="d" name="altitude"/>
+       <arg type="(idd)" name="accuracy"/>
+-      <annotation name="org.qtproject.QtDBus.QtTypeName.In5" value="Accuracy"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out5" value="Accuracy"/>
+     </signal>
+   </interface>
+ </node>
+diff --git a/org.freedesktop.Geoclue.Satellite.xml b/org.freedesktop.Geoclue.Satellite.xml
+index ade5827..b025fd1 100644
+--- a/org.freedesktop.Geoclue.Satellite.xml
++++ b/org.freedesktop.Geoclue.Satellite.xml
+@@ -24,9 +24,9 @@
+       <arg type="i" name="satellite_used"/>
+       <arg type="i" name="satellite_visible"/>
+       <arg type="ai" name="used_prn"/>
+-      <annotation name="org.qtproject.QtDBus.QtTypeName.In3" value="QList&lt;int&gt;"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out3" value="QList&lt;int&gt;"/>
+       <arg type="a(iiii)" name="sat_info"/>
+-      <annotation name="org.qtproject.QtDBus.QtTypeName.In4" value="QList&lt;SatelliteInfo&gt;"/>
++      <annotation name="org.qtproject.QtDBus.QtTypeName.Out4" value="QList&lt;SatelliteInfo&gt;"/>
+     </signal>
+   </interface>
+ </node>
+-- 
+2.47.3
+

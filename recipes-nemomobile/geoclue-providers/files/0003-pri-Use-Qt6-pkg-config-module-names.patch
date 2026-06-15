@@ -1,0 +1,32 @@
+From b22c07c00c073fb36c69ac6ef0c476d0663c7245 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 13 Jun 2026 07:42:50 +0000
+Subject: [PATCH] pri: Use Qt6 pkg-config module names
+
+The libconnman-qt and libqofono dependencies were migrated to Qt6, which
+renamed their pkg-config modules: connman-qt5 -> connman-qt6,
+qofono-qt5 -> qofono-qt6 and qofonoext -> qofonoext-qt6. Update the .pri
+to match, otherwise qmake fails do_configure with
+'connman-qt5 development package not found'.
+
+Upstream-Status: Pending
+---
+ geoclue-providers-hybris.pri | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/geoclue-providers-hybris.pri b/geoclue-providers-hybris.pri
+index e4177e7..9bc5e5d 100644
+--- a/geoclue-providers-hybris.pri
++++ b/geoclue-providers-hybris.pri
+@@ -8,7 +8,7 @@ target.path = /usr/libexec
+ QT = core dbus network
+ 
+ CONFIG += link_pkgconfig
+-PKGCONFIG += connman-qt5 qofono-qt5 qofonoext
++PKGCONFIG += connman-qt6 qofono-qt6 qofonoext-qt6
+ 
+ LIBS += -lrt
+ 
+-- 
+2.47.3
+

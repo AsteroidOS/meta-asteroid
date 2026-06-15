@@ -5,13 +5,17 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/mer-hybris/geoclue-providers-hybris.git;protocol=https;branch=master \
     file://0001-pri-Fix-host-contamination-path-issue.patch \
+    file://0002-Drop-nemo-qml-plugin-systemsettings-dependency.patch \
+    file://0003-pri-Use-Qt6-pkg-config-module-names.patch \
+    file://0004-dbus-Annotate-signal-args-with-QtTypeName-Out-for-Qt6.patch \
+    file://0005-backends-Qualify-stream-manipulators-with-Qt-for-Qt6.patch \
     "
 SRCREV = "0.2.40"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "geoclue libhybris libconnman-qt libqofono qofonoext nemo-qml-plugin-systemsettings"
+DEPENDS += "geoclue libhybris libconnman-qt libqofono qofonoext"
 inherit qt6-qmake pkgconfig
 
 # Ensures that the root sources can be found.
