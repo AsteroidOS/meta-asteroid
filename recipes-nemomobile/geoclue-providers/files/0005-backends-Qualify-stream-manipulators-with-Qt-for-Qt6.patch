@@ -1,0 +1,76 @@
+From 8f491a23df552ac936569d02e196abc7f2bf30bc Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 15 Jun 2026 08:55:11 +0000
+Subject: [PATCH] backends: Qualify stream manipulators with Qt:: for Qt6
+
+Qt6 removed the global-namespace stream manipulators (hex, showbase,
+...) that Qt5 exposed via <QTextStream>; they now live in the Qt
+namespace. Qualify the qCDebug() uses in the HAL and Binder backends as
+Qt::showbase and Qt::hex, otherwise do_compile fails with 'hex was not
+declared in this scope'.
+
+Upstream-Status: Pending
+---
+ binder/binderlocationbackend_aidl.cpp | 2 +-
+ binder/binderlocationbackend_hidl.cpp | 2 +-
+ hal/hallocationbackend.cpp            | 6 +++---
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/binder/binderlocationbackend_aidl.cpp b/binder/binderlocationbackend_aidl.cpp
+index 77aa82a..ba6b694 100644
+--- a/binder/binderlocationbackend_aidl.cpp
++++ b/binder/binderlocationbackend_aidl.cpp
+@@ -282,7 +282,7 @@ GBinderLocalReply *geoclue_binder_gnss_callback(
+             {
+             guint32 capabilities;
+             if (gbinder_reader_read_uint32(&reader, &capabilities)) {
+-                qCDebug(lcGeoclueHybris) << "capabilities" << showbase << hex << capabilities;
++                qCDebug(lcGeoclueHybris) << "capabilities" << Qt::showbase << Qt::hex << capabilities;
+             }
+             }
+             break;
+diff --git a/binder/binderlocationbackend_hidl.cpp b/binder/binderlocationbackend_hidl.cpp
+index 967bf87..2517b3e 100644
+--- a/binder/binderlocationbackend_hidl.cpp
++++ b/binder/binderlocationbackend_hidl.cpp
+@@ -371,7 +371,7 @@ GBinderLocalReply *geoclue_binder_gnss_callback(
+             {
+             guint32 capabilities;
+             if (gbinder_reader_read_uint32(&reader, &capabilities)) {
+-                qCDebug(lcGeoclueHybris) << "capabilities" << showbase << hex << capabilities;
++                qCDebug(lcGeoclueHybris) << "capabilities" << Qt::showbase << Qt::hex << capabilities;
+             }
+             }
+             break;
+diff --git a/hal/hallocationbackend.cpp b/hal/hallocationbackend.cpp
+index 44ba610..a594c00 100644
+--- a/hal/hallocationbackend.cpp
++++ b/hal/hallocationbackend.cpp
+@@ -234,7 +234,7 @@ void nmeaCallback(GpsUtcTime timestamp, const char *nmeaData, int length)
+ 
+ void setCapabilitiesCallback(uint32_t capabilities)
+ {
+-    qCDebug(lcGeoclueHybris) << "capabilities" << showbase << hex << capabilities;
++    qCDebug(lcGeoclueHybris) << "capabilities" << Qt::showbase << Qt::hex << capabilities;
+ }
+ 
+ void acquireWakelockCallback()
+@@ -309,13 +309,13 @@ void gpsNiNotifyCallback(GpsNiNotification *notification)
+ void agpsRilRequestSetId(uint32_t flags)
+ {
+     Q_UNUSED(flags)
+-    qCDebug(lcGeoclueHybris) << "AGNSS RIL request set ID flags" << showbase << hex << flags;
++    qCDebug(lcGeoclueHybris) << "AGNSS RIL request set ID flags" << Qt::showbase << Qt::hex << flags;
+ }
+ 
+ void agpsRilRequestRefLoc(uint32_t flags)
+ {
+     Q_UNUSED(flags)
+-    qCDebug(lcGeoclueHybris) << "AGNSS RIL request ref location flags" << showbase << hex << flags;
++    qCDebug(lcGeoclueHybris) << "AGNSS RIL request ref location flags" << Qt::showbase << Qt::hex << flags;
+ }
+ 
+ void gnssXtraDownloadRequest()
+-- 
+2.47.3
+
