@@ -15,9 +15,9 @@ do_install() {
     install -d ${D}/var/lib/environment/compositor/
     install -m 0644 ${UNPACKDIR}/default.conf ${D}/var/lib/environment/compositor/
 
-    install -d ${D}/usr/share/qt5/keymaps/
-    ${STAGING_BINDIR_NATIVE}/kmap2qmap ${UNPACKDIR}/keys.kmap ${D}/usr/share/qt5/keymaps/keys.qmap
+    install -d ${D}/usr/share/qt6/keymaps/
+    ${STAGING_BINDIR_NATIVE}/kmap2qmap ${UNPACKDIR}/keys.kmap ${D}/usr/share/qt6/keymaps/keys.qmap
 }
 
-FILES:${PN} += "/usr/share/qt5/keymaps/keys.qmap"
+FILES:${PN} += "/usr/share/qt6/keymaps/keys.qmap"
 
