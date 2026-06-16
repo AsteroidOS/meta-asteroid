@@ -11,6 +11,7 @@ SRC_URI = "gitsm://github.com/sailfishos/ngfd.git;protocol=https;branch=master \
            file://0001-ngf-Use-relative-path.patch \
            file://0002-ffmemless-Reserve-enough-space-for-sprintf.patch \
            file://0003-ffmemless-support-FF_PERIODIC-only-haptic-drivers.patch \
+           file://0004-profile-source-vibration-gate-from-dconf.patch \
            "
 SRCREV = "3372625b3a221fdbdcc3dbb225e93df34ac307c0"
 PR = "r1"
@@ -21,7 +22,7 @@ inherit autotools pkgconfig
 
 B = "${S}"
 
-DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib profiled mce"
+DEPENDS += "pulseaudio libsndfile1 json-c zlib dbus glib-2.0 libffi libcap gstreamer1.0 dbus-glib dconf mce"
 
 do_configure:prepend() {
     sed -i "s@src data doc tests@src data@" ${S}/Makefile.am
