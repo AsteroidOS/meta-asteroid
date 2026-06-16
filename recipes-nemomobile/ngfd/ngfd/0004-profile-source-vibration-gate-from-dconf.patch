@@ -1,0 +1,749 @@
+From e3742b8d099f64765e4900729e8876eaade92bda Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Mon, 15 Jun 2026 21:10:51 +0000
+Subject: [PATCH] profile: source alert-vibration gate from dconf instead of
+ profiled
+
+AsteroidOS does not ship the sailfishos profiled daemon. The only
+profile-derived value ngfd consumes is the boolean gating alert
+vibrations (profile.current.vibrating.alert.enabled, read by
+src/ngf/haptic.c); the shipped events.d use none of the per-profile
+tone/pattern transforms. Reduce the profile plugin to feeding that
+single boolean from dconf, the schemaless settings store the
+AsteroidOS UI already uses, and drop the libprofile/D-Bus dependency.
+
+Upstream-Status: Inappropriate [distribution]
+---
+ configure.ac                    |   6 +-
+ src/plugins/profile/Makefile.am |   4 +-
+ src/plugins/profile/plugin.c    | 648 +++-----------------------------
+ 3 files changed, 67 insertions(+), 591 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 44820cf..76f6b44 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -187,8 +187,12 @@ fi
+ AM_CONDITIONAL(BUILD_IMMVIBE, test x$enable_immvibe = xyes)
+ 
+ # Profile plugin
++#
++# AsteroidOS does not ship the sailfishos `profiled` daemon. The profile plugin
++# only needs to feed the alert-vibration gate into ngfd's context, which it now
++# sources from dconf (the settings store the AsteroidOS UI already uses).
+ 
+-PKG_CHECK_MODULES(PROFILE, profile, [has_profile=yes], [has_profile=no])
++PKG_CHECK_MODULES(PROFILE, dconf, [has_profile=yes], [has_profile=no])
+ AC_SUBST(PROFILE_CFLAGS)
+ AC_SUBST(PROFILE_LIBS)
+ 
+diff --git a/src/plugins/profile/Makefile.am b/src/plugins/profile/Makefile.am
+index daa7052..540d3b8 100644
+--- a/src/plugins/profile/Makefile.am
++++ b/src/plugins/profile/Makefile.am
+@@ -1,7 +1,7 @@
+ plugindir = @NGFD_PLUGIN_DIR@
+ plugin_LTLIBRARIES = libngfd_profile.la
+ libngfd_profile_la_SOURCES = plugin.c
+-libngfd_profile_la_LIBADD = @NGFD_PLUGIN_LIBS@ @DBUS_LIBS@ @PROFILE_LIBS@
++libngfd_profile_la_LIBADD = @NGFD_PLUGIN_LIBS@ @PROFILE_LIBS@
+ libngfd_profile_la_LDFLAGS = -module -avoid-version
+-libngfd_profile_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @DBUS_CFLAGS@ @PROFILE_CFLAGS@ -I$(top_srcdir)/src/include
++libngfd_profile_la_CFLAGS = @NGFD_PLUGIN_CFLAGS@ @PROFILE_CFLAGS@ -I$(top_srcdir)/src/include
+ 
+diff --git a/src/plugins/profile/plugin.c b/src/plugins/profile/plugin.c
+index 841eb1c..6b745f6 100644
+--- a/src/plugins/profile/plugin.c
++++ b/src/plugins/profile/plugin.c
+@@ -19,628 +19,100 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
+  */
+ 
+-#include <profiled/libprofile.h>
+-#include <stdlib.h>
+-
+-#include <sys/types.h>
+-#include <dirent.h>
++/*
++ * AsteroidOS variant.
++ *
++ * Upstream this plugin bridged the sailfishos `profiled` daemon (libprofile,
++ * D-Bus com.nokia.profiled) into ngfd's context, mapping a whole profile
++ * key/value store and providing per-profile tone/pattern transforms.
++ *
++ * AsteroidOS does not ship profiled. The only profile-derived value ngfd
++ * actually consumes is the boolean that gates alert vibrations
++ * (profile.current.vibrating.alert.enabled, read by src/ngf/haptic.c), and the
++ * shipped events.d/*.ini use none of the tone/pattern transform machinery. So
++ * this plugin is reduced to feeding that single boolean from dconf -- the same
++ * schemaless settings store the AsteroidOS UI (Nemo.Configuration) writes when
++ * the user toggles vibration in the quick settings panel.
++ */
+ 
+-#include <dbus/dbus.h>
++#include <dconf.h>
+ 
+ #include <ngf/core.h>
+ #include <ngf/plugin.h>
+-#include <ngf/event.h>
+ #include <ngf/context.h>
+ 
+-#define LOG_CAT                 "profile: "
+-#define PROFILE_KEY_PATTERN     ".profile"
+-
+-#define KEY_VIBRATION_ENABLED   "vibrating.alert.enabled"
+-#define KEY_TOUCH_VIBRA_LEVEL	"touchscreen.vibration.level"
+-#define CURRENT_PROFILE_KEY     "profile.current_profile"
+-#define TONE_SUFFIX             ".tone"
+-#define VOLUME_SUFFIX           ".volume"
+-#define SYSTEM_SUFFIX           ".sound.level"
+-#define PATTERN_SUFFIX          ".pattern"
+-#define MAX_DEPTH               3
++#define LOG_CAT                     "profile: "
+ 
+-#define CLAMP_VALUE(in_v,in_min,in_max) \
+-    ((in_v) <= (in_min) ? (in_min) : ((in_v) >= (in_max) ? (in_max) : (in_v)))
++#define DCONF_VIBRATION_KEY         "/desktop/asteroid/vibration"
++#define CONTEXT_VIBRATION_ENABLED   "profile.current.vibrating.alert.enabled"
+ 
+ N_PLUGIN_NAME        ("profile")
+-N_PLUGIN_VERSION     ("0.1")
+-N_PLUGIN_DESCRIPTION ("Profile support")
+-
+-typedef struct _ProfileEntry
+-{
+-    gchar  *key;
+-    gchar  *profile;
+-    gchar  *target;
+-} ProfileEntry;
+-
+-typedef struct _SoundLevelEntry
+-{
+-    gchar  *key;
+-    int    *levels;
+-    guint   count;
+-} SoundLevelEntry;
+-
+-static DBusConnection *session_bus = NULL;
+-static GList      *sound_levels            = NULL; /* contains SoundLevelEntry entries */
+-static GList      *request_keys            = NULL;
+-static GHashTable *profile_entries         = NULL;
+-static gchar      *file_search_path        = NULL;
+-
+-static void          transform_properties_cb      (NHook *hook,
+-                                                   void *data,
+-                                                   void *userdata);
+-static ProfileEntry* parse_profile_entry          (const char *value);
+-static void          free_entry                   (ProfileEntry *entry);
+-static GList*        append_unique_key            (GList *keys,
+-                                                   const char *key);
+-static void          find_entries_within_event_cb (const char *key,
+-                                                   const NValue *value,
+-                                                   gpointer userdata);
+-static void          find_profile_entries         (NCore *core);
+-static void          value_changed_cb             (const char *profile,
+-                                                   const char *key,
+-                                                   const char *value,
+-                                                   const char *type,
+-                                                   void *userdata);
+-static void          profile_changed_cb           (const char *profile,
+-                                                   void *userdata);
+-static void          query_current_profile        (NCore *core);
+-static void          query_current_values         (NCore *core);
+-static gchar*        find_file_from_path          (const char *start_path,
+-                                                   const char *filename,
+-                                                   int current_depth);
+-static gchar*        get_absolute_tone_path       (const char *value);
+-static gchar*        construct_context_key        (const char *profile,
+-                                                   const char *key);
+-static void          update_context_value         (NContext *context,
+-                                                   const char *profile,
+-                                                   const char *key,
+-                                                   const char *value);
+-
++N_PLUGIN_VERSION     ("1.0")
++N_PLUGIN_DESCRIPTION ("Alert vibration gating from dconf")
+ 
++static DConfClient *client     = NULL;
++static gulong       changed_id = 0;
+ 
+ static void
+-transform_properties_cb (NHook *hook, void *data, void *userdata)
++update_vibration_enabled (NCore *core)
+ {
+-    (void) hook;
+-    (void) data;
+-    (void) userdata;
+-
+-    NCore        *core        = (NCore*) userdata;
+-    NContext     *context     = n_core_get_context (core);
+-    NProplist    *new_props   = NULL;
+-    NProplist    *props       = NULL;
+-    GList        *iter        = NULL;
+-    const char   *match_str   = NULL;
+-    ProfileEntry *entry       = NULL;
+-    NValue       *value       = NULL;
+-    gchar        *context_key = NULL;
+-
+-    NCoreHookTransformPropertiesData *transform = (NCoreHookTransformPropertiesData*) data;
+-
+-    N_DEBUG (LOG_CAT "transforming profile values for request '%s'",
+-        n_request_get_name (transform->request));
+-
+-    new_props = n_proplist_new ();
+-    props = (NProplist*) n_request_get_properties (transform->request);
+-    for (iter = g_list_first (request_keys); iter; iter = g_list_next (iter)) {
+-        match_str = n_proplist_get_string (props, (gchar*) iter->data);
+-        if (!match_str)
+-            continue;
+-
+-        entry = g_hash_table_lookup (profile_entries, match_str);
+-        if (!entry)
+-            continue;
+-
+-        /* if this a fallback request, we don't care if there is existing
+-           target. otherwise check if the target exists. */
+-
+-        if (!n_request_is_fallback (transform->request) &&
+-             n_proplist_has_key (props, entry->target))
+-            continue;
+-
+-        context_key = construct_context_key (entry->profile, entry->key);
+-        value = (NValue*) n_context_get_value (context, context_key);
+-
+-        if (value) {
+-            N_DEBUG (LOG_CAT "+ transforming profile key '%s' to target '%s'",
+-                entry->key, entry->target);
+-            n_proplist_set (new_props, entry->target, n_value_copy (value));
+-        }
+-
+-        g_free (context_key);
+-    }
+-
+-    n_proplist_merge (props, new_props);
+-    n_proplist_free (new_props);
+-
+-    N_DEBUG (LOG_CAT "new properties:");
+-    n_proplist_dump (props);
+-}
+-
+-static ProfileEntry*
+-parse_profile_entry (const char *value)
+-{
+-    g_assert (value != NULL);
+-
+-    ProfileEntry  *entry         = NULL;
+-    gchar        **tokens        = NULL;
+-    gchar        **source_tokens = NULL;
+-
+-    /* split the profile key and target key */
+-
+-    tokens = g_strsplit (value, "=>", 2);
+-    if (tokens[1] == NULL) {
+-        N_WARNING (LOG_CAT "profile store key missing for '%s'", value);
+-        g_strfreev (tokens);
+-        return NULL;
+-    }
+-
+-    g_strstrip (tokens[0]);
+-    g_strstrip (tokens[1]);
+-
+-    /* figure out the source profile for the key */
+-
+-    source_tokens = g_strsplit (tokens[0], "@", 2);
+-
+-    g_strstrip (source_tokens[0]);
+-    if (source_tokens[1])
+-        g_strstrip (source_tokens[1]);
+-
+-    /* new entry */
+-
+-    entry = g_new0 (ProfileEntry, 1);
+-    entry->key     = g_strdup (source_tokens[0]);
+-    entry->profile = g_strdup (source_tokens[1]);
+-    entry->target  = g_strdup (tokens[1]);
+-
+-    g_strfreev (source_tokens);
+-    g_strfreev (tokens);
+-
+-    return entry;
+-}
+-
+-static void
+-free_entry (ProfileEntry *entry)
+-{
+-    g_free (entry->key);
+-    g_free (entry->profile);
+-    g_free (entry->target);
+-    g_free (entry);
+-}
+-
+-static GList*
+-append_unique_key (GList *keys, const char *key)
+-{
+-    g_assert (key != NULL);
+-
+-    GList *result = NULL;
+-    GList *iter   = NULL;
+-
+-    for (iter = g_list_first (keys); iter; iter = g_list_next (iter)) {
+-        if (g_str_equal ((gchar*) iter->data, key))
+-            return keys;
+-    }
+-
+-    N_DEBUG (LOG_CAT "new unique transform key '%s'", key);
+-    result = g_list_append (keys, g_strdup (key));
+-    return result;
+-}
+-
+-static void
+-find_entries_within_event_cb (const char *key, const NValue *value,
+-                              gpointer userdata)
+-{
+-    (void) key;
+-    (void) value;
+-    (void) userdata;
+-
+-    ProfileEntry *entry     = NULL;
+-    ProfileEntry *match     = NULL;
+-    const char   *value_str = NULL;
+-
+-    if (g_strstr_len (key, 32, PROFILE_KEY_PATTERN) == NULL)
+-        return;
+-
+-    N_DEBUG (LOG_CAT "possible profile key entry '%s'", key);
+-
+-    value_str = n_value_get_string ((NValue*) value);
+-    entry = parse_profile_entry (value_str);
+-
+-    if (!entry)
+-        return;
+-
+-    match = (ProfileEntry*) g_hash_table_lookup (profile_entries, value_str);
+-    if (!match) {
+-        g_hash_table_insert (profile_entries, g_strdup (value_str), entry);
+-        N_DEBUG (LOG_CAT "new profile entry with key '%s', profile '%s' and target '%s'",
+-            entry->key, entry->profile, entry->target);
+-
+-        if (g_str_has_suffix (key, PROFILE_KEY_PATTERN))
+-            request_keys = append_unique_key (request_keys, key);
+-    }
+-    else {
+-        free_entry (entry);
+-    }
+-}
+-
+-static void
+-find_profile_entries (NCore *core)
+-{
+-    GList     *event_list = NULL;
+-    GList     *iter       = NULL;
+-    NEvent    *event      = NULL;
+-    NProplist *props      = NULL;
+-
+-    event_list = n_core_get_events (core);
+-    for (iter = g_list_first (event_list); iter; iter = g_list_next (iter)) {
+-        event = (NEvent*) iter->data;
+-        props = (NProplist*) n_event_get_properties (event);
+-
+-        N_DEBUG (LOG_CAT "searching profile entries from event '%s'",
+-            n_event_get_name (event));
+-
+-        n_proplist_foreach (props, find_entries_within_event_cb, NULL);
+-    }
+-}
+-
+-static gchar*
+-find_file_from_path (const char *start_path, const char *filename,
+-                     int current_depth)
+-{
+-    gchar *result_path = NULL;
+-    gchar *tmp         = NULL;
+-
+-    DIR *parent_dir;
+-    struct dirent *walk;
+-
+-    if (current_depth > MAX_DEPTH)
+-        return NULL;
+-
+-    if (!start_path || !filename)
+-        return NULL;
+-
+-    tmp = g_build_filename (start_path, filename, NULL);
+-    if (g_file_test (tmp, G_FILE_TEST_EXISTS))
+-        return tmp;
+-    g_free (tmp);
+-
+-    parent_dir = opendir (start_path);
+-    while ((walk = readdir (parent_dir)) != NULL) {
+-        if (walk->d_type & DT_DIR) {
+-            if (g_str_equal (walk->d_name, ".") || g_str_equal (walk->d_name, ".."))
+-                continue;
+-
+-            tmp = g_build_filename (start_path, walk->d_name, NULL);
+-            result_path = find_file_from_path (tmp, filename, current_depth + 1);
+-            g_free (tmp);
+-
+-            if (result_path)
+-                break;
+-        }
+-    }
+-
+-    closedir (parent_dir);
+-
+-    return result_path;
+-}
+-
+-static gchar*
+-get_absolute_tone_path (const char *value)
+-{
+-    if (!file_search_path || !value)
+-        return g_strdup (value);
+-
+-    if (g_file_test (value, G_FILE_TEST_EXISTS))
+-        return g_strdup (value);
+-
+-    return find_file_from_path (file_search_path, value, 0);
+-}
+-
+-static gchar*
+-construct_context_key (const char *profile, const char *key)
+-{
+-    const char *profile_str = NULL;
+-    profile_str = profile ? profile : "current";
+-    return g_strdup_printf ("profile.%s.%s", profile_str, key);
+-}
+-
+-static void
+-update_context_value (NContext *context, const char *profile, const char *key,
+-                      const char *value)
+-{
+-    gchar  *context_key = NULL;
+-    NValue *context_val = NULL;
+-    gint    level       = 0;
+-    gchar  *new_val     = NULL;
+-    GList  *iter        = NULL;
+-    SoundLevelEntry *e  = NULL;
+-
+-    context_key = construct_context_key (profile, key);
+-    context_val = n_value_new ();
+-
+-    if (g_str_has_suffix (key, TONE_SUFFIX) ||
+-        g_str_has_suffix (key, PATTERN_SUFFIX)) {
+-        new_val = get_absolute_tone_path (value);
+-        new_val = new_val != NULL ? new_val : g_strdup (value);
+-        n_value_set_string (context_val, new_val);
+-        g_free (new_val);
+-    }
+-    else if (g_str_has_suffix (key, VOLUME_SUFFIX)) {
+-        n_value_set_int (context_val, profile_parse_int (value));
+-    }
+-    else if (g_str_has_suffix (key, SYSTEM_SUFFIX)) {
+-        for (iter = g_list_first (sound_levels); iter; iter = g_list_next (iter)) {
+-            e = (SoundLevelEntry*) iter->data;
+-            if (g_str_has_suffix (key, e->key)) {
+-                level = profile_parse_int (value);
+-                level = CLAMP_VALUE (level, 0, (gint) e->count - 1);
+-                n_value_set_int (context_val, e->levels[level]);
+-            }
+-        }
+-    }
+-    else if (g_str_equal (key, KEY_VIBRATION_ENABLED)) {
+-        n_value_set_bool (context_val, profile_parse_bool (value));
+-    } else if (g_str_equal (key, KEY_TOUCH_VIBRA_LEVEL)) {
+-        n_value_set_int (context_val, profile_parse_int (value));
+-    } else {
+-        n_value_set_string (context_val, value);
+-    }
+-
+-    n_context_set_value (context, context_key, context_val);
+-    g_free (context_key);
+-}
+-
+-static void
+-value_changed_cb (const char *profile,
+-                  const char *key,
+-                  const char *value,
+-                  const char *type,
+-                  void *userdata)
+-{
+-    (void) type;
+-
+-    NCore      *core      = (NCore*) userdata;
+-    NContext   *context   = n_core_get_context (core);
+-    const char *current   = NULL;
+-
+-    update_context_value (context, profile, key, value);
+-
+-    /* update current profile value if necessary */
+-
+-    current = n_value_get_string ((NValue*) n_context_get_value (context,
+-        CURRENT_PROFILE_KEY));
+-    if (current && g_str_equal (current, profile))
+-        update_context_value (context, NULL, key, value);
+-}
+-
+-static void
+-profile_changed_cb (const char *profile,
+-                    void *userdata)
+-{
+-    (void) profile;
+-    (void) userdata;
+-
+-    NCore    *core    = (NCore*) userdata;
+     NContext *context = n_core_get_context (core);
+-    NValue   *value   = NULL;
+-
+-    /* store the current profile to the context */
+-
+-    value = n_value_new ();
+-    n_value_set_string (value, profile);
+-    n_context_set_value (context, CURRENT_PROFILE_KEY, value);
+-    N_DEBUG (LOG_CAT "current profile changed to '%s'", profile);
+-}
+-
+-static void
+-query_current_profile (NCore *core)
+-{
+-    NContext   *context = n_core_get_context (core);
+-    NValue     *value   = NULL;
+-    char       *profile = NULL;
+-
+-    profile = profile_get_profile ();
+-
+-    /* store the current profile to the context */
+-
+-    value = n_value_new ();
+-    n_value_set_string (value, profile);
+-    n_context_set_value (context, "profile.current_profile", value);
+-    N_DEBUG (LOG_CAT "current profile set to '%s'", profile);
+-
+-    free (profile);
+-}
+-
+-static void
+-query_current_values (NCore *core)
+-{
+-    NContext      *context     = n_core_get_context (core);
+-    char         **profiles    = NULL;
+-    char         **p           = NULL;
+-    const char    *current     = NULL;
+-    profileval_t  *values      = NULL;
+-    profileval_t  *v           = NULL;
+-    gboolean       is_current  = FALSE;
+-
+-    profiles = profile_get_profiles ();
+-    current  = n_value_get_string ((NValue*) n_context_get_value (context,
+-        "profile.current_profile"));
+-
+-    for (p = profiles; *p; ++p) {
+-        is_current = current && g_str_equal (current, *p);
+-        values = profile_get_values (*p);
+-        for (v = values; v->pv_key; ++v) {
+-            update_context_value (context, *p, v->pv_key, v->pv_val);
+-            if (is_current)
+-                update_context_value (context, NULL, v->pv_key, v->pv_val);
+-        }
+-        profile_free_values (values);
+-    }
+-
+-    /* fallbacks */
+-
+-    /* This is in a way a bug, since profiled doesn't expose fallback settings ever,
+-     * but, when requesting non-existing profile, profile_get_values() returns
+-     * fallback profile contents. */
+-    values = profile_get_values ("fallback");
+-    for (v = values; v->pv_key; ++v)
+-        update_context_value (context, "fallback", v->pv_key, v->pv_val);
+-    profile_free_values (values);
+-
+-    profile_free_profiles (profiles);
+-}
++    NValue   *value   = n_value_new ();
++    GVariant *variant = dconf_client_read (client, DCONF_VIBRATION_KEY);
++    gboolean  enabled = TRUE; /* vibrate unless explicitly disabled */
+ 
+-static void
+-setup_level (const char *key, const NValue *value)
+-{
+-    gchar             **split = NULL;
+-    gchar             **iter  = NULL;
+-    guint               i     = 0;
+-    SoundLevelEntry    *entry = NULL;
+-
+-    if (!value) {
+-        N_WARNING (LOG_CAT "parameters for %s not found!", key);
+-        return;
+-    }
+-
+-    if (n_value_type (value) != N_VALUE_TYPE_STRING) {
+-        N_WARNING (LOG_CAT "invalid value type for %s!", key);
+-        return;
+-    }
+-
+-    entry = (SoundLevelEntry*) g_malloc0 (sizeof (SoundLevelEntry));
+-    entry->key = g_strdup (key);
+-
+-    split = g_strsplit (n_value_get_string (value), ";", -1);
+-    for (iter = split; *iter; ++iter)
+-        ++entry->count;
+-
+-    entry->levels = (int*) g_malloc0 (sizeof (int) * entry->count);
+-    for (iter = split, i = 0; *iter; ++iter, ++i) {
+-        entry->levels[i] = atoi (*iter);
+-        entry->levels[i] = CLAMP_VALUE (entry->levels[i], 0, 100);
++    if (variant) {
++        if (g_variant_is_of_type (variant, G_VARIANT_TYPE_BOOLEAN))
++            enabled = g_variant_get_boolean (variant);
++        else
++            N_WARNING (LOG_CAT "%s is not a boolean, assuming enabled",
++                DCONF_VIBRATION_KEY);
++        g_variant_unref (variant);
+     }
+ 
+-    N_DEBUG (LOG_CAT "adding profile convert entry '%s' with %d sound levels", entry->key, entry->count);
+-    sound_levels = g_list_append (sound_levels, entry);
++    n_value_set_bool (value, enabled);
++    n_context_set_value (context, CONTEXT_VIBRATION_ENABLED, value);
+ 
+-    g_strfreev (split);
++    N_DEBUG (LOG_CAT "alert vibration %s", enabled ? "enabled" : "disabled");
+ }
+ 
+ static void
+-setup_sound_levels (NProplist *params)
++changed_cb (DConfClient *c, const gchar *prefix, const gchar * const *changes,
++            const gchar *tag, gpointer userdata)
+ {
+-    gchar **split = NULL;
+-    gchar **iter  = NULL;
+-
+-    g_assert (params);
+-
+-    if (!n_proplist_has_key (params, "sound-levels")) {
+-        N_WARNING (LOG_CAT "no sound-levels defined in profile.ini!");
+-        return;
+-    }
++    (void) c;
++    (void) prefix;
++    (void) changes;
++    (void) tag;
+ 
+-    split = g_strsplit (n_proplist_get_string (params, "sound-levels"), ";", -1);
+-    for (iter = split; *iter; ++iter)
+-        setup_level (*iter, n_proplist_get (params, *iter));
+-
+-    g_strfreev (split);
+-}
+-
+-static gboolean
+-setup_session_bus_connection (NCore *core)
+-{
+-    /* setup the session bus connection */
+-    DBusError error;
+-    dbus_error_init(&error);
+-
+-    if (!session_bus) {
+-        session_bus = dbus_bus_get(DBUS_BUS_SESSION, &error);
+-        if (dbus_error_is_set(&error)) {
+-            N_DEBUG (LOG_CAT "Could not connect to DBus session bus.");
+-            return FALSE;
+-        }
+-    }
+-
+-    N_DEBUG (LOG_CAT "Connected to DBus session bus.");
+-    profile_connection_set (session_bus);
+-
+-    query_current_profile (core);
+-    query_current_values (core);
+-
+-    return TRUE;
++    update_vibration_enabled ((NCore*) userdata);
+ }
+ 
+ N_PLUGIN_LOAD (plugin)
+ {
+-    NCore     *core   = NULL;
+-    NProplist *params = NULL;
+-
+-    profile_entries = g_hash_table_new_full (g_str_hash, g_str_equal,
+-        g_free, (GDestroyNotify) free_entry);
+-
+-    /* find all profile key entries within events. */
+-
+-    core = n_plugin_get_core (plugin);
+-    find_profile_entries (core);
+-
+-    /* connect to the transform properties hook. */
+-
+-    (void) n_core_connect (core, N_CORE_HOOK_TRANSFORM_PROPERTIES,
+-        0, transform_properties_cb, core);
+-
+-    /* query the system sound volume levels and file search
+-       path. */
+-
+-    params = (NProplist*) n_plugin_get_params (plugin);
+-
+-    setup_sound_levels (params);
+-
+-    file_search_path = g_strdup (n_proplist_get_string (params, "search-path"));
+-
+-    /* setup the profile client */
+-
+-    profile_connection_disable_autoconnect ();
+-
+-    profile_track_add_active_cb  (value_changed_cb, core, NULL);
+-    profile_track_add_change_cb  (value_changed_cb, core, NULL);
+-    profile_track_add_profile_cb (profile_changed_cb, core, NULL);
++    NCore *core = n_plugin_get_core (plugin);
+ 
+-    if (!setup_session_bus_connection (core))
+-        return FALSE;
++    client = dconf_client_new ();
++    changed_id = g_signal_connect (client, "changed",
++        G_CALLBACK (changed_cb), core);
++    dconf_client_watch_fast (client, DCONF_VIBRATION_KEY);
+ 
+-    profile_tracker_init ();
++    /* seed the context with the current value */
++    update_vibration_enabled (core);
+ 
+     return TRUE;
+ }
+ 
+-static void
+-sound_levels_free_cb (gpointer data)
+-{
+-    SoundLevelEntry *e = (SoundLevelEntry*) data;
+-    g_free (e->key);
+-    g_free (e->levels);
+-    g_free (e);
+-}
+-
+ N_PLUGIN_UNLOAD (plugin)
+ {
+-    NCore *core = n_plugin_get_core (plugin);
+-
+-    n_core_disconnect (core, N_CORE_HOOK_TRANSFORM_PROPERTIES, transform_properties_cb, core);
+-
+-    profile_tracker_quit ();
+-
+-    g_free               (file_search_path);
+-    g_list_free_full     (sound_levels, sound_levels_free_cb);
+-    g_hash_table_destroy (profile_entries);
+-    g_list_free_full     (request_keys, g_free);
+-
+     (void) plugin;
++
++    if (client) {
++        dconf_client_unwatch_fast (client, DCONF_VIBRATION_KEY);
++        if (changed_id)
++            g_signal_handler_disconnect (client, changed_id);
++        g_object_unref (client);
++        client = NULL;
++        changed_id = 0;
++    }
+ }
+-- 
+2.47.3
+
