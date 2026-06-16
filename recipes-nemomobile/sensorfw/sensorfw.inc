@@ -30,6 +30,9 @@ do_configure:prepend() {
     sed -i 's/$$\[QT_INSTALL_LIBS\]/\/usr\/lib/g' "${S}/core/core.pro"
     sed -i '/include( doc\/doc.pri )/d' "${S}/sensorfw.pro"
     sed -i 's/sensord-qt5/sensord-qt6/g' "${S}/sensorfw.pro"
+    # We never ship the unit tests; don't build them (avoids buildpaths QA
+    # warnings from TMPDIR references baked into the test binaries).
+    sed -i '/^[[:space:]]*tests[[:space:]]*\\$/d' "${S}/sensorfw.pro"
 }
 
 do_configure:prepend:hybris-machine() {
