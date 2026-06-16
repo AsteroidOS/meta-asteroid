@@ -12,5 +12,11 @@ inherit qt6-qmake
 
 DEPENDS += "qtdeclarative timed mce"
 
-FILES:${PN}-dbg += "/usr/lib/qml/Nemo/Time/.debug /opt/"
+do_install:append() {
+    # Drop the upstream unit-test binaries (mer /opt/tests convention). They
+    # are not run on-device and their ELF embeds TMPDIR (buildpaths QA).
+    rm -rf ${D}/opt
+}
+
+FILES:${PN}-dbg += "/usr/lib/qml/Nemo/Time/.debug"
 FILES:${PN} += "/usr/lib/qml/Nemo/Time/ "

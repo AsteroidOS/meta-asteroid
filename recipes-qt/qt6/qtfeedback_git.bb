@@ -15,6 +15,15 @@ DEPENDS += "qtbase qtdeclarative"
 
 inherit qt6-qmake
 
+do_install:append() {
+    # qt6-qmake.bbclass strips STAGING_DIR from .prl files but leaves the
+    # QMAKE_PRL_BUILD_DIR line, which embeds TMPDIR (buildpaths QA). Drop it
+    # like qt6-cmake.bbclass does. QTBUG-105877
+    find ${D} \( -name "*.pri" -or -name "*.prl" \) -exec \
+        sed -i -e '/QMAKE_PRL_BUILD_DIR/d' \
+               -e '\|${WORKDIR}|d' {} \;
+}
+
 FILES:${PN} += "${OE_QMAKE_PATH_PLUGINS} /usr/lib/qml /usr/lib/libQt5Feedback.prl"
 FILES:${PN}-dev += " \
     /usr/lib/mkspecs \

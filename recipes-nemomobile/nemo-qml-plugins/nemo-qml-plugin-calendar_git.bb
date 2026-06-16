@@ -11,5 +11,11 @@ inherit qt6-qmake pkgconfig
 
 DEPENDS += "qtbase qtdeclarative mkcal libaccounts-qt6 timed"
 
-FILES:${PN}-dbg += "/opt /usr/lib/qml/org/nemomobile/calendar/.debug"
+do_install:append() {
+    # Drop the upstream unit-test binaries (mer /opt/tests convention). They
+    # are not run on-device and their ELF embeds TMPDIR (buildpaths QA).
+    rm -rf ${D}/opt
+}
+
+FILES:${PN}-dbg += "/usr/lib/qml/org/nemomobile/calendar/.debug"
 FILES:${PN} += "/usr/lib/qml/org/nemomobile/calendar/ /usr/share/dbus-1/services/org.nemomobile.calendardataservice.service"

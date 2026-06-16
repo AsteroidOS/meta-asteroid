@@ -22,6 +22,13 @@ do_install:append() {
     if ls ${D}${libdir}/pkgconfig/connman-qt6.pc >/dev/null 2>/dev/null; then
         sed -i "s@-L${STAGING_LIBDIR}@-L\${libdir}@g" ${D}${libdir}/pkgconfig/connman-qt6.pc
     fi
+
+    # qt6-qmake.bbclass strips STAGING_DIR from .prl files but leaves the
+    # QMAKE_PRL_BUILD_DIR line, which embeds TMPDIR (buildpaths QA). Drop it
+    # like qt6-cmake.bbclass does. QTBUG-105877
+    find ${D} \( -name "*.pri" -or -name "*.prl" \) -exec \
+        sed -i -e '/QMAKE_PRL_BUILD_DIR/d' \
+               -e '\|${WORKDIR}|d' {} \;
 }
 FILES:${PN} += " \
     ${OE_QMAKE_PATH_QML}/Connman/ \
@@ -29,6 +36,3 @@ FILES:${PN} += " \
 FILES:${PN}-dev += " \
     ${libdir}/libconnman-qt6.prl \
 "
-# ERROR: libconnman-qt-1.3.3+git-r0 do_package_qa: QA Issue: File /usr/lib/libconnman-qt6.prl in package libconnman-qt-dev contains reference to TMPDIR [buildpaths]
-ERROR_QA:remove = "buildpaths"
-WARN_QA:append = " buildpaths"
