@@ -18,6 +18,12 @@ inherit qt6-qmake asteroid-users pkgconfig
 B = "${S}"
 
 # Code expects to be massaged first the same way it's done in RPM .spec
+do_configure:prepend() {
+    # We never ship the unit tests; don't build them (avoids buildpaths QA
+    # warnings from TMPDIR references baked into the test binaries).
+    sed -i 's/SUBDIRS += src tests tools/SUBDIRS += src tools/' ${S}/timed.pro
+}
+
 do_compile:prepend() {
     mkdir -p ${B}/src/h/timed-qt6
     # As B=${S} here, src/lib/qmacro.h may exist from previous builds
@@ -46,4 +52,3 @@ DEPENDS += "systemd tzdata libiodata-native libiodata qtbase sailfish-access-con
 RDEPENDS:${PN} += "libcap-bin tzdata"
 FILES:${PN} += "/usr/lib/ /usr/lib/systemd/user/default.target.wants/"
 FILES:${PN}-dev += "/usr/share/mkspecs"
-FILES:${PN}-dbg += "/opt"
