@@ -41,10 +41,9 @@ do_install:append() {
     ln -s /usr/share/zoneinfo/Etc/GMT ${D}/var/lib/timed/localtime
 
     cp ${UNPACKDIR}/timed.conf ${D}/etc/dbus-1/system.d/
-}
 
-pkg_postinst:${PN}() {
-    setcap cap_sys_time+ep $D/usr/bin/timed
+    # nemo packaging grants cap_sys_time to the timed binary but we manage the
+    # time only via systemd so we explicitly don't grant timed the cap.
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
