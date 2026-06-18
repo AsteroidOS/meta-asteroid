@@ -14,7 +14,8 @@ S = "${WORKDIR}/git"
 DEPENDS += "qtbase usb-moded"
 inherit qt6-qmake pkgconfig
 
+EXTRA_QMAKEVARS_PRE = "PREFIX=${prefix}"
+
 do_install:append() {
-    mv ${D}/include ${D}/usr/
     install -m 644 -D ${UNPACKDIR}/usb-moded-qt6.pc ${D}/usr/lib/pkgconfig/
 }
