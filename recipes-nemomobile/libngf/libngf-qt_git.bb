@@ -14,10 +14,7 @@ S = "${WORKDIR}/git"
 DEPENDS += " qtbase qtdeclarative libngf qtfeedback dbus"
 inherit qt6-qmake pkgconfig
 
-do_install:append() {
-    mv ${D}/include/* ${D}/usr/include/
-    rmdir ${D}/include/
-}
+EXTRA_QMAKEVARS_PRE = "PREFIX=${prefix}"
 
 FILES:${PN} += "/usr/lib/qml/Nemo/Ngf /usr/lib/plugins/feedback"
 FILES:${PN}-dbg += "/opt /usr/lib/qml/Nemo/Ngf/.debug/"
