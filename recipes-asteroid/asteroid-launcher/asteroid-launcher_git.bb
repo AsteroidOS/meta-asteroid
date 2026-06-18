@@ -58,7 +58,7 @@ do_install:append() {
     cp -r ${UNPACKDIR}/Notifications/* ${D}/home/ceres/.local/share/system/privileged/Notifications/
 }
 
-do_install:apppend:hybris-machine() {
+do_install:append:hybris-machine() {
     # On hybris machines, the launcher must run only after Android has started
     install -m 0755 ${UNPACKDIR}/asteroid-launcher-precondition-hybris ${D}/usr/bin/asteroid-launcher-precondition
 }
