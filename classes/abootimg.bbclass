@@ -14,7 +14,7 @@ do_deploy:append() {
              -r ${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz \
              ${ABOOTIMG_ARGS}
 
-    cp ${B}/boot.img ${DEPLOYDIR}/boot.img
+    cp ${B}/boot.img ${DEPLOYDIR}/${DISTRO}-${MACHINE}-boot.img
 
     install -d ${D}/${KERNEL_IMAGEDEST}
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}

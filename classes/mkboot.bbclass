@@ -15,7 +15,7 @@ do_deploy:append() {
     sed -i "s@%%RAMDISK_SIZE%%@$(stat --printf="%s" ${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz)@" img_info
     mkboot . boot.img || { echo "mkboot failed"; exit 1; }
 
-    cp ${B}/boot.img ${DEPLOYDIR}/boot.img
+    cp ${B}/boot.img ${DEPLOYDIR}/${DISTRO}-${MACHINE}-boot.img
 
     install -d ${D}/${KERNEL_IMAGEDEST}
     install -m 0644 ${B}/boot.img ${D}/${KERNEL_IMAGEDEST}
