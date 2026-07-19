@@ -1,0 +1,390 @@
+master: fix provider reference leak, cold-start kill, and one-shot power-cycling (v3)
+
+Upstream-Status: Inappropriate [upstream abandoned, geoclue1 superseded by geoclue2]
+
+v3 adds a 30-second linger before provider shutdown. Field testing (v2)
+surfaced that one-shot consumers - e.g. asteroid-map requesting a single
+position rather than streaming - subscribe and unsubscribe within
+seconds. With shutdown working (v2), every such request power-cycled the
+GPS, forcing a cold start each time and never acquiring a fix. Now
+gc_master_provider_unsubscribe() schedules deinitialize on a 30s
+g_timeout instead of calling it directly; any re-subscribe cancels the
+pending shutdown. The timeout is also cancelled in dispose. 30s is a
+tunable compromise: long enough to bridge repeated one-shot requests
+and app restarts, short enough to bound the power cost after real use
+ends.
+
+v2: keep not-yet-available (ACQUIRING) candidate providers subscribed
+during provider selection - unsubscribing them was only harmless while
+provider shutdown was disabled; with shutdown re-enabled it killed a
+cold-starting GPS within a second of starting it (the bug the original
+author dodged in 2008 by disabling shutdown instead of fixing
+selection).
+
+v1: the master daemon had no working dereference path at all:
+GcMasterClient Add/RemoveReference were TODO no-ops, master never
+destroyed client objects nor watched app bus names, and the provider
+shutdown call was commented out. Fix: real per-sender refcounting on
+GcMasterClient mirroring gc-provider.c, NameOwnerChanged watch to clean
+up after crashed apps, client self-destruction at zero references
+(idle-deferred), and re-enabled provider shutdown.
+
+Field record: v2 confirmed on medaka 2026-07-19 (cold start acquires,
+shutdown on app close, in-session restart works). v3 linger path
+compile-checked, not yet field-tested; the one-shot scenario needs an
+asteroid-map-style consumer to verify.
+
+Needs dbus-glib >= 0.90. Apply with patch -p1 (replaces v1/v2 entirely).
+
+--- a/src/master-provider.c	2026-07-18 23:12:46.176524124 +0200
++++ b/src/master-provider.c	2026-07-19 16:11:29.806200598 +0200
+@@ -101,7 +101,10 @@
+ 	
+ 	GeoclueAddress *address;
+ 	GcAddressCache address_cache;
+-	
++
++	/* pending delayed shutdown after the last client unsubscribes */
++	guint deinit_timeout_id;
++
+ } GcMasterProviderPrivate;
+ 
+ enum {
+@@ -117,6 +120,8 @@
+ 
+ G_DEFINE_TYPE (GcMasterProvider, gc_master_provider, G_TYPE_OBJECT)
+ 
++static void gc_master_provider_cancel_pending_deinit (GcMasterProvider *provider);
++
+ static void
+ copy_error (GError **target, GError *source)
+ {
+@@ -552,6 +557,8 @@
+ static void
+ dispose (GObject *object)
+ {
++	gc_master_provider_cancel_pending_deinit (GC_MASTER_PROVIDER (object));
++
+ 	GcMasterProviderPrivate *priv = GET_PRIVATE (object);
+ 	
+ 	if (priv->position) {
+@@ -1014,6 +1021,38 @@
+ 	return provider;
+ }
+ 
++/* Delayed shutdown: one-shot consumers (e.g. a single position request)
++ * subscribe and unsubscribe within seconds. Shutting the provider down
++ * immediately would power-cycle a GPS on every request, forcing a cold
++ * start each time and never acquiring a fix. Linger for a grace period
++ * instead; any re-subscribe cancels the pending shutdown. */
++#define GC_MASTER_PROVIDER_DEINIT_LINGER_SECONDS 30
++
++static gboolean
++gc_master_provider_deinit_timeout (gpointer data)
++{
++	GcMasterProvider *provider = GC_MASTER_PROVIDER (data);
++	GcMasterProviderPrivate *priv = GET_PRIVATE (provider);
++
++	priv->deinit_timeout_id = 0;
++	if (!priv->position_clients && !priv->address_clients) {
++		g_debug ("%s linger expired, shutting down", priv->name);
++		gc_master_provider_deinitialize (provider);
++	}
++	return FALSE;
++}
++
++static void
++gc_master_provider_cancel_pending_deinit (GcMasterProvider *provider)
++{
++	GcMasterProviderPrivate *priv = GET_PRIVATE (provider);
++
++	if (priv->deinit_timeout_id != 0) {
++		g_source_remove (priv->deinit_timeout_id);
++		priv->deinit_timeout_id = 0;
++	}
++}
++
+ /* client calls this when it wants to use the provider. 
+    Returns true if provider was actually started, and 
+    client should assume accuracy has changed. 
+@@ -1026,7 +1065,9 @@
+ {
+ 	GcMasterProviderPrivate *priv = GET_PRIVATE (provider);
+ 	gboolean started = FALSE;
+-	
++
++	gc_master_provider_cancel_pending_deinit (provider);
++
+ 	/* decide wether to run initialize or not */
+ 	if (!gc_master_provider_is_running (provider)) {
+ 		if (!(priv->provides & GEOCLUE_PROVIDE_CACHEABLE_ON_CONNECTION)) {
+@@ -1068,9 +1109,13 @@
+ 	    !priv->address_clients) {
+ 		/* no one is using this provider, shutdown... */
+ 		/* not clearing cached accuracies on purpose */
+-		g_debug ("%s without clients", priv->name);
+-		
+-		/* gc_master_provider_deinitialize (provider); */
++		g_debug ("%s without clients, lingering %ds", priv->name,
++		         GC_MASTER_PROVIDER_DEINIT_LINGER_SECONDS);
++
++		gc_master_provider_cancel_pending_deinit (provider);
++		priv->deinit_timeout_id = g_timeout_add_seconds (
++			GC_MASTER_PROVIDER_DEINIT_LINGER_SECONDS,
++			gc_master_provider_deinit_timeout, provider);
+ 	}
+ }
+ 
+--- a/src/client.c	2026-07-18 23:12:46.176203103 +0200
++++ b/src/client.c	2026-07-19 01:11:36.337380311 +0200
+@@ -34,6 +34,12 @@
+ 
+ #include <config.h>
+ 
++#include <string.h>
++
++#include <dbus/dbus.h>
++#include <dbus/dbus-glib-bindings.h>
++#include <dbus/dbus-glib-lowlevel.h>
++
+ #include <geoclue/geoclue-error.h>
+ #include <geoclue/geoclue-marshal.h>
+ 
+@@ -80,6 +86,13 @@
+ 	gboolean address_provider_choice_in_progress;
+ 	time_t last_address_changed;
+ 
++	/* reference counts per D-Bus sender, and a watch on those senders
++	 * so the client can be destroyed when all referencing apps are
++	 * gone (mirrors the accounting real providers do in gc-provider.c) */
++	GHashTable *connections;
++	DBusGProxy *bus_proxy;
++	gboolean being_destroyed;
++
+ } GcMasterClientPrivate;
+ 
+ #define GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GC_TYPE_MASTER_CLIENT, GcMasterClientPrivate))
+@@ -111,6 +124,13 @@
+ static void gc_master_client_position_init (GcIfacePositionClass *iface);
+ static void gc_master_client_address_init (GcIfaceAddressClass *iface);
+ 
++static void gc_master_client_schedule_destroy (GcMasterClient *client);
++static void client_name_owner_changed (DBusGProxy     *proxy,
++                                       const char     *name,
++                                       const char     *prev_owner,
++                                       const char     *new_owner,
++                                       GcMasterClient *client);
++
+ G_DEFINE_TYPE_WITH_CODE (GcMasterClient, gc_master_client, G_TYPE_OBJECT,
+ 			 G_IMPLEMENT_INTERFACE(GC_TYPE_IFACE_GEOCLUE,
+ 						gc_master_client_geoclue_init)
+@@ -383,8 +403,14 @@
+ 		l = l->next;
+ 	}
+ 	
+-	/* no provider found */
+-	gc_master_client_unsubscribe_providers (client, *provider_list, iface);
++	/* No provider is AVAILABLE right now. Keep the candidates
++	 * subscribed anyway: a cold-starting provider (e.g. a GPS in
++	 * ACQUIRING) must stay running so its status-changed signal can
++	 * re-trigger provider selection once it gets a fix. Unsubscribing
++	 * here was harmless only while provider shutdown was disabled in
++	 * gc_master_provider_unsubscribe(); with shutdown re-enabled it
++	 * would kill an acquiring provider the instant it starts.
++	 * Subscriptions are still dropped when the client is destroyed. */
+ 	return NULL;
+ }
+ 
+@@ -796,7 +822,7 @@
+ {
+ 	GcMasterClient *client = GC_MASTER_CLIENT (object);
+ 	GcMasterClientPrivate *priv = GET_PRIVATE (object);
+-	
++
+ 	/* do not free contents of the lists, Master takes care of them */
+ 	if (priv->position_providers) {
+ 		gc_master_client_unsubscribe_providers (client, priv->position_providers, GC_IFACE_ALL);
+@@ -808,7 +834,19 @@
+ 		g_list_free (priv->address_providers);
+ 		priv->address_providers = NULL;
+ 	}
+-	
++
++	if (priv->bus_proxy) {
++		dbus_g_proxy_disconnect_signal (priv->bus_proxy, "NameOwnerChanged",
++		                                G_CALLBACK (client_name_owner_changed),
++		                                client);
++		g_object_unref (priv->bus_proxy);
++		priv->bus_proxy = NULL;
++	}
++	if (priv->connections) {
++		g_hash_table_destroy (priv->connections);
++		priv->connections = NULL;
++	}
++
+ 	((GObjectClass *) gc_master_client_parent_class)->finalize (object);
+ }
+ 
+@@ -847,18 +885,45 @@
+ static void
+ gc_master_client_init (GcMasterClient *client)
+ {
++	DBusGConnection *connection;
++	GError *error = NULL;
+ 	GcMasterClientPrivate *priv = GET_PRIVATE (client);
+-	
++
+ 	priv->position_provider_choice_in_progress = FALSE;
+ 	priv->address_provider_choice_in_progress = FALSE;
+-	
++
+ 	priv->position_started = FALSE;
+ 	priv->position_provider = NULL;
+ 	priv->position_providers = NULL;
+-	
++
+ 	priv->address_started = FALSE;
+ 	priv->address_provider = NULL;
+ 	priv->address_providers = NULL;
++
++	priv->connections = g_hash_table_new_full (g_str_hash, g_str_equal,
++	                                           g_free, g_free);
++	priv->bus_proxy = NULL;
++	priv->being_destroyed = FALSE;
++
++	/* Watch referencing apps so the client can clean up after apps
++	 * that crash or forget to call RemoveReference */
++	connection = dbus_g_bus_get (GEOCLUE_DBUS_BUS, &error);
++	if (connection == NULL) {
++		g_warning ("Master client could not get D-Bus connection: %s",
++		           error->message);
++		g_error_free (error);
++		return;
++	}
++	priv->bus_proxy = dbus_g_proxy_new_for_name (connection,
++	                                             DBUS_SERVICE_DBUS,
++	                                             DBUS_PATH_DBUS,
++	                                             DBUS_INTERFACE_DBUS);
++	dbus_g_proxy_add_signal (priv->bus_proxy, "NameOwnerChanged",
++	                         G_TYPE_STRING, G_TYPE_STRING,
++	                         G_TYPE_STRING, G_TYPE_INVALID);
++	dbus_g_proxy_connect_signal (priv->bus_proxy, "NameOwnerChanged",
++	                             G_CALLBACK (client_name_owner_changed),
++	                             client, NULL);
+ }
+ 
+ static gboolean
+@@ -955,11 +1020,82 @@
+ 	return TRUE;
+ }
+ 
++/* Destroying the client unregisters it from D-Bus and drops the
++ * creation reference from Create(); finalize then unsubscribes from all
++ * master-providers, which lets gc_master_provider_unsubscribe shut down
++ * (and thereby RemoveReference) providers that have no users left. The
++ * destroy is deferred to an idle so a pending D-Bus reply can flush. */
++static gboolean
++destroy_idle (gpointer data)
++{
++	GcMasterClient *client = GC_MASTER_CLIENT (data);
++	DBusGConnection *connection;
++	GError *error = NULL;
++
++	connection = dbus_g_bus_get (GEOCLUE_DBUS_BUS, &error);
++	if (connection) {
++		dbus_g_connection_unregister_g_object (connection,
++		                                       G_OBJECT (client));
++	} else {
++		g_warning ("Could not get D-Bus connection: %s", error->message);
++		g_error_free (error);
++	}
++	g_object_unref (client);
++	return FALSE;
++}
++
++static void
++gc_master_client_schedule_destroy (GcMasterClient *client)
++{
++	GcMasterClientPrivate *priv = GET_PRIVATE (client);
++
++	if (priv->being_destroyed) {
++		return;
++	}
++	priv->being_destroyed = TRUE;
++	g_debug ("master client without referencing apps, destroying");
++	g_idle_add (destroy_idle, client);
++}
++
++static void
++client_name_owner_changed (DBusGProxy     *proxy,
++                           const char     *name,
++                           const char     *prev_owner,
++                           const char     *new_owner,
++                           GcMasterClient *client)
++{
++	GcMasterClientPrivate *priv = GET_PRIVATE (client);
++
++	if (strcmp (new_owner, "") != 0 || strcmp (name, prev_owner) != 0) {
++		return;
++	}
++	/* an app disappeared from the bus: drop all its references */
++	if (g_hash_table_remove (priv->connections, prev_owner)) {
++		g_warning ("Impolite app %s disconnected without unreferencing master client", prev_owner);
++		if (g_hash_table_size (priv->connections) == 0) {
++			gc_master_client_schedule_destroy (client);
++		}
++	}
++}
++
+ static void
+ add_reference (GcIfaceGeoclue *geoclue,
+                DBusGMethodInvocation *context)
+ {
+-	/* TODO implement if needed */
++	GcMasterClientPrivate *priv = GET_PRIVATE (geoclue);
++	char *sender;
++	int *pcount;
++
++	sender = dbus_g_method_get_sender (context);
++	pcount = g_hash_table_lookup (priv->connections, sender);
++	if (!pcount) {
++		pcount = g_malloc0 (sizeof (int));
++		g_hash_table_insert (priv->connections, sender, pcount);
++	} else {
++		g_free (sender);
++	}
++	(*pcount)++;
++
+ 	dbus_g_method_return (context);
+ }
+ 
+@@ -967,8 +1103,28 @@
+ remove_reference (GcIfaceGeoclue *geoclue,
+                   DBusGMethodInvocation *context)
+ {
+-	/* TODO implement if needed */
++	GcMasterClient *client = GC_MASTER_CLIENT (geoclue);
++	GcMasterClientPrivate *priv = GET_PRIVATE (client);
++	char *sender;
++	int *pcount;
++
++	sender = dbus_g_method_get_sender (context);
++	pcount = g_hash_table_lookup (priv->connections, sender);
++	if (!pcount) {
++		g_warning ("Master client unreffed by app that has not referenced it");
++	} else {
++		(*pcount)--;
++		if (*pcount == 0) {
++			g_hash_table_remove (priv->connections, sender);
++		}
++	}
++	g_free (sender);
++
+ 	dbus_g_method_return (context);
++
++	if (g_hash_table_size (priv->connections) == 0) {
++		gc_master_client_schedule_destroy (client);
++	}
+ }
+ 
+ static void
