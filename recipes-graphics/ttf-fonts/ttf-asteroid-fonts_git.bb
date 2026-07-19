@@ -2,7 +2,7 @@ SUMMARY = "AsteroidOS fonts set"
 SECTION = "fonts"
 HOMEPAGE = "https://github.com/AsteroidOS/asteroid-fonts"
 LICENSE = "OFL-1.1 & Apache-2.0 & CC-BY-3.0 & CC-BY-4.0 & MIT"
-LIC_FILES_CHKSUM = "file://README.md;beginline=9;endline=25;md5=ab62300cfd2695c80cf7c2aedcfd0688"
+LIC_FILES_CHKSUM = "file://README.md;beginline=9;endline=25;md5=938519f4c84c3323cc9d56adb35bb79b"
 INHIBIT_DEFAULT_DEPS = "1"
 
 inherit allarch
@@ -11,7 +11,7 @@ inherit asteroid-users
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-fonts.git;protocol=https;branch=master \
     file://69-emoji.conf"
-SRCREV = "778f8485c8cd81d736a5244e65e96df0bfa59700"
+SRCREV = "2436c92d90385e33eccf77df22c2e5bad1b6e050"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
