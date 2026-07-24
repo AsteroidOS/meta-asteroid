@@ -1,0 +1,10 @@
+[Unit]
+Description=Underclock CPU and GPU to save battery life
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 20
+ExecStart=/usr/bin/underclock
+
+[Install]
+WantedBy=basic.target

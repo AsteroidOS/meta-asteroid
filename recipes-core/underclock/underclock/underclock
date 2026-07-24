@@ -1,0 +1,105 @@
+#!/bin/sh
+#
+# Generic AsteroidOS underclock script.
+#
+# One script for every watch: it offlines all CPU cores except the first,
+# requests a low-power CPU governor, pins the GPU to its lowest available
+# frequency and enables the low-power / idle sysfs knobs. Every path is probed
+# before it is touched, so a knob a given kernel does not expose is simply
+# skipped rather than special-cased per device.
+
+# Write $2 into the file $1, but only if it exists and is writable.
+write_if() {
+    [ -w "$1" ] && echo "$2" > "$1"
+}
+
+# CPU cores:
+# Offline every core except cpu0. The watch UI runs comfortably on a single
+# core and the idle-current saving is meaningful for the small battery. Cores
+# that do not exist (e.g. a dual-core SoC) simply have no "online" node and
+# are skipped, so this adapts to the core count automatically.
+for online in /sys/devices/system/cpu/cpu[0-9]*/online; do
+    case "$online" in
+        */cpu0/online) continue ;;   # never offline the boot core
+    esac
+    write_if "$online" 0
+done
+
+# CPU governor:
+# Prefer schedutil (scheduler-driven, mainline since kernel 4.7) when the
+# kernel offers it, otherwise fall back to ondemand. Older 3.x watch kernels
+# only ship the latter; newer kernels get the better governor for free. Left
+# untouched if the kernel offers neither.
+gov=/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+avail=/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+if [ -w "$gov" ] && [ -r "$avail" ]; then
+    for g in schedutil ondemand; do
+        if grep -qw "$g" "$avail"; then
+            echo "$g" > "$gov"
+            break
+        fi
+    done
+fi
+
+# Low-power / idle knobs:
+# Exposed under lpm_levels on most kernels, lpm_levels_legacy on a few.
+for lpm in lpm_levels lpm_levels_legacy; do
+    base=/sys/module/$lpm
+    [ -d "$base" ] || continue
+    write_if "$base/parameters/sleep_disabled" 0
+    write_if "$base/system/cpu0/pc/suspend_enabled" 1
+    write_if "$base/system/cpu0/pc/idle_enabled" 1
+    write_if "$base/system/cpu0/standalone_pc/suspend_enabled" 1
+    write_if "$base/system/cpu0/standalone_pc/idle_enabled" 1
+done
+
+# Adreno GPUs:
+# Pin the GPU to its lowest available frequency.
+gpu=/sys/class/kgsl/kgsl-3d0/devfreq
+if [ -r "$gpu/available_frequencies" ]; then
+    gpu_min=$(tr ' ' '\n' < "$gpu/available_frequencies" | grep -E '^[0-9]+$' | sort -n | head -n1)
+    if [ -n "$gpu_min" ]; then
+        # Lower min_freq first so the min <= max invariant holds while we
+        # clamp both ends down to the same value.
+        write_if "$gpu/min_freq" "$gpu_min"
+        write_if "$gpu/max_freq" "$gpu_min"
+    fi
+fi
+write_if "$gpu/governor" performance
+
+# MediaTek deep-sleep priming
+# On MT6580 watches, reading /dev/spm fixes battery drain and the deep sleep
+# mode. A no-op everywhere the node is absent.
+[ -r /dev/spm ] && cat /dev/spm > /dev/null 2>&1
+
+# PowerHAL fixups for interactive-governor watches:
+# Some watches (tetra) ship a userspace PowerHAL that drives the "interactive"
+# governor and needs a handful of device-specific sysfs nodes owned by its
+# runtime user so it can tweak them after boot. These nodes live under the
+# kona-fb platform device, which only exists on such watches, so the whole
+# block is skipped everywhere else. interactive is selected here rather than in
+# the generic governor step above because it must not be preferred on the other
+# watches (where it is merely the stock default we deliberately move away from).
+konafb=/sys/devices/platform/3c200000.kona-fb
+if [ -d "$konafb" ]; then
+    write_if /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+    write_if /sys/power/memc_dfs_init 1
+
+    # Selecting interactive above (re)creates its tunable directory; chown the
+    # nodes the PowerHAL writes so it can drive them as an unprivileged user.
+    for node in \
+        /sys/class/input/input1/mode \
+        "$konafb/backlight_brightness" \
+        "$konafb/panel_mode" \
+        /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq \
+        /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load \
+        /sys/devices/system/cpu/cpufreq/interactive/timer_rate \
+        /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay \
+        /sys/devices/system/cpu/cpufreq/interactive/min_sample_time \
+        /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq \
+        /sys/devices/system/cpu/cpufreq/interactive/timer_slack; do
+        [ -e "$node" ] && chown ceres:root "$node"
+    done
+fi
+
+exit 0
