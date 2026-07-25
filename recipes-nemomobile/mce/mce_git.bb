@@ -13,13 +13,14 @@ SRC_URI = "gitsm://github.com/sailfishos/mce.git;protocol=https;branch=master \
     file://0007-powerkey-Also-suspend-on-palm-reports.patch \
     file://builtin-gconf.values \
     file://mce.service \
-    file://0008-Remove-the-libdsme-dependency-entirely.patch"
+    file://0008-Remove-the-libdsme-dependency-entirely.patch \
+    file://0009-mce-hbtimer-arm-a-CLOCK_BOOTTIME_ALARM-timerfd-direc.patch"
 SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 
-DEPENDS += "glib-2.0 mcedevel libiphb systemd dbus-glib dbus libngf pkgconfig-native usb-moded"
+DEPENDS += "glib-2.0 mcedevel systemd dbus-glib dbus libngf pkgconfig-native usb-moded"
 
 do_install() {
     oe_runmake install _UNITDIR=${systemd_system_unitdir} DESTDIR=${D}
