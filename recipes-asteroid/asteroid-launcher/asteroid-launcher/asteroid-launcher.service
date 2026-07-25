@@ -9,7 +9,7 @@ WorkingDirectory=/
 EnvironmentFile=-/var/lib/environment/compositor/*.conf
 ExecStartPre=/usr/bin/asteroid-launcher-precondition
 ExecStartPre=-/bin/sh -ec '/bin/echo QUIT > /run/psplash_fifo'
-ExecStart=/usr/bin/asteroid-launcher $LIPSTICK_OPTIONS --systemd
+ExecStart=/usr/bin/asteroid-launcher -plugin evdevtouch $LIPSTICK_OPTIONS --systemd
 TimeoutStopSec=3
 Restart=always
 
