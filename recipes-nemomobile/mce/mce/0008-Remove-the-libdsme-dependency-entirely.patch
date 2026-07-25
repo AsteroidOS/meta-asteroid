@@ -1,0 +1,1216 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 25 Jul 2026 13:34:59 +0000
+Subject: [PATCH 8/9] Remove the libdsme dependency entirely
+
+AsteroidOS no longer ships dsme, so mce can no longer talk to it. Drop
+libdsme from mce: synthesize the USER system state at init (dsme used to
+feed it, and display/keypad/tklock are gated on it), route reboot/shutdown
+through systemctl, and drop the thermalmanager D-Bus monitor.
+---
+ Makefile   |   2 -
+ mce-dbus.c |   5 -
+ mce-dsme.c | 989 ++++-------------------------------------------------
+ 3 files changed, 69 insertions(+), 927 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 4ac8f39..bd98e09 100644
+--- a/Makefile
++++ b/Makefile
+@@ -284,11 +284,9 @@ MCE_PKG_NAMES += glib-2.0
+ MCE_PKG_NAMES += gio-2.0
+ MCE_PKG_NAMES += gmodule-2.0
+ MCE_PKG_NAMES += dbus-1
+-MCE_PKG_NAMES += dsme
+ MCE_PKG_NAMES += libiphb
+ MCE_PKG_NAMES += libsystemd
+ MCE_PKG_NAMES += libngf0
+-MCE_PKG_NAMES += thermalmanager_dbus_if
+ 
+ MCE_PKG_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(MCE_PKG_NAMES))
+ MCE_PKG_LDLIBS := $(shell $(PKG_CONFIG) --libs   $(MCE_PKG_NAMES))
+diff --git a/mce-dbus.c b/mce-dbus.c
+index d539b89..8e147f0 100644
+--- a/mce-dbus.c
++++ b/mce-dbus.c
+@@ -45,7 +45,6 @@
+ #include "dbus-gmain/dbus-gmain.h"
+ 
+ #include <mce/dbus-names.h>
+-#include <dsme/thermalmanager_dbus_if.h>
+ 
+ /* ========================================================================= *
+  * TYPES & CONSTANTS
+@@ -2141,10 +2140,6 @@ static struct
+ 	.name     = DSME_DBUS_SERVICE,
+ 	.datapipe = &dsme_service_state_pipe,
+     },
+-    {
+-	.name     = thermalmanager_service,
+-	.datapipe = &thermalmanager_service_state_pipe,
+-    },
+     {
+ 	.name     = "org.bluez",
+ 	.datapipe = &bluez_service_state_pipe,
+diff --git a/mce-dsme.c b/mce-dsme.c
+index 5299c16..ef342ef 100644
+--- a/mce-dsme.c
++++ b/mce-dsme.c
+@@ -1,8 +1,6 @@
+ /**
+  * @file mce-dsme.c
+- * Interface code and logic between
+- * DSME (the Device State Management Entity)
+- * and MCE (the Mode Control Entity)
++ * Device state logic that used to be driven by DSME.
+  * <p>
+  * Copyright © 2004-2011 Nokia Corporation and/or its subsidiary(-ies).
+  * Copyright © 2012-2019 Jolla Ltd.
+@@ -24,446 +22,121 @@
+  *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with mce.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * ------------------------------------------------------------------------
++ * AsteroidOS note
++ *
++ * AsteroidOS does not run the dsme daemon. This module used to keep a
++ * socket to dsme for the device runlevel/state, a process watchdog and
++ * thermal notifications; all of that is gone (and libdsme with it). What
++ * remains here is the minimum the rest of mce still relies on:
++ *
++ *   - Assume MCE_SYSTEM_STATE_USER at startup. Nothing else feeds the
++ *     system state now, and the display / tklock / input state machines
++ *     stay gated on it, so mce would otherwise never come up.
++ *   - Keep the system_state -> LED pattern / transition-submode /
++ *     shutting-down glue, so any state change we drive ourselves behaves
++ *     as it did before.
++ *   - Clear MCE_SUBMODE_TRANSITION once init_done goes true. init_done is
++ *     fed independently by the display flag-file watcher, so this still
++ *     works without dsme.
++ *   - Route reboot / shutdown requests to systemd.
++ * ------------------------------------------------------------------------
+  */
+ 
+ #include "mce-dsme.h"
+ 
+ #include "mce.h"
+ #include "mce-log.h"
+-#include "mce-dbus.h"
+-#include "mce-worker.h"
+ 
+ #include <stdlib.h>
+ #include <unistd.h>
+ 
+-#include <dsme/state.h>
+-#include <dsme/protocol.h>
+-#include <dsme/processwd.h>
+-#include <dsme/thermalmanager_dbus_if.h>
+-
+ /* ========================================================================= *
+  * MODULE DATA
+  * ========================================================================= */
+ 
+-/** Pointer to the dsmesock connection */
+-static dsmesock_connection_t *mce_dsme_socket_connection = NULL;
+-
+-/** I/O watch for mce_dsme_socket_connection */
+-static guint mce_dsme_socket_recv_id = 0;
+-
+ /** ID for delayed state transition reporting timer */
+ static guint mce_dsme_transition_id = 0;
+ 
+-/** Availability of dsme; from dsme_service_state_pipe */
+-static service_state_t dsme_service_state = SERVICE_STATE_UNDEF;
+-
+-/** Availability of thermalmanager; from thermalmanager_service_state_pipe */
+-static service_state_t thermalmanager_service_state = SERVICE_STATE_UNDEF;
+-
+-/** System state from dsme; fed to system_state_pipe */
++/** System state; fed to system_state_pipe */
+ static system_state_t system_state = MCE_SYSTEM_STATE_UNDEF;
+ 
+-/** Thermal state from thermalmanager (dsme); fed to thermal_state_pipe */
+-static thermal_state_t thermal_state = THERMAL_STATE_UNDEF;
+-
+-/** Shutdown warning from dsme; fed to shutting_down_pipe */
++/** Shutdown warning; fed to shutting_down_pipe */
+ static bool mce_dsme_shutting_down_flag = false;
+ 
+ /** Cached init_done state; assume unknown */
+ static tristate_t init_done = TRISTATE_UNKNOWN;
+ 
+ /* ========================================================================= *
+- * MODULE FUNCTIONS
+- * ========================================================================= */
+-
+-/* ------------------------------------------------------------------------- *
+- * UTILITY_FUNCTIONS
+- * ------------------------------------------------------------------------- */
+-
+-static thermal_state_t mce_dsme_parse_thermal_state    (const char *name);
+-static system_state_t  mce_dsme_normalise_system_state (dsme_state_t dsmestate);
+-
+-/* ------------------------------------------------------------------------- *
+- * WORKER_WATCHDOG
+- * ------------------------------------------------------------------------- */
+-
+-static void           mce_dsme_worker_done_cb  (void *aptr, void *reply);
+-static void          *mce_dsme_worker_pong_cb  (void *aptr);
+-static void           mce_dsme_worker_ping     (void);;
+-
+-/* ------------------------------------------------------------------------- *
+- * PROCESS_WATCHDOG
+- * ------------------------------------------------------------------------- */
+-
+-static void           mce_dsme_processwd_pong (void);
+-static void           mce_dsme_processwd_init (void);
+-static void           mce_dsme_processwd_quit (void);
+-
+-/* ------------------------------------------------------------------------- *
+- * SYSTEM_STATE
+- * ------------------------------------------------------------------------- */
+-
+-static void           mce_dsme_query_system_state      (void);
+-void                  mce_dsme_request_powerup         (void);
+-void                  mce_dsme_request_reboot          (void);
+-void                  mce_dsme_request_normal_shutdown (void);
+-
+-/* ------------------------------------------------------------------------- *
+- * TRANSITION_SUBMODE
+- * ------------------------------------------------------------------------- */
+-
+-static gboolean       mce_dsme_transition_cb       (gpointer data);
+-static void           mce_dsme_transition_cancel   (void);
+-static void           mce_dsme_transition_schedule (void);
+-
+-/* ------------------------------------------------------------------------- *
+- * SHUTTING_DOWN
+- * ------------------------------------------------------------------------- */
+-
+-static bool           mce_dsme_is_shutting_down  (void);
+-static void           mce_dsme_set_shutting_down (bool shutting_down);
+-
+-/* ------------------------------------------------------------------------- *
+- * SOCKET_CONNECTION
+- * ------------------------------------------------------------------------- */
+-
+-static bool           mce_dsme_socket_send         (void *msg);
+-static gboolean       mce_dsme_socket_recv_cb      (GIOChannel *source, GIOCondition condition, gpointer data);
+-static bool           mce_dsme_socket_is_connected (void);
+-static bool           mce_dsme_socket_connect      (void);
+-static void           mce_dsme_socket_disconnect   (void);
+-
+-/* ------------------------------------------------------------------------- *
+- * DBUS_HANDLERS
+- * ------------------------------------------------------------------------- */
+-
+-static gboolean       mce_dsme_dbus_thermal_state_change_cb   (DBusMessage *const msg);
+-static void           mce_dsme_dbus_thermal_state_reply_cb    (DBusPendingCall *pc, void *aptr);
+-static void           mce_dsme_dbus_cancel_thermal_state_query(void);
+-static void           mce_dsme_dbus_start_thermal_state_query (void);
+-
+-static gboolean       mce_dsme_dbus_init_done_cb              (DBusMessage *const msg);
+-static gboolean       mce_dsme_dbus_shutdown_cb               (DBusMessage *const msg);
+-static gboolean       mce_dsme_dbus_thermal_shutdown_cb       (DBusMessage *const msg);
+-static gboolean       mce_dsme_dbus_battery_empty_shutdown_cb (DBusMessage *const msg);
+-
+-static void           mce_dsme_dbus_init(void);
+-static void           mce_dsme_dbus_quit(void);
+-
+-/* ------------------------------------------------------------------------- *
+- * DATAPIPE_TRACKING
+- * ------------------------------------------------------------------------- */
+-
+-static void           mce_dsme_datapipe_set_thermal_state     (thermal_state_t state);
+-
+-static void           mce_dsme_datapipe_dsme_service_state_cb (gconstpointer data);
+-static void           mce_dsme_datapipe_thermalmanager_service_state_cb(gconstpointer const data);
+-static void           mce_dsme_datapipe_init_done_cb          (gconstpointer data);
+-static void           mce_dsme_datapipe_system_state_cb       (gconstpointer data);
+-
+-static void           mce_dsme_datapipe_init(void);
+-static void           mce_dsme_datapipe_quit(void);
+-
+-/* ------------------------------------------------------------------------- *
+- * MODULE_INIT_EXIT
+- * ------------------------------------------------------------------------- */
+-
+-gboolean              mce_dsme_init(void);
+-void                  mce_dsme_exit(void);
+-
+-/* ========================================================================= *
+- * UTILITY_FUNCTIONS
++ * PROTOTYPES
+  * ========================================================================= */
+ 
+-/** Convert system states used by dsme to the ones used in mce datapipes
+- *
+- * @param dsmestate System state constant used by dsme
+- *
+- * @return System state constant used within mce
+- */
+-static system_state_t mce_dsme_normalise_system_state(dsme_state_t dsmestate)
+-{
+-    system_state_t state = MCE_SYSTEM_STATE_UNDEF;
+-
+-    switch (dsmestate) {
+-    case DSME_STATE_SHUTDOWN:
+-        state = MCE_SYSTEM_STATE_SHUTDOWN;
+-        break;
+-
+-    case DSME_STATE_USER:
+-        state = MCE_SYSTEM_STATE_USER;
+-        break;
+-
+-    case DSME_STATE_ACTDEAD:
+-        state = MCE_SYSTEM_STATE_ACTDEAD;
+-        break;
+-
+-    case DSME_STATE_REBOOT:
+-        state = MCE_SYSTEM_STATE_REBOOT;
+-        break;
+-
+-    case DSME_STATE_BOOT:
+-        state = MCE_SYSTEM_STATE_BOOT;
+-        break;
+-
+-    case DSME_STATE_NOT_SET:
+-        break;
+-
+-    case DSME_STATE_TEST:
+-        mce_log(LL_WARN,
+-                "Received DSME_STATE_TEST; treating as undefined");
+-        break;
+-
+-    case DSME_STATE_MALF:
+-        mce_log(LL_WARN,
+-                "Received DSME_STATE_MALF; treating as undefined");
+-        break;
+-
+-    case DSME_STATE_LOCAL:
+-        mce_log(LL_WARN,
+-                "Received DSME_STATE_LOCAL; treating as undefined");
+-        break;
+-
+-    default:
+-        mce_log(LL_ERR,
+-                "Received an unknown state from DSME; "
+-                "treating as undefined");
+-        break;
+-    }
+-
+-    return state;
+-}
++static void     mce_dsme_exec_systemctl    (const char *verb);
+ 
+-/** Convert thermal manager thermal state name to mce thermal_state_t
+- *
+- * @param name  Thermal state name as received over D-Bus
+- *
+- * @return name mapped to thermal_state_t enumeration value
+- */
+-static thermal_state_t mce_dsme_parse_thermal_state(const char *name)
+-{
+-    thermal_state_t state = THERMAL_STATE_UNDEF;
++static gboolean mce_dsme_transition_cb      (gpointer data);
++static void     mce_dsme_transition_cancel  (void);
++static void     mce_dsme_transition_schedule(void);
+ 
+-    if( name == 0 )
+-        ;
+-    else if( !strcmp(name, thermalmanager_thermal_status_low) )
+-        state = THERMAL_STATE_OK;
+-    else if( !strcmp(name, thermalmanager_thermal_status_normal) )
+-        state = THERMAL_STATE_OK;
+-    else if( !strcmp(name, thermalmanager_thermal_status_warning) )
+-        state = THERMAL_STATE_OK;
+-    else if( !strcmp(name, thermalmanager_thermal_status_alert) )
+-        state = THERMAL_STATE_OVERHEATED;
+-    else if( !strcmp(name, thermalmanager_thermal_status_fatal) )
+-        state = THERMAL_STATE_OVERHEATED;
++static void     mce_dsme_set_shutting_down  (bool shutting_down);
+ 
+-    return state;
+-}
++static void     mce_dsme_datapipe_init_done_cb   (gconstpointer data);
++static void     mce_dsme_datapipe_system_state_cb(gconstpointer data);
++static void     mce_dsme_datapipe_init      (void);
++static void     mce_dsme_datapipe_quit      (void);
+ 
+ /* ========================================================================= *
+- * WORKER_WATCHDOG
++ * SYSTEM_STATE  (reboot / shutdown requests)
+  * ========================================================================= */
+ 
+-/** Validation context for the jobs passed from this module */
+-#define MCE_DSME_WORKERWD_JOB_CONTEXT "mce-dsme"
+-
+-/** Descriptive name for the dummy sanity check worker thread jobs */
+-#define MCE_DSME_WORKERWD_JOB_NAME    "ping"
+-
+-/** Number of worker jobs scheduled */
+-static guint mce_dsme_worker_ping_cnt = 0;
+-
+-/** Number of worker jobs executed */
+-static guint mce_dsme_worker_pong_cnt = 0;
+-
+-/** Number of worker jobs notified */
+-static guint mce_dsme_worker_done_cnt = 0;
+-
+-/** Flag for: worker thread issues noticed */
+-static bool  mce_dsme_worker_misbehaving = false;
+-
+-/** Handle dummy job finished notification
+- *
+- * @param aptr   Ping count passed to the worker thread (as void pointer)
+- * @param reply  Ping count returned from the worker thread (as void pointer)
+- */
+-static void mce_dsme_worker_done_cb(void *aptr, void *reply)
+-{
+-    (void)reply;
+-
+-    mce_dsme_worker_done_cnt = GPOINTER_TO_INT(aptr);
+-
+-    /* Check if the last job scheduled matches what got executed
+-     * and notified as finished */
+-
+-    if( mce_dsme_worker_ping_cnt != mce_dsme_worker_pong_cnt ||
+-        mce_dsme_worker_ping_cnt != mce_dsme_worker_done_cnt ) {
+-        mce_log(LL_CRIT, "worker thread is misbehaving");
+-        mce_dsme_worker_misbehaving = true;
+-    }
+-}
+-
+-/** Dummy job to be executed by the worker thread
++/** Ask systemd to perform a power state transition
+  *
+- * @param aptr  Ping count (as void pointer)
++ * AsteroidOS does not run dsme, so the reboot / shutdown requests that
++ * used to be sent over the dsme socket are handed to systemd instead
++ * (which is what actually owns these transitions).
+  *
+- * @return Ping count (as void pointer)
++ * @param verb systemctl verb, e.g. "reboot" or "poweroff"
+  */
+-static void *mce_dsme_worker_pong_cb(void *aptr)
++static void mce_dsme_exec_systemctl(const char *verb)
+ {
+-    /* Note: This is executed in the worker thread context */
++    pid_t pid = fork();
+ 
+-    mce_dsme_worker_pong_cnt = GPOINTER_TO_INT(aptr);
+-
+-    /* Check if the job we got to execute is the latest one
+-     * scheduled from the main thread */
+-
+-    if( mce_dsme_worker_ping_cnt != mce_dsme_worker_pong_cnt ) {
+-        mce_log(LL_CRIT, "worker thread is misbehaving");
+-        mce_dsme_worker_misbehaving = true;
++    if( pid == 0 ) {
++        /* Child: replace with systemctl */
++        execl("/bin/systemctl", "systemctl", verb, (char *)0);
++        execl("/usr/bin/systemctl", "systemctl", verb, (char *)0);
++        _exit(EXIT_FAILURE);
+     }
+ 
+-    return aptr;
+-}
+-
+-/** Run a dummy job through worker thread to make sure it is still functioning
+- */
+-static void mce_dsme_worker_ping(void)
+-{
+-    /* Check if previous job got executed as expected */
+-    if( mce_dsme_worker_ping_cnt != mce_dsme_worker_pong_cnt ||
+-        mce_dsme_worker_ping_cnt != mce_dsme_worker_done_cnt ) {
+-        mce_log(LL_CRIT, "worker thread is possibly stuck");
+-        mce_dsme_worker_misbehaving = true;
+-    }
+-    else if( mce_dsme_worker_misbehaving ) {
+-        mce_dsme_worker_misbehaving = false;
+-        mce_log(LL_CRIT, "worker thread is working again");
+-    }
+-
+-    mce_dsme_worker_ping_cnt += 1;
+-
+-    mce_worker_add_job(MCE_DSME_WORKERWD_JOB_CONTEXT,
+-                       MCE_DSME_WORKERWD_JOB_NAME,
+-                       mce_dsme_worker_pong_cb,
+-                       mce_dsme_worker_done_cb,
+-                       GINT_TO_POINTER(mce_dsme_worker_ping_cnt));
+-}
+-
+-/* ========================================================================= *
+- * PROCESS_WATCHDOG
+- * ========================================================================= */
+-
+-/**
+- * Send pong message to the DSME process watchdog
+- */
+-static void mce_dsme_processwd_pong(void)
+-{
+-    /* Set up the message */
+-    DSM_MSGTYPE_PROCESSWD_PONG msg =
+-        DSME_MSG_INIT(DSM_MSGTYPE_PROCESSWD_PONG);
+-    msg.pid = getpid();
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
+-
+-    /* Run worker thread sanity check */
+-    mce_dsme_worker_ping();
+-
+-    /* Execute hearbeat actions even if ping-pong ipc failed */
+-    datapipe_exec_full(&heartbeat_event_pipe, GINT_TO_POINTER(0));
+-}
+-
+-/**
+- * Register to DSME process watchdog
+- */
+-static void mce_dsme_processwd_init(void)
+-{
+-    /* Set up the message */
+-    DSM_MSGTYPE_PROCESSWD_CREATE msg =
+-        DSME_MSG_INIT(DSM_MSGTYPE_PROCESSWD_CREATE);
+-    msg.pid = getpid();
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
+-}
+-
+-/**
+- * Unregister from DSME process watchdog
+- */
+-static void mce_dsme_processwd_quit(void)
+-{
+-    mce_log(LL_DEBUG, "Disabling DSME process watchdog");
+-
+-    /* Set up the message */
+-    DSM_MSGTYPE_PROCESSWD_DELETE msg =
+-        DSME_MSG_INIT(DSM_MSGTYPE_PROCESSWD_DELETE);
+-    msg.pid = getpid();
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
+-}
+-
+-/* ========================================================================= *
+- * SYSTEM_STATE
+- * ========================================================================= */
+-
+-/** Send system state inquiry
+- */
+-static void mce_dsme_query_system_state(void)
+-{
+-    /* Set up the message */
+-    DSM_MSGTYPE_STATE_QUERY msg = DSME_MSG_INIT(DSM_MSGTYPE_STATE_QUERY);
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
++    if( pid == -1 )
++        mce_log(LL_ERR, "failed to fork for 'systemctl %s': %m", verb);
++    else
++        mce_log(LL_DEVEL, "requested 'systemctl %s' from systemd", verb);
+ }
+ 
+-/** Request powerup
+- */
+ void mce_dsme_request_powerup(void)
+ {
+-    /* Set up the message */
+-    DSM_MSGTYPE_POWERUP_REQ msg = DSME_MSG_INIT(DSM_MSGTYPE_POWERUP_REQ);
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
++    /* There is no ACTDEAD / charging-only state without dsme, so there is
++     * nothing to power up into; this is a no-op. */
++    mce_log(LL_DEBUG, "powerup request ignored; dsme not in use");
+ }
+ 
+-/** Request reboot
+- */
+ void mce_dsme_request_reboot(void)
+ {
+     if( datapipe_get_gint(osupdate_running_pipe) ) {
+         mce_log(LL_WARN, "reboot blocked; os update in progress");
+-        goto EXIT;
++        return;
+     }
+-
+-    /* Set up the message */
+-    DSM_MSGTYPE_REBOOT_REQ msg = DSME_MSG_INIT(DSM_MSGTYPE_REBOOT_REQ);
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
+-EXIT:
+-    return;
++    mce_dsme_exec_systemctl("reboot");
+ }
+ 
+-/** Request normal shutdown
+- */
+ void mce_dsme_request_normal_shutdown(void)
+ {
+     if( datapipe_get_gint(osupdate_running_pipe) ) {
+         mce_log(LL_WARN, "shutdown blocked; os update in progress");
+-        goto EXIT;
++        return;
+     }
+-
+-    /* Set up the message */
+-    DSM_MSGTYPE_SHUTDOWN_REQ msg = DSME_MSG_INIT(DSM_MSGTYPE_SHUTDOWN_REQ);
+-
+-    /* Send the message */
+-    mce_dsme_socket_send(&msg);
+-EXIT:
+-    return;
++    mce_dsme_exec_systemctl("poweroff");
+ }
+ 
+ /* ========================================================================= *
+@@ -506,38 +179,24 @@ static void mce_dsme_transition_schedule(void)
+ 
+     /* Check if we have transition to end */
+     if( !(mce_get_submode_int32() & MCE_SUBMODE_TRANSITION) )
+-        goto EXIT;
++        return;
+ 
+ #if TRANSITION_DELAY > 0
+-    /* Setup new timeout */
+     mce_dsme_transition_id =
+         g_timeout_add(TRANSITION_DELAY, mce_dsme_transition_cb, NULL);
+ #elif TRANSITION_DELAY == 0
+-    /* Set up idle callback */
+     mce_dsme_transition_id =
+         g_idle_add(mce_dsme_transition_cb, NULL);
+ #else
+     /* Trigger immediately */
+     mce_dsme_transition_cb(0);
+ #endif
+-
+-EXIT:
+-    return;
+ }
+ 
+ /* ========================================================================= *
+  * SHUTTING_DOWN
+  * ========================================================================= */
+ 
+-/** Predicate for: device is shutting down
+- *
+- * @return true if shutdown is in progress, false otherwise
+- */
+-static bool mce_dsme_is_shutting_down(void)
+-{
+-    return mce_dsme_shutting_down_flag;
+-}
+-
+ /** Update device is shutting down state
+  *
+  * @param shutting_down true if shutdown has started, false otherwise
+@@ -545,513 +204,21 @@ static bool mce_dsme_is_shutting_down(void)
+ static void mce_dsme_set_shutting_down(bool shutting_down)
+ {
+     if( mce_dsme_shutting_down_flag == shutting_down )
+-        goto EXIT;
++        return;
+ 
+     mce_dsme_shutting_down_flag = shutting_down;
+ 
+     mce_log(LL_DEVEL, "Shutdown %s",
+             mce_dsme_shutting_down_flag ? "started" : "canceled");
+ 
+-    /* Re-evaluate dsmesock connection */
+-    if( !mce_dsme_shutting_down_flag )
+-        mce_dsme_socket_connect();
+-
+     datapipe_exec_full(&shutting_down_pipe,
+                        GINT_TO_POINTER(mce_dsme_shutting_down_flag));
+-
+-EXIT:
+-    return;
+-}
+-
+-/* ========================================================================= *
+- * SOCKET_CONNECTION
+- * ========================================================================= */
+-
+-/**
+- * Generic send function for dsmesock messages
+- *
+- * @param msg A pointer to the message to send
+- */
+-static bool mce_dsme_socket_send(void *msg)
+-{
+-    bool res = false;
+-
+-    if( !mce_dsme_socket_connection ) {
+-        mce_log(LL_WARN, "failed to send %s to dsme; %s",
+-                dsmemsg_name(msg), "not connected");
+-        goto EXIT;
+-    }
+-
+-    if( dsmesock_send(mce_dsme_socket_connection, msg) == -1) {
+-        mce_log(LL_ERR, "failed to send %s to dsme; %m",
+-                dsmemsg_name(msg));
+-    }
+-
+-    mce_log(LL_DEBUG, "%s sent to DSME", dsmemsg_name(msg));
+-
+-    res = true;
+-
+-EXIT:
+-    return res;
+-}
+-
+-/** Callback for pending I/O from dsmesock
+- *
+- * @param source     (not used)
+- * @param condition  I/O condition that caused the callback to be called
+- * @param data       (not used)
+- *
+- * @return TRUE if iowatch is to be kept, or FALSE if it should be removed
+- */
+-static gboolean mce_dsme_socket_recv_cb(GIOChannel *source,
+-                                        GIOCondition condition,
+-                                        gpointer data)
+-{
+-    gboolean keep_going = TRUE;
+-    dsmemsg_generic_t *msg = 0;
+-
+-    DSM_MSGTYPE_STATE_CHANGE_IND *msg2;
+-
+-    (void)source;
+-    (void)data;
+-
+-    if( condition & (G_IO_ERR | G_IO_HUP | G_IO_NVAL) ) {
+-        if( !mce_dsme_is_shutting_down() )
+-            mce_log(LL_CRIT, "DSME socket hangup/error");
+-        keep_going = FALSE;
+-        goto EXIT;
+-    }
+-
+-    if( !(msg = dsmesock_receive(mce_dsme_socket_connection)) )
+-        goto EXIT;
+-
+-    if( DSMEMSG_CAST(DSM_MSGTYPE_CLOSE, msg) ) {
+-        if( !mce_dsme_is_shutting_down() )
+-            mce_log(LL_WARN, "DSME socket closed");
+-        keep_going = FALSE;
+-    }
+-    else if( DSMEMSG_CAST(DSM_MSGTYPE_PROCESSWD_PING, msg) ) {
+-        mce_dsme_processwd_pong();
+-    }
+-    else if( (msg2 = DSMEMSG_CAST(DSM_MSGTYPE_STATE_CHANGE_IND, msg)) ) {
+-        system_state_t state = mce_dsme_normalise_system_state(msg2->state);
+-        datapipe_exec_full(&system_state_pipe,
+-                           GINT_TO_POINTER(state));
+-    }
+-    else {
+-        mce_log(LL_DEBUG, "Unhandled %s message received from DSME",
+-                dsmemsg_name(msg));
+-    }
+-
+-EXIT:
+-    free(msg);
+-
+-    if( !keep_going ) {
+-        if( !mce_dsme_is_shutting_down() ) {
+-            mce_log(LL_WARN, "DSME i/o notifier disabled;"
+-                    " assuming dsme was stopped");
+-        }
+-
+-        /* mark notifier as removed */
+-        mce_dsme_socket_recv_id = 0;
+-
+-        /* close and wait for possible dsme restart */
+-        mce_dsme_socket_disconnect();
+-    }
+-
+-    return keep_going;
+-}
+-
+-/** Predicate for: socket connection to dsme exists
+- *
+- * @return true if connected, false otherwise
+- */
+-static bool mce_dsme_socket_is_connected(void)
+-{
+-    return mce_dsme_socket_connection && mce_dsme_socket_recv_id;
+-}
+-
+-/** Initialise dsmesock connection
+- *
+- * @return true on success, false on failure
+- */
+-static bool mce_dsme_socket_connect(void)
+-{
+-    GIOChannel *iochan = NULL;
+-
+-    /* No new connections during shutdown */
+-    if( mce_dsme_is_shutting_down() )
+-        goto EXIT;
+-
+-    /* No new connections unless dsme dbus service is up */
+-    if( dsme_service_state != SERVICE_STATE_RUNNING )
+-        goto EXIT;
+-
+-    /* Already connected ? */
+-    if( mce_dsme_socket_recv_id )
+-        goto EXIT;
+-
+-    mce_log(LL_DEBUG, "Opening DSME socket");
+-
+-    if( !(mce_dsme_socket_connection = dsmesock_connect()) ) {
+-        mce_log(LL_ERR, "Failed to open DSME socket");
+-        goto EXIT;
+-    }
+-
+-    mce_log(LL_DEBUG, "Adding DSME socket notifier");
+-
+-    if( !(iochan = g_io_channel_unix_new(mce_dsme_socket_connection->fd)) ) {
+-        mce_log(LL_ERR,"Failed to set up I/O channel for DSME socket");
+-        goto EXIT;
+-    }
+-
+-    mce_dsme_socket_recv_id =
+-        g_io_add_watch(iochan,
+-                       G_IO_IN | G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+-                       mce_dsme_socket_recv_cb, NULL);
+-
+-    /* Query the current system state; if the mainloop isn't running,
+-     * this will trigger an update when the mainloop starts
+-     */
+-    mce_dsme_query_system_state();
+-
+-    /* Register with DSME's process watchdog */
+-    mce_dsme_processwd_init();
+-
+-EXIT:
+-    if( iochan ) g_io_channel_unref(iochan);
+-
+-    if( !mce_dsme_socket_recv_id )
+-        mce_dsme_socket_disconnect();
+-
+-    return mce_dsme_socket_is_connected();
+-}
+-
+-/** Close dsmesock connection
+- */
+-static void mce_dsme_socket_disconnect(void)
+-{
+-    if( mce_dsme_socket_recv_id ) {
+-        mce_log(LL_DEBUG, "Removing DSME socket notifier");
+-        g_source_remove(mce_dsme_socket_recv_id);
+-        mce_dsme_socket_recv_id = 0;
+-
+-        /* Still having had a live socket notifier means: We have
+-         * initiated the dsmesock disconnect and need to deactivate
+-         * the process watchdog before actually disconnecting. */
+-        mce_dsme_processwd_quit();
+-    }
+-
+-    if( mce_dsme_socket_connection ) {
+-        mce_log(LL_DEBUG, "Closing DSME socket");
+-        dsmesock_close(mce_dsme_socket_connection);
+-        mce_dsme_socket_connection = 0;
+-    }
+-}
+-
+-/* ========================================================================= *
+- * DBUS_HANDLERS
+- * ========================================================================= */
+-
+-/** Pending thermal state query */
+-static DBusPendingCall *mce_dsme_thermal_state_query_pc = 0;
+-
+-/** D-Bus callback for the thermal state change notification signal
+- *
+- * @param msg The D-Bus message
+- *
+- * @return TRUE
+- */
+-static gboolean
+-mce_dsme_dbus_thermal_state_change_cb(DBusMessage *const msg)
+-{
+-    DBusError error = DBUS_ERROR_INIT;
+-    const char *name = 0;
+-
+-    if( !dbus_message_get_args(msg, &error,
+-                               DBUS_TYPE_STRING, &name,
+-                               DBUS_TYPE_INVALID)) {
+-        mce_log(LL_ERR, "Failed to parse %s.%s; %s: %s",
+-                dbus_message_get_interface(msg),
+-                dbus_message_get_member(msg),
+-                error.name, error.message);
+-        goto EXIT;
+-    }
+-
+-    mce_log(LL_WARN, "thermal state signal: %s", name);
+-    thermal_state_t state = mce_dsme_parse_thermal_state(name);
+-    mce_dsme_datapipe_set_thermal_state(state);
+-
+-EXIT:
+-    dbus_error_free(&error);
+-    return TRUE;
+-}
+-
+-/** Handle reply to async query made from mce_dsme_thermal_state_query_async()
+- */
+-static void
+-mce_dsme_dbus_thermal_state_reply_cb(DBusPendingCall *pc, void *aptr)
+-{
+-    (void)aptr;
+-
+-    DBusMessage *rsp  = 0;
+-    DBusError    err  = DBUS_ERROR_INIT;
+-    const char  *name = 0;
+-
+-    if( pc != mce_dsme_thermal_state_query_pc )
+-        goto EXIT;
+-
+-    dbus_pending_call_unref(mce_dsme_thermal_state_query_pc),
+-        mce_dsme_thermal_state_query_pc = 0;
+-
+-    if( !(rsp = dbus_pending_call_steal_reply(pc)) ) {
+-        mce_log(LL_WARN, "no reply");
+-        goto EXIT;
+-    }
+-
+-    if( dbus_set_error_from_message(&err, rsp) ) {
+-        mce_log(LL_WARN, "error reply: %s: %s", err.name, err.message);
+-        goto EXIT;
+-    }
+-
+-    if( !dbus_message_get_args(rsp, &err,
+-                               DBUS_TYPE_STRING, &name,
+-                               DBUS_TYPE_INVALID) ) {
+-        mce_log(LL_WARN, "parse error: %s: %s", err.name, err.message);
+-        goto EXIT;
+-    }
+-
+-    mce_log(LL_DEBUG, "thermal state reply: %s", name);
+-    thermal_state_t state = mce_dsme_parse_thermal_state(name);
+-    mce_dsme_datapipe_set_thermal_state(state);
+-
+-EXIT:
+-    if( rsp ) dbus_message_unref(rsp);
+-    dbus_error_free(&err);
+-    return;
+-}
+-
+-/** Cancel pending async thermal state query
+- */
+-static void
+-mce_dsme_dbus_cancel_thermal_state_query(void)
+-{
+-    if( mce_dsme_thermal_state_query_pc ) {
+-        mce_log(LL_DEBUG, "cancel thermal state query");
+-        dbus_pending_call_cancel(mce_dsme_thermal_state_query_pc);
+-        dbus_pending_call_unref(mce_dsme_thermal_state_query_pc);
+-        mce_dsme_thermal_state_query_pc = 0;
+-    }
+-}
+-
+-/** Initiate async query to find out current thermal state
+- */
+-static void
+-mce_dsme_dbus_start_thermal_state_query(void)
+-{
+-    mce_dsme_dbus_cancel_thermal_state_query();
+-
+-    mce_log(LL_DEBUG, "start thermal state query");
+-    dbus_send_ex(thermalmanager_service,
+-                 thermalmanager_path,
+-                 thermalmanager_interface,
+-                 thermalmanager_get_thermal_state,
+-                 mce_dsme_dbus_thermal_state_reply_cb, 0, 0,
+-                 &mce_dsme_thermal_state_query_pc,
+-                 DBUS_TYPE_INVALID);
+-}
+-
+-/** D-Bus callback for the init done notification signal
+- *
+- * @param msg The D-Bus message
+- *
+- * @return TRUE
+- */
+-static gboolean mce_dsme_dbus_init_done_cb(DBusMessage *const msg)
+-{
+-    (void)msg;
+-
+-    mce_log(LL_DEVEL, "Received init done notification");
+-
+-    /* Remove transition submode after brief delay */
+-    mce_dsme_transition_schedule();
+-
+-    return TRUE;
+-}
+-
+-/** D-Bus callback for the shutdown notification signal
+- *
+- * @param msg The D-Bus message
+- *
+- * @return TRUE
+- */
+-static gboolean mce_dsme_dbus_shutdown_cb(DBusMessage *const msg)
+-{
+-    (void)msg;
+-
+-    mce_log(LL_WARN, "Received shutdown notification");
+-    mce_dsme_set_shutting_down(true);
+-
+-    return TRUE;
+-}
+-
+-/** D-Bus callback for the thermal shutdown notification signal
+- *
+- * @param msg The D-Bus message
+- *
+- * @return TRUE
+- */
+-static gboolean
+-mce_dsme_dbus_thermal_shutdown_cb(DBusMessage *const msg)
+-{
+-    (void)msg;
+-
+-    mce_log(LL_WARN, "Received thermal shutdown notification");
+-    mce_datapipe_request_display_state(MCE_DISPLAY_ON);
+-
+-    return TRUE;
+-}
+-
+-/** D-Bus callback for the battery empty shutdown notification signal
+- *
+- * @param msg The D-Bus message
+- *
+- * @return TRUE
+- */
+-static gboolean
+-mce_dsme_dbus_battery_empty_shutdown_cb(DBusMessage *const msg)
+-{
+-    (void)msg;
+-
+-    mce_log(LL_WARN, "Received battery empty shutdown notification");
+-    mce_datapipe_request_display_state(MCE_DISPLAY_ON);
+-
+-    return TRUE;
+-}
+-
+-/** Array of dbus message handlers */
+-static mce_dbus_handler_t mce_dsme_dbus_handlers[] =
+-{
+-    /* signals */
+-    {
+-        .interface = "com.nokia.startup.signal",
+-        .name      = "init_done",
+-        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
+-        .callback  = mce_dsme_dbus_init_done_cb,
+-    },
+-    {
+-        .interface = "com.nokia.dsme.signal",
+-        .name      = "shutdown_ind",
+-        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
+-        .callback  = mce_dsme_dbus_shutdown_cb,
+-    },
+-    {
+-        .interface = "com.nokia.dsme.signal",
+-        .name      = "thermal_shutdown_ind",
+-        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
+-        .callback  = mce_dsme_dbus_thermal_shutdown_cb,
+-    },
+-    {
+-        .interface = "com.nokia.dsme.signal",
+-        .name      = "battery_empty_ind",
+-        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
+-        .callback  = mce_dsme_dbus_battery_empty_shutdown_cb,
+-    },
+-    {
+-        .interface = thermalmanager_interface,
+-        .name      = thermalmanager_state_change_ind,
+-        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
+-        .callback  = mce_dsme_dbus_thermal_state_change_cb,
+-    },
+-    /* sentinel */
+-    {
+-        .interface = 0
+-    }
+-};
+-
+-/** Add dbus handlers
+- */
+-static void mce_dsme_dbus_init(void)
+-{
+-    mce_dbus_handler_register_array(mce_dsme_dbus_handlers);
+-}
+-
+-/** Remove dbus handlers
+- */
+-static void mce_dsme_dbus_quit(void)
+-{
+-    mce_dbus_handler_unregister_array(mce_dsme_dbus_handlers);
+ }
+ 
+ /* ========================================================================= *
+  * DATAPIPE_TRACKING
+  * ========================================================================= */
+ 
+-static void mce_dsme_datapipe_set_thermal_state(thermal_state_t state)
+-{
+-    if( thermal_state != state ) {
+-        /* All thermal state transitions are of interest - except for the
+-         * UNDEF -> OK that is expected to happen during mce startup. */
+-        int level = LL_WARN;
+-        if( thermal_state == THERMAL_STATE_UNDEF && state == THERMAL_STATE_OK )
+-            level = LL_DEBUG;
+-        mce_log(level, "thermal state changed: %s -> %s",
+-                thermal_state_repr(thermal_state),
+-                thermal_state_repr(state));
+-        thermal_state = state;
+-        datapipe_exec_full(&thermal_state_pipe, GINT_TO_POINTER(thermal_state));
+-    }
+-}
+-
+-/** Datapipe trigger for dsme availability
+- *
+- * @param data DSME D-Bus service availability (as a void pointer)
+- */
+-static void mce_dsme_datapipe_dsme_service_state_cb(gconstpointer const data)
+-{
+-    service_state_t prev = dsme_service_state;
+-    dsme_service_state = GPOINTER_TO_INT(data);
+-
+-    if( dsme_service_state == prev )
+-        goto EXIT;
+-
+-    mce_log(LL_DEVEL, "DSME dbus service: %s -> %s",
+-            service_state_repr(prev),
+-            service_state_repr(dsme_service_state));
+-
+-    /* Re-evaluate dsmesock connection */
+-    if( dsme_service_state == SERVICE_STATE_RUNNING )
+-        mce_dsme_socket_connect();
+-
+-EXIT:
+-    return;
+-}
+-
+-/** Datapipe trigger for thermalmanager availability
+- *
+- * @param data thermalmanager D-Bus service availability (as a void pointer)
+- */
+-static void mce_dsme_datapipe_thermalmanager_service_state_cb(gconstpointer const data)
+-{
+-    service_state_t prev = thermalmanager_service_state;
+-    thermalmanager_service_state = GPOINTER_TO_INT(data);
+-
+-    if( thermalmanager_service_state == prev )
+-        goto EXIT;
+-
+-    mce_log(LL_DEBUG, "thermalmanager dbus service: %s -> %s",
+-            service_state_repr(prev),
+-            service_state_repr(thermalmanager_service_state));
+-
+-    if( thermalmanager_service_state == SERVICE_STATE_RUNNING )
+-        mce_dsme_dbus_start_thermal_state_query();
+-    else
+-        mce_dsme_dbus_cancel_thermal_state_query();
+-
+-EXIT:
+-    return;
+-}
+-
+ /** Change notifications for init_done
+  */
+ static void mce_dsme_datapipe_init_done_cb(gconstpointer data)
+@@ -1060,7 +227,7 @@ static void mce_dsme_datapipe_init_done_cb(gconstpointer data)
+     init_done = GPOINTER_TO_INT(data);
+ 
+     if( init_done == prev )
+-        goto EXIT;
++        return;
+ 
+     mce_log(LL_DEBUG, "init_done = %s -> %s",
+             tristate_repr(prev),
+@@ -1070,9 +237,6 @@ static void mce_dsme_datapipe_init_done_cb(gconstpointer data)
+         /* Remove transition submode after brief delay */
+         mce_dsme_transition_schedule();
+     }
+-
+-EXIT:
+-    return;
+ }
+ 
+ /** Handle system_state_pipe notifications
+@@ -1088,7 +252,7 @@ static void mce_dsme_datapipe_system_state_cb(gconstpointer data)
+     system_state = GPOINTER_TO_INT(data);
+ 
+     if( system_state == prev )
+-        goto EXIT;
++        return;
+ 
+     mce_log(LL_DEVEL, "system_state: %s -> %s",
+             system_state_repr(prev),
+@@ -1132,9 +296,6 @@ static void mce_dsme_datapipe_system_state_cb(gconstpointer data)
+     default:
+         break;
+     }
+-
+-EXIT:
+-    return;
+ }
+ 
+ /** Array of datapipe handlers */
+@@ -1146,14 +307,6 @@ static datapipe_handler_t mce_dsme_datapipe_handlers[] =
+         .input_cb  = mce_dsme_datapipe_system_state_cb,
+     },
+     // output triggers
+-    {
+-        .datapipe  = &dsme_service_state_pipe,
+-        .output_cb = mce_dsme_datapipe_dsme_service_state_cb,
+-    },
+-    {
+-        .datapipe  = &thermalmanager_service_state_pipe,
+-        .output_cb = mce_dsme_datapipe_thermalmanager_service_state_cb,
+-    },
+     {
+         .datapipe  = &init_done_pipe,
+         .output_cb = mce_dsme_datapipe_init_done_cb,
+@@ -1194,11 +347,15 @@ static void mce_dsme_datapipe_quit(void)
+  */
+ gboolean mce_dsme_init(void)
+ {
+-    mce_worker_add_context(MCE_DSME_WORKERWD_JOB_CONTEXT);
+-
+     mce_dsme_datapipe_init();
+ 
+-    mce_dsme_dbus_init();
++    /* AsteroidOS runs without dsme, which used to report the runlevel /
++     * device state. Nothing will ever feed system_state_pipe now, so assume
++     * the normal running state up front: otherwise the rest of mce (display,
++     * tklock, input handling, ...) stays gated on MCE_SYSTEM_STATE_USER and
++     * never comes up. */
++    datapipe_exec_full(&system_state_pipe,
++                       GINT_TO_POINTER(MCE_SYSTEM_STATE_USER));
+ 
+     return TRUE;
+ }
+@@ -1207,16 +364,8 @@ gboolean mce_dsme_init(void)
+  */
+ void mce_dsme_exit(void)
+ {
+-    mce_worker_rem_context(MCE_DSME_WORKERWD_JOB_CONTEXT);
+-
+-    mce_dsme_dbus_quit();
+-
+-    mce_dsme_socket_disconnect();
+-
+     mce_dsme_datapipe_quit();
+ 
+-    /* Remove all timer sources & pending calls before returning */
++    /* Remove all timer sources before returning */
+     mce_dsme_transition_cancel();
+-    mce_dsme_dbus_cancel_thermal_state_query();
+-    return;
+ }
