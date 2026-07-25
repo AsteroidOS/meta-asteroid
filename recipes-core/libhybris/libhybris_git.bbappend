@@ -11,6 +11,13 @@ EXTRA_OECONF:append = " --enable-wayland --with-default-egl-platform=wayland --w
 TARGET_CC_ARCH:remove = "-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_TIME_BITS=64"
 INSANE_SKIP:append:pn-${PN} = "32bit-time"
 
+# native_handle_clone is not declared on the android-headers providers and
+# some HAL callbacks (e.g. gps_callback) cast between incompatible pointer
+# types, so libhybris trips -Werror=implicit-function-declaration /
+# int-conversion / incompatible-pointer-types with modern toolchains. This
+# affects most machine, so suppress it here rather than per-device.
+CFLAGS:append = " -Wno-implicit-function-declaration -Wno-int-conversion -Wno-incompatible-pointer-types"
+
 COMPATIBLE_MACHINE=""
 
 do_configure:prepend() {
