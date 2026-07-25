@@ -61,3 +61,10 @@ do_install:append:hybris-machine() {
     # On hybris machines, the launcher must run only after Android has started
     install -m 0755 ${UNPACKDIR}/asteroid-launcher-precondition-hybris ${D}/usr/bin/asteroid-launcher-precondition
 }
+
+pkg_postinst:${PN}() {
+    # cap_wake_alarm is required to set up always-on-display ticks.
+    setcap cap_wake_alarm+ep $D/usr/bin/asteroid-launcher
+}
+
+PACKAGE_WRITE_DEPS = "libcap-native"
