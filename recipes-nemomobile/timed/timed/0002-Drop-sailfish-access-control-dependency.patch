@@ -1,0 +1,79 @@
+From 5f2a01c801a7f040184205f9e7655c9766029e90 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 25 Jul 2026 13:22:37 +0000
+Subject: [PATCH] Drop sailfish-access-control dependency
+
+Upstream-Status: Inappropriate [asteroid-specific: sailfish-access-control
+is a Sailfish-only library we don't want to ship]
+
+The only use of the library was a sailfish_access_control_hasgroup() call
+in permissions_helper() gating access to the shared alarm/settings storage
+on membership of the sailfish-alarms / sailfish-datetime groups.
+
+AsteroidOS is effectively single-user and does not use that group model.
+The shared storage directories are group-owned and sgid, so the following
+access(2) check already enforces filesystem permissions on its own; the
+group membership test was a redundant pre-filter. Drop it, along with the
+include and the PKGCONFIG entry, so timed no longer needs the library.
+---
+ src/server/server.pro |  1 -
+ src/server/timed.cpp  | 18 +++++++-----------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/src/server/server.pro b/src/server/server.pro
+index a4f2987..73ece0d 100644
+--- a/src/server/server.pro
++++ b/src/server/server.pro
+@@ -83,7 +83,6 @@ HEADERS += notification.h
+ 
+ CONFIG += link_pkgconfig iodata-qt$${QT_MAJOR_VERSION}
+ PKGCONFIG += libsystemd
+-PKGCONFIG += sailfishaccesscontrol
+ 
+ CONFIG(dsme_dbus_if) {
+     PKGCONFIG += dsme_dbus_if
+diff --git a/src/server/timed.cpp b/src/server/timed.cpp
+index db56b1d..02aecc9 100644
+--- a/src/server/timed.cpp
++++ b/src/server/timed.cpp
+@@ -64,8 +64,6 @@
+ #include "csd.h"
+ #endif
+ 
+-#include <sailfishaccesscontrol.h>
+-
+ #include <fstream>
+ #include <iomanip>
+ #include <iostream>
+@@ -376,21 +374,19 @@ bool Timed::permissions_helper(const QString &label,
+                                bool write_access,
+                                const QString &group) const
+ {
++    /* AsteroidOS is effectively single-user and does not use the sailfish-*
++     * supplementary group model, so the group-membership gate (which pulled in
++     * the sailfish-access-control library) is dropped. The shared storage
++     * directories are group-owned and sgid, so filesystem access(2) below is
++     * the real permission check on its own. */
++    Q_UNUSED(group);
+     bool allowed = false;
+     int mode = write_access ? (R_OK | W_OK) : R_OK;
+     if (directory.isEmpty()) {
+         /* Partial/missing configuration: Severely cripples functionality */
+         log_critical("%s: directory not configured", qUtf8Printable(label));
+-    } else if (!group.isEmpty()
+-               && !sailfish_access_control_hasgroup(geteuid(), qUtf8Printable(group))) {
+-        /* It is expected that some users do not have access to shared alarms */
+-        log_debug("%s: uid %d - not in %s group",
+-                  qUtf8Printable(label),
+-                  (int) geteuid(),
+-                  qUtf8Printable(group));
+     } else if (access(qUtf8Printable(directory), mode) == -1) {
+-        /* Supplementary group requirements are met, but filesystem level
+-     * access is denied: Severely cripples functionality */
++        /* Filesystem level access is denied: Severely cripples functionality */
+         log_critical("%s: directory %s - no %s access: %m",
+                      qUtf8Printable(label),
+                      qUtf8Printable(directory),
+-- 
+2.47.3
+

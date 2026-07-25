@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master \
            file://timed.conf \
            file://0001-Add-wakeup-event-for-use-with-ambient-mode.patch \
+           file://0002-Drop-sailfish-access-control-dependency.patch \
            "
 SRCREV = "80ea5e63cf58db616789adbfeb9cf3bfd63dddaa"
 PR = "r1"
@@ -47,7 +48,7 @@ do_install:append() {
 }
 
 PACKAGE_WRITE_DEPS = "libcap-native"
-DEPENDS += "systemd tzdata libiodata-native libiodata qtbase sailfish-access-control"
+DEPENDS += "systemd tzdata libiodata-native libiodata qtbase"
 RDEPENDS:${PN} += "libcap-bin tzdata"
 FILES:${PN} += "/usr/lib/ /usr/lib/systemd/user/default.target.wants/"
 FILES:${PN}-dev += "/usr/share/mkspecs"
