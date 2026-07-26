@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "git://github.com/sailfishos/timed.git;protocol=https;branch=master \
            file://timed.conf \
-           file://0001-Add-wakeup-event-for-use-with-ambient-mode.patch \
            "
 SRCREV = "80ea5e63cf58db616789adbfeb9cf3bfd63dddaa"
 PR = "r1"
