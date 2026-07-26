@@ -9,7 +9,7 @@ inherit asteroid-users
 IMAGE_FEATURES += "package-management empty-root-password allow-empty-password allow-root-login"
 
 IMAGE_INSTALL += " \
-kernel-modules base-files base-passwd systemd busybox iproute2 connman pam-plugin-loginuid bluez5 polkit polkit-group-rule-datetime \
+kernel-modules base-files base-passwd systemd busybox iproute2 connman pam-plugin-loginuid bluez5 polkit polkit-group-rule-datetime sudo \
 pulseaudio-server openssh-sshd openssh-sftp-server openssh-scp dsme mce ngfd nfcd timed sensorfw resize-rootfs mapplauncherd-booster-asteroid usb-moded \
 ${@oe.utils.conditional('MACHINE_HAS_WLAN', 'true', 'iproute2 wpa-supplicant connman-client', '', d)} \
 qt5compat-qmlplugins supported-languages ttf-asteroid-fonts asteroid-sounds asteroid-launcher asteroid-calculator asteroid-calendar asteroid-stopwatch asteroid-settings asteroid-timer asteroid-alarmclock asteroid-weather asteroid-music asteroid-btsyncd asteroid-flashlight asteroid-diamonds"
