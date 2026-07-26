@@ -199,14 +199,6 @@ index f33ec64..42ca0e5 100644
  static void                 compositor_stm_send_ctrl_request (compositor_stm_t *self);
  static void                 compositor_stm_forget_ctrl_request(compositor_stm_t *self);
  static void                 compositor_stm_ctrl_request_cb   (DBusPendingCall *pc, void *aptr);
-@@ -933,6 +937,7 @@ static gboolean            mdy_dbus_handle_blanking_pause_cancel_req(DBusMessage
- static gboolean            mdy_dbus_handle_display_stats_get_req(DBusMessage *const req);
- 
- static gboolean            mdy_dbus_handle_desktop_started_sig(DBusMessage *const msg);
-+static gboolean            mdy_dbus_timed_wakeup_sig(DBusMessage *const msg);
- 
- static void                mdy_dbus_init(void);
- static void                mdy_dbus_quit(void);
 @@ -1396,6 +1401,29 @@ xlat(int src_lo, int src_hi, int dst_lo, int dst_hi, int val)
   * DATAPIPE_TRACKING
   * ========================================================================= */
@@ -447,60 +439,6 @@ index f33ec64..42ca0e5 100644
  /** D-Bus callback for the display lpm method call
   *
   * @param msg The D-Bus message
-@@ -10254,6 +10392,40 @@ static gboolean mdy_dbus_handle_desktop_started_sig(DBusMessage *const msg)
-     return status;
- }
- 
-+/**
-+ * D-Bus callback for timed wakeup event, used to update ambient display.
-+ *
-+ * @param msg The D-Bus message
-+ * @return TRUE on success, FALSE on failure
-+ */
-+static gboolean mdy_dbus_timed_wakeup_sig(DBusMessage *const msg)
-+{
-+    gboolean status = FALSE;
-+    dbus_bool_t dta = TRUE;
-+    (void)msg;
-+
-+    mce_log(LL_DEBUG, "Received timed wakeup event, updating ambient display");
-+    if (mdy_use_low_power_mode && mdy_low_power_mode_supported) {
-+        bool ack = dbus_send_ex2(COMPOSITOR_SERVICE,
-+                            COMPOSITOR_PATH,
-+                            COMPOSITOR_IFACE,
-+                            COMPOSITOR_SET_AMBIENT_UPDATES_ENABLED,
-+                            NULL,
-+                            COMPOSITOR_STM_DBUS_CALL_TIMEOUT,
-+                            NULL, 0,
-+                            NULL,
-+                            DBUS_TYPE_BOOLEAN, &dta,
-+                            DBUS_TYPE_INVALID);
-+
-+        if( !ack ) 
-+            mce_log(LL_CRIT, "Failed to send ambient mode update request");
-+    }
-+
-+    status = TRUE;
-+
-+    return status;
-+}
-+
- /** Array of dbus message handlers */
- static mce_dbus_handler_t mdy_dbus_handlers[] =
- {
-@@ -10301,6 +10473,12 @@ static mce_dbus_handler_t mdy_dbus_handlers[] =
-         .type      = DBUS_MESSAGE_TYPE_SIGNAL,
-         .callback  = mdy_dbus_handle_desktop_started_sig,
-     },
-+    {
-+        .interface = "com.nokia.time",
-+        .name      = "wakeup_event",
-+        .type      = DBUS_MESSAGE_TYPE_SIGNAL,
-+        .callback  = mdy_dbus_timed_wakeup_sig,
-+    },
-     {
-         .interface = COMPOSITOR_IFACE,
-         .name      = COMPOSITOR_TOPMOST_WINDOW_PID_CHANGED,
 @@ -10348,6 +10526,14 @@ static mce_dbus_handler_t mdy_dbus_handlers[] =
          .args      =
              "    <arg direction=\"out\" name=\"cabc_mode\" type=\"s\"/>\n"
