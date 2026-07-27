@@ -1,19 +1,20 @@
 #
 # This class is used to create dummy headers for newer versions of GCC not supported by the kernel being compiled
 #
+# Old kernels ship per-compiler headers (include/linux/compiler-gccN.h) only up
+# to whatever GCC major existed at the time. Building with a newer toolchain
+# needs a matching header, so we synthesise any that are missing (up to the
+# actual kernel compiler's major) as thin shims chaining back to the previous
+# version. Headers the kernel already provides are left untouched.
+#
 
 do_configure:prepend() {
-    echo "#include <linux/compiler-gcc4.h>" > ${S}/include/linux/compiler-gcc5.h
-    echo "#include <linux/compiler-gcc5.h>" > ${S}/include/linux/compiler-gcc6.h
-    echo "#include <linux/compiler-gcc6.h>" > ${S}/include/linux/compiler-gcc7.h
-    echo "#include <linux/compiler-gcc7.h>" > ${S}/include/linux/compiler-gcc8.h
-    echo "#include <linux/compiler-gcc8.h>" > ${S}/include/linux/compiler-gcc9.h
-    echo "#include <linux/compiler-gcc9.h>" > ${S}/include/linux/compiler-gcc10.h
-    echo "#include <linux/compiler-gcc10.h>" > ${S}/include/linux/compiler-gcc11.h
-    echo "#include <linux/compiler-gcc11.h>" > ${S}/include/linux/compiler-gcc12.h
-    echo "#include <linux/compiler-gcc12.h>" > ${S}/include/linux/compiler-gcc13.h
-    echo "#include <linux/compiler-gcc13.h>" > ${S}/include/linux/compiler-gcc14.h
-    echo "#include <linux/compiler-gcc14.h>" > ${S}/include/linux/compiler-gcc15.h
+    to="$(${KERNEL_CC} -dumpversion | cut -d. -f1)"
+
+    for v in $(seq 4 "${to}"); do
+        hdr="${S}/include/linux/compiler-gcc${v}.h"
+        [ -e "${hdr}" ] || echo "#include <linux/compiler-gcc$((v - 1)).h>" > "${hdr}"
+    done
 }
 
 do_install:prepend() {
