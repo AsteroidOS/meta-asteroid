@@ -10,6 +10,8 @@ MKBOOTIMG_HEADER_VERSION ?= "0"
 MKBOOTIMG_VENDOR_BOOT ?= "false"
 MKBOOTIMG_INIT_BOOT ?= "false"
 MKBOOTIMG_DTBO ?= "false"
+MKBOOTIMG_CMDLINE ?= ""
+MKBOOTIMG_BOARD ?= ""
 KERNEL_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}"
 DTB_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/dts/${KERNEL_DEVICETREE}"
 
@@ -31,6 +33,8 @@ do_deploy:append() {
         mkbootimg -o "${B}"/"${DISTRO}-${MACHINE}-boot.img" \
                   --kernel "${KERNEL_OUTPUT}" \
                   --ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
+                  --cmdline "${MKBOOTIMG_CMDLINE}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                   ${MKBOOTIMG_ARGS}
 
@@ -43,6 +47,8 @@ do_deploy:append() {
                   --kernel "${KERNEL_OUTPUT}" \
                   --ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
                   --dtb "${B}"/dt.dtb.android \
+                  --cmdline "${MKBOOTIMG_CMDLINE}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version 2 \
                   ${MKBOOTIMG_ARGS}
 
@@ -53,6 +59,7 @@ do_deploy:append() {
         # Kernel to boot.img, initramfs and dtb to vendor_boot.img
         mkbootimg -o "${B}"/"${DISTRO}-${MACHINE}-boot.img" \
                   --kernel "${KERNEL_OUTPUT}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                   ${MKBOOTIMG_ARGS}
 
@@ -62,6 +69,8 @@ do_deploy:append() {
             mkbootimg --vendor_boot "${B}"/"${DISTRO}-${MACHINE}-vendor_boot.img" \
                       --vendor_ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
                       --dtb "${B}"/dt.dtb.android \
+                      --vendor_cmdline "${MKBOOTIMG_CMDLINE}" \
+                      --board "${MKBOOTIMG_BOARD}" \
                       --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                       ${MKBOOTIMG_VENDOR_ARGS}
 
