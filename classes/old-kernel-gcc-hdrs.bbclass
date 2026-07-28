@@ -13,7 +13,7 @@ do_configure:prepend() {
 
     for v in $(seq 4 "${to}"); do
         hdr="${S}/include/linux/compiler-gcc${v}.h"
-        [ -e "${hdr}" ] || echo "#include <linux/compiler-gcc$((v - 1)).h>" > "${hdr}"
+        [ -e "${hdr}" ] || echo "#include <linux/compiler-gcc$(expr $v - 1).h>" > "${hdr}"
     done
 }
 
