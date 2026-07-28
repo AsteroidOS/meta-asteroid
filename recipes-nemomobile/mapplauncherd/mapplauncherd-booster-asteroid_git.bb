@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qt6-qmake
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase"
-RDEPENDS:${PN} += "mapplauncherd"
+RDEPENDS:${PN} += "mapplauncherd qtsensors-qmlplugins"
 
 do_configure:prepend() {
     sed -i "s@INCLUDEPATH += /usr/include/applauncherd/@INCLUDEPATH += ${STAGING_INCDIR}/applauncherd ${STAGING_INCDIR}/mdeclarativecache6/@" ${S}/booster-asteroid.pro
