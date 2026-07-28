@@ -10,5 +10,5 @@ PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
 inherit qt6-cmake pkgconfig
 
-DEPENDS += "extra-cmake-modules qtbase kcalendarcore timed libical sqlite3 util-linux"
+DEPENDS += "extra-cmake-modules qtbase kcalendarcore libical sqlite3 util-linux"
 EXTRA_OECMAKE += " -DBUILD_TESTS=OFF -DBUILD_PLUGINS=OFF -DENABLE_QT6=ON"
