@@ -24,12 +24,10 @@ do_install() {
     rm ${D}${includedir}/android/android-headers.pc
 }
 
-# Precompiled libraries, INSANE_SKIP all.
-do_package_qa() {
-}
-
-# Allow empty main package since the -dev package depends on it
-ALLOW_EMPTY:${PN} = "1"
+# We don't ship libstdc++.so as part of these tarballs. 
+# This library exists on these watches' system partitions, which we mount during boot.
+# Convince yocto that we already have this file.
+RPROVIDES:android-system += "libstdc++.so"
 
 PACKAGES =+ "android-system android-headers"
 FILES:android-system = "/usr"
