@@ -9,12 +9,12 @@ SRCREV = "${AUTOREV}"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${WORKDIR}/git"
-inherit qt6-cmake gsettings pkgconfig
+inherit qt6-cmake pkgconfig
 
-DEPENDS += "qml-asteroid qtbase glibmm amber-mpris qttools-native"
-RDEPENDS:${PN} += "glibmm amber-mpris systemd"
+DEPENDS += "qml-asteroid qtbase mlite amber-mpris qttools-native"
+RDEPENDS:${PN} += "amber-mpris systemd"
 
-FILES:${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/glib-2.0/schemas /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
+FILES:${PN} += "/usr/bin/ /usr/lib/systemd/user/ /usr/share/translations/ /usr/lib/systemd/user/default.target.wants/"
 
 do_install:append() {
     install -d ${D}/usr/lib/systemd/user/
