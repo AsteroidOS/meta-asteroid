@@ -11,7 +11,7 @@ S = "${WORKDIR}/git"
 inherit qt6-cmake pkgconfig
 
 DEPENDS += "extra-cmake-modules qtdeclarative qtsvg qtvirtualkeyboard mapplauncherd-booster-asteroid qtdeclarative-native qtshadertools qtshadertools-native qt5compat"
-RDEPENDS:${PN} += "asteroid-machine-config qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion"
+RDEPENDS:${PN} += "asteroid-machine-config qtsvg-plugins qtvirtualkeyboard asteroid-icons-ion qtimageformats-plugins"
 
 FILES:${PN} += "/usr/lib /usr/share/icons/asteroid/"
 FILES:${PN}-dbg += "/usr/lib/qml/org/asteroid/controls/.debug/ /usr/lib/qml/QtQuick/Controls/Styles/Asteroid/.debug/"
