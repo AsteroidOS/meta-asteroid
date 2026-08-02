@@ -10,6 +10,7 @@ UNPACKDIR = "${S}"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 DEPENDS += "qttools-native"
+RDEPENDS:${PN} += "asteroid-virtualkeyboard"
 
 do_install() {
     install -d ${D}/var/lib/environment/compositor/
