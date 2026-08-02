@@ -1,5 +1,0 @@
-EXTRA_OECONF += "--disable-editor"
-DEPENDS:remove = "gtk+3"
-DEPENDS:remove = "libxml2"
-DEPENDS += "dbus"
-REQUIRED_DISTRO_FEATURES:remove = "x11"
