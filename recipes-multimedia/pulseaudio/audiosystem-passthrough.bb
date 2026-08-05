@@ -15,8 +15,6 @@ SRC_URI = " \
         git://github.com/mer-hybris/audiosystem-passthrough.git;branch=master;protocol=https \
 "
 
-S = "${WORKDIR}/git"
-
 TARGET_CC_ARCH += "${LDFLAGS}"
 
 EXTRA_OEMAKE = "KEEP_SYMBOLS=1 CROSS_COMPILE=${TARGET_PREFIX} CC='${CC}' "
