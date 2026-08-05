@@ -19,7 +19,7 @@ B = "${WORKDIR}/git"
 # Out of dir build breaks mlite6.pc installation
 
 do_install:append() {
-    cd src/
+    cd ${S}/src/
     cp *.h MDConfGroup MNotificationGroup MRemoteAction MExport MDesktopEntry MNotification MGConfItem  ${D}/usr/include/mlite6/
 }
 
