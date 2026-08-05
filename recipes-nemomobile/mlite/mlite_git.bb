@@ -18,10 +18,6 @@ inherit qt6-qmake pkgconfig
 B = "${WORKDIR}/git" 
 # Out of dir build breaks mlite6.pc installation
 
-do_configure:prepend() {
-    sed -i "s@\$\$\[QT_INSTALL_BINS\]/@@" src/src.pro
-}
-
 do_install:append() {
     cd src/
     cp *.h MDConfGroup MNotificationGroup MRemoteAction MExport MDesktopEntry MNotification MGConfItem  ${D}/usr/include/mlite6/
