@@ -20,8 +20,6 @@ SRC_URI = "git://github.com/mer-hybris/pulseaudio-modules-droid.git;branch=maste
            file://0001-Make-5-enums-optional-for-Halium-android-headers.patch \
 "
 
-S = "${WORKDIR}/git"
-
 inherit meson pkgconfig
 
 # Install where PA's MODULE_PATH (libdir/pulseaudio/modules) finds our
