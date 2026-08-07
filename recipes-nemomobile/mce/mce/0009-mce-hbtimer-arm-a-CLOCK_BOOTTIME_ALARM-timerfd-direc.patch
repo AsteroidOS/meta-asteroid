@@ -1,0 +1,260 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 25 Jul 2026 13:35:09 +0000
+Subject: [PATCH 9/9] mce-hbtimer: arm a CLOCK_BOOTTIME_ALARM timerfd directly
+
+libiphb was only a thin wrapper that opened a private timerfd and armed it
+via the iphb socket protocol. AsteroidOS drops libiphb, so open the timerfd
+here instead: timerfd_create(CLOCK_BOOTTIME_ALARM) (falling back to plain
+CLOCK_BOOTTIME when CAP_WAKE_ALARM is unavailable), timerfd_settime() to arm,
+and read() the 8-byte expiration count to drain it. Same suspend-waking
+heartbeat, one fewer dependency.
+---
+ Makefile      |   1 -
+ mce-hbtimer.c | 116 +++++++++++++++++++++++++++-----------------------
+ 2 files changed, 63 insertions(+), 54 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index bd98e09..38ec245 100644
+--- a/Makefile
++++ b/Makefile
+@@ -284,7 +284,6 @@ MCE_PKG_NAMES += glib-2.0
+ MCE_PKG_NAMES += gio-2.0
+ MCE_PKG_NAMES += gmodule-2.0
+ MCE_PKG_NAMES += dbus-1
+-MCE_PKG_NAMES += libiphb
+ MCE_PKG_NAMES += libsystemd
+ MCE_PKG_NAMES += libngf0
+ 
+diff --git a/mce-hbtimer.c b/mce-hbtimer.c
+index 534f454..fe2f8d0 100644
+--- a/mce-hbtimer.c
++++ b/mce-hbtimer.c
+@@ -35,6 +35,7 @@
+ #endif
+ 
+ #include <sys/socket.h>
++#include <unistd.h>
+ 
+ #include <stdlib.h>
+ #include <inttypes.h>
+@@ -42,7 +43,15 @@
+ #include <errno.h>
+ #include <pthread.h>
+ 
+-#include <iphbd/libiphb.h>
++#include <stdint.h>
++#include <sys/timerfd.h>
++
++#ifndef CLOCK_BOOTTIME_ALARM
++# define CLOCK_BOOTTIME_ALARM 9
++#endif
++#ifndef CLOCK_BOOTTIME
++# define CLOCK_BOOTTIME 7
++#endif
+ 
+ /* ========================================================================= *
+  * Types and functions
+@@ -154,8 +163,8 @@ static guint mht_connection_timer_id = 0;
+ /** Number of connection attempts so far */
+ static gint  mht_connection_retry_no = 0;
+ 
+-/** Handle for iphb connection */
+-static iphb_t   mht_connection_handle = 0;
++/** Heartbeat timerfd (-1 when not open) */
++static int      mht_connection_fd = -1;
+ 
+ static bool     mht_connection_try_to_open (void);
+ 
+@@ -171,13 +180,9 @@ static void     mht_connection_close       (void);
+  * DATAPIPE_HANDLERS
+  * ------------------------------------------------------------------------- */
+ 
+-/** Availability of dsme; from dsme_service_state_pipe */
+-static service_state_t dsme_service_state = SERVICE_STATE_UNDEF;
+-
+ /** Device is shutting down; assume false */
+ static bool shutting_down = false;
+ 
+-static void mht_datapipe_dsme_service_state_cb (gconstpointer data);
+ static void mht_datapipe_resume_detected_event_cb (gconstpointer data);
+ static void mht_datapipe_shutting_down_cb  (gconstpointer data);
+ 
+@@ -668,6 +673,24 @@ mht_glib_set_wakeup(int64_t trigger, int64_t now)
+  * IPHB_WAKEUPS
+  * ========================================================================= */
+ 
++/** Drain any pending expirations from the heartbeat timerfd */
++static void
++mht_iphb_drain(int fd)
++{
++    uint64_t exp;
++    while( read(fd, &exp, sizeof exp) > 0 ) { /* keep draining */ }
++}
++
++/** Arm (seconds > 0) or disarm (seconds == 0) the heartbeat timerfd */
++static void
++mht_iphb_arm(int fd, int seconds)
++{
++    struct itimerspec its;
++    memset(&its, 0, sizeof its);
++    its.it_value.tv_sec = seconds;
++    timerfd_settime(fd, 0, &its, NULL);
++}
++
+ /** iphb wakeup callback for dispatching heartbeat timers
+  *
+  * @param chn  io channel
+@@ -699,7 +722,9 @@ mht_iphb_wakeup_cb(GIOChannel *chn, GIOCondition cnd, gpointer data)
+ 
+     char buf[256];
+ 
+-    int rc = recv(fd, buf, sizeof buf, MSG_DONTWAIT);
++    /* The iphb fd is a (non-blocking) timerfd now, not a socket, so it must
++     * be drained with read() rather than recv(). */
++    int rc = read(fd, buf, sizeof buf);
+ 
+     if( rc == 0 ) {
+         if( !shutting_down )
+@@ -751,7 +776,7 @@ mht_iphb_set_wakeup(int64_t trigger, int64_t now)
+     int hi = 0;
+     int64_t tick = NO_TICK;
+ 
+-    if( mht_connection_handle && trigger != NO_TICK) {
++    if( mht_connection_fd != -1 && trigger != NO_TICK) {
+         /* Calculate the iphb wakeup range to be used. */
+         int64_t delay = (trigger - now + 999) / 1000;
+ 
+@@ -779,8 +804,12 @@ mht_iphb_set_wakeup(int64_t trigger, int64_t now)
+     if( mht_iphb_wakeup_tick != tick ) {
+         mht_iphb_wakeup_tick = tick;
+ 
+-        if( mht_connection_handle )
+-            iphb_wait2(mht_connection_handle, lo, hi, 0, 1);
++        if( mht_connection_fd != -1 ) {
++            /* Drain any past expiration, then (re)arm at the far end of the
++             * [lo, hi] window; hi == 0 disarms. */
++            mht_iphb_drain(mht_connection_fd);
++            mht_iphb_arm(mht_connection_fd, hi);
++        }
+ 
+         mce_log(LL_DEBUG, "iphb wakeup in [%d, %d] s", lo, hi);
+     }
+@@ -801,19 +830,19 @@ mht_iphb_set_wakeup(int64_t trigger, int64_t now)
+ static bool
+ mht_connection_try_to_open(void)
+ {
+-    iphb_t handle = 0;
+-
+-    if( mht_connection_handle )
+-        goto cleanup;
++    int fd = -1;
+ 
+-    if( !(handle = iphb_open(0)) ) {
+-        mce_log(LL_WARN, "iphb_open: %m");
++    if( mht_connection_fd != -1 )
+         goto cleanup;
+-    }
+ 
+-    int fd = iphb_get_fd(handle);
++    /* Prefer an alarm clock so heartbeat wakeups can end (auto)suspend; this
++     * needs CAP_WAKE_ALARM. Without it fall back to a plain boottime timer
++     * that only fires while the device is awake. */
++    fd = timerfd_create(CLOCK_BOOTTIME_ALARM, TFD_NONBLOCK | TFD_CLOEXEC);
++    if( fd == -1 )
++        fd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK | TFD_CLOEXEC);
+     if( fd == -1 ) {
+-        mce_log(LL_WARN, "iphb_get_fd: %m");
++        mce_log(LL_WARN, "timerfd_create: %m");
+         goto cleanup;
+     }
+ 
+@@ -824,17 +853,17 @@ mht_connection_try_to_open(void)
+     if( !mht_iphb_wakeup_watch_id )
+         goto cleanup;
+ 
+-    /* cache the handle */
+-    mht_connection_handle = handle, handle = 0;
++    /* cache the fd */
++    mht_connection_fd = fd, fd = -1;
+ 
+     mce_log(LL_DEBUG, "iphb connected; dispatch hbtimers");
+     mht_queue_dispatch_timers();
+ 
+ cleanup:
+ 
+-    if( handle ) iphb_close(handle);
++    if( fd != -1 ) close(fd);
+ 
+-    return mht_connection_handle != 0;
++    return mht_connection_fd != -1;
+ }
+ 
+ /** Callback for connect reattempt timer
+@@ -935,10 +964,10 @@ mht_connection_close(void)
+             mht_iphb_wakeup_watch_id = 0;
+     }
+ 
+-    /* close handle */
+-    if( mht_connection_handle ) {
+-        iphb_close(mht_connection_handle),
+-            mht_connection_handle = 0;
++    /* close timerfd */
++    if( mht_connection_fd != -1 ) {
++        close(mht_connection_fd),
++            mht_connection_fd = -1;
+ 
+         mce_log(LL_DEBUG, "iphb disconnected");
+ 
+@@ -963,27 +992,6 @@ static void mht_datapipe_resume_detected_event_cb(gconstpointer data)
+ 
+ /** Datapipe trigger for dsme availability
+  */
+-static void mht_datapipe_dsme_service_state_cb(gconstpointer const data)
+-{
+-    service_state_t prev = dsme_service_state;
+-    dsme_service_state = GPOINTER_TO_INT(data);
+-
+-    if( dsme_service_state == prev )
+-        goto EXIT;
+-
+-    mce_log(LL_DEBUG, "DSME dbus service: %s -> %s",
+-            service_state_repr(prev),
+-            service_state_repr(dsme_service_state));
+-
+-    if( dsme_service_state == SERVICE_STATE_RUNNING )
+-        mht_connection_open();
+-    else
+-        mht_connection_close();
+-
+-EXIT:
+-    return;
+-}
+-
+ /** Change notifications for shutting_down
+  */
+ static void mht_datapipe_shutting_down_cb(gconstpointer data)
+@@ -1011,10 +1019,6 @@ static datapipe_handler_t mht_datapipe_handlers[] =
+         .datapipe  = &resume_detected_event_pipe,
+         .output_cb = mht_datapipe_resume_detected_event_cb,
+     },
+-    {
+-        .datapipe  = &dsme_service_state_pipe,
+-        .output_cb = mht_datapipe_dsme_service_state_cb,
+-    },
+     {
+         .datapipe  = &shutting_down_pipe,
+         .output_cb = mht_datapipe_shutting_down_cb,
+@@ -1059,6 +1063,12 @@ mce_hbtimer_init(void)
+     /* Mark as initialized */
+     mce_hbtimer_initialized = true;
+ 
++    /* Open the heartbeat timerfd right away. Previously this waited for the
++     * dsme D-Bus service to appear, since dsme hosted the heartbeat server.
++     * The timer is now a self-contained CLOCK_BOOTTIME_ALARM timerfd owned by
++     * mce itself, so open it unconditionally (with retry) at init time. */
++    mht_connection_open();
++
+     /* Schedule timers that have been created
+      * before initialization took place */
+     mht_queue_schedule_wakeups();
