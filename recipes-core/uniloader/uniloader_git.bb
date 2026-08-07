@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=ba925be40dd5b952d53f0414e95a491a"
 
 SRC_URI = "git://github.com/ivoszbg/uniLoader.git;branch=master;protocol=https"
 SRCREV = "831c31bac9fc93f4787d6349006766844fdeb7b2"
-S = "${WORKDIR}/git"
 
 SYSROOT_DIRS = "/uniloader"
 
