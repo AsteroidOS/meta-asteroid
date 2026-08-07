@@ -9,7 +9,6 @@ SRCREV = "72a6943f4f7aa6b53c91793e2a4b32093a255b61"
 PV = "0.123"
 
 SRC_URI = "git://github.com/sailfishos/libqofono.git;protocol=https;branch=master"
-S = "${WORKDIR}/git"
 
 inherit qt6-qmake
 
