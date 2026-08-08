@@ -1,0 +1,225 @@
+From: Darrel Griët <dgriet@gmail.com>
+Subject: [PATCH] v10: Make updates request-driven and deliver them on vsync
+
+HwComposerBackend_v10 had no requestUpdate() override, so QtQuick fell
+back to its generic 5 ms update timer and rendered the compositor scene
+continuously (~50 fps) even when nothing changed and even when the
+display was off. That kept the render thread near 90% CPU on a blanked
+screen and, because the compositor never went idle, mce never got the
+'safe to suspend' acknowledgement, so the device never entered deep
+sleep. v11/v20 already deliver updates on demand; do the same for v10.
+
+Deliver the pending updates from the hwcomposer vsync callback rather
+than from a free-running timer. A coarse timer at 1000ms/refreshRate()
+is not phase-locked to the display: rendering starts at a random point
+in the vsync period and swap() then blocks on the vsync condition for
+whatever remains of it. The two clocks beat against each other, so
+under continuous input (dragging, scrolling) frame times alternate
+between ~17 ms and ~33 ms, which shows up as visible jitter on minnow.
+
+requestUpdate() therefore only flags the pending update, the vsync
+callback (which runs on a hwc thread) posts a single event to the GUI
+thread, and delivery happens phase-locked to the display with a full
+vsync period of render budget. A 50 ms timer remains as a fallback for
+the case where vsync events do not arrive, mirroring v11/v20's vsync
+timeout. While the display is off the update is queued instead of
+delivered; sleepDisplay(false) re-enables vsync events and flushes
+m_pendingUpdate on wakeup.
+
+Upstream-Status: Pending
+
+Not yet submitted to mer-hybris; carried in meta-asteroid for now. The fix
+is generic to the v10 backend and could be offered upstream later.
+---
+--- a/hwcomposer/hwcomposer_backend_v10.h
++++ b/hwcomposer/hwcomposer_backend_v10.h
+@@ -48,8 +48,13 @@
+ 
+ #include <QWaitCondition>
+ #include <QMutex>
++#include <QObject>
++#include <QAtomicInt>
++#include <QBasicTimer>
++#include <QSet>
++#include <QWindow>
+ 
+-class HwComposerBackend_v10 : public HwComposerBackend {
++class HwComposerBackend_v10 : public QObject, public HwComposerBackend {
+ public:
+     HwComposerBackend_v10(hw_module_t *hwc_module, hw_device_t *hw_device, power_module_t *pw_device, void *libminisf);
+     virtual ~HwComposerBackend_v10();
+@@ -60,6 +65,8 @@
+     virtual void swap(EGLNativeDisplayType display, EGLSurface surface);
+     virtual void sleepDisplay(bool sleep);
+     virtual float refreshRate();
++    virtual bool requestUpdate(QEglFSWindow *window) Q_DECL_OVERRIDE;
++    void notifyVsync();
+     virtual bool getScreenSizes(int *width, int *height, float *physical_width, float *physical_height)
+     {
+         *width = 0;
+@@ -70,12 +77,21 @@
+         return false;
+     }
+ 
++protected:
++    bool event(QEvent *) Q_DECL_OVERRIDE;
++    void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
++    void handleUpdateDelivery();
++
+ private:
+     hwc_composer_device_1_t *hwc_device;
+     power_module_t *pwr_device;
+     hwc_display_contents_1_t *hwc_list;
+     hwc_display_contents_1_t **hwc_mList;
+     int hwc_numDisplays;
++    bool m_displayOff;
++    QAtomicInt m_updatePending;
++    QBasicTimer m_deliverUpdateTimeout;
++    QSet<QWindow *> m_pendingUpdate;
+ };
+ 
+ #endif /* HWC_DEVICE_API_VERSION_1_0 */
+--- a/hwcomposer/hwcomposer_backend_v10.cpp
++++ b/hwcomposer/hwcomposer_backend_v10.cpp
+@@ -44,6 +44,10 @@
+ #include <inttypes.h>
+ #include <unistd.h>
+ 
++#include <QtCore/QCoreApplication>
++#include <qpa/qplatformwindow.h>
++#include "qeglfswindow.h"
++
+ #ifdef HWC_DEVICE_API_VERSION_1_0
+ 
+ /* For vsync thread synchronization */
+@@ -52,6 +56,9 @@
+ 
+ static float vsyncFPS = -1;
+ 
++/* For delivering update requests from the vsync callback thread */
++static HwComposerBackend_v10 *hwcv10_instance = NULL;
++
+ const char *
+ comp_type_str(int32_t type)
+ {
+@@ -120,6 +127,9 @@
+     vsync_mutex.lock();
+     vsync_cond.wakeOne();
+     vsync_mutex.unlock();
++
++    if (hwcv10_instance)
++        hwcv10_instance->notifyVsync();
+ }
+ 
+ void
+@@ -142,7 +152,9 @@
+     , hwc_list(NULL)
+     , hwc_mList(NULL)
+     , hwc_numDisplays(1) // "For HWC 1.0, numDisplays will always be one."
++    , m_displayOff(false)
+ {
++    hwcv10_instance = this;
+     hwc_device->registerProcs(hwc_device, &global_procs);
+     hwc_device->eventControl(hwc_device, 0, HWC_EVENT_VSYNC, 1);
+     sleepDisplay(false);
+@@ -151,6 +163,7 @@
+ HwComposerBackend_v10::~HwComposerBackend_v10()
+ {
+     hwc_device->eventControl(hwc_device, 0, HWC_EVENT_VSYNC, 0);
++    hwcv10_instance = NULL;
+ 
+     // Close the hwcomposer handle
+     HWC_PLUGIN_EXPECT_ZERO(hwc_close_1(hwc_device));
+@@ -253,6 +266,7 @@
+ void
+ HwComposerBackend_v10::sleepDisplay(bool sleep)
+ {
++    m_displayOff = sleep;
+     if (sleep) {
+         HWC_PLUGIN_EXPECT_ZERO(hwc_device->eventControl(hwc_device, 0, HWC_EVENT_VSYNC, 0));
+         HWC_PLUGIN_EXPECT_ZERO(hwc_device->blank(hwc_device, 0, 1));
+@@ -273,6 +287,11 @@
+     if (!sleep && hwc_list != NULL) {
+         hwc_list->flags = HWC_GEOMETRY_CHANGED;
+     }
++
++    // When waking up, flush any update requests that were queued while the
++    // display was off.
++    if (!sleep && !m_pendingUpdate.isEmpty() && !m_deliverUpdateTimeout.isActive())
++        m_deliverUpdateTimeout.start(0, this);
+ }
+ 
+ float
+@@ -293,4 +312,72 @@
+     return vsyncFPS;
+ }
+ 
++bool
++HwComposerBackend_v10::requestUpdate(QEglFSWindow *window)
++{
++    m_pendingUpdate.insert(window->window());
++
++    // While the display is off, just queue the request; it is delivered when
++    // the display is turned back on (see sleepDisplay). This lets the
++    // compositor go idle so the SoC can actually enter deep sleep instead of
++    // busy-looping the render thread on a blanked display.
++    if (m_displayOff)
++        return true;
++
++    // Deliver update requests from the vsync callback (see notifyVsync), so
++    // rendering is phase-locked to the display instead of paced by a timer
++    // that drifts against it. The scene graph only asks for another update if
++    // something actually changed, so a static scene still stops rendering.
++    m_updatePending.storeRelease(1);
++
++    // Fallback in case vsync events do not arrive (e.g. around display
++    // off/on transitions); mirrors the v11/v20 vsync timeout strategy.
++    if (!m_deliverUpdateTimeout.isActive())
++        m_deliverUpdateTimeout.start(50, this);
++
++    return true;
++}
++
++void
++HwComposerBackend_v10::notifyVsync()
++{
++    // Runs on the hwcomposer vsync callback thread; hand delivery over to the
++    // GUI thread. At most one event is in flight thanks to the test-and-set.
++    if (m_updatePending.testAndSetAcquire(1, 0))
++        QCoreApplication::postEvent(this, new QEvent(QEvent::User));
++}
++
++bool
++HwComposerBackend_v10::event(QEvent *e)
++{
++    if (e->type() == QEvent::User) {
++        m_deliverUpdateTimeout.stop();
++        handleUpdateDelivery();
++        return true;
++    }
++    return QObject::event(e);
++}
++
++void
++HwComposerBackend_v10::handleUpdateDelivery()
++{
++    m_updatePending.storeRelease(0);
++    const QSet<QWindow *> pending = m_pendingUpdate;
++    m_pendingUpdate.clear();
++    for (QWindow *w : pending) {
++        QPlatformWindow *platformWindow = w->handle();
++        if (platformWindow)
++            platformWindow->deliverUpdateRequest();
++    }
++}
++
++void
++HwComposerBackend_v10::timerEvent(QTimerEvent *e)
++{
++    if (e->timerId() == m_deliverUpdateTimeout.timerId()) {
++        m_deliverUpdateTimeout.stop();
++        handleUpdateDelivery();
++    }
++}
++
+ #endif /* HWC_DEVICE_API_VERSION_1_0 */
