@@ -19,9 +19,9 @@ index bc7055a..628557f 100644
  #include <QWaitCondition>
  #include <QMutex>
 +#include <sync/sync.h>
-
- class HwComposerBackend_v10 : public HwComposerBackend {
- public:
+ #include <QObject>
+ #include <QBasicTimer>
+ #include <QSet>
 diff --git a/hwcomposer/hwcomposer_backend_v11.h b/hwcomposer/hwcomposer_backend_v11.h
 index 46b34d3..8281925 100644
 --- a/hwcomposer/hwcomposer_backend_v11.h
