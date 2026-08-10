@@ -5,7 +5,6 @@ LIC_FILES_CHKSUM = "file://COPYING-CMAKE-SCRIPTS;md5=54c7042be62e169199200bc6477
 SRC_URI = "git://invent.kde.org/frameworks/extra-cmake-modules.git;protocol=https;branch=master"
 SRCREV = "a1dac86d6c848473d840b748b82694ef6916a3ca"
 PV = "5.96.0"
-S = "${WORKDIR}/git"
 
 ALLOW_EMPTY:${PN} = "1"
 

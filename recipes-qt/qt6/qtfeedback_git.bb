@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/sailfishos/qtfeedback.git;protocol=https;branch=mer-
 SRCREV = "2cd40d1deca20f883107215cb826fd47c408a5cb"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "qtbase qtdeclarative"
 

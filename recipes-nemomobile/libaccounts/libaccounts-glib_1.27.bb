@@ -10,7 +10,6 @@ SRC_URI = "git://gitlab.com/accounts-sso/libaccounts-glib.git;protocol=https;bra
            "
 
 SRCREV = "26c54322304e9df598b2ba67427433a2e68b823e"
-S = "${WORKDIR}/git"
 
 EXTRA_OEMESON = "-Dpy-overrides-dir=${libdir}/python${PYTHON_BASEVERSION}/dist-packages/gi/overrides/ -Ddocs=false -Dtests=false"
 

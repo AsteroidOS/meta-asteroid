@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/android-simg2img.git;protocol=https;branc
 SRCREV = "e7d04c8a25e51d4be1b748e29dec4d5effcc788e"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}${bindir}

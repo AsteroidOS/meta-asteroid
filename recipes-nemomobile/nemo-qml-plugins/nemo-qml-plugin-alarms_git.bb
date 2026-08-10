@@ -8,7 +8,6 @@ SRC_URI = "git://github.com/sailfishos/nemo-qml-plugin-alarms.git;protocol=https
 SRCREV = "4377d1e31a56c763ba3e2d61137f97529281c1bd"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 inherit qt6-qmake pkgconfig
 

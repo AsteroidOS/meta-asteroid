@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/sailfishos/libnfcdef.git;protocol=https;branch=maste
 SRCREV = "2f4d115c977919de74fbf1ab30ce8d43b1d7ed32"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "KEEP_SYMBOLS=1"
 

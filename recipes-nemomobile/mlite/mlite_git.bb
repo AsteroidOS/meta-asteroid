@@ -12,19 +12,14 @@ SRC_URI = "git://github.com/sailfishos/mlite.git;protocol=https;branch=master \
 SRCREV = "387404e357d1d4bdfc445d3dafda2dc8f5f64a81"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS:append = "qtbase glib-2.0 dconf"
 inherit qt6-qmake pkgconfig
 B = "${WORKDIR}/git" 
 # Out of dir build breaks mlite6.pc installation
 
-do_configure:prepend() {
-    sed -i "s@\$\$\[QT_INSTALL_BINS\]/@@" src/src.pro
-}
-
 do_install:append() {
-    cd src/
+    cd ${S}/src/
     cp *.h MDConfGroup MNotificationGroup MRemoteAction MExport MDesktopEntry MNotification MGConfItem  ${D}/usr/include/mlite6/
 }
 

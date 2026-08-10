@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/andersson/qrtr.git;protocol=https;branch=master \
 SRCREV = "d0d471c96e7d112fac6f48bd11f9e8ce209c04d2"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 systemd"
 

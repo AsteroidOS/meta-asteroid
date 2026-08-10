@@ -7,7 +7,6 @@ SRC_URI = "git://github.com/AsteroidOS/mapplauncherd-booster-asteroid.git;protoc
 SRCREV = "40f3ce8e479678b4fdb275982dc53bd0835ea884"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 inherit qt6-qmake
 
 DEPENDS += "mapplauncherd mapplauncherd-qt qtdeclarative qtbase"

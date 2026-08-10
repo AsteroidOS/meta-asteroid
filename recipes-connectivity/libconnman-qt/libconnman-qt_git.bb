@@ -6,7 +6,6 @@ DEPENDS += "qtbase qtdeclarative"
 
 VERSION = "1.3.3"
 PV = "${VERSION}+git"
-S = "${WORKDIR}/git"
 
 SRCREV = "6b5ad435bbe9cb306324fc5d09a3624543e2ff63"
 SRC_URI = "git://github.com/sailfishos/libconnman-qt.git;protocol=https;branch=master"

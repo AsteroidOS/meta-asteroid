@@ -9,7 +9,6 @@ SRC_URI = "git://github.com/mer-hybris/libncicore.git;protocol=https;branch=mast
 SRCREV = "7063aead7fb89938d5c248c1695f2dd657341da0"
 PR = "r1"
 PV = "+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 DEPENDS += "glib-2.0 libglibutil glib-2.0-native"
 

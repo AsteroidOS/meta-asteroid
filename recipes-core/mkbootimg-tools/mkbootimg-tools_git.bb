@@ -1,15 +1,16 @@
 SUMMARY = "Tools to write Android boot images"
 HOMEPAGE = "https://github.com/xiaolu/mkbootimg_tools & https://android.googlesource.com/platform/system/tools/mkbootimg"
 LICENSE = "Apache-2.0"
-SRC_URI = "git://github.com/xiaolu/mkbootimg_tools.git;protocol=https;branch=master;name=old;destsuffix=git/old \
-           git://android.googlesource.com/platform/system/tools/mkbootimg.git;protocol=https;branch=main;name=aosp;destsuffix=git/aosp"
+SRC_URI = "git://github.com/xiaolu/mkbootimg_tools.git;protocol=https;branch=master;name=old;destsuffix=old \
+           git://android.googlesource.com/platform/system/tools/mkbootimg.git;protocol=https;branch=main;name=aosp;destsuffix=aosp"
 LIC_FILES_CHKSUM = "file://old/mkboot;beginline=1;endline=14;md5=7b23e8b2786c0da7fb7ff74d45637d54 \
                     file://aosp/mkbootimg.py;beginline=3;endline=15;md5=4b298fb007f09b49f4fd3c8bf859805e"
 SRCREV_old = "df5b4ab37854e72e124d8108cbfb5a1b88ee3c63"
 SRCREV_aosp = "d2bb0af5ba6d3198a3e99529c97eda1be0b5a093"
 SRCREV_FORMAT = "old_aosp"
-S = "${WORKDIR}/git"
 PV = "git"
+
+S = "${UNPACKDIR}"
 
 BBCLASSEXTEND = "native"
 
