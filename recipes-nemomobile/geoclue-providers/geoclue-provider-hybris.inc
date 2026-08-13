@@ -21,8 +21,4 @@ inherit qt6-qmake pkgconfig
 # Ensures that the root sources can be found.
 B = "${S}"
 
-do_install:append() {
-    chmod 04755 ${D}/usr/libexec/geoclue-hybris
-}
-
 FILES:${PN} += "/usr/share/dbus-1 /usr/share/geoclue-providers /usr/lib/systemd/user"
