@@ -1,0 +1,55 @@
+From: Timo Könnecke <github.com/moWerk>
+Date: Sun, 16 Aug 2026 14:00:00 +0200
+Subject: [PATCH] pulseaudio: Do not cap the server side buffer at 1024 frames
+
+QPulseAudioSinkStream::startStream() sets pa_buffer_attr.maxlength to 1024
+frames and leaves tlength at -1. maxlength is PulseAudio's total buffer for
+the stream and the server clamps tlength down to it, so every Qt stream runs
+on 21ms of buffer at 48kHz regardless of what the application requested
+through QAudioSink::setBufferSize(). No public API can influence maxlength.
+
+Any missed wakeup is then an underrun. On a single core device this is
+continuous: measured 1182 implicit underruns in 64 seconds of a steady tone,
+and 0 with this change.
+
+m_hardwareBufferFrames is effectively never set on this path.
+setHardwareBufferFrames() has one caller, the spatial audio engine, which is
+unreachable from QAudioSink and QSoundEffect, so value_or(1024) always
+applies. In dev the field is renamed m_nativePeriodFrames, which makes the
+mistake clearer: a period is one wakeup quantum, not a whole buffer.
+
+Leave maxlength to the server and derive tlength from the ringbuffer the
+stream can actually supply, taking half of it. PulseAudio requests a whole
+tlength per callback, so setting tlength equal to the ringbuffer lets a
+single callback drain it and the following request finds it empty; the
+shortfall is padded with silence and written anyway, which is audible as
+crackle and is invisible to PulseAudio because a full buffer still arrives.
+Half leaves the producer room to refill.
+
+Upstream-Status: Pending
+---
+diff --git i/src/multimedia/pulseaudio/qpulseaudiosink.cpp w/src/multimedia/pulseaudio/qpulseaudiosink.cpp
+index 3c6a8f6..27d173e 100644
+--- i/src/multimedia/pulseaudio/qpulseaudiosink.cpp
++++ w/src/multimedia/pulseaudio/qpulseaudiosink.cpp
+@@ -222,9 +222,18 @@ void QPulseAudioSinkStream::uninstallCallbacks()
+ 
+ bool QPulseAudioSinkStream::startStream(StreamType streamType)
+ {
++    // maxlength is the server's total buffer for the stream and tlength is
++    // clamped to it, so the 1024 frame default caps every stream at 21ms at
++    // 48kHz however large a buffer the application asked for.
++    //
++    // tlength is half the ringbuffer rather than all of it: PulseAudio requests
++    // a whole tlength in a single callback, so making them equal lets one
++    // callback drain the ringbuffer completely, and the next request arrives
++    // before the producer thread has refilled it. The shortfall is then padded
++    // with silence and written anyway, which is audible.
+     pa_buffer_attr attr{
+-        .maxlength = uint32_t(m_format.bytesForFrames(m_hardwareBufferFrames.value_or(1024))),
+-        .tlength = uint32_t(-1),
++        .maxlength = uint32_t(-1),
++        .tlength = uint32_t(ringbufferSizeInBytes() / 2),
+         .prebuf = uint32_t(-1),
+         .minreq = uint32_t(-1),
+         .fragsize = uint32_t(-1),
