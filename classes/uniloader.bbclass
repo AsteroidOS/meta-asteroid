@@ -12,7 +12,7 @@ MACHINE_DEFCONFIG ?= "${MACHINE}_defconfig"
 KERNEL_OUTPUT = "${B}/uniloader/${UNILOADER_IMAGE}"
 
 addtask do_prepare_uniloader after do_compile before do_deploy
-do_prepare_uniloader[depends] = "uniloader:do_install initramfs-android-image:do_image_complete"
+do_prepare_uniloader[depends] = "uniloader:do_install asteroid-initramfs:do_image_complete"
 
 do_prepare_uniloader() {
     # Ensure the kernel image is an executable format
@@ -27,7 +27,7 @@ do_prepare_uniloader() {
     # Integrate the newly built kernel, dtb, and initramfs blobs into the source
     cp "${B}/${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}" "${B}/uniloader/blob/Image"
     cp "${B}/${KERNEL_OUTPUT_DIR}/dts/${KERNEL_DEVICETREE}" "${B}/uniloader/blob/dtb"
-    cp "${DEPLOY_DIR_IMAGE}/initramfs-android-image-${MACHINE}.cpio.gz" "${B}/uniloader/blob/ramdisk"
+    cp "${DEPLOY_DIR_IMAGE}/asteroid-initramfs-${MACHINE}.cpio.gz" "${B}/uniloader/blob/ramdisk"
 }
 
 addtask do_configure_uniloader after do_prepare_uniloader before do_deploy

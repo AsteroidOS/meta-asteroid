@@ -10,10 +10,12 @@ MKBOOTIMG_HEADER_VERSION ?= "0"
 MKBOOTIMG_VENDOR_BOOT ?= "false"
 MKBOOTIMG_INIT_BOOT ?= "false"
 MKBOOTIMG_DTBO ?= "false"
+MKBOOTIMG_CMDLINE ?= ""
+MKBOOTIMG_BOARD ?= ""
 KERNEL_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/${KERNEL_IMAGETYPE}"
 DTB_OUTPUT ?= "${KERNEL_OUTPUT_DIR}/dts/${KERNEL_DEVICETREE}"
 
-do_deploy[depends] += "initramfs-android-image:do_image_complete \
+do_deploy[depends] += "asteroid-initramfs:do_image_complete \
                        mkbootimg-tools-native:do_populate_sysroot \
                        mkdtboimg-native:do_populate_sysroot \
                        dtc-native:do_populate_sysroot"
@@ -30,7 +32,9 @@ do_deploy:append() {
         # Kernel and initramfs to boot.img
         mkbootimg -o "${B}"/"${DISTRO}-${MACHINE}-boot.img" \
                   --kernel "${KERNEL_OUTPUT}" \
-                  --ramdisk "${DEPLOY_DIR_IMAGE}"/initramfs-android-image-"${MACHINE}".cpio.gz \
+                  --ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
+                  --cmdline "${MKBOOTIMG_CMDLINE}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                   ${MKBOOTIMG_ARGS}
 
@@ -41,8 +45,10 @@ do_deploy:append() {
         # Kernel, initramfs, and dtb to boot.img
         mkbootimg -o "${B}"/"${DISTRO}-${MACHINE}-boot.img" \
                   --kernel "${KERNEL_OUTPUT}" \
-                  --ramdisk "${DEPLOY_DIR_IMAGE}"/initramfs-android-image-"${MACHINE}".cpio.gz \
+                  --ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
                   --dtb "${B}"/dt.dtb.android \
+                  --cmdline "${MKBOOTIMG_CMDLINE}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version 2 \
                   ${MKBOOTIMG_ARGS}
 
@@ -53,6 +59,7 @@ do_deploy:append() {
         # Kernel to boot.img, initramfs and dtb to vendor_boot.img
         mkbootimg -o "${B}"/"${DISTRO}-${MACHINE}-boot.img" \
                   --kernel "${KERNEL_OUTPUT}" \
+                  --board "${MKBOOTIMG_BOARD}" \
                   --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                   ${MKBOOTIMG_ARGS}
 
@@ -60,8 +67,10 @@ do_deploy:append() {
         if [ "${MKBOOTIMG_VENDOR_BOOT}" = "true" ]; then
             # Generate vendor_boot
             mkbootimg --vendor_boot "${B}"/"${DISTRO}-${MACHINE}-vendor_boot.img" \
-                      --vendor_ramdisk "${DEPLOY_DIR_IMAGE}"/initramfs-android-image-"${MACHINE}".cpio.gz \
+                      --vendor_ramdisk "${DEPLOY_DIR_IMAGE}"/asteroid-initramfs-"${MACHINE}".cpio.gz \
                       --dtb "${B}"/dt.dtb.android \
+                      --vendor_cmdline "${MKBOOTIMG_CMDLINE}" \
+                      --board "${MKBOOTIMG_BOARD}" \
                       --header_version "${MKBOOTIMG_HEADER_VERSION}" \
                       ${MKBOOTIMG_VENDOR_ARGS}
 
