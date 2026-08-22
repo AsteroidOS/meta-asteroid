@@ -25,7 +25,6 @@ do_install:append() {
 
     install -d ${D}/var/lib/environment/mapplauncherd
     echo "QT_QPA_PLATFORM=wayland-egl" > ${D}/var/lib/environment/mapplauncherd/asteroid-qt6.conf
-    echo "QT_IM_MODULE=qtvirtualkeyboard" >> ${D}/var/lib/environment/mapplauncherd/asteroid-qt6.conf
 }
 
 FILES:${PN} += "/usr/libexec/mapplauncherd/ /usr/lib/systemd/user /usr/share/booster-asteroid-qt6 /usr/lib/systemd/user/default.target.wants/"
