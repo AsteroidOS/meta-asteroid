@@ -1,0 +1,29 @@
+From: Darrel Griët <dgriet@gmail.com>
+Subject: [PATCH] v10: Fix the refresh rate fallback unit
+
+When the HWC_VSYNC_PERIOD query fails, the fallback assigned 60 to
+vsyncVal, but vsyncVal holds the vsync period in nanoseconds, not a
+rate in Hz. refreshRate() then reported 1e9/60 = ~16.7 million fps
+("VSync: 60ns, 16666667.000000fps" in the log). That bogus rate is what
+the plugin hands to Qt and, through wl_output, to every Wayland client,
+so animation timesteps are wrong on any device where the query fails
+(e.g. minnow).
+
+Use the period of a 60 Hz display, in nanoseconds, as the fallback.
+
+Upstream-Status: Pending
+
+Not yet submitted to mer-hybris; carried in meta-asteroid for now. The fix
+is generic to the v10 backend and could be offered upstream later.
+---
+--- a/hwcomposer/hwcomposer_backend_v10.cpp	2026-07-12 18:00:00.000000000 +0200
++++ b/hwcomposer/hwcomposer_backend_v10.cpp	2026-07-12 18:00:00.000000000 +0200
+@@ -284,7 +284,7 @@
+         int res = hwc_device->query(hwc_device, HWC_VSYNC_PERIOD, &vsyncVal);
+         if (res != 0 || vsyncVal == 0) {
+             qWarning() << "query(HWC_VSYNC_PERIOD) failed, assuming 60 Hz";
+-            vsyncVal = 60.0;
++            vsyncVal = 16666667; // 60 Hz vsync period in ns
+         }
+
+         vsyncFPS = (float)1000000000 / (float)vsyncVal;
