@@ -20,8 +20,16 @@ inherit qt6-qmake pkgconfig
 # Ensures that the root sources can be found.
 B = "${S}"
 
+# NOTE: this used to be setuid-root (04755). On at least one port (hoki,
+# see AsteroidOS/meta-smartwatch#252) that causes glibc/D-Bus to strip
+# DBUS_SESSION_BUS_ADDRESS from the environment for setuid processes (a
+# real, documented security hardening behavior - real-uid != effective-uid
+# triggers it), which makes QDBusConnection::sessionBus() fail to connect
+# and registerObject() fail with a qFatal crash on startup. The GNSS
+# binder HAL access this binary needs does not require root - confirmed
+# working as a normal, unprivileged user. Dropping the setuid bit.
 do_install:append() {
-    chmod 04755 ${D}/usr/libexec/geoclue-hybris
+    chmod 0755 ${D}/usr/libexec/geoclue-hybris
 }
 
 FILES:${PN} += "/usr/share/dbus-1 /usr/share/geoclue-providers /usr/lib/systemd/user"
