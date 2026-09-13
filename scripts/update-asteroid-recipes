@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+
+import argparse
+import glob
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+SRC_URI_RE = re.compile(
+    r'git://(?P<host>[^/;\s"]+)/(?P<path>[^;\s"]+?)(?:\.git)?;[^"]*?branch=(?P<branch>[^;\s"]+)')
+SRCREV_RE = re.compile(r'^SRCREV\s*=\s*"(?P<rev>[^"]*)"[ \t]*$', re.MULTILINE)
+PV_RE = re.compile(r'^PV\s*=\s*"(?P<pv>\d[\w.]*\+\d+\+git)"[ \t]*$', re.MULTILINE)
+DESCRIBE_RE = re.compile(r'^(?P<tag>.+)-(?P<count>\d+)-g[0-9a-f]+$')
+
+
+def git(*args):
+    process = subprocess.run(["git", *args], text=True, capture_output=True)
+    if process.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} failed:\n{process.stderr.strip()}")
+    return process.stdout.strip("\n")
+
+
+class Upstream:
+    def __init__(self, url, branch, dir):
+        self.dir = dir
+        git("clone", "--quiet", "--bare", "--filter=tree:0", "--branch", branch, url, dir)
+        self.head = self.git("rev-parse", branch)
+        m = DESCRIBE_RE.match(self.git("describe", "--tags", "--long", "--match", "[0-9]*", self.head))
+        self.pv = f"{m.group('tag')}+{m.group('count')}+git"
+
+    def git(self, *args):
+        return git("-C", self.dir, *args)
+
+    def shortlog(self, old):
+        try:
+            return self.git("log", "--no-merges", "--format=  > %s", f"{old}..{self.head}")
+        except RuntimeError:
+            return ""
+
+
+class Recipe:
+    def __init__(self, path, text, tmpdir):
+        self.path = path
+        self.name = re.sub(r'_[^_/]*\.bb$', '', os.path.basename(path))
+        self.text = text
+        m = SRC_URI_RE.search(text)
+        if not m:
+            sys.exit(f"error: {path}: no git SRC_URI with a branch= parameter")
+
+        url = f"https://{m.group('host')}/{m.group('path')}.git"
+        self.upstream = Upstream(url, m.group("branch"), os.path.join(tmpdir, self.name))
+
+        m = SRCREV_RE.search(text)
+        if not m:
+            sys.exit(f"error: {path}: no SRCREV line")
+
+        self.old_rev = m.group("rev")
+        self.old_pv = PV_RE.search(text).group("pv")
+
+    def write(self):
+        text = SRCREV_RE.sub(f'SRCREV = "{self.upstream.head}"', self.text, count=1)
+        text = PV_RE.sub(f'PV = "{self.upstream.pv}"', text, count=1)
+        with open(self.path, "w") as f:
+            f.write(text)
+
+    def describe(self):
+        head = f"{self.name}: {self.old_rev[:7]} -> {self.upstream.head[:7]} ({self.old_pv} -> {self.upstream.pv})"
+        log = self.upstream.shortlog(self.old_rev)
+        return head + ("\n" + log if log else "")
+
+
+def find_recipes(tmpdir):
+    for path in sorted(glob.glob("recipes-asteroid/*/*_git.bb")):
+        with open(path) as f:
+            text = f.read()
+        if PV_RE.search(text):
+            yield Recipe(path, text, tmpdir)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Pin AsteroidOS git recipes to the latest upstream commit.")
+    parser.add_argument("--dry-run", action="store_true", help="only report what would change")
+    parser.add_argument("--no-commit", action="store_true", help="modify the recipes but do not commit")
+    args = parser.parse_args()
+
+    os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    with tempfile.TemporaryDirectory(prefix="update-asteroid-recipes-") as tmpdir:
+        groups = {}
+        for recipe in find_recipes(tmpdir):
+            groups.setdefault(os.path.dirname(recipe.path), []).append(recipe)
+
+        for group, recipes in groups.items():
+            changed = []
+            for recipe in recipes:
+                if recipe.old_rev == recipe.upstream.head:
+                    print(f"{recipe.name}: up to date at {recipe.old_rev[:7]} ({recipe.old_pv})")
+                    continue
+
+                print(recipe.describe())
+                changed.append(recipe)
+
+            if not changed or args.dry_run:
+                continue
+
+            for recipe in changed:
+                recipe.write()
+
+            if args.no_commit:
+                continue
+
+            # Group recipes in same folder
+            if len(recipes) > 1:
+                commits = [(f"{os.path.basename(group)}: Bump SRCREVs", changed)]
+            else:
+                commits = [(f"{r.name}: Bump SRCREV to {r.upstream.head[:7]}", [r]) for r in changed]
+
+            for subject, items in commits:
+                body = "\n\n".join(r.describe() for r in items)
+                git("add", "--", *[r.path for r in items])
+                git("commit", "--quiet", "-m", subject, "-m", body)
+                print(f"committed: {subject}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except RuntimeError as e:
+        sys.exit(f"error: {e}")
