@@ -4,7 +4,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-weather.git;protocol=https;branch=master"
-SRCREV = "${AUTOREV}"
+SRCREV = "f42f0706de13205d1f9486414158474ad426f18c"
 
 require asteroid-app.inc
 
