@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-settings.git;protocol=https;branch=master"
 SRCREV = "45d547d3872b6895e7328612784bc9b76f7fdff9"
+PV = "2.1+35+git"
 
 require asteroid-app.inc
 

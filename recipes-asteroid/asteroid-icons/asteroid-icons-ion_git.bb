@@ -5,8 +5,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=92e02b7236a0635eaf1478f8041b0602"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-icons-ion;protocol=https;branch=master"
 SRCREV = "7941cd491296b79941cbdad0d4b72bd34810c5dc"
+PV = "2.1+0+git"
+PE = "1"
 PR = "r1"
-PV = "+git${SRCPV}"
 
 do_install() {
     install -d ${D}/usr/share/icons/asteroid/

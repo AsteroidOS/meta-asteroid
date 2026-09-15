@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-calendar.git;protocol=https;branch=master"
 SRCREV = "02b78a66bb2c317212506f87197717b817e12afa"
+PV = "2.1+12+git"
 
 require asteroid-app.inc
 

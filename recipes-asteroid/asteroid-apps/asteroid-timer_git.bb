@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-timer.git;protocol=https;branch=master"
 SRCREV = "28d3fa8a664c3f8a03ec463fe8de648b4fbc34cc"
+PV = "2.1+9+git"
 
 REMOVE_TRANSLATIONS = "1"
 

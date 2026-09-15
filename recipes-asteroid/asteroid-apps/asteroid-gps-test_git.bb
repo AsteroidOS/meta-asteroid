@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-gps-test.git;protocol=https;branch=master"
 SRCREV = "991329e453854593094cea018f6412f7e2e654bd"
+PV = "2.1+8+git"
 
 REMOVE_TRANSLATIONS = "1"
 
