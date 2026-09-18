@@ -4,7 +4,7 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-flashlight.git;protocol=https;branch=master"
-SRCREV = "e5e4b72471e2eeb784a9a0224906e9dacf3850e5"
-PV = "2.1+18+git"
+SRCREV = "138a9f381f44d2f1a42f41af95de248fafefabdc"
+PV = "2.1+21+git"
 
 require asteroid-app.inc
