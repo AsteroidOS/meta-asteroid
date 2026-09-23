@@ -1,0 +1,44 @@
+From 011b1d61acdb089621924dc11c702c96fd85179b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Wed, 23 Sep 2026 20:50:34 +0200
+Subject: [PATCH] qt-api: Fix synchronous D-Bus calls on Qt 6
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Qt 6's variadic QDBusAbstractInterface::call() also marshals the unset
+arguments, so every getter fails with "Marshalling failed: Invalid
+QVariant passed in arguments". Pass only the arguments that are set.
+
+Upstream-Status: Pending
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ qt-api/abstractsensor_i.cpp | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/qt-api/abstractsensor_i.cpp b/qt-api/abstractsensor_i.cpp
+index 2961095..5cc1479 100644
+--- a/qt-api/abstractsensor_i.cpp
++++ b/qt-api/abstractsensor_i.cpp
+@@ -536,13 +536,19 @@ QDBusMessage AbstractSensorChannelInterface::call(QDBus::CallMode mode,
+                                                   const QVariant& arg7,
+                                                   const QVariant& arg8)
+ {
+-    return pimpl_->call(mode, method, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
++    QList<QVariant> args;
++    for (const QVariant *arg : { &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8 }) {
++        if (!arg->isValid())
++            break;
++        args << *arg;
++    }
++    return callWithArgumentList(mode, method, args);
+ }
+ 
+ QDBusMessage AbstractSensorChannelInterface::callWithArgumentList(QDBus::CallMode mode, const QString& method,
+                                                                   const QList<QVariant>& args)
+ {
+-    return pimpl_->call(mode, method, args);
++    return pimpl_->callWithArgumentList(mode, method, args);
+ }
+ 
+ void AbstractSensorChannelInterface::dbusConnectNotify(const QMetaMethod& signal)
