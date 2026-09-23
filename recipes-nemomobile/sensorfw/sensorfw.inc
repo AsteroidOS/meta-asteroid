@@ -10,6 +10,7 @@ SRC_URI = "git://github.com/sailfishos/sensorfw.git;protocol=https;branch=master
            file://0004-Fix-compilation-when-autohybris-is-used.patch \
            file://0005-Fix-compilation-when-hybris-is-used.patch \
            file://0006-hybrisadaptor-Queue-erroneous-events-too.patch \
+           file://0007-qt-api-Fix-synchronous-D-Bus-calls-on-Qt-6.patch \
            file://sensorfwd.service"
 SRCREV = "0.15.1"
 PR = "r1"
