@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-btsyncd.git;protocol=https;branch=master \
     file://asteroid-btsyncd.service"
-SRCREV = "7c3918ae7371208981d8fa0494de58c1cc34ef66"
-PV = "2.1+15+git"
+SRCREV = "e14fbcd9a157f0988204e874b03f6f800f89d645"
+PV = "2.1+16+git"
 PE = "1"
 PR = "r1"
 inherit qt6-cmake pkgconfig
