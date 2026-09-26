@@ -1,0 +1,133 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sat, 19 Sep 2026 23:14:15 +0200
+Subject: [PATCH] Hold a wakelock while forwarding HAL packets to vhci
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Android's stack keeps the CPU awake while it handles a received packet.
+bluebinder holds none, so a host running autosleep can suspend before
+the stack above vhci sees the data.
+
+BLUEBINDER_RX_WAKELOCK_MS tunes the 1s timeout; 0 disables.
+
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+
+Upstream-Status: Pending
+---
+ bluebinder.c | 80 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
+
+diff --git a/bluebinder.c b/bluebinder.c
+index c6724d7..9353d8e 100644
+--- a/bluebinder.c
++++ b/bluebinder.c
+@@ -262,6 +262,80 @@ binder_remote_died(
+     GBinderRemoteObject* obj,
+     void* user_data);
+ 
++#define RX_WAKELOCK_NAME "bluebinder_rx"
++#define RX_WAKELOCK_PATH "/sys/power/wake_lock"
++#define RX_WAKELOCK_DEFAULT_TIMEOUT_MS 1000
++#define RX_WAKELOCK_MIN_KICK_INTERVAL_US 100000
++
++static int rx_wakelock_fd = -1;
++static gint64 rx_wakelock_timeout_ns = 0;
++static gint64 rx_wakelock_last_kick_us = 0;
++
++static
++void
++rx_wakelock_init(void)
++{
++    const char *env = getenv("BLUEBINDER_RX_WAKELOCK_MS");
++    int timeout_ms = RX_WAKELOCK_DEFAULT_TIMEOUT_MS;
++
++    if (env) {
++        timeout_ms = atoi(env);
++    }
++
++    if (timeout_ms <= 0) {
++        return;
++    }
++
++    rx_wakelock_fd = open(RX_WAKELOCK_PATH, O_WRONLY | O_CLOEXEC);
++    if (rx_wakelock_fd < 0) {
++        fprintf(stderr, "Not blocking suspend for incoming packets, cannot open %s: %s\n",
++            RX_WAKELOCK_PATH, strerror(errno));
++        return;
++    }
++
++    rx_wakelock_timeout_ns = (gint64)timeout_ms * 1000000;
++}
++
++static
++void
++rx_wakelock_kick(void)
++{
++    char request[64];
++    gint64 now;
++    int len;
++
++    if (rx_wakelock_fd < 0) {
++        return;
++    }
++
++    now = g_get_monotonic_time();
++    if (rx_wakelock_last_kick_us &&
++            now - rx_wakelock_last_kick_us < RX_WAKELOCK_MIN_KICK_INTERVAL_US) {
++        return;
++    }
++    rx_wakelock_last_kick_us = now;
++
++    len = snprintf(request, sizeof(request), "%s %" G_GINT64_FORMAT "\n",
++        RX_WAKELOCK_NAME, rx_wakelock_timeout_ns);
++
++    if (write(rx_wakelock_fd, request, len) < 0) {
++        fprintf(stderr, "Failed to take the %s wakelock: %s\n",
++            RX_WAKELOCK_NAME, strerror(errno));
++        close(rx_wakelock_fd);
++        rx_wakelock_fd = -1;
++    }
++}
++
++static
++void
++rx_wakelock_close(void)
++{
++    if (rx_wakelock_fd >= 0) {
++        close(rx_wakelock_fd);
++        rx_wakelock_fd = -1;
++    }
++}
++
+ static
+ gboolean
+ read_rfkill_name(
+@@ -1021,6 +1095,8 @@ bluebinder_callbacks_transact(
+                 }
+             }
+ 
++            rx_wakelock_kick();
++
+             dev_write_packet(proxy, packet, count + 1);
+ 
+             free(packet);
+@@ -1197,6 +1273,8 @@ int main(int argc, char *argv[])
+     proxy.death_id = gbinder_remote_object_add_death_handler
+             (proxy.remote, binder_remote_died, &proxy);
+ 
++    rx_wakelock_init();
++
+     if (setup_vhci(&proxy)) {
+         gboolean bluetooth_on = FALSE;
+         gboolean bluetooth_state_known = FALSE;
+@@ -1291,6 +1369,8 @@ unref:
+ 
+     close(proxy.host_fd);
+ 
++    rx_wakelock_close();
++
+ #if USE_SYSTEMD
+     sd_notify(0,
+         "STATUS=Exiting.\n"
