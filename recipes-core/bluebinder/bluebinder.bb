@@ -6,10 +6,12 @@ LIC_FILES_CHKSUM = "file://bluebinder.c;beginline=1;endline=29;md5=ba064fbc04c56
 
 SRC_URI = "git://github.com/mer-hybris/bluebinder.git;branch=master;protocol=https \
            file://0001-service-fixes.patch \
+           file://0002-Hold-a-wakelock-while-forwarding-HAL-packets-to-vhci.patch \
 "
-SRCREV = "1.0.15"
-PR = "r1"
-PV = "+git${SRCPV}"
+SRCREV = "c3e1b155e308f6df9c9a02dbd909a44e7319ab7d"
+PE = "1"
+PV = "1.0.20+git"
+PR = "r3"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
@@ -35,3 +37,5 @@ do_install() {
 }
 
 FILES:${PN} += "${sbindir}/bluebinder_post.sh ${sbindir}/bluebinder_wait.sh"
+
+do_configure[noexec] = "1"
