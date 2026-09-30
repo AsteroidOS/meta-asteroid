@@ -1,0 +1,65 @@
+From: Darrel Griët <dgriet@gmail.com>
+Date: Wed, 1 Oct 2026 00:00:00 +0200
+Subject: [PATCH] test: Parenthesise assignments inside assert
+
+glibc 2.43's assert no longer wraps its argument in parentheses when
+building with -std=c99, so an assignment used as the condition trips
+-Werror=parentheses.
+
+Upstream-Status: Pending
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+diff --git a/test/testmod_state.c b/test/testmod_state.c
+index 53c8751..863186f 100644
+--- a/test/testmod_state.c
++++ b/test/testmod_state.c
+@@ -119,7 +119,7 @@ static module_t* load_state_module(const char*  bootstate,
+ 
+   if (expected_state == DSME_STATE_ACTDEAD) {
+       DSM_MSGTYPE_SAVE_DATA_IND* ind2;
+-      assert(ind2 = queued(DSM_MSGTYPE_SAVE_DATA_IND));
++      assert((ind2 = queued(DSM_MSGTYPE_SAVE_DATA_IND)));
+       free(ind2);
+   }
+ 
+@@ -766,7 +766,7 @@ static void testcase20(void)
+   // do not specify $BOOTSTATE
+   module_t* state = load_module_under_test(module_name_tmp);
+   DSM_MSGTYPE_STATE_CHANGE_IND* ind;
+-  assert(ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND));
++  assert((ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND)));
+   assert(ind->state == DSME_STATE_USER);
+   free(ind);
+   assert(message_queue_is_empty());
+@@ -777,7 +777,7 @@ static void testcase20(void)
+   state = load_state_module("DIIBADAABA", DSME_STATE_USER);
+ 
+   DSM_MSGTYPE_ENTER_MALF* msg;
+-  assert(msg = queued(DSM_MSGTYPE_ENTER_MALF));
++  assert((msg = queued(DSM_MSGTYPE_ENTER_MALF)));
+   free(msg);
+   assert(!timer_exists());
+   assert(message_queue_is_empty());
+@@ -820,7 +820,7 @@ static void testcase21(void)
+   module_t* state = load_module_under_test(module_name_tmp);
+   unsetenv("BOOTSTATE");
+   DSM_MSGTYPE_STATE_CHANGE_IND* ind;
+-  assert(ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND));
++  assert((ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND)));
+   assert(ind->state == DSME_STATE_USER);
+   free(ind);
+   assert(!message_queue_is_empty());
+@@ -837,11 +837,11 @@ static void testcase21(void)
+   setenv("BOOTSTATE", "DIIBADAABA", true);
+   state = load_module_under_test(module_name_tmp);
+   unsetenv("BOOTSTATE");
+-  assert(ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND));
++  assert((ind = queued(DSM_MSGTYPE_STATE_CHANGE_IND)));
+   assert(ind->state == DSME_STATE_USER);
+   free(ind);
+   assert(!message_queue_is_empty());
+-  assert(malfmsg = queued(DSM_MSGTYPE_ENTER_MALF));
++  assert((malfmsg = queued(DSM_MSGTYPE_ENTER_MALF)));
+   //TODO: Should the reason / component be checked?
+   free(malfmsg);
+   assert(message_queue_is_empty());
