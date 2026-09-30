@@ -17,7 +17,9 @@ SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"
 PR = "r1"
 PV = "+git${SRCPV}"
 
-DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf pkgconfig-native usb-moded"
+inherit pkgconfig
+
+DEPENDS += "glib-2.0 libdsme libiphb systemd dbus-glib dbus libngf usb-moded"
 
 do_install() {
     oe_runmake install _UNITDIR=${systemd_system_unitdir} DESTDIR=${D}
