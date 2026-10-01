@@ -9,7 +9,7 @@ index fe99494..9c58cd3 100755
  while true
  do
 -    bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]")
-+    bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]" | head -1)
++    bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]" | head -n 1)
      if [ "$bt_status" = "[running]" ] ; then
          echo "Bluetooth service running"
          exit 0
