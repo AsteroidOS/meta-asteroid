@@ -46,10 +46,10 @@ index d7a059d..c3f9f99 100755
      /usr/bin/getprop | grep -q init.svc.*.bluetooth.audio
      if [ $? -eq 0 ] ; then
 -        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -v audio |grep -o "\[running\]")
-+        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -v audio |grep -o "\[running\]" | head -1)
++        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -v audio |grep -o "\[running\]" | head -n 1)
      else
 -        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]")
-+        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]" | head -1)
++        bt_status=$(/usr/bin/getprop |grep "init.svc.*bluetooth" |grep -o "\[running\]" | head -n 1)
      fi
      if [ "$bt_status" = "[running]" ] ; then
          echo "Bluetooth service running"
