@@ -1,6 +1,7 @@
 DESCRIPTION = "Load the WiFi firmware and enable driver"
 PR = "r0"
 SRC_URI = "file://msm-wifi-enabler.service"
+S = "${UNPACKDIR}"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10"
 
