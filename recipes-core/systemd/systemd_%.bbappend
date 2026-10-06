@@ -1,4 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+SRC_URI += "file://random-seed-credit.conf"
 SRC_URI:append:hybris-machine = " file://50-video.rules \
                   file://65-android.rules"
 
@@ -7,6 +8,9 @@ do_install:append() {
     install -d ${D}/var/lib/systemd/linger
     touch ${D}/var/lib/systemd/linger/ceres
     sed -i "s@agetty --noclear @agetty --autologin ceres @" ${D}${systemd_system_unitdir}/getty@.service
+
+    install -d ${D}${systemd_system_unitdir}/systemd-random-seed.service.d
+    install -m 0644 ${UNPACKDIR}/random-seed-credit.conf ${D}${systemd_system_unitdir}/systemd-random-seed.service.d/credit.conf
 }
 
 do_install:append:hybris-machine() {
