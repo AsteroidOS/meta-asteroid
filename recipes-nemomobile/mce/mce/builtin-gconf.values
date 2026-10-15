@@ -1,1 +1,3 @@
 /system/osso/dsm/display/display_brightness=5
+/system/osso/dsm/display/inhibit_blank_mode=0
+/system/osso/dsm/locks/tklock_blank_disable=0
