@@ -4,8 +4,8 @@ LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=84dcc94da3adb52b53ae4fa38fe49e5d"
 
 SRC_URI = "git://github.com/AsteroidOS/asteroid-settings.git;protocol=https;branch=master"
-SRCREV = "a2eade1aad3124b326ceff6139f9a752eafb6f5f"
-PV = "2.1+45+git"
+SRCREV = "60340bd1c27a7b9e4884bd61c0563d091bc8b240"
+PV = "2.1+47+git"
 
 require asteroid-app.inc
 
