@@ -1,0 +1,10 @@
+[Unit]
+Description=Set the kernel time zone from the system time zone
+ConditionPathExists=/etc/localtime
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/kernel-timezone
+
+[Install]
+WantedBy=multi-user.target
