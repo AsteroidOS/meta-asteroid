@@ -1,4 +1,4 @@
-From 9706e2e44acbf719aaf454707dc21b9809704943 Mon Sep 17 00:00:00 2001
+From 56fd86e4e7ae8686ff5bffb8873cdb05f5c3e39d Mon Sep 17 00:00:00 2001
 From: MagneFire <IDaNLContact@gmail.com>
 Date: Sun, 7 Mar 2021 21:44:09 +0100
 Subject: [PATCH] tilt-to-wake: Wake screen when wrist gesture arrives.
@@ -8,19 +8,24 @@ Content-Transfer-Encoding: 8bit
 
 Upstream-Status: Inappropriate
 
+Only genuine evdev and sensord reports generate the gesture: the
+FORGET/RESET/RESTORE session notifications reach the same callback, and
+the initial-value query replays the previous gesture with its stale
+timestamp, so without that guard every sensorfwd restart lit the display.
+
 Signed-off-by: Darrel Griët <dgriet@gmail.com>
 ---
  builtin-gconf.c           |  10 ++
  datapipe.c                |   4 +
  datapipe.h                |   1 +
  evdev.h                   |   1 +
- mce-sensorfw.c            | 206 ++++++++++++++++++++++++++++++++++++++
+ mce-sensorfw.c            | 217 ++++++++++++++++++++++++++++++++++++++
  mce-sensorfw.h            |   4 +
  modules/display.h         |   8 ++
  modules/sensor-gestures.c |  26 +++++
  tests/ut/ut_display.c     |   5 +
  tools/mcetool.c           |  32 ++++++
- 10 files changed, 297 insertions(+)
+ 10 files changed, 308 insertions(+)
 
 diff --git a/builtin-gconf.c b/builtin-gconf.c
 index 5517292..b04689c 100644
@@ -90,7 +95,7 @@ index be89a42..e7faf7a 100644
  
      /* Modifiers */
 diff --git a/mce-sensorfw.c b/mce-sensorfw.c
-index c71e5f7..7c49104 100644
+index c71e5f7..1cd6732 100644
 --- a/mce-sensorfw.c
 +++ b/mce-sensorfw.c
 @@ -30,6 +30,8 @@
@@ -226,7 +231,7 @@ index c71e5f7..7c49104 100644
  // (exported API defined in "mce-sensorfw.h")
  
  static gboolean mce_sensorfw_evdev_cb    (GIOChannel *chn, GIOCondition cnd, gpointer aptr);
-@@ -1582,6 +1617,31 @@ EXIT:
+@@ -1582,6 +1617,33 @@ EXIT:
      return ack;
  }
  
@@ -243,12 +248,14 @@ index c71e5f7..7c49104 100644
 +                                DBUS_TYPE_INVALID) )
 +        goto EXIT;
 +
-+    const sfw_sample_wrist_t sample = {
-+        .wrist_timestamp = tck,
-+        .wrist_tilted    = (val < 1) ? true : false,
-+    };
-+
-+    sfw_plugin_handle_sample(plugin, &sample);
++    /* Wrist gesture is an event-type sensor with no meaningful current
++     * value: the initial-value query replays the previous gesture with
++     * its stale timestamp, which would fake a tilt-to-wake at every
++     * session (re)establishment. Parse and acknowledge it, but do not
++     * forward it to the sample path. */
++    (void)plugin;
++    (void)tck;
++    (void)val;
 +
 +    ack = true;
 +EXIT:
@@ -258,7 +265,7 @@ index c71e5f7..7c49104 100644
  static bool
  sfw_backend_accelerometer_value_cb(sfw_plugin_t *plugin, DBusMessageIter *data)
  {
-@@ -2116,6 +2176,114 @@ sfw_backend_orient_sample_cb(sfw_plugin_t *plugin, sfw_notify_t type, const void
+@@ -2116,6 +2178,123 @@ sfw_backend_orient_sample_cb(sfw_plugin_t *plugin, sfw_notify_t type, const void
      return;
  }
  
@@ -323,6 +330,15 @@ index c71e5f7..7c49104 100644
 +        sfw_notify_wrist_cb(sample->wrist_tilted);
 +    }
 +
++    /* Only genuine sensor reports may generate a tilt-to-wake gesture.
++     * Session lifecycle notifications (FORGET/RESET/RESTORE) land in
++     * this callback too, so without this every sensorfwd restart would
++     * fake a tilt and light the display. */
++    if( !tracking_active )
++        goto EXIT;
++    if( type != NOTIFY_EVDEV && type != NOTIFY_SENSORD )
++        goto EXIT;
++
 +    ev = malloc(sizeof(struct input_event));
 +
 +    mce_log(LL_DEVEL, "tilt-to-wake gesture from wrist gesture");
@@ -373,7 +389,7 @@ index c71e5f7..7c49104 100644
  /** Callback for handling accelerometer events from sensord */
  static void
  sfw_backend_accelerometer_sample_cb(sfw_plugin_t *plugin, sfw_notify_t type, const void *sampledata)
-@@ -2608,6 +2776,15 @@ static const sfw_backend_t sfw_backend_lut[SFW_SENSOR_ID_COUNT] =
+@@ -2608,6 +2787,15 @@ static const sfw_backend_t sfw_backend_lut[SFW_SENSOR_ID_COUNT] =
          .be_sample_cb        = sfw_backend_orient_sample_cb,
          .be_value_method     = SFW_SENSOR_METHOD_READ_ORIENT,
      },
@@ -389,7 +405,7 @@ index c71e5f7..7c49104 100644
      [SFW_SENSOR_ID_ACCELEROMETER] = {
          .be_sensor_name      = SFW_SENSOR_NAME_ACCELEROMETER,
          .be_sensor_object    = 0,
-@@ -5183,6 +5360,35 @@ mce_sensorfw_orient_disable(void)
+@@ -5183,6 +5371,35 @@ mce_sensorfw_orient_disable(void)
  
  // ----------------------------------------------------------------
  
@@ -604,3 +620,6 @@ index e067c43..f5d519d 100644
          {
                  .name        = "get-color-profile-ids",
                  .flag        = 'a',
+-- 
+2.47.3
+
