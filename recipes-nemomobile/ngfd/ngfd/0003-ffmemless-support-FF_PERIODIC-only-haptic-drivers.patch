@@ -42,13 +42,33 @@ events for them in the first place. This patch makes it work:
    n_proplist_get_uint() silently returns 0 for events.d values. Fall
    back to n_proplist_get_string() + strtoul.
 
+6. Repeating events: sound.repeat (alarm, ringtone) means vibrate until
+   the client stops the request. ffmemless played one iteration and
+   completed its sink from the completion timer, which ends the request
+   when there is no sound sink to keep it open. Re-trigger the effect
+   from that timer instead until the request is stopped.
+
+7. Arm the completion timer once the effect has started, not before it
+   is uploaded: the upload wakes the DSP over I2C and that latency was
+   cut off every buzz. It also kept the erase from landing while the
+   chip was back in hibernation, where the stop write was NACKed and
+   the next erases blocked waiting for a completion that never came.
+
+8. Direction: effects defined in the ini get direction 0x4000 (forward)
+   or 0xC000 (reverse). cs40l26 accepts 0x0000 and 0x8000 only and
+   rejects anything else with "Invalid ff_effect direction", so no ini
+   effect ever played there. Use 0x0000 and 0x8000, still 180 degrees
+   apart; the ff-memless drivers ignore the direction anyway.
+
 Signed-off-by: Florent Revest <revestflo@gmail.com>
 ---
- src/plugins/ffmemless/ffmemless.c |  6 ++--
- src/plugins/ffmemless/plugin.c    | 36 +++++++++++++++++++++++--
- 2 files changed, 38 insertions(+), 4 deletions(-)
+ src/plugins/ffmemless/ffmemless.c |  6 +--
+ src/plugins/ffmemless/ffmemless.h |  4 +-
+ src/plugins/ffmemless/plugin.c    | 90 ++++++++++++++++++++++++-------
+ 3 files changed, 77 insertions(+), 23 deletions(-)
 
 diff --git a/src/plugins/ffmemless/ffmemless.c b/src/plugins/ffmemless/ffmemless.c
+index 0a5bef2..1c83052 100644
 --- a/src/plugins/ffmemless/ffmemless.c
 +++ b/src/plugins/ffmemless/ffmemless.c
 @@ -109,9 +109,9 @@ int ffmemless_evdev_file_search(unsigned long features[4])
@@ -63,11 +83,35 @@ diff --git a/src/plugins/ffmemless/ffmemless.c b/src/plugins/ffmemless/ffmemless
 +			 test_bit(FF_PERIODIC, features);
  		if (result)
  			return fp;
-
+ 
+diff --git a/src/plugins/ffmemless/ffmemless.h b/src/plugins/ffmemless/ffmemless.h
+index 3c09b45..9f85051 100644
+--- a/src/plugins/ffmemless/ffmemless.h
++++ b/src/plugins/ffmemless/ffmemless.h
+@@ -21,8 +21,8 @@
+ #ifndef __FFMEMLESS_H
+ #define __FFMEMLESS_H
+ 
+-#define FF_DIR_FORWARD	0x4000
+-#define FF_DIR_REVERSE	0xC000
++#define FF_DIR_FORWARD	0x0000
++#define FF_DIR_REVERSE	0x8000
+ 
+ int ffmemless_play(int effect_id, int device_file, int play);
+ int ffmemless_upload_effect(struct ff_effect *effect, int device_file);
 diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
+index 7131e78..19f24dd 100644
 --- a/src/plugins/ffmemless/plugin.c
 +++ b/src/plugins/ffmemless/plugin.c
-@@ -269,12 +269,25 @@ static int ffm_setup_default_effect(GHashTable *effects, int dev_fd)
+@@ -61,6 +61,7 @@ struct ffm_effect_data {
+ 	NSinkInterface *iface;
+ 	int id;
+ 	int repeat;
++	gboolean repeat_until_stopped;
+ 	guint playback_time;
+ 	int poll_id;
+ 	int16_t customEffectId;
+@@ -269,12 +270,25 @@ static int ffm_setup_default_effect(GHashTable *effects, int dev_fd)
  		ff.type = FF_CONSTANT;
  		ff.replay.length = NGF_DEFAULT_DURATION;
  		ff.u.constant.level = NGF_DEFAULT_LEVEL;
@@ -94,8 +138,95 @@ diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
  	}
  	if (ffm.cache_effects) {
  		memcpy(&data->cached_effect, &ff, sizeof(ff));
-@@ -719,6 +732,15 @@
-
+@@ -550,10 +564,30 @@ ffm_eff_error1:
+ 	return -1;
+ }
+ 
++static int ffm_effect_id(const struct ffm_effect_data *data)
++{
++	return ffm.cache_effects ? data->cached_effect.id : data->id;
++}
++
+ gboolean ffm_playback_done(gpointer userdata)
+ {
+ 	struct ffm_effect_data *data = (struct ffm_effect_data *) userdata;
+ 
++	if (data->repeat_until_stopped) {
++		/* sound.repeat: the request lasts until the client stops it.
++		 * Drivers that play an effect once per EV_FF write (cs40l26
++		 * and the other non ff-memless ones) have gone quiet by now,
++		 * and an ff-memless loop would only survive until the request
++		 * completed below. Trigger the next iteration here instead
++		 * and keep this timer running. */
++		N_DEBUG (LOG_CAT "Effect id %d iteration done, repeating",
++				data->id);
++		if (!ffmemless_play(ffm_effect_id(data), ffm.dev_file,
++				data->repeat))
++			return TRUE;
++		N_DEBUG (LOG_CAT "Effect id %d re-trigger failed", data->id);
++	}
++
+ 	N_DEBUG (LOG_CAT "Effect id %d completed", data->id);
+ 
+ 	if (ffm.cache_effects) {
+@@ -568,13 +602,7 @@ static int ffm_play(struct ffm_effect_data *data, int play)
+ {
+ 	data->poll_id = 0;
+ 
+-	/* if there is playback time set, this is single shot effect */
+ 	if (play) {
+-		if (data->playback_time) {
+-			N_DEBUG (LOG_CAT "setting up completion timer");
+-			data->poll_id = g_timeout_add(data->playback_time + 20,
+-						ffm_playback_done, data);
+-		}
+ 		N_DEBUG (LOG_CAT "Starting playback %d", data->id);
+ 	} else {
+ 		if (ffm.cache_effects) {
+@@ -601,10 +629,6 @@ static int ffm_play(struct ffm_effect_data *data, int play)
+ 					data->cached_effect.u.periodic.custom_len = 0;
+ 				}
+ 				N_DEBUG (LOG_CAT "%d effect re-load failed", data->id);
+-				if (data->poll_id) {
+-					g_source_remove (data->poll_id);
+-					data->poll_id = 0;
+-				}
+ 				return FALSE;
+ 			}
+ 			// custom data in stack, needed only for upload
+@@ -613,15 +637,23 @@ static int ffm_play(struct ffm_effect_data *data, int play)
+ 				data->cached_effect.u.periodic.custom_len = 0;
+ 			}
+ 		}
++	}
+ 
+-		if (ffmemless_play(data->cached_effect.id, ffm.dev_file, play))
+-			return FALSE;
+-		return TRUE;
+-	} else {
+-		if (ffmemless_play(data->id, ffm.dev_file, play))
+-			return FALSE;
+-		return TRUE;
++	if (ffmemless_play(ffm_effect_id(data), ffm.dev_file, play))
++		return FALSE;
++
++	/* If there is playback time set, this is a single shot effect (or
++	 * one iteration of a repeating one): arm the completion timer only
++	 * now that the effect is running. The upload above is synchronous
++	 * and can take a while (cs40l26 wakes its DSP over I2C first), and
++	 * on such drivers erasing the effect from the timer also stops it,
++	 * so a timer armed earlier would cut the effect short. */
++	if (play && data->playback_time) {
++		N_DEBUG (LOG_CAT "setting up completion timer");
++		data->poll_id = g_timeout_add(data->playback_time + 20,
++					ffm_playback_done, data);
+ 	}
++	return TRUE;
+ }
+ 
+ static void ffm_sink_shutdown(NSinkInterface *iface)
+@@ -706,6 +738,15 @@ static int ffm_sink_prepare(NSinkInterface *iface, NRequest *request)
+ 
  	repeat = n_proplist_get_bool (props, FFM_SOUND_REPEAT_KEY);
  	playback_time = n_proplist_get_uint (props, FFM_HAPTIC_DURATION_KEY);
 +	if (!playback_time) {
@@ -110,7 +241,11 @@ diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
  	if (repeat || playback_time) {
  		/*
  		 * If duration was not defined, it's zero and we don't report playback
-@@ -729,8 +751,20 @@
+@@ -713,11 +754,24 @@ static int ffm_sink_prepare(NSinkInterface *iface, NRequest *request)
+ 		 * keep repeating them until timer runs out and effect ends.
+ 		 */
+ 		copy->repeat = INT32_MAX; /* repeat to "infinity" */
++		copy->repeat_until_stopped = repeat;
  		if (!copy->playback_time && playback_time) {
  			copy->playback_time = playback_time;
  		};
@@ -120,7 +255,7 @@ diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
 +		 * stays 0 and ffm_play() takes the STOP path. */
 +		copy->repeat = 1;
  	}
-
+ 
 +	/* Drive the kernel-side effect length too, not just the cleanup
 +	 * timer. cs40l26 (and other timed_output / BUZZGEN style drivers)
 +	 * play replay.length ms and stop; looping the EV_FF write does
@@ -130,3 +265,7 @@ diff --git a/src/plugins/ffmemless/plugin.c b/src/plugins/ffmemless/plugin.c
 +
  	N_DEBUG (LOG_CAT "prep effect %s, repeat %d times, duration of %d ms",
  			key, copy->repeat, copy->playback_time);
+ 
+-- 
+2.47.3
+
