@@ -1,0 +1,37 @@
+From: Florent Revest <revestflo@gmail.com>
+Subject: [PATCH] Poll in passive mode only for reader/writer
+
+Upstream-Status: Pending
+
+Tags only talk in passive communication mode, active mode is for
+NFC-DEP peers. Asking for ActivePollA/F in reader/writer mode made the
+NXP SN220U (Pixel Watch 2) reject RF_DISCOVER_CMD with STATUS_REJECTED,
+so discovery never started. Keep active polling for peer mode only.
+---
+ src/nci_transition_idle_to_discovery.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/src/nci_transition_idle_to_discovery.c b/src/nci_transition_idle_to_discovery.c
+index ac213ff..d469c89 100644
+--- a/src/nci_transition_idle_to_discovery.c
++++ b/src/nci_transition_idle_to_discovery.c
+@@ -298,9 +298,14 @@ nci_transition_idle_to_discovery_discover(
+      */
+ 
+     if (sm->op_mode & NFC_OP_MODE_RW) {
+-        techs |= NCI_TECH_A_POLL |
++        /*
++         * Tags only talk in passive communication mode. Active mode
++         * (NFC-DEP) is only needed for peer-to-peer, and some NFCCs
++         * (NXP SN220) reject RF_DISCOVER_CMD that asks for it.
++         */
++        techs |= NCI_TECH_A_POLL_PASSIVE |
+             NCI_TECH_B_POLL |
+-            NCI_TECH_F_POLL |
++            NCI_TECH_F_POLL_PASSIVE |
+             NCI_TECH_V_POLL;
+     }
+ 
+-- 
+2.47.3
+
