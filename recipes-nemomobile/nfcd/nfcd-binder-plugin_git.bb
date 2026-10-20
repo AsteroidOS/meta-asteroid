@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://src/plugin.h;beginline=1;endline=31;md5=ba484c1af8c91
 
 SRC_URI = "git://github.com/mer-hybris/nfcd-binder-plugin.git;protocol=https;branch=master \
            file://0001-Makefile-Allow-for-CC-to-be-overridden.patch \
+           file://0002-Run-coreInitialized-and-prediscover-before-reporting-.patch \
            "
 SRCREV = "ee270922a39d3730226936d7e78896dd508400be"
 PR = "r1"

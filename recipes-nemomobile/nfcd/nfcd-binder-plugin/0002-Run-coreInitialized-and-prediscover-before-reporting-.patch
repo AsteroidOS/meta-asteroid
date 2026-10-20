@@ -1,0 +1,116 @@
+From: Florent Revest <revestflo@gmail.com>
+Subject: [PATCH] Run coreInitialized() and prediscover() before reporting
+ power on
+
+Upstream-Status: Pending
+
+Reporting the adapter as powered right after open() let nfcd request
+the mode and the NCI state machine run from INIT straight to
+RFST_DISCOVERY, so coreInitialized() and prediscover() were never
+called on the HAL. NXP's AIDL HAL (SN220U on the Pixel Watch 2) does
+its proprietary controller setup in coreInitialized(); without it the
+NFCC answers RF_DISCOVER_CMD with STATUS_REJECTED.
+
+Hold the state machine at RFST_IDLE after open(), run the two HAL calls
+there and only then notify nfcd that the power is on.
+---
+ src/binder_nfc_adapter.c | 50 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 6 deletions(-)
+
+diff --git a/src/binder_nfc_adapter.c b/src/binder_nfc_adapter.c
+index ec950ec..95185b4 100644
+--- a/src/binder_nfc_adapter.c
++++ b/src/binder_nfc_adapter.c
+@@ -78,6 +78,8 @@ struct binder_nfc_adapter {
+     gulong data_id;
+ 
+     gboolean core_initialized;
++    gboolean hal_init_pending;
++    gboolean hal_init_requested;
+     gboolean need_power;
+     gboolean power_on;
+     gboolean power_switch_pending;
+@@ -216,6 +218,30 @@ binder_nfc_adapter_handle_data(
+     }
+ }
+ 
++static
++void
++binder_nfc_adapter_start_hal_init(
++    BinderNfcAdapter* self,
++    gboolean requested)
++{
++    NciCore* nci = self->adapter.nci;
++
++    /*
++     * Don't report the adapter as powered yet. Once the NCI core has
++     * reset and initialized the NFCC, run coreInitialized() and
++     * prediscover() on the HAL and only then tell the core that the
++     * power is on, so that discovery starts after the HAL has finished
++     * its own (proprietary) initialization of the controller. Reporting
++     * the power first made nfcd request the mode and the NCI state
++     * machine run straight from INIT to RFST_DISCOVERY, skipping both
++     * HAL calls; NXP firmware (SN220U) then rejects RF_DISCOVER_CMD.
++     */
++    self->hal_init_pending = TRUE;
++    self->hal_init_requested = requested;
++    nci_core_restart(nci);
++    nci_core_set_state(nci, NCI_RFST_IDLE);
++}
++
+ static
+ void
+ binder_nfc_adapter_set_power(
+@@ -228,15 +254,19 @@ binder_nfc_adapter_set_power(
+         self->power_switch_pending = FALSE;
+         self->power_on = on;
+         if (on) {
+-            nci_core_restart(nci);
++            binder_nfc_adapter_start_hal_init(self, TRUE);
++        } else {
++            self->hal_init_pending = FALSE;
++            nfc_adapter_power_notify(NFC_ADAPTER(self), on, TRUE);
+         }
+-        nfc_adapter_power_notify(NFC_ADAPTER(self), on, TRUE);
+     } else if (self->power_on != on) {
+         self->power_on = on;
+         if (on) {
+-            nci_core_restart(nci);
++            binder_nfc_adapter_start_hal_init(self, FALSE);
++        } else {
++            self->hal_init_pending = FALSE;
++            nfc_adapter_power_notify(NFC_ADAPTER(self), on, FALSE);
+         }
+-        nfc_adapter_power_notify(NFC_ADAPTER(self), on, FALSE);
+     }
+ }
+ 
+@@ -255,7 +285,7 @@ void
+ binder_nfc_adapter_open_done(
+     BinderNfcAdapter* self)
+ {
+-    GDEBUG("Power on");
++    GDEBUG("Opened");
+     binder_nfc_adapter_set_power(self, TRUE);
+ }
+ 
+@@ -444,7 +474,15 @@ binder_nfc_adapter_prediscover_complete(
+ 
+     GDEBUG("PREDISCOVER %s", ok ? "ok" : "failed (that's ok)");
+     self->pending_tx = 0;
+-    nci_core_set_state(nci, NCI_RFST_DISCOVERY);
++    if (self->hal_init_pending) {
++        /* HAL is initialized, now the adapter is powered */
++        self->hal_init_pending = FALSE;
++        GDEBUG("Power on");
++        nfc_adapter_power_notify(NFC_ADAPTER(self), TRUE,
++            self->hal_init_requested);
++    } else {
++        nci_core_set_state(nci, NCI_RFST_DISCOVERY);
++    }
+     binder_nfc_adapter_state_check(self);
+ }
+ 
+-- 
+2.47.3
+
