@@ -10,8 +10,8 @@ SRC_URI = "git://github.com/AsteroidOS/asteroid-launcher.git;protocol=https;bran
     file://qt6-hidpi.conf \
     file://Notifications/"
 SRC_URI:append:hybris-machine = " file://asteroid-launcher-precondition-hybris "
-SRCREV = "0ba0eb50a68fc6f1019312d511ec3e2fd1b48f31"
-PV = "2.1+154+git"
+SRCREV = "4bd3d281fe3a2ea9631c640e1f00871fa19bbd4c"
+PV = "2.1+160+git"
 PE = "1"
 PR = "r1"
 inherit qt6-cmake pkgconfig asteroid-users
