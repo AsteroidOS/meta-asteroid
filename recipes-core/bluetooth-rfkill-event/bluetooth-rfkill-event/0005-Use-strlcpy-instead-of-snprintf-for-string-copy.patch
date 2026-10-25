@@ -18,12 +18,12 @@ Upstream-Status: Inappropriate
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
-index bff3075..a26032c 100644
+index 9269e2f..65bd915 100644
 --- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
 +++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
-@@ -1082,7 +1082,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
+@@ -1160,7 +1160,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
      /* based on chip read its config file, if any, and define the hciattach utility used to dowload the patch */
-     if (!strncmp(rfkill_name, sysname, strlen(rfkill_name))) {
+     if (!strncmp(rfkill_name, sysname, strlen(rfkill_name)) || !strncmp(BCM_RFKILL_NAME1, sysname, sizeof(BCM_RFKILL_NAME1))) {
  	read_config(config_file);
 -	snprintf(hciattach, sizeof(hciattach), patcher_impl[main_opts.patcher].name);
 +	strlcpy(hciattach, patcher_impl[main_opts.patcher].name, sizeof(hciattach));
