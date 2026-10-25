@@ -13,7 +13,7 @@ SRC_URI = "git://github.com/mer-hybris/bluetooth-rfkill-event.git;protocol=https
            file://0004-Remove-sysconfig-file.patch;patchdir=.. \
            file://0005-Use-strlcpy-instead-of-snprintf-for-string-copy.patch;patchdir=.. \
            "
-SRCREV = "f411db38e8f6b49403f2e9a320083630f990bcbc"
+SRCREV = "d64fbb2f2e09cbec6d04a43ecbcc49f1fe4f8843"
 PR = "r1"
 PV = "+git${SRCPV}"
 S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}/bluetooth-rfkill-event"

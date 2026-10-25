@@ -18,7 +18,7 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
-index d8de7aa..f0ec621 100644
+index 75353af..9269e2f 100644
 --- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
 +++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
 @@ -44,6 +44,7 @@
@@ -29,9 +29,9 @@ index d8de7aa..f0ec621 100644
  #include <bluetooth/bluetooth.h>
  #include <bluetooth/hci.h>
  #include <bluetooth/hci_lib.h>
-@@ -77,7 +78,8 @@ enum rfkill_switch_type {
-    name is defined in the kernel driver implementing rfkill interface for power */
+@@ -80,7 +81,8 @@ enum rfkill_switch_type {
  #define BCM_RFKILL_NAME "bcm43xx Bluetooth\n"
+ #define BCM_RFKILL_NAME1 "bt_default\n"
  #define BCM_43341_UART_DEV "/dev/ttyMFD0"
 -#define BD_ADD_FACTORY_FILE "/factory/bluetooth_address"
 +#define STORAGE_DIR "/var/lib/bluetooth-rfkill-event/"
@@ -39,7 +39,7 @@ index d8de7aa..f0ec621 100644
  char factory_bd_add[18];
  char default_bd_addr[18];
  
-@@ -771,6 +773,16 @@ gboolean check_bd_format(const char* bd_add)
+@@ -808,6 +810,16 @@ gboolean check_bd_format(const char* bd_add)
      return TRUE;
  }
  
@@ -56,7 +56,7 @@ index d8de7aa..f0ec621 100644
  void load_bd_add(void)
  {
      FILE *fp;
-@@ -791,21 +803,22 @@ void load_bd_add(void)
+@@ -828,21 +840,22 @@ void load_bd_add(void)
          memcpy(factory_bd_add, default_bd_addr, sizeof(factory_bd_add));
          main_opts.bd_add = factory_bd_add;
          main_opts.set_bd = TRUE;
