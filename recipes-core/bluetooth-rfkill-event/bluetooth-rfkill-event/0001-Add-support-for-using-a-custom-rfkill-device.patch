@@ -1,4 +1,4 @@
-From ed0212ced4d3cbf4c6fa220db223cda6b5634829 Mon Sep 17 00:00:00 2001
+From 1ab31d0172aa6fda7989f4f8e5aef983a0abd4cc Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
 Date: Fri, 3 Feb 2023 23:01:19 +0100
 Subject: [PATCH] Add support for using a custom rfkill device.
@@ -14,10 +14,10 @@ Signed-off-by: Darrel Griët <dgriet@gmail.com>
  1 file changed, 19 insertions(+), 2 deletions(-)
 
 diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
-index bff3075..d8de7aa 100644
+index ef8d33e..75353af 100644
 --- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
 +++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
-@@ -130,6 +130,7 @@ char hciattach_options[PATH_MAX];
+@@ -135,6 +135,7 @@ char hciattach_options[PATH_MAX];
  char hci_uart_default_dev[PATH_MAX] = BCM_43341_UART_DEV;
  
  gboolean hci_dev_registered;
@@ -25,16 +25,16 @@ index bff3075..d8de7aa 100644
  char *bt_module = NULL;
  char *config_file = DEFAULT_CONFIG_FILE;
  GHashTable *switch_hash = NULL; /* hash index to metadata about the switch */
-@@ -1066,7 +1067,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
+@@ -1144,7 +1145,7 @@ static int rfkill_switch_add(struct rfkill_event *event)
      }
  
      /* based on chip read its config file, if any, and define the hciattach utility used to dowload the patch */
--    if (!strncmp(BCM_RFKILL_NAME, sysname, sizeof(BCM_RFKILL_NAME))) {
-+    if (!strncmp(rfkill_name, sysname, strlen(rfkill_name))) {
+-    if (!strncmp(BCM_RFKILL_NAME, sysname, sizeof(BCM_RFKILL_NAME)) || !strncmp(BCM_RFKILL_NAME1, sysname, sizeof(BCM_RFKILL_NAME1))) {
++    if (!strncmp(rfkill_name, sysname, strlen(rfkill_name)) || !strncmp(BCM_RFKILL_NAME1, sysname, sizeof(BCM_RFKILL_NAME1))) {
  	read_config(config_file);
  	snprintf(hciattach, sizeof(hciattach), patcher_impl[main_opts.patcher].name);
  	type = BT_PWR;
-@@ -1117,7 +1118,7 @@ int main(int argc, char **argv)
+@@ -1195,7 +1196,7 @@ int main(int argc, char **argv)
          };
          int c;
  
@@ -43,7 +43,7 @@ index bff3075..d8de7aa 100644
          if (c == -1)
              break;
  
-@@ -1127,6 +1128,9 @@ int main(int argc, char **argv)
+@@ -1205,6 +1206,9 @@ int main(int argc, char **argv)
                 until BT rfkill switch is identified */
              bt_module = optarg;
              break;
@@ -53,7 +53,7 @@ index bff3075..d8de7aa 100644
          case 'c':
              config_file = optarg;
              break;
-@@ -1145,9 +1149,22 @@ int main(int argc, char **argv)
+@@ -1223,9 +1227,22 @@ int main(int argc, char **argv)
  
      INFO("Starting bluetooth_rfkill_event");
  
