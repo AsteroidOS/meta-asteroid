@@ -12,6 +12,7 @@ SRC_URI = "git://github.com/mer-hybris/bluetooth-rfkill-event.git;protocol=https
            file://0003-Fix-loading-the-service-file.patch;patchdir=.. \
            file://0004-Remove-sysconfig-file.patch;patchdir=.. \
            file://0005-Use-strlcpy-instead-of-snprintf-for-string-copy.patch;patchdir=.. \
+           file://0006-Don-t-call-FD_ISSET-on-closed-pipes-in-system_timeou.patch;patchdir=.. \
            "
 SRCREV = "d64fbb2f2e09cbec6d04a43ecbcc49f1fe4f8843"
 PR = "r1"
