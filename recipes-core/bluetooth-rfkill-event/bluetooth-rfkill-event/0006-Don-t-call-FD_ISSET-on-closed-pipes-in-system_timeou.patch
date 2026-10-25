@@ -1,0 +1,42 @@
+From ba57c92bcd6e8dcd5823e857a04b0c7d2cb5ec37 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Darrel=20Gri=C3=ABt?= <dgriet@gmail.com>
+Date: Sun, 25 Oct 2026 15:19:29 +0100
+Subject: [PATCH] Don't call FD_ISSET() on closed pipes in system_timeout()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+A closed pipe is set to -1.
+When FD_ISSET() is called on that closed pipe an assertion is triggered:
+ *** bit out of range 0 - FD_SETSIZE on fd_set ***: terminated
+
+Fix this by only using FD_ISSET() on open pipes.
+
+Upstream-Status: Pending
+Signed-off-by: Darrel Griët <dgriet@gmail.com>
+---
+ bluetooth-rfkill-event/bluetooth_rfkill_event.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/bluetooth-rfkill-event/bluetooth_rfkill_event.c b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+index 65bd915..834eec7 100644
+--- a/bluetooth-rfkill-event/bluetooth_rfkill_event.c
++++ b/bluetooth-rfkill-event/bluetooth_rfkill_event.c
+@@ -491,7 +491,7 @@ static int system_timeout(char *cmd)
+ 		break;
+ 
+ 	    default:
+-		if (FD_ISSET(pipes[1][PIPE_READ], &readfds)) {
++		if (pipes[1][PIPE_READ] >= 0 && FD_ISSET(pipes[1][PIPE_READ], &readfds)) {
+ 		    n = read(pipes[1][PIPE_READ], buf, PIPE_BUF);
+ 		    if (n > 0)
+ 			DEBUG("pid %d: %.*s", child, n, buf);
+@@ -502,7 +502,7 @@ static int system_timeout(char *cmd)
+ 		    }
+ 		}
+ 
+-		if (FD_ISSET(pipes[2][PIPE_READ], &readfds)) {
++		if (pipes[2][PIPE_READ] >= 0 && FD_ISSET(pipes[2][PIPE_READ], &readfds)) {
+ 		    n = read(pipes[2][PIPE_READ], buf, PIPE_BUF);
+ 		    if (n > 0)
+ 			DEBUG("pid %d: %.*s", child, n, buf);
