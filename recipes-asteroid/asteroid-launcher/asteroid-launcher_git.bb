@@ -34,7 +34,6 @@ DEPENDS += " \
     usb-moded-qt6 \
     systemd \
     nemo-keepalive \
-    dsme \
 "
 RDEPENDS:${PN}:append:hybris-machine = " qt6-qpa-hwcomposer-plugin "
 

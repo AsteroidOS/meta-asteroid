@@ -1,0 +1,227 @@
+From ae7b4c7620e2c3d67fe08b78b28cc360762ea7a2 Mon Sep 17 00:00:00 2001
+From: Florent Revest <revestflo@gmail.com>
+Date: Sat, 25 Jul 2026 08:30:07 +0000
+Subject: [PATCH] heartbeat: use a timerfd directly instead of libiphb
+
+The Heartbeat helper only ever used libiphb to own a CLOCK_BOOTTIME_ALARM
+timerfd; talk to the kernel directly instead and drop the libiphb dependency.
+tryConnect() creates the timerfd (falling back to CLOCK_BOOTTIME without
+CAP_WAKE_ALARM), wait()/stop() arm/disarm it via timerfd_settime(), and the
+QSocketNotifier callback drains it with read() (an 8-byte expiration count)
+rather than recv() on a socket.
+---
+ lib/heartbeat.cpp | 89 ++++++++++++++++++++++++++++++-----------------
+ lib/heartbeat.h   |  6 +---
+ lib/lib.pro       |  1 -
+ 3 files changed, 58 insertions(+), 38 deletions(-)
+
+diff --git a/lib/heartbeat.cpp b/lib/heartbeat.cpp
+index 6564b04..e452313 100644
+--- a/lib/heartbeat.cpp
++++ b/lib/heartbeat.cpp
+@@ -29,10 +29,12 @@
+ ****************************************************************************************/
+ 
+ #include <sys/types.h>
+-#include <sys/socket.h>
++#include <sys/timerfd.h>
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
++#include <stdint.h>
+ #include <errno.h>
+ #include <unistd.h>
+ 
+@@ -40,6 +42,29 @@
+ 
+ #include "heartbeat.h"
+ 
++#ifndef CLOCK_BOOTTIME_ALARM
++# define CLOCK_BOOTTIME_ALARM 9
++#endif
++#ifndef CLOCK_BOOTTIME
++# define CLOCK_BOOTTIME 7
++#endif
++
++/* Drain any pending expirations from the heartbeat timerfd. */
++static void hb_drain(int fd)
++{
++    uint64_t exp;
++    while (read(fd, &exp, sizeof exp) > 0) { /* keep draining */ }
++}
++
++/* Arm (seconds > 0) or disarm (seconds == 0) the heartbeat timerfd. */
++static void hb_arm(int fd, int seconds)
++{
++    struct itimerspec its;
++    memset(&its, 0, sizeof its);
++    its.it_value.tv_sec = seconds;
++    timerfd_settime(fd, 0, &its, NULL);
++}
++
+ Heartbeat::Heartbeat(QObject *parent) : QObject(parent)
+ {
+     m_started   = false;
+@@ -48,7 +73,7 @@ Heartbeat::Heartbeat(QObject *parent) : QObject(parent)
+     m_min_delay = 0;
+     m_max_delay = 0;
+ 
+-    m_iphb_handle     = 0;
++    m_iphb_fd         = -1;
+     m_wakeup_notifier = 0;
+     m_connect_timer   = new QTimer();
+     QObject::connect(m_connect_timer, SIGNAL(timeout()),
+@@ -64,25 +89,24 @@ Heartbeat::~Heartbeat()
+ bool
+ Heartbeat::tryConnect()
+ {
+-    bool   status = false;
+-    iphb_t handle = 0;
+-
+-    if (!m_iphb_handle) {
+-        int fd;
+-
+-        if (!(handle = iphb_open(0))) {
+-            qWarning("iphb_open: %s", strerror(errno));
+-            goto cleanup;
+-        }
+-
+-        if ((fd = iphb_get_fd(handle)) == -1) {
+-            qWarning("iphb_get_fd: %s", strerror(errno));
++    bool status = false;
++    int  fd     = -1;
++
++    if (m_iphb_fd == -1) {
++        /* Prefer an alarm clock so heartbeat wakeups can end (auto)suspend;
++         * this needs CAP_WAKE_ALARM. Without it fall back to a plain boottime
++         * timer that only fires while the device is awake. */
++        fd = timerfd_create(CLOCK_BOOTTIME_ALARM, TFD_NONBLOCK | TFD_CLOEXEC);
++        if (fd == -1)
++            fd = timerfd_create(CLOCK_BOOTTIME, TFD_NONBLOCK | TFD_CLOEXEC);
++        if (fd == -1) {
++            qWarning("timerfd_create: %s", strerror(errno));
+             goto cleanup;
+         }
+ 
+-        m_iphb_handle = handle;
+-        handle = 0;
+-        m_wakeup_notifier = new QSocketNotifier(fd, QSocketNotifier::Read);
++        m_iphb_fd = fd;
++        fd = -1;
++        m_wakeup_notifier = new QSocketNotifier(m_iphb_fd, QSocketNotifier::Read);
+         QObject::connect(m_wakeup_notifier, SIGNAL(activated(int)),
+                          this, SLOT(wakeup(int)));
+         m_wakeup_notifier->setEnabled(true);
+@@ -91,7 +115,7 @@ Heartbeat::tryConnect()
+     status = true;
+ 
+ cleanup:
+-    if (handle) iphb_close(handle);
++    if (fd != -1) close(fd);
+ 
+     return status;
+ }
+@@ -106,9 +130,9 @@ Heartbeat::disconnect()
+     delete m_wakeup_notifier;
+     m_wakeup_notifier = 0;
+ 
+-    if (m_iphb_handle) {
+-        iphb_close(m_iphb_handle);
+-        m_iphb_handle = 0;
++    if (m_iphb_fd != -1) {
++        close(m_iphb_fd);
++        m_iphb_fd = -1;
+     }
+ }
+ 
+@@ -189,18 +213,21 @@ Heartbeat::wait()
+         return;
+     }
+ 
+-    if (!m_iphb_handle) {
++    if (m_iphb_fd == -1) {
+         connect();
+     }
+ 
+-    if (!m_waiting && m_iphb_handle) {
++    if (!m_waiting && m_iphb_fd != -1) {
+         int lo = m_min_delay;
+         int hi = m_max_delay;
+         if (lo != hi) {
+             // TODO: from monotime to relative
+             // TODO: timeout if already passed
+         }
+-        iphb_wait2(m_iphb_handle, lo, hi, 0, 1);
++        /* Drain any past expiration, then arm at the far end of the [lo, hi]
++         * window; mirrors the old iphb_wait2. */
++        hb_drain(m_iphb_fd);
++        hb_arm(m_iphb_fd, hi);
+         m_waiting = true;
+     }
+ }
+@@ -215,11 +242,9 @@ Heartbeat::wakeup(int fd)
+      * know whether the read succeeded or not */
+     char buf[256];
+ 
+-    /* Stopping/reprogramming IPHB flushes pending input
+-     * from the socket. If that happens after decision
+-     * to call this input callback is already made, simple
+-     * read could block and that can't be allowed. */
+-    int rc = recv(fd, buf, sizeof buf, MSG_DONTWAIT);
++    /* The heartbeat fd is a non-blocking timerfd, so drain it with read()
++     * (an 8-byte expiration count) rather than recv(). */
++    int rc = read(fd, buf, sizeof buf);
+ 
+     /* Deal with I/O errors */
+     if (rc == -1) {
+@@ -272,8 +297,8 @@ cleanup:
+ void
+ Heartbeat::stop()
+ {
+-    if (m_waiting && m_iphb_handle) {
+-        iphb_wait2(m_iphb_handle, 0, 0, 0, 0);
++    if (m_waiting && m_iphb_fd != -1) {
++        hb_arm(m_iphb_fd, 0);
+     }
+     m_waiting = false;
+     m_started = false;
+diff --git a/lib/heartbeat.h b/lib/heartbeat.h
+index 1689618..cdf53c4 100644
+--- a/lib/heartbeat.h
++++ b/lib/heartbeat.h
+@@ -34,10 +34,6 @@
+ # include <QSocketNotifier>
+ # include <QTimer>
+ 
+-extern "C" {
+-# include <iphbd/libiphb.h>
+-}
+-
+ class Heartbeat : public QObject
+ {
+     Q_OBJECT
+@@ -72,7 +68,7 @@ private:
+     bool             m_started;
+     bool             m_waiting;
+ 
+-    iphb_t           m_iphb_handle;
++    int              m_iphb_fd;
+     QSocketNotifier *m_wakeup_notifier;
+     QTimer          *m_connect_timer;
+ 
+diff --git a/lib/lib.pro b/lib/lib.pro
+index 197ccec..bff7ddb 100644
+--- a/lib/lib.pro
++++ b/lib/lib.pro
+@@ -9,7 +9,6 @@ QT        += dbus
+ QT        -= gui
+ CONFIG    += qt debug link_pkgconfig
+ CONFIG    += create_pc create_prl no_install_prl
+-PKGCONFIG += libiphb
+ 
+ #DEFINES += DEBUG_TRACE
+ 
+-- 
+2.47.3
+
