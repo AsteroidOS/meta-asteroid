@@ -21,6 +21,13 @@ do_install:append:hybris-machine() {
 
 PACKAGECONFIG:append = " pam"
 
+# systemd-pstore: at every boot, archive what the kernel kept in pstore from
+# the previous boot (ramoops console, panic record, Android pmsg) into
+# /var/lib/systemd/pstore/ and clear it, so a crash on a watch with a
+# ramoops region is diagnosable without a serial cable. PID 1 also only
+# mounts /sys/fs/pstore when built with it.
+PACKAGECONFIG:append = " pstore"
+
 PACKAGECONFIG:remove = "rfkill"
 
 PACKAGECONFIG:remove = "timesyncd"
