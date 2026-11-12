@@ -59,7 +59,7 @@ new file mode 100644
 index 0000000..60adcb6
 --- /dev/null
 +++ b/adaptors/hybriswristgestureadaptor/hybriswristgestureadaptor.cpp
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,95 @@
 +/****************************************************************************
 +**
 +** Copyright (C) 2013 Jolla Ltd
@@ -107,8 +107,9 @@ index 0000000..60adcb6
 +        powerStatePath.clear();
 +    }
 +
-+    // Set default delay.
-+    setInterval(200, 0);
++    // Default 200 ms interval: with a 0 interval the HAL falls back to its fastest
++    // sampling (2.5 ms on aurora), which keeps the sensor hub needlessly busy.
++    setDefaultInterval(200000);
 +}
 +
 +HybrisWristGestureAdaptor::~HybrisWristGestureAdaptor()
