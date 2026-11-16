@@ -11,6 +11,7 @@ SRC_URI = "gitsm://github.com/sailfishos/mce.git;protocol=https;branch=master \
     file://0005-Ambient-Mode-Wait-for-compositor-when-sending-enable.patch \
     file://0006-Ambient-Mode-Exit-ambient-mode-when-touch-is-detecte.patch \
     file://0007-powerkey-Also-suspend-on-palm-reports.patch \
+    file://0008-display-Make-the-always-on-brightness-a-setting.patch \
     file://builtin-gconf.values \
     file://mce.service"
 SRCREV = "51135ea73ae162ec7708415801505e10a6f3fe5f"

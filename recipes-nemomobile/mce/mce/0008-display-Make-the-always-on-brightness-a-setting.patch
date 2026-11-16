@@ -1,0 +1,428 @@
+From db7f7530601a2f249b32730bf5dfbe9ddb586eb8 Mon Sep 17 00:00:00 2001
+From: moWerk <mo@mowerk.net>
+Date: Mon, 16 Nov 2026 12:26:33 +0100
+Subject: [PATCH] display: Make the always-on brightness a setting
+
+The always-on face is shown at a level nobody chose, and which of two
+wrong answers a watch gets depends on whether its ambient light sensor
+answers. mce writes the low power mode level in one place, guarded on the
+sensor having reported. Where it has, the LPM ambient light profile
+decides, and that profile tops out at 28 percent of the panel's range on
+every watch that ships no table of its own. Where the sensor never
+reports, the level is never written and stays at its initial 1, which is
+an always-on face that cannot be read.
+
+display_brightness_lpm holds that level in percent, 0 meaning follow the
+profile as before.
+
+display.c sends it through the lpm brightness pipe in place of the
+display brightness, so it holds in the branch where the als filter passes
+its input through, which is the case with autobrightness off, and the
+no-sensor guard now passes an explicit setting. That guard exists because
+the filter answers 100 percent while the als is disabled, which cannot
+happen for a level someone chose, and opening it is what unsticks the
+watches that sat at 1.
+
+In the filter the setting is the ceiling. The profile keeps its shape, so
+a watch with a working sensor still dims its always-on face in the dark,
+and the top of the profile lands where the user put it. While the setting
+is unset the profile top is stored once, ahead of the als checks so that
+a watch whose sensor never reports starts at the same value, and from an
+idle callback because storing a value re-filters the brightness.
+
+A port can preset it in builtin-gconf.values, which is the knob a panel
+that reads badly at the shared default has lacked.
+
+mcetool --set-lpm-brightness sets it, and mcetool prints it beside the
+display brightness.
+
+Checked on nemo, 480x480, whose als never reports: unset seeds 28 and the
+panel stays at 70 of 255 as before, then 5, 10, 20, 40 and 80 percent
+give 11, 24, 50, 101 and 204, every one the value
+mce_xlat_int(1,100,1,255,x) predicts.
+Not checked: a watch with a working sensor, where the rescale rather than
+the passthrough branch runs.
+
+Upstream-Status: Inappropriate
+---
+ builtin-gconf.c                 |   5 ++
+ modules/display.c               |  48 ++++++++++++--
+ modules/display.h               |   9 +++
+ modules/filter-brightness-als.c | 113 ++++++++++++++++++++++++++++++--
+ tools/mcetool.c                 |  43 ++++++++++++
+ 5 files changed, 210 insertions(+), 8 deletions(-)
+
+diff --git a/builtin-gconf.c b/builtin-gconf.c
+index b04689c..ede8219 100644
+--- a/builtin-gconf.c
++++ b/builtin-gconf.c
+@@ -1220,6 +1220,11 @@ static const setting_t gconf_defaults[] =
+     .type = "i",
+     .def  = G_STRINGIFY(MCE_DEFAULT_DISPLAY_BRIGHTNESS),
+   },
++  {
++    .key  = MCE_SETTING_DISPLAY_BRIGHTNESS_LPM,
++    .type = "i",
++    .def  = G_STRINGIFY(MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM),
++  },
+   {
+     .key  = MCE_SETTING_DISPLAY_BRIGHTNESS_LEVEL_SIZE,
+     .type = "i",
+diff --git a/modules/display.c b/modules/display.c
+index 3a5b1e1..2f6f009 100644
+--- a/modules/display.c
++++ b/modules/display.c
+@@ -1257,6 +1257,12 @@ static guint mdy_brightness_step_size_setting_id = 0;
+ 
+ /** display brightness setting; [1, mdy_brightness_step_count] */
+ static gint  mdy_brightness_setting = MCE_DEFAULT_DISPLAY_BRIGHTNESS;
++
++/** Brightness of the low power mode display [%]; 0 = follow the als profile */
++static gint  mdy_brightness_setting_lpm = MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM;
++
++/** Setting notifier id for mdy_brightness_setting_lpm */
++static guint mdy_brightness_setting_lpm_setting_id = 0;
+ static guint mdy_brightness_setting_setting_id = 0;
+ 
+ /** timestamp of the latest brightness setting change */
+@@ -1877,9 +1883,16 @@ static void mdy_datapipe_lpm_brightness_cb(gconstpointer data)
+ 
+     mce_log(LL_DEBUG, "input: %d -> %d", prev, curr);
+ 
+-    // Sometimes it happens that the brightness changes while the als is disabled(ambient_light_level = -1), this cause the 
+-    // filter to return 100%, resulting in max brightness ambient mode.
+-    if( (curr == prev) || (ambient_light_level < 0))
++    if( curr == prev )
++        goto EXIT;
++
++    // Sometimes it happens that the brightness changes while the als is
++    // disabled(ambient_light_level = -1), this cause the filter to return
++    // 100%, resulting in max brightness ambient mode. An explicit always-on
++    // setting is a level someone chose, so it passes: without this a watch
++    // whose als never reports keeps the initial level of 1, which is why
++    // some ports show an always-on face that cannot be read.
++    if( ambient_light_level < 0 && mdy_brightness_setting_lpm < 1 )
+         goto EXIT;
+ 
+     mdy_brightness_set_lpm_level(curr);
+@@ -2204,8 +2217,16 @@ static void mdy_datapipe_execute_brightness(void)
+ 
+     /* And through lpm brightness pipe; to update:
+      * - mdy_brightness_level_display_lpm
++     *
++     * Where the user has set an always-on level, that is what goes in, so it
++     * holds in the branch where the als filter passes its input through.
+      */
+-    datapipe_exec_full(&lpm_brightness_pipe, GINT_TO_POINTER(brightness));
++    int brightness_lpm = brightness;
++
++    if( mdy_brightness_setting_lpm > 0 )
++        brightness_lpm = mdy_brightness_setting_lpm;
++
++    datapipe_exec_full(&lpm_brightness_pipe, GINT_TO_POINTER(brightness_lpm));
+ }
+ 
+ /** Array of datapipe handlers */
+@@ -10908,6 +10929,16 @@ static void mdy_setting_cb(GConfClient *const gcc, const guint id,
+             mdy_setting_sanitize_brightness_levels();
+         }
+     }
++    else if( id == mdy_brightness_setting_lpm_setting_id ) {
++        gint val = gconf_value_get_int(gcv);
++        if( mdy_brightness_setting_lpm != val ) {
++            mce_log(LL_NOTICE, "mdy_brightness_setting_lpm: %d -> %d",
++                    mdy_brightness_setting_lpm, val);
++            mdy_brightness_setting_lpm = val;
++
++            mdy_datapipe_execute_brightness();
++        }
++    }
+     else if( id == mdy_brightness_dim_static_setting_id ) {
+         gint val = gconf_value_get_int(gcv);
+         if( mdy_brightness_dim_static != val ) {
+@@ -11288,6 +11319,12 @@ static void mdy_setting_init(void)
+                           mdy_setting_cb,
+                           &mdy_brightness_setting_setting_id);
+ 
++    mce_setting_track_int(MCE_SETTING_DISPLAY_BRIGHTNESS_LPM,
++                          &mdy_brightness_setting_lpm,
++                          MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM,
++                          mdy_setting_cb,
++                          &mdy_brightness_setting_lpm_setting_id);
++
+     mce_setting_track_int(MCE_SETTING_DISPLAY_DIM_STATIC_BRIGHTNESS,
+                           &mdy_brightness_dim_static,
+                           MCE_DEFAULT_DISPLAY_DIM_STATIC_BRIGHTNESS,
+@@ -11512,6 +11549,9 @@ static void mdy_setting_quit(void)
+     mce_setting_notifier_remove(mdy_brightness_setting_setting_id),
+         mdy_brightness_setting_setting_id = 0;
+ 
++    mce_setting_notifier_remove(mdy_brightness_setting_lpm_setting_id),
++        mdy_brightness_setting_lpm_setting_id = 0;
++
+     mce_setting_notifier_remove(mdy_brightness_dim_static_setting_id),
+         mdy_brightness_dim_static_setting_id = 0;
+ 
+diff --git a/modules/display.h b/modules/display.h
+index 8bd4513..dcd6fd9 100644
+--- a/modules/display.h
++++ b/modules/display.h
+@@ -247,6 +247,15 @@
+ # define MCE_SETTING_DISPLAY_BRIGHTNESS                  MCE_SETTING_DISPLAY_PATH "/display_brightness"
+ # define MCE_DEFAULT_DISPLAY_BRIGHTNESS                  3 // uses legacy [1,5] range = 60%
+ 
++/** Brightness of the low power mode display [%]
++ *
++ * 0 lets the ambient light profile decide, as it did before this setting
++ * existed. 1-100 is the level the always-on face is shown at, on the same
++ * scale as MCE_SETTING_DISPLAY_BRIGHTNESS.
++ */
++# define MCE_SETTING_DISPLAY_BRIGHTNESS_LPM              MCE_SETTING_DISPLAY_PATH "/display_brightness_lpm"
++# define MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM              0
++
+ /** Default brightness fade duration [ms]
+  *
+  * Used for all display state changes that do not have
+diff --git a/modules/filter-brightness-als.c b/modules/filter-brightness-als.c
+index 54eed91..8854332 100644
+--- a/modules/filter-brightness-als.c
++++ b/modules/filter-brightness-als.c
+@@ -287,6 +287,15 @@ static guint    fba_setting_als_enabled_id = 0;
+ 
+ /** Filter brightness through ALS setting */
+ static gboolean fba_setting_als_autobrightness = MCE_DEFAULT_DISPLAY_ALS_AUTOBRIGHTNESS;
++
++/** Brightness of the low power mode display [%]; 0 = follow the als profile */
++static gint fba_setting_lpm_brightness = MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM;
++
++/** Setting notifier id for fba_setting_lpm_brightness */
++static guint fba_setting_lpm_brightness_id = 0;
++
++/** Idle callback id for seeding fba_setting_lpm_brightness */
++static guint fba_setting_lpm_brightness_seed_id = 0;
+ static guint    fba_setting_als_autobrightness_id = 0;
+ 
+ /** ALS is used for LID filtering setting */
+@@ -338,6 +347,12 @@ fba_setting_cb(GConfClient *const gcc, const guint id,
+         fba_setting_als_autobrightness = gconf_value_get_bool(gcv);
+         fba_status_rethink();
+     }
++    else if( id == fba_setting_lpm_brightness_id ) {
++        fba_setting_lpm_brightness = gconf_value_get_int(gcv);
++        mce_log(LL_NOTICE, "fba_setting_lpm_brightness: %d",
++                fba_setting_lpm_brightness);
++        fba_datapipe_execute_brightness_change();
++    }
+     else if( id == fba_setting_filter_lid_with_als_id ) {
+         fba_setting_filter_lid_with_als = gconf_value_get_bool(gcv);
+         fba_status_rethink();
+@@ -394,6 +409,12 @@ fba_setting_init(void)
+                            fba_setting_cb,
+                            &fba_setting_als_autobrightness_id);
+ 
++    mce_setting_track_int(MCE_SETTING_DISPLAY_BRIGHTNESS_LPM,
++                          &fba_setting_lpm_brightness,
++                          MCE_DEFAULT_DISPLAY_BRIGHTNESS_LPM,
++                          fba_setting_cb,
++                          &fba_setting_lpm_brightness_id);
++
+     mce_setting_track_bool(MCE_SETTING_TK_FILTER_LID_WITH_ALS,
+                            &fba_setting_filter_lid_with_als,
+                            MCE_DEFAULT_TK_FILTER_LID_WITH_ALS,
+@@ -434,6 +455,14 @@ fba_setting_quit(void)
+     mce_setting_notifier_remove(fba_setting_als_autobrightness_id),
+         fba_setting_als_autobrightness_id = 0;
+ 
++    mce_setting_notifier_remove(fba_setting_lpm_brightness_id),
++        fba_setting_lpm_brightness_id = 0;
++
++    if( fba_setting_lpm_brightness_seed_id ) {
++        g_source_remove(fba_setting_lpm_brightness_seed_id),
++            fba_setting_lpm_brightness_seed_id = 0;
++    }
++
+     mce_setting_notifier_remove(fba_setting_filter_lid_with_als_id),
+         fba_setting_filter_lid_with_als_id = 0;
+ 
+@@ -1272,6 +1301,61 @@ EXIT:
+     return GINT_TO_POINTER(brightness * curr_scale / 100);
+ }
+ 
++/** Brightness percentage at the top of a loaded als profile
++ *
++ * Slots a profile does not fill stay at lux=INT_MAX and val=100 from
++ * fba_als_filter_reset_profiles(), so scanning for the largest level would
++ * answer 100 for every profile. The top is the last slot that still carries
++ * a lux limit of its own.
++ *
++ * @param self als filtering state
++ * @param prof profile to read
++ *
++ * @return the level of the profile's last step, or 0 if it has none
++ */
++static int
++fba_als_filter_profile_top(const fba_als_filter_t *self, int prof)
++{
++    int top = 0;
++
++    if( prof < 0 || prof >= FBA_PROFILE_COUNT )
++        goto EXIT;
++
++    for( int slot = 0; slot <= FBA_PROFILE_STEPS; ++slot ) {
++        if( self->lut[prof][slot].lux == INT_MAX )
++            break;
++        top = self->lut[prof][slot].val;
++    }
++
++EXIT:
++    return top;
++}
++
++/** Write the als profile top into the unset always-on brightness setting
++ *
++ * Runs from an idle callback rather than from the filter, because setting a
++ * value re-filters the brightness and a filter must not re-enter itself.
++ *
++ * @param aptr the level to store, as a pointer
++ *
++ * @return FALSE, to run once
++ */
++static gboolean
++fba_setting_lpm_brightness_seed_cb(gpointer aptr)
++{
++    int ceiling = GPOINTER_TO_INT(aptr);
++
++    fba_setting_lpm_brightness_seed_id = 0;
++
++    if( fba_setting_lpm_brightness < 1 && ceiling > 0 ) {
++        mce_log(LL_NOTICE, "%s: seeded with the als profile top %d",
++                MCE_SETTING_DISPLAY_BRIGHTNESS_LPM, ceiling);
++        mce_setting_set_int(MCE_SETTING_DISPLAY_BRIGHTNESS_LPM, ceiling);
++    }
++
++    return FALSE;
++}
++
+ /** Ambient Light Sensor filter for LPM brightness
+  *
+  * @param data The un-processed brightness setting (1-100) stored in a pointer
+@@ -1282,19 +1366,40 @@ fba_datapipe_lpm_brightness_filter(gpointer data)
+ {
+     int value = GPOINTER_TO_INT(data);
+ 
+-    if( !fba_setting_als_autobrightness || fba_inputflt_output_lux < 0 )
+-        goto EXIT;
+-
+     if( lut_lpm.profiles < 1 )
+         goto EXIT;
+ 
+     int max_prof = lut_lpm.profiles - 1;
+ 
+-    int prof = mce_xlat_int(1,100, 0,max_prof, value);
++    int prof    = mce_xlat_int(1,100, 0,max_prof, value);
++    int ceiling = fba_als_filter_profile_top(&lut_lpm, prof);
++
++    /* While the setting is unset the profile top is stored once, so the
++     * setting starts at the level this watch already used. This is ahead of
++     * the als checks below, because a watch whose sensor never reports needs
++     * the same starting value. */
++    if( fba_setting_lpm_brightness < 1 ) {
++        if( ceiling > 0 && !fba_setting_lpm_brightness_seed_id ) {
++            fba_setting_lpm_brightness_seed_id =
++                g_idle_add(fba_setting_lpm_brightness_seed_cb,
++                           GINT_TO_POINTER(ceiling));
++        }
++        goto EXIT;
++    }
++
++    if( !fba_setting_als_autobrightness || fba_inputflt_output_lux < 0 )
++        goto EXIT;
++
+     /* Note: Input value is ignored and output is
+      *       determined only by the als config */
+     value = fba_als_filter_run(&lut_lpm, prof, fba_inputflt_output_lux);
+ 
++    /* The setting is the ceiling. The profile keeps its shape, so a watch with
++     * a real sensor still dims its always-on face in the dark, and the top of
++     * the profile lands where the user put it. */
++    if( ceiling > 0 )
++        value = mce_xlat_int(1, ceiling, 1, fba_setting_lpm_brightness, value);
++
+ EXIT:
+     return GINT_TO_POINTER(value);
+ }
+diff --git a/tools/mcetool.c b/tools/mcetool.c
+index f5d519d..f37d871 100644
+--- a/tools/mcetool.c
++++ b/tools/mcetool.c
+@@ -178,6 +178,7 @@ static bool          xmce_allow_display_blanking                       (const ch
+ static bool          xmce_set_blank_prevent_mode                       (const char *args);
+ static void          xmce_get_blank_prevent_mode                       (void);
+ static bool          xmce_set_display_brightness                       (const char *args);
++static bool          xmce_set_display_brightness_lpm                   (const char *args);
+ static void          xmce_get_display_brightness                       (void);
+ static bool          xmce_set_dimmed_brightness_static                 (const char *args);
+ static void          xmce_get_dimmed_brightness_static                 (void);
+@@ -3363,6 +3364,37 @@ static void xmce_get_display_brightness(void)
+         printf("%-"PAD1"s %s (1-100)\n", "Brightness:", txt);
+ }
+ 
++/** Set the brightness of the low power mode display
++ *
++ * @param args string that can be parsed to integer in [0 ... 100] range
++ */
++static bool xmce_set_display_brightness_lpm(const char *args)
++{
++        debugf("%s(%s)\n", __FUNCTION__, args);
++        int val = xmce_parse_integer(args);
++
++        if( val < 0 || val > 100 ) {
++                errorf("%d: invalid brightness value\n", val);
++                exit(EXIT_FAILURE);
++        }
++        xmce_setting_set_int(MCE_SETTING_DISPLAY_BRIGHTNESS_LPM, val);
++        return true;
++}
++
++/** Get the brightness of the low power mode display and print it out
++ */
++static void xmce_get_display_brightness_lpm(void)
++{
++        gint val = 0;
++        char txt[32];
++
++        strcpy(txt, "unknown");
++        if( xmce_setting_get_int(MCE_SETTING_DISPLAY_BRIGHTNESS_LPM, &val) )
++                snprintf(txt, sizeof txt, "%d", (int)val);
++        printf("%-"PAD1"s %s (0-100, 0 = follow the als profile)\n",
++               "Lpm brightness:", txt);
++}
++
+ /** Set statically defined dimmed display brightness
+  *
+  * @param args string that can be parsed to integer in [1 ... 100] range
+@@ -6507,6 +6539,7 @@ static bool xmce_get_status(const char *args)
+         xmce_get_display_state();
+         xmce_get_color_profile();
+         xmce_get_display_brightness();
++        xmce_get_display_brightness_lpm();
+         xmce_get_dimmed_brightness_static();
+         xmce_get_dimmed_brightness_dynamic();
+         xmce_get_compositor_dimming();
+@@ -7320,6 +7353,16 @@ static const mce_opt_t options[] =
+                         "set the display brightness to BRIGHTNESS;\n"
+                         "valid values are: 1-100\n"
+         },
++        {
++                .name        = "set-lpm-brightness",
++                .flag        = 'W',
++                .with_arg    = xmce_set_display_brightness_lpm,
++                .values      = "0...100",
++                .usage       =
++                        "set the brightness of the low power mode display;\n"
++                        "valid values are: 1-100, and 0 to follow the\n"
++                        "ambient light profile\n"
++        },
+ 
+         {
+                 .name        = "set-dimmed-brightness-static",
