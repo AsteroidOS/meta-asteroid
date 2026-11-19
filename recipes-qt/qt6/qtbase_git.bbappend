@@ -1,6 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/qtbase:"
 SRC_URI += " file://0001-libhybris-egl-server-Fix-build.patch "
-SRC_URI += " file://0002-qplatforminputcontextfactory-Use-qtvirtualkeyboard-b.patch"
 
 PACKAGECONFIG:append = " gles2 sql-sqlite glib fontconfig "
 
