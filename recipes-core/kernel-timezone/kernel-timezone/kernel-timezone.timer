@@ -1,0 +1,9 @@
+[Unit]
+Description=Set the kernel time zone on time zone and clock changes
+
+[Timer]
+OnTimezoneChange=true
+OnClockChange=true
+
+[Install]
+WantedBy=timers.target
